@@ -1,0 +1,35 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+@import 'packages/theme-chalk/varilable';
+@import 'packages/theme-chalk/common.scss';
+
+:root {
+    --next-layout-header-height: 64px;
+    --next-layout-nav-height: 45px;
+    --next-layout-sidebar-width: 240px;
+}
+
+$block: 'layout-transverse';
+.#{bf($block ,'header')} {
+    height: $layout-header-height;
+    background-color: $layout-bg-color;
+    color: $layout-font-color;
+    width: 100%;
+    display: flex;
+	align-items: center;
+	justify-content: space-between;
+    .#{bf($block ,'header', 'menu')} {
+        flex: 1 1 auto;
+        height: 100%;
+        overflow: hidden;
+    }
+    .#{bf($block ,'header', 'right')} {
+		flex-grow: 0;
+		flex-shrink: 0;
+		padding-left: 30px;
+        height: 100%;
+    }
+}
+.#{bf($block ,'main')} {
+    width: 100%;
+    height: calc(100% - #{$layout-header-height});
+}

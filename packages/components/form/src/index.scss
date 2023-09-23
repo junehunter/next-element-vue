@@ -1,0 +1,113 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+@import 'packages/theme-chalk/common.scss';
+
+$block: 'form';
+.#{bem($block)} {
+    padding: 10px 0;
+    .el-form-item {
+        .el-form-item__label {
+            width: var(--form-label-width);
+            text-align: right;
+            align-items: center;
+            .#{bem($block, 'item-label')} {
+                width: auto;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+        }
+        .el-form-item__content {
+            .el-select {
+                width: 100%;
+            }
+        }
+    }
+
+    .#{bem($block, 'number-range')} {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        .el-input-number {
+            flex: 1 1 auto;
+            $btn-width: 24px;
+            .el-input-number__decrease,
+            .el-input-number__increase {
+                width: $btn-width;
+            }
+            .el-input__wrapper {
+                padding-left: $btn-width + 2px;
+                padding-right: $btn-width + 2px;
+            }
+        }
+        .#{bem($block, 'number-range', 'division')} {
+            padding: 0 10px;
+            color: #606266;
+            font-size: 12px;
+        }
+    }
+    .#{bem($block, 'input-table')} {
+        height: calc(var(--el-input-height, 32px));
+        .el-input__wrapper {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            justify-content: flex-start;
+            @extend .text-ellipsis;
+            &:hover {
+                box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
+            }
+        }
+        .#{bem($block, 'input-table', 'value')} {
+            color: var(--el-input-text-color, var(--el-text-color-regular));
+            @extend .text-ellipsis;
+        }
+        .#{bem($block, 'input-table', 'placeholder')} {
+            color: var(--el-text-color-placeholder);
+            @extend .text-ellipsis;
+        }
+        .#{bem($block, 'input-table', 'append')} {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+    }
+    .#{bem($block, 'input-table')}.is-disabled {
+        cursor: not-allowed;
+        .el-input__wrapper {
+            cursor: not-allowed;
+            &:hover {
+                box-shadow: none;
+            }
+        }
+    }
+    .#{bem($block, 'footer')} {
+        text-align: center;
+        padding: 10px 0;
+    }
+}
+$table-content: bem($block, 'input-table', 'content');
+.#{$table-content} {
+    height: 500px;
+    .el-radio-group {
+        width: 100%;
+        height: 100%;
+        .el-radio {
+            .el-radio__label {
+                display: none;
+            }
+        }
+    }
+} 
+.#{bem($block, 'input-table', 'footer')} {
+    padding: 0 0 10px;
+    text-align: right;
+    position: sticky;
+    bottom: -10px;
+}
+
+
+.#{bem('dialog')}.is-fullscreen {
+    .el-dialog__body {
+        .#{$table-content} {
+            height: calc(100% - 50px);
+        }
+    }
+}

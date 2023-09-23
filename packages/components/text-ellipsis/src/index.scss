@@ -1,0 +1,15 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+.#{bem('text-ellipsis')} {
+	display: inline-flex;
+	width: 100%;
+	box-sizing: border-box;
+	align-items: center;
+	&__text {
+		display: inline-block;
+		cursor: pointer;
+		width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}

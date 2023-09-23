@@ -1,0 +1,53 @@
+@use './config.scss';
+
+@function bem($block, $element: '', $modifier: '') {
+	$name: config.$namespace + config.$common-separator + $block;
+
+	@if $element != '' {
+		$name: $name + config.$element-separator + $element;
+	}
+
+	@if $modifier != '' {
+		$name: $name + config.$modifier-separator + $modifier;
+	}
+
+	@return $name;
+}
+
+@function bf($args...) {
+	$name: config.$namespace;
+	@each $item in $args {
+		@if $item != '' {
+			$name: $name + '-' + $item;
+		}
+	}
+	@return $name;
+}
+
+@function is($block, $args...) {
+	$name: config.$state-prefix + $block;
+	@each $item in $args {
+		@if $item != '' {
+			$name: $name + '-' + $item;
+		}
+	}
+	@return $name;
+}
+
+@function joinVarName($list) {
+	$name: '--' + config.$namespace;
+	@each $item in $list {
+		@if $item != '' {
+			$name: $name + '-' + $item;
+		}
+	}
+	@return $name;
+}
+
+@function getCssVarName($args...) {
+	@return joinVarName($args);
+}
+
+@function getCssVar($args...) {
+	@return var(#{joinVarName($args)});
+}

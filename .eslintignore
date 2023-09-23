@@ -1,0 +1,14 @@
+
+*.sh
+node_modules
+dist
+docs
+*.md
+*.scss
+*.woff
+*.ttf
+.vscode
+.idea
+mock
+typings
+package-lock.json

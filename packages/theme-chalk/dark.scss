@@ -1,0 +1,34 @@
+@use './mixins/index' as *;
+
+[data-theme='dark'] {
+    --next-main-bg-color: #141414;
+    --el-bg-color: var(--next-main-bg-color);
+    --el-fill-color-blank: var(--next-main-bg-color);
+    --el-fill-color-light: var(--next-main-bg-color);
+    --el-bg-color-overlay: var(--next-main-bg-color);
+    --el-bg-color-page: var(--next-main-bg-color);
+	--el-mask-color: rgba(0, 0, 0, 0.6);
+    --el-text-color-regular: #ffffff;
+    --el-text-color-primary: #ffffff;
+    .#{bem('layout')} {
+        background-color: var(--next-main-bg-color);
+        .#{bem('tabs')} {
+            .#{bf('tabs', 'list')} {
+                >li {
+                    background-color: unset !important;
+                    &:hover {
+                        background-color: unset !important;
+                    }
+                }
+                >li.is-active {
+                    &:hover {
+                        background-color: unset !important;
+                    }
+                }
+            }
+        }
+    }
+    .el-picker__popper {
+        border: 1px solid #ffffff !important;
+    }
+}
