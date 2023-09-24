@@ -1,4 +1,4 @@
-import { defineComponent, markRaw, ref, watchEffect, h, PropType, CSSProperties, provide } from 'vue';
+import { defineComponent, markRaw, ref, watchEffect, h, PropType, CSSProperties, provide, computed, watch } from 'vue';
 import type { Component } from 'vue';
 import { useNamespace } from 'packages/hooks';
 import { merge } from 'lodash-unified';
@@ -28,11 +28,6 @@ export default defineComponent({
 			type: Object as PropType<CSSProperties>,
 			default: () => ({}),
 		},
-		layout: {
-			type: String,
-			values: ['defaults', 'transverse', 'columns', 'classic'],
-			default: 'transverse',
-		},
 		options: {
 			type: Object,
 			default: () => {
@@ -42,22 +37,38 @@ export default defineComponent({
 	},
 	emits: ['changeLanguage', 'changeUserDropdown'],
 	setup(props, { slots, emit }) {
-		const config = merge(defaultConfig, props.options);
-		provide('options', config);
+		const _config = ref<any>(merge(defaultConfig, props.options));
+		const options = computed(() => _config.value).value;
+		provide('options', options);
 		provide('__ns__', ns);
 		provide('__emit__', emit);
 		provide('__slots__', slots);
-		return { config };
+		const updateOptions = (cfg: any) => {
+			_config.value = merge(options, cfg);
+		};
+		provide('updateOptions', updateOptions);
+		// 外部props数据触发更新
+		watch(
+			() => props.options,
+			cfg => {
+				updateOptions(cfg);
+			},
+			{
+				deep: true,
+			}
+		);
+		return { options, updateOptions };
 	},
 	render() {
 		const props = this.$props;
 		const slots = this.$slots;
-		const activeLayout = ref<Component>(layouts[props.layout]);
+		const layout = this.options.setting?.layout || 'transverse';
+		const activeLayout = ref<Component>(layouts[layout]);
 		const updateLayout = () => {
-			activeLayout.value = layouts[props.layout];
+			activeLayout.value = layouts[layout];
 			// 当配置项没有定义时使用默认布局
 			if (!activeLayout.value) {
-				activeLayout.value = layouts.defaults;
+				activeLayout.value = layouts.transverse;
 			}
 		};
 		watchEffect(() => {

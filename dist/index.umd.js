@@ -918,7 +918,7 @@
         const locale = localeOverrides || vue.inject(localeContextKey, vue.ref());
         return buildLocaleContext(vue.computed((() => locale.value || zhcnLocale)));
     };
-    const {getLightColor: getLightColor} = function useChangeColor() {
+    function useChangeColor() {
         return {
             hexToRgb: str => {
                 let hexs = "";
@@ -951,11 +951,12 @@
                 return useChangeColor().rgbToHex(rgb[0], rgb[1], rgb[2]);
             }
         };
-    }(), nextUseCssVar = (cssvar, value) => {
+    }
+    const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssvar, value) => {
         document.documentElement.style.setProperty(cssvar, value);
     }, nextUseCssTheme = (cssvar, value) => {
         nextUseCssVar(cssvar, value);
-        for (let i = 1; i < 10; i++) nextUseCssVar(cssvar + "-light-" + i, getLightColor(value, i / 10));
+        for (let i = 1; i < 10; i++) nextUseCssVar(cssvar + "-light-" + i, getLightColor$4(value, i / 10));
         nextUseCssVar(`${cssvar}-dark-2`, value);
     }, withInstall = (main, extra) => {
         if (main.install = app => {
@@ -993,13 +994,14 @@
         tabs: [],
         menuTree: [],
         setting: {
+            layout: "transverse",
             themeColor: "#c71585",
             headerBarColor: "#282c34",
             headerBarFontColor: "#FFFFFF",
-            isHeaderBarColorGradual: !0,
+            isHeaderBarColorGradual: !1,
             asidebarColor: "#282c34",
             asidebarFontColor: "#ffffff",
-            isAsidebarColorGradual: !0,
+            isAsidebarColorGradual: !1,
             isDark: !1
         }
     }, LogoView = vue.defineComponent({
@@ -1237,18 +1239,42 @@
     } ], [ "__file", "view.vue" ] ]), LayoutSetting = vue.defineComponent({
         setup() {},
         render() {
-            const _ns = vue.inject("__ns__", {}), _config = vue.inject("options", {}), settingConfig = vue.reactive({
+            const _slots = vue.inject("__slots__", {}), _ns = vue.inject("__ns__", {}), _config = vue.inject("options", {}), _updateOptions = vue.inject("updateOptions", null), settingConfig = vue.reactive({
                 ..._config.setting
-            }), _onChangeThemeColor = color => {
+            }), _changeUpdateOptions = () => {
+                const options = {
+                    ..._config,
+                    setting: {
+                        ...settingConfig
+                    }
+                };
+                _updateOptions(options);
+            }, _onChangeThemeColor = color => {
                 if (!color) return elementPlus.ElMessage({
                     type: "warning",
                     message: "主题颜色不能为空"
                 }), !1;
-                settingConfig.themeColor = color, nextUseCssTheme("--el-color-primary", color);
+                settingConfig.themeColor = color, nextUseCssTheme("--el-color-primary", color), 
+                _changeUpdateOptions();
             }, _onChangeSwitchDark = () => {
                 const body = document.documentElement;
-                settingConfig.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", "");
-            };
+                settingConfig.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", ""), 
+                _changeUpdateOptions();
+            }, _onChangeColor = (color, key, cssvar) => {
+                settingConfig[key] = color, nextUseCssVar(cssvar, color), _changeUpdateOptions();
+            }, layouts = [ {
+                type: "defaults",
+                text: "默认"
+            }, {
+                type: "classic",
+                text: "经典"
+            }, {
+                type: "transverse",
+                text: "横向"
+            }, {
+                type: "columns",
+                text: "分栏"
+            } ];
             return vue.createVNode(elementPlus.ElScrollbar, null, {
                 default: () => [ vue.createVNode(elementPlus.ElDivider, {
                     "border-style": "dashed"
@@ -1281,7 +1307,68 @@
                     "active-color": "#1f1f1f",
                     "inactive-color": "#dcdfe6",
                     onChange: _onChangeSwitchDark
-                }, null) ]) ]) ]
+                }, null) ]) ]), vue.createVNode("div", {
+                    class: _ns.b("config-bar-item")
+                }, [ vue.createVNode("span", {
+                    class: _ns.be("config-bar-item", "label")
+                }, [ vue.createTextVNode("顶栏背景颜色") ]), vue.createVNode("div", {
+                    class: _ns.be("config-bar-item", "value")
+                }, [ vue.createVNode(elementPlus.ElColorPicker, {
+                    modelValue: settingConfig.headerBarColor,
+                    "onUpdate:modelValue": $event => settingConfig.headerBarColor = $event,
+                    predefine: [ "#282c34", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585", "#FB07A0" ],
+                    onChange: color => _onChangeColor(color, "headerBarColor", "--next-layout-bg-color")
+                }, null) ]) ]), vue.createVNode("div", {
+                    class: _ns.b("config-bar-item")
+                }, [ vue.createVNode("span", {
+                    class: _ns.be("config-bar-item", "label")
+                }, [ vue.createTextVNode("顶栏字体颜色") ]), vue.createVNode("div", {
+                    class: _ns.be("config-bar-item", "value")
+                }, [ vue.createVNode(elementPlus.ElColorPicker, {
+                    modelValue: settingConfig.headerBarFontColor,
+                    "onUpdate:modelValue": $event => settingConfig.headerBarFontColor = $event,
+                    predefine: [ "#282c34", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585", "#FB07A0" ],
+                    onChange: color => _onChangeColor(color, "headerBarFontColor", "--next-layout-font-color")
+                }, null) ]) ]), vue.createVNode("div", {
+                    class: _ns.b("config-bar-item")
+                }, [ vue.createVNode("span", {
+                    class: _ns.be("config-bar-item", "label")
+                }, [ vue.createTextVNode("顶栏背景渐变") ]), vue.createVNode("div", {
+                    class: _ns.be("config-bar-item", "value")
+                }, [ vue.createVNode(vue.resolveComponent("el-switch"), {
+                    modelValue: settingConfig.isHeaderBarColorGradual,
+                    "onUpdate:modelValue": $event => settingConfig.isHeaderBarColorGradual = $event,
+                    onChange: _changeUpdateOptions
+                }, null) ]) ]), vue.createVNode(elementPlus.ElDivider, {
+                    "border-style": "dashed"
+                }, {
+                    default: () => [ vue.createTextVNode("布局方式") ]
+                }), vue.createVNode("ul", {
+                    class: _ns.b("config-bar-layout")
+                }, [ layouts.map((item => vue.createVNode("li", {
+                    class: [ _ns.be("config-bar-layout", item.type), _ns.is("active", settingConfig.layout === item.type) ],
+                    onClick: event => ((event, layout) => {
+                        event.stopPropagation(), settingConfig.layout = layout.type, _changeUpdateOptions();
+                    })(event, item)
+                }, [ vue.createVNode("div", {
+                    class: "layout-wrap"
+                }, [ vue.createVNode("div", {
+                    class: "layout-box"
+                }, [ vue.createVNode("p", {
+                    class: "layout-text"
+                }, [ item.text ]) ]) ]), vue.createVNode("aside", null, null) ]))) ]), vue.createVNode("div", {
+                    class: _ns.b("config-bar-item"),
+                    style: {
+                        "margin-top": "20px"
+                    }
+                }, [ vue.createVNode("span", {
+                    class: _ns.be("config-bar-item", "label")
+                }, [ vue.createTextVNode("是否显示标签栏") ]), vue.createVNode("div", {
+                    class: _ns.be("config-bar-item", "value")
+                }, [ vue.createVNode(vue.resolveComponent("el-switch"), {
+                    modelValue: _config.showTabs,
+                    "onUpdate:modelValue": $event => _config.showTabs = $event
+                }, null) ]) ]), _slots.setting?.() ]
             });
         }
     });
@@ -1436,14 +1523,22 @@
                 }) ]
             }) ]);
         }
-    }), Header$3 = vue.defineComponent({
+    });
+    const {getLightColor: getLightColor$3} = useChangeColor();
+    var Header$3 = vue.defineComponent({
         setup: () => ({
             ns: vue.inject("ns", {})
         }),
         render() {
-            const slots = this.$slots, _ns = this.ns;
+            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$3(color, .5)})`
+                } : "";
+            }));
             return vue.createVNode("header", {
-                class: _ns.b("header")
+                class: _ns.b("header"),
+                style: headerStyle.value
             }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
                 class: _ns.bf("header", "right")
             }, [ vue.createVNode(HeaderTools, null, {
@@ -1531,8 +1626,8 @@
         },
         setup(props) {
             vue.provide("ns", ns$e);
-            const _menuTree = props.menuTree, router = vueRouter.useRouter(), currentPath = router.currentRoute.value.fullPath, activePath = vue.ref(currentPath);
-            vue.watch((() => router.currentRoute.value), (to => {
+            const _menuTree = props.menuTree, router = vueRouter.useRouter(), currentPath = router?.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
+            vue.watch((() => router?.currentRoute?.value), (to => {
                 activePath.value = to.fullPath;
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
@@ -1572,10 +1667,12 @@
             const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
             return vue.createVNode("aside", {
                 class: _ns.b("sidebar")
-            }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                mode: "vertical",
-                menuTree: _config.menuTree
-            }, null) ]);
+            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
+                default: () => [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
+                    mode: "vertical",
+                    menuTree: _config.menuTree
+                }, null) ]
+            }) ]);
         }
     });
     const ns$d = useNamespace("layout-defaults");
@@ -1599,11 +1696,19 @@
                 }, [ slots.default?.() ]) ]) ]
             });
         }
-    }), Header$2 = vue.defineComponent({
+    });
+    const {getLightColor: getLightColor$2} = useChangeColor();
+    var Header$2 = vue.defineComponent({
         setup(props, {slots: slots}) {
-            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {});
+            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$2(color, .5)})`
+                } : "";
+            }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
-                class: _ns.b("header")
+                class: _ns.b("header"),
+                style: headerStyle.value
             }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
                 class: _ns.bf("header", "menu")
             }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
@@ -1636,11 +1741,19 @@
             }, [ slots.default?.() ]) ]);
             var s;
         }
-    }), Header$1 = vue.defineComponent({
+    });
+    const {getLightColor: getLightColor$1} = useChangeColor();
+    var Header$1 = vue.defineComponent({
         setup(props, {slots: slots}) {
-            const _ns = vue.inject("ns", {});
+            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$1(color, .5)})`
+                } : "";
+            }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
-                class: _ns.b("header")
+                class: _ns.b("header"),
+                style: headerStyle.value
             }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
                 class: _ns.bf("header", "menu")
             }, null), vue.createVNode("div", {
@@ -1691,11 +1804,19 @@
                 }
             });
         }
-    }), Header = vue.defineComponent({
+    });
+    const {getLightColor: getLightColor} = useChangeColor();
+    var Header = vue.defineComponent({
         setup(props, {slots: slots}) {
-            const _ns = vue.inject("ns", {});
+            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor(color, .5)})`
+                } : "";
+            }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
-                class: _ns.b("header")
+                class: _ns.b("header"),
+                style: headerStyle.value
             }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
                 class: _ns.bf("header", "menu")
             }, [ slots[slots_config_headerMenu]?.() ]), vue.createVNode("div", {
@@ -1712,10 +1833,12 @@
             const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
             return vue.createVNode("aside", {
                 class: _ns.b("sidebar")
-            }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                mode: "vertical",
-                menuTree: _config.menuTree
-            }, null) ]);
+            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
+                default: () => [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
+                    mode: "vertical",
+                    menuTree: _config.menuTree
+                }, null) ]
+            }) ]);
         }
     });
     const ns$a = useNamespace("layout-classic");
@@ -1757,11 +1880,6 @@
                 type: Object,
                 default: () => ({})
             },
-            layout: {
-                type: String,
-                values: [ "defaults", "transverse", "columns", "classic" ],
-                default: "transverse"
-            },
             options: {
                 type: Object,
                 default: () => ({})
@@ -1769,16 +1887,25 @@
         },
         emits: [ "changeLanguage", "changeUserDropdown" ],
         setup(props, {slots: slots, emit: emit}) {
-            const config = merge$1(defaultConfig$2, props.options);
-            return vue.provide("options", config), vue.provide("__ns__", ns$9), vue.provide("__emit__", emit), 
-            vue.provide("__slots__", slots), {
-                config: config
+            const _config = vue.ref(merge$1(defaultConfig$2, props.options)), options = vue.computed((() => _config.value)).value;
+            vue.provide("options", options), vue.provide("__ns__", ns$9), vue.provide("__emit__", emit), 
+            vue.provide("__slots__", slots);
+            const updateOptions = cfg => {
+                _config.value = merge$1(options, cfg);
+            };
+            return vue.provide("updateOptions", updateOptions), vue.watch((() => props.options), (cfg => {
+                updateOptions(cfg);
+            }), {
+                deep: !0
+            }), {
+                options: options,
+                updateOptions: updateOptions
             };
         },
         render() {
-            const props = this.$props, slots = this.$slots, activeLayout = vue.ref(layouts[props.layout]);
+            const props = this.$props, slots = this.$slots, layout = this.options.setting?.layout || "transverse", activeLayout = vue.ref(layouts[layout]);
             vue.watchEffect((() => {
-                activeLayout.value = layouts[props.layout], activeLayout.value || (activeLayout.value = layouts.defaults);
+                activeLayout.value = layouts[layout], activeLayout.value || (activeLayout.value = layouts.transverse);
             }));
             const _activeSlots = {};
             for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
@@ -1811,34 +1938,32 @@
                     path: tab.path
                 });
             }
-            const activeIndex = vue.ref(defaultIndex);
-            let tabsView = vue.reactive(_tabs.value);
-            const onChange = command => {
-                const active = _activeTab.value, len = tabsView.length, i = tabsView.findIndex((v => v.path === active));
+            const activeIndex = vue.ref(defaultIndex), tabsView = vue.ref(_tabs.value), onChange = command => {
+                const active = _activeTab.value, len = tabsView.value.length, i = tabsView.value.findIndex((v => v.path === active));
                 switch (command) {
                   case "other":
-                    i > -1 && (activeIndex.value = 1, tabsView = [ tabsView[0], tabsView[i] ]);
+                    i > -1 && (activeIndex.value = 1, tabsView.value = [ tabsView.value[0], tabsView.value[i] ]);
                     break;
 
                   case "left":
                     if (i > -1) {
-                        const rightTags = tabsView.slice(i);
-                        rightTags.unshift(tabsView[0]), tabsView = rightTags, activeIndex.value = 1;
+                        const rightTags = tabsView.value.slice(i);
+                        rightTags.unshift(tabsView.value[0]), tabsView.value = rightTags, activeIndex.value = 1;
                     }
                     break;
 
                   case "right":
                     if (i > -1 && i < len - 1) {
-                        const leftTags = tabsView.slice(0, i + 1);
-                        tabsView = leftTags;
+                        const leftTags = tabsView.value.slice(0, i + 1);
+                        tabsView.value = leftTags;
                     }
                     break;
 
                   case "all":
-                    const homeTag = tabsView[0];
-                    activeIndex.value = 0, tabsView = [ homeTag ], onClickTabItem(null, homeTag, activeIndex.value);
+                    const homeTag = tabsView.value[0];
+                    activeIndex.value = 0, tabsView.value = [ homeTag ], onClickTabItem(null, homeTag, activeIndex.value);
                 }
-                emit("change", activeIndex.value, tabsView, command);
+                emit("change", activeIndex.value, tabsView.value, command);
             }, onClickTabItem = (event, tab, index) => {
                 event?.stopPropagation(), activeIndex.value = index;
                 let to = {
@@ -1848,49 +1973,49 @@
                 };
                 router.push(to);
             };
-            vue.watch((() => router.currentRoute.value), (to => {
+            vue.watch((() => router?.currentRoute?.value), (to => {
                 const {tagTitle: tagTitle} = to.query, activeRoute = {
                     name: to.name,
-                    title: tagTitle || to.meta.title,
+                    title: tagTitle || to.meta?.title,
                     path: to.path,
                     meta: to.meta,
                     params: to.params,
                     query: to.query
-                }, i = tabsView.findIndex((v => v.path === to.path));
-                i > -1 ? (activeIndex.value = i, tabsView[i] = activeRoute) : (activeIndex.value = tabsView.length, 
-                tabsView.push(activeRoute));
+                }, i = tabsView.value.findIndex((v => v.path === to.path));
+                i > -1 ? (activeIndex.value = i, tabsView.value[i] = activeRoute) : (activeIndex.value = tabsView.value.length, 
+                tabsView.value.push(activeRoute));
             }));
             const renderContent = () => vue.createVNode("nav", {
                 class: ns$8.b()
             }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
                 default: () => [ vue.createVNode("ul", {
                     class: ns$8.b("list")
-                }, [ tabsView.map(((tab, index) => vue.createVNode("li", {
+                }, [ tabsView.value.map(((tab, index) => tab ? vue.createVNode("li", {
                     class: [ "tab-item", ns$8.is("active", activeIndex.value === index) ],
                     onClick: event => onClickTabItem(event, tab, index)
                 }, [ vue.createVNode("i", {
-                    class: [ "tab-icon", tab.meta.icon ]
-                }, null), vue.createVNode("span", null, [ t(tab.title) ]), tab.meta.isAffix || "/" === tab.path ? null : vue.createVNode("span", {
+                    class: [ "tab-icon", tab.meta?.icon ]
+                }, null), vue.createVNode("span", null, [ t(tab.title) ]), tab.meta?.isAffix || "/" === tab.path ? null : vue.createVNode("span", {
                     onClick: event => ((event, tab, index) => {
                         event.stopPropagation();
                         const active = _activeTab.value;
                         if (active === tab.path) {
-                            const prevTag = tabsView[index - 1];
+                            const prevTag = tabsView.value[index - 1];
                             router.push({
                                 path: prevTag.path,
                                 query: prevTag.query || {},
                                 params: prevTag.params || {}
-                            }), emit("close", prevTag, tabsView);
+                            }), emit("close", prevTag, tabsView.value);
                         }
-                        tabsView.splice(index, 1);
-                        const i = tabsView.findIndex((v => v.path === active)) || 0;
+                        tabsView.value.splice(index, 1);
+                        const i = tabsView.value.findIndex((v => v.path === active)) || 0;
                         activeIndex.value = i > -1 ? i : 0;
                     })(event, tab, index)
                 }, [ vue.createVNode(elementPlus.ElIcon, {
                     class: "tab-close"
                 }, {
                     default: () => [ vue.createVNode(close_default, null, null) ]
-                }) ]) ]))) ]) ]
+                }) ]) ]) : null)) ]) ]
             }), vue.createVNode(elementPlus.ElDropdown, {
                 "show-timeout": 80,
                 "hide-timeout": 80,
@@ -4464,7 +4589,7 @@
         })(app);
     };
     var index = {
-        version: "0.0.10",
+        version: "0.0.13",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4475,7 +4600,7 @@
     exports.localeContextKey = localeContextKey, exports.namespaceContextKey = namespaceContextKey, 
     exports.nextUseCssTheme = nextUseCssTheme, exports.nextUseCssVar = nextUseCssVar, 
     exports.translate = translate, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
-    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.10", 
+    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.13", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

@@ -31,10 +31,10 @@ export default defineComponent({
 		provide('ns', ns);
 		const _menuTree = props.menuTree as MenuItemInterface[];
 		const router = useRouter();
-		const currentPath = router.currentRoute.value.fullPath;
+		const currentPath = router?.currentRoute?.value.fullPath;
 		const activePath = ref(currentPath);
 		watch(
-			() => router.currentRoute.value,
+			() => router?.currentRoute?.value,
 			to => {
 				activePath.value = to.fullPath;
 			}

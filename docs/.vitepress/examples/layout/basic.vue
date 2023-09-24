@@ -5,19 +5,29 @@ const layout = ref<string>('transverse');
 const isTabs = ref<boolean>(true);
 const menuTree = [];
 const logo = new URL('/logo.svg', import.meta.url).href;
-const layoutOptions = {
+const layoutOptions = ref<any>({
 	logo: logo,
 	profile: logo,
 	menuTree: menuTree,
 	showTabs: isTabs.value,
 	tabs: [],
+	setting: {},
+});
+const layoutRef = ref<any>();
+const onChangeLayout = (val: string) => {
+	layoutOptions.value.setting.layout = val;
+	// layoutRef.value.options.setting.layout = layout.value;
+};
+const onChangeTab = val => {
+	layoutOptions.value.showTabs = val;
+	// layoutRef.value.options.showTabs = isTabs.value;
 };
 </script>
 
 <template>
 	<div class="layout-container">
 		<div class="tabs">
-			<el-radio-group v-model="layout" size="large">
+			<el-radio-group v-model="layout" size="large" @change="onChangeLayout">
 				<el-radio-button label="transverse">横向布局</el-radio-button>
 				<el-radio-button label="columns">分栏布局</el-radio-button>
 				<el-radio-button label="classic">经典布局</el-radio-button>
@@ -25,10 +35,10 @@ const layoutOptions = {
 			</el-radio-group>
 			<div>
 				<span style="padding: 0 20px">是否显示导航栏</span>
-				<el-switch v-model="isTabs" />
+				<el-switch v-model="isTabs" @change="onChangeTab" />
 			</div>
 		</div>
-		<NextLayout style="margin-top: 10px; height: 600px" :options="layoutOptions" :layout="layout">
+		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions">
 			<template v-if="isTabs" #tabs>
 				<NextTabs :tabs="layoutOptions.tabs"></NextTabs>
 			</template>
@@ -45,7 +55,7 @@ const layoutOptions = {
 		align-items: center;
 	}
 	:deep(.main) {
-		background-color: #0000000d;
+		background-color: #f5f5f5;
 	}
 }
 </style>

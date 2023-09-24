@@ -1,17 +1,10 @@
-import { defineComponent, computed, ref, reactive, watch } from 'vue';
+import { defineComponent, computed, ref, watch, PropType } from 'vue';
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElScrollbar } from 'element-plus';
 import { Close, Back, Right } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
 import { useRouter } from 'vue-router';
+import type { TabInterface } from './interface';
 
-interface TabInterface {
-	name?: string;
-	title: string;
-	path: string;
-	meta: any;
-	query?: any;
-	params?: any;
-}
 const ns = useNamespace('tabs');
 export default defineComponent({
 	name: 'NextTabs',
@@ -21,7 +14,7 @@ export default defineComponent({
 			default: '/',
 		},
 		tabs: {
-			type: Array,
+			type: Array as PropType<TabInterface[]>,
 			default: () => {
 				return [];
 			},
@@ -41,42 +34,42 @@ export default defineComponent({
 			}
 		}
 		const activeIndex = ref(defaultIndex);
-		let tabsView = reactive(_tabs.value);
+		const tabsView = ref<TabInterface[]>(_tabs.value);
 		const onChange = command => {
 			const active = _activeTab.value;
-			const len = tabsView.length;
-			const i = tabsView.findIndex((v: any) => v.path === active);
+			const len = tabsView.value.length;
+			const i = tabsView.value.findIndex((v: any) => v.path === active);
 			switch (command) {
 				case 'other':
 					if (i > -1) {
 						activeIndex.value = 1;
-						tabsView = [tabsView[0], tabsView[i]];
+						tabsView.value = [tabsView.value[0], tabsView.value[i]];
 					}
 					break;
 				case 'left':
 					if (i > -1) {
-						const rightTags = tabsView.slice(i);
-						rightTags.unshift(tabsView[0]);
-						tabsView = rightTags;
+						const rightTags = tabsView.value.slice(i);
+						rightTags.unshift(tabsView.value[0]);
+						tabsView.value = rightTags;
 						activeIndex.value = 1;
 					}
 					break;
 				case 'right':
 					if (i > -1 && i < len - 1) {
-						const leftTags = tabsView.slice(0, i + 1);
-						tabsView = leftTags;
+						const leftTags = tabsView.value.slice(0, i + 1);
+						tabsView.value = leftTags;
 					}
 					break;
 				case 'all':
-					const homeTag = tabsView[0] as TabInterface;
+					const homeTag = tabsView.value[0] as TabInterface;
 					activeIndex.value = 0;
-					tabsView = [homeTag];
+					tabsView.value = [homeTag];
 					onClickTabItem(null, homeTag, activeIndex.value);
 					break;
 				default:
 					break;
 			}
-			emit('change', activeIndex.value, tabsView, command);
+			emit('change', activeIndex.value, tabsView.value, command);
 		};
 		const onClickTabItem = (event: MouseEvent, tab: TabInterface, index: number) => {
 			event?.stopPropagation();
@@ -92,16 +85,16 @@ export default defineComponent({
 			event.stopPropagation();
 			const active = _activeTab.value;
 			if (active === tab.path) {
-				const prevTag = tabsView[index - 1] as TabInterface;
+				const prevTag = tabsView.value[index - 1] as TabInterface;
 				router.push({
 					path: prevTag.path,
 					query: prevTag.query || {},
 					params: prevTag.params || {},
 				});
-				emit('close', prevTag, tabsView);
+				emit('close', prevTag, tabsView.value);
 			}
-			tabsView.splice(index, 1);
-			const i = tabsView.findIndex((v: any) => v.path === active) || 0;
+			tabsView.value.splice(index, 1);
+			const i = tabsView.value.findIndex((v: any) => v.path === active) || 0;
 			if (i > -1) {
 				activeIndex.value = i;
 			} else {
@@ -109,24 +102,24 @@ export default defineComponent({
 			}
 		};
 		watch(
-			() => router.currentRoute.value,
+			() => router?.currentRoute?.value,
 			(to: any) => {
 				const { tagTitle } = to.query;
 				const activeRoute = {
 					name: to.name,
-					title: tagTitle || to.meta.title,
+					title: tagTitle || to.meta?.title,
 					path: to.path,
 					meta: to.meta,
 					params: to.params,
 					query: to.query,
 				};
-				const i = tabsView.findIndex((v: any) => v.path === to.path);
+				const i = tabsView.value.findIndex((v: any) => v.path === to.path);
 				if (i > -1) {
 					activeIndex.value = i;
-					tabsView[i] = activeRoute;
+					tabsView.value[i] = activeRoute;
 				} else {
-					activeIndex.value = tabsView.length;
-					tabsView.push(activeRoute);
+					activeIndex.value = tabsView.value.length;
+					tabsView.value.push(activeRoute);
 				}
 			}
 		);
@@ -135,12 +128,12 @@ export default defineComponent({
 				<nav class={ns.b()}>
 					<ElScrollbar>
 						<ul class={ns.b('list')}>
-							{(tabsView as any[]).map((tab, index) => {
-								return (
+							{(tabsView.value as TabInterface[]).map((tab, index) => {
+								return tab ? (
 									<li class={['tab-item', ns.is('active', activeIndex.value === index)]} onClick={event => onClickTabItem(event, tab, index)}>
-										<i class={['tab-icon', tab.meta.icon]}></i>
+										<i class={['tab-icon', tab.meta?.icon]}></i>
 										<span>{t(tab.title)}</span>
-										{!tab.meta.isAffix && tab.path !== '/' ? (
+										{!tab.meta?.isAffix && tab.path !== '/' ? (
 											<span onClick={event => onCloseTab(event, tab, index)}>
 												<ElIcon class={'tab-close'}>
 													<Close />
@@ -148,7 +141,7 @@ export default defineComponent({
 											</span>
 										) : null}
 									</li>
-								);
+								) : null;
 							})}
 						</ul>
 					</ElScrollbar>

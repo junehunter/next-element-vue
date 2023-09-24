@@ -9,27 +9,49 @@ $block: 'layout-defaults';
     height: 100%;
     display: flex;
     justify-content: space-between;
+    background-color: #f5f5f5;
+    --next-layout-sidebar-width: 300px;
+    --next-layout-font-color: var(--el-text-color-primary);
+    $margin-w: 16px;
     .#{bf($block, 'sidebar')} {
         flex-grow: 0;
         flex-shrink: 0;
         width: $layout-sidebar-width;
         height: 100%;
-        // background-color: $layout-bg-color;
-        // color: $layout-font-color;
+        position: relative;
+        padding: $margin-w 0 $margin-w $margin-w;
+        box-sizing: border-box;
+        >.el-scrollbar {
+            border-radius: 6px;
+            .el-scrollbar__view {
+                height: 100%;
+                box-shadow: var(--el-box-shadow-light);
+            }
+        }
     }
     .#{bf($block, 'header')} {
         height: $layout-header-height;
-        background-color: $layout-bg-color;
-        color: $layout-font-color;
-        width: 100%;
+        background-color: var(--el-bg-color);
+        color: var(--el-text-color-primary);
+        width: calc(100% - $margin-w * 2);
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin: 0 $margin-w;
+        border-radius: 6px 6px 0 0;
+    }
+    .#{bf('tabs')} {
+        background-color: var(--el-bg-color);
+        color: var(--el-text-color-primary);
+        width: calc(100% - $margin-w * 2);
+        margin: 0 $margin-w;
+        border-radius: 0 0 6px 6px;
     }
     .#{bf($block, 'content')} {
         flex: 1 1 auto;
         width: calc(100% - $layout-sidebar-width);
-        height: 100%;
+        height: calc(100% - $margin-w);
+        margin-top: $margin-w;
     }
     .#{bf($block ,'main')} {
         width: 100%;

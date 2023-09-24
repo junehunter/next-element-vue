@@ -26,6 +26,7 @@ declare const _default: {
     tabs: any[];
     menuTree: any[];
     setting: {
+        layout: string;
         themeColor: string;
         headerBarColor: string;
         headerBarFontColor: string;

@@ -5,7 +5,7 @@ export declare const NextTabs: import("../../utils/install").SFCWithInstall<impo
         default: string;
     };
     tabs: {
-        type: ArrayConstructor;
+        type: import("vue").PropType<import("./src/interface").TabInterface[]>;
         default: () => any[];
     };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "select" | "close")[], "change" | "select" | "close", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
@@ -14,7 +14,7 @@ export declare const NextTabs: import("../../utils/install").SFCWithInstall<impo
         default: string;
     };
     tabs: {
-        type: ArrayConstructor;
+        type: import("vue").PropType<import("./src/interface").TabInterface[]>;
         default: () => any[];
     };
 }>> & {
@@ -23,6 +23,6 @@ export declare const NextTabs: import("../../utils/install").SFCWithInstall<impo
     onClose?: (...args: any[]) => any;
 }, {
     activeTab: string | number;
-    tabs: unknown[];
+    tabs: import("./src/interface").TabInterface[];
 }, {}>> & Record<string, any>;
 export default NextTabs;

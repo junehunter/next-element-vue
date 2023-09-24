@@ -43,6 +43,8 @@ export default {
 	tabs: [],
 	menuTree: [],
 	setting: {
+		// 布局方式
+		layout: 'transverse', // 'defaults', 'transverse', 'columns', 'classic'
 		// 主题颜色
 		themeColor: '#c71585',
 		// 头部栏背景颜色
@@ -50,13 +52,13 @@ export default {
 		// 头部栏字体颜色
 		headerBarFontColor: '#FFFFFF',
 		// 头部栏背景颜色是否渐变
-		isHeaderBarColorGradual: true,
+		isHeaderBarColorGradual: false,
 		// 左侧侧边栏背景颜色
 		asidebarColor: '#282c34',
 		// 左侧侧边栏字体颜色
 		asidebarFontColor: '#ffffff',
 		// 左侧侧边栏背景色是否渐变
-		isAsidebarColorGradual: true,
+		isAsidebarColorGradual: false,
 		// 是否暗黑模式
 		isDark: false,
 	},

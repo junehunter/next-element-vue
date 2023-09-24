@@ -108,7 +108,7 @@ export default {
 					declaration: true, // 打包后是否输出d.ts文件，设置为true则输出
 					declarationDir: outputDir, // 输出类型声明文件的目录，与输出文件目录一致
 				},
-				exclude: ['src', 'packages/**/*.test.ts'], // 忽略文件输出d.ts文件
+				exclude: ['packages/**/*.test.ts'], // 忽略文件输出d.ts文件
 			},
 		}),
 		vuePlugin({
@@ -173,18 +173,21 @@ export default {
 						const pathFile = entryFileNames.replace(/\[name\]/g, 'index');
 						const name = pathFile.replace(/\.[^.]+$/, '.d.ts');
 						const outputPath = path.resolve(outDir, name);
-						fs.copyFileSync(inputPath, outputPath);
-						const cssFileName = pathFile.replace(/\.js$/, '.css');
-						if (cssFileName !== 'index.css') {
-							const cssFilePath = path.resolve(outDir, cssFileName);
-							if (fs.existsSync(cssFilePath)) {
-								// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-								fs.unlinkSync(cssFilePath, err => {
-									// eslint-disable-next-line no-console
-									console.log('css文件删除失败：', cssFilePath);
-								});
+						try {
+							fs.copyFileSync(inputPath, outputPath);
+							const cssFileName = pathFile.replace(/\.js$/, '.css');
+							if (cssFileName !== 'index.css') {
+								const cssFilePath = path.resolve(outDir, cssFileName);
+								if (fs.existsSync(cssFilePath)) {
+									// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+									fs.unlinkSync(cssFilePath, err => {
+										// eslint-disable-next-line no-console
+										console.log('css文件删除失败：', cssFilePath);
+									});
+								}
 							}
-						}
+							// eslint-disable-next-line no-empty
+						} catch (error) {}
 					}
 				}
 			},

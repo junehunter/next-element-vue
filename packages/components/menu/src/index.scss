@@ -3,23 +3,52 @@
 @import 'packages/theme-chalk/common.scss';
 
 $block: 'menu';
-$acive-font-color: var(--el-menu-active-color);
+.active-menu-item {
+	color: $theme-color;
+	.icon {
+		fill: $theme-color;
+	}
+	i.iconfont {
+		color: $theme-color;
+	}
+}
+// 纵向菜单
 .#{bem($block)}.el-menu--vertical {
     height: 100%;
+	border: unset;
 	.el-menu-item,
+	.el-sub-menu,
 	.el-sub-menu__title {
         color: var(--el-text-color-primary);
         .icon {
             fill: var(--el-text-color-primary);
         }
+		i.iconfont {
+			color: var(--el-text-color-primary);
+		}
 		&:hover {
-			color: $acive-font-color;
-            .icon {
-                fill: $acive-font-color;
-            }
+			>.#{bf($block, 'item')} {
+				&__icon,
+				&__title {
+					@extend .active-menu-item;
+				}
+			}
 		}
     }
+	.el-menu-item.is-active,
+	.el-sub-menu.is-active {
+		>.#{bf($block, 'item')} {
+			&__icon,
+			&__title {
+				@extend .active-menu-item;
+			}
+		}
+		>.el-sub-menu__title {
+			@extend .active-menu-item;
+		}
+	}
 }
+// 横向菜单
 .#{bem($block)}.el-menu--horizontal {
     width: 100%;
     height: $layout-header-height;
@@ -27,47 +56,45 @@ $acive-font-color: var(--el-menu-active-color);
 	border-bottom: none;
 	user-select: none;
 	.el-menu-item,
-	.el-sub-menu,
-	.el-sub-menu__title {
-		color: $layout-font-color;
-		&:hover {
-			background-color: unset !important;
-			color: $acive-font-color;
-            .icon {
-                fill: $acive-font-color;
-            }
-            i.iconfont {
-                color: $acive-font-color;
-            }
-		}
-		&:focus {
-			background-color: unset !important;
-		}
-	}
-	.el-menu-item,
 	.el-sub-menu__title,
 	.is-active {
 		border-bottom: unset !important;
 	}
-	.el-menu-item.is-active,
-	.el-sub-menu.is-active {
+	.el-menu-item,
+	.el-sub-menu,
+	.el-sub-menu__title {
 		position: relative;
+		color: $layout-font-color;
+		&:hover {
+			background-color: unset !important;
+			@extend .active-menu-item;
+		}
+		&:focus {
+			background-color: unset !important;
+			color: $layout-font-color;
+		}
 		&::after {
 			content: '';
 			position: absolute;
 			left: 50%;
-			transform: translateX(-50%);
+			right: 50%;
 			bottom: 5px;
-			width: 50px;
+			height: 2px;
+			transition: all 0.3s ease-in-out;
+		}
+	}
+	.el-menu-item.is-active,
+	.el-sub-menu.is-active {
+        @extend .active-menu-item;
+		&::after {
+			content: '';
+			position: absolute;
+			left: var(--el-menu-base-level-padding);
+			right: var(--el-menu-base-level-padding);
+			bottom: 5px;
 			height: 2px;
 			background-color: $theme-color;
 		}
-        .icon {
-            fill: $theme-color;
-        }
-        i.iconfont {
-            color: $theme-color;
-        }
 	}
 }
 $popper: bf($block, 'popper');
@@ -84,18 +111,13 @@ $popper: bf($block, 'popper');
 			background-color: $layout-bg-color;
 			&:hover {
 				background-color: rgba(#000000, 0.3);
-                color: $theme-color;
-                .icon {
-                    fill: $theme-color;
-                }
-                i.iconfont {
-                    color: $theme-color;
-                }
+                @extend .active-menu-item;
 			}
 		}
 		.el-menu-item.is-active,
+		.el-sub-menu.is-active,
 		.el-sub-menu__title.is-active {
-			color: $acive-font-color;
+			@extend .active-menu-item;
 		}
 	}
 }

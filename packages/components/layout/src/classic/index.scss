@@ -27,6 +27,7 @@ $block: 'layout-classic';
     .#{bf($block ,'container')} {
         flex: 1 1 auto;
         height: 100%;
+        width: calc(100% - $layout-sidebar-width);
         .#{bf($block, 'main')} {
             width: 100%;
             height: 100%;
@@ -37,13 +38,17 @@ $block: 'layout-classic';
         flex-shrink: 0;
         width: $layout-sidebar-width;
         height: 100%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        >.el-scrollbar .el-scrollbar__view {
+            height: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
     }
 }
 .#{bf($block, 'content')}.#{is('layout', 'tabs')} {
     height: calc(100% - #{$layout-header-height}) !important;
     .#{bf($block ,'container')} {
-        width: 100%;
-        height: 100%;
         .#{bf($block, 'main')} {
             width: 100%;
             height: calc(100% - #{$layout-nav-height});
