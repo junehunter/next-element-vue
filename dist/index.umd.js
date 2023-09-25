@@ -1,6 +1,6 @@
 !function(global, factory) {
-    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("vue-router")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "vue-router" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.core, global.vueRouter);
-}(this, (function(exports, vue, elementPlus, core, vueRouter) {
+    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore);
+}(this, (function(exports, vue, elementPlus, core) {
     "use strict";
     const _bem = (namespace, block, blockSuffix, element, modifier) => {
         let cls = `${namespace}-${block}`;
@@ -1626,8 +1626,8 @@
         },
         setup(props) {
             vue.provide("ns", ns$e);
-            const _menuTree = props.menuTree, router = vueRouter.useRouter(), currentPath = router?.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
-            vue.watch((() => router?.currentRoute?.value), (to => {
+            const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
+            vue.watch((() => router.currentRoute?.value), (to => {
                 activePath.value = to.fullPath;
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
@@ -1931,7 +1931,7 @@
         },
         emits: [ "change", "select", "close" ],
         setup(props, {emit: emit}) {
-            const router = vueRouter.useRouter(), {t: t} = useLocale(), _activeTab = vue.computed((() => router.currentRoute.value.fullPath)), _tabs = vue.computed((() => props.tabs)), defaultIndex = _tabs.value?.findIndex((v => v.path === _activeTab.value));
+            const {t: t} = useLocale(), router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _activeTab = vue.computed((() => router.currentRoute.value.fullPath)), _tabs = vue.computed((() => props.tabs)), defaultIndex = _tabs.value?.findIndex((v => v.path === _activeTab.value));
             if (defaultIndex < 0) {
                 const tab = _tabs.value[0];
                 tab && tab.path && router.replace({
@@ -1973,7 +1973,7 @@
                 };
                 router.push(to);
             };
-            vue.watch((() => router?.currentRoute?.value), (to => {
+            vue.watch((() => router.currentRoute?.value), (to => {
                 const {tagTitle: tagTitle} = to.query, activeRoute = {
                     name: to.name,
                     title: tagTitle || to.meta?.title,
@@ -4589,7 +4589,7 @@
         })(app);
     };
     var index = {
-        version: "0.0.13",
+        version: "0.0.14",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4600,7 +4600,7 @@
     exports.localeContextKey = localeContextKey, exports.namespaceContextKey = namespaceContextKey, 
     exports.nextUseCssTheme = nextUseCssTheme, exports.nextUseCssVar = nextUseCssVar, 
     exports.translate = translate, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
-    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.13", 
+    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.14", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

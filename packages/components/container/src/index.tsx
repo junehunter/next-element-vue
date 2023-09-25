@@ -1,4 +1,5 @@
-import { defineComponent, PropType, CSSProperties, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar } from 'element-plus';
 import { useNamespace } from 'packages/hooks';
 

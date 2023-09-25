@@ -1,8 +1,9 @@
-import { defineComponent, computed, ref, watch, PropType } from 'vue';
+import { defineComponent, computed, ref, watch, getCurrentInstance } from 'vue';
+import type { PropType } from 'vue';
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElScrollbar } from 'element-plus';
 import { Close, Back, Right } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
-import { useRouter } from 'vue-router';
+import type { Router } from 'vue-router';
 import type { TabInterface } from './interface';
 
 const ns = useNamespace('tabs');
@@ -22,8 +23,9 @@ export default defineComponent({
 	},
 	emits: ['change', 'select', 'close'],
 	setup(props, { emit }) {
-		const router = useRouter();
 		const { t } = useLocale();
+		const instance = getCurrentInstance()!;
+		const router = instance.appContext.config.globalProperties.$router as Router;
 		const _activeTab = computed(() => router.currentRoute.value.fullPath);
 		const _tabs = computed(() => props.tabs);
 		const defaultIndex = _tabs.value?.findIndex((v: any) => v.path === _activeTab.value);
@@ -102,7 +104,7 @@ export default defineComponent({
 			}
 		};
 		watch(
-			() => router?.currentRoute?.value,
+			() => router.currentRoute?.value,
 			(to: any) => {
 				const { tagTitle } = to.query;
 				const activeRoute = {

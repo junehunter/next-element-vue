@@ -1,4 +1,4 @@
-import { PropType } from 'vue';
+import type { PropType } from 'vue';
 import type { TabInterface } from './interface';
 declare const _default: import("vue").DefineComponent<{
     activeTab: {

@@ -1,11 +1,11 @@
-import { defineComponent, provide, ref, watch } from 'vue';
+import { defineComponent, provide, ref, watch, getCurrentInstance } from 'vue';
 import type { PropType } from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu } from 'element-plus';
 import { useNamespace } from 'packages/hooks';
 import NextMenuItem from './widgets/menu-item';
 import MenuItemTitle from './widgets/menu-item-title';
 import type { MenuItemInterface } from './interface';
-import { useRouter } from 'vue-router';
+import type { Router } from 'vue-router';
 
 const ns = useNamespace('menu');
 export default defineComponent({
@@ -29,12 +29,13 @@ export default defineComponent({
 	},
 	setup(props) {
 		provide('ns', ns);
+		const instance = getCurrentInstance()!;
+		const router = instance.appContext.config.globalProperties.$router as Router;
 		const _menuTree = props.menuTree as MenuItemInterface[];
-		const router = useRouter();
-		const currentPath = router?.currentRoute?.value.fullPath;
+		const currentPath = router.currentRoute?.value.fullPath;
 		const activePath = ref(currentPath);
 		watch(
-			() => router?.currentRoute?.value,
+			() => router.currentRoute?.value,
 			to => {
 				activePath.value = to.fullPath;
 			}

@@ -1,12 +1,8 @@
-import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, nextTick } from "vue";
+import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, nextTick } from "vue";
 
 import { localeContextKey as localeContextKey$1, ElMessage, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElTooltip, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElTimeSelect, ElEmpty } from "element-plus";
 
-import { MoonNight, Sunny, ArrowDown, Setting, Close, Back, Right, Search, Delete, DArrowLeft, DArrowRight, ArrowUp, Plus, Refresh, Tools, EditPen, View, FullScreen, InfoFilled } from "@element-plus/icons-vue";
-
 import { useFullscreen } from "@vueuse/core";
-
-import { useRouter } from "vue-router";
 
 const defaultNamespace = "next", _bem = (namespace, block, blockSuffix, element, modifier) => {
     let cls = `${namespace}-${block}`;
@@ -1123,7 +1119,245 @@ var defaultConfig$2 = {
             class: ns.be("header-logo", "title")
         }, [ _options.title ]) ]) ]);
     }
-}), LayoutSetting = defineComponent({
+}), export_helper_default = (sfc, props) => {
+    let target = sfc.__vccOpts || sfc;
+    for (let [key, val] of props) target[key] = val;
+    return target;
+}, arrow_down_vue_vue_type_script_lang_default = {
+    name: "ArrowDown"
+}, _hoisted_16 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_36 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"
+}, null, -1) ];
+
+var arrow_down_default = export_helper_default(arrow_down_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_16, _hoisted_36);
+} ], [ "__file", "arrow-down.vue" ] ]), arrow_up_vue_vue_type_script_lang_default = {
+    name: "ArrowUp"
+}, _hoisted_112 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_312 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m488.832 344.32-339.84 356.672a32 32 0 0 0 0 44.16l.384.384a29.44 29.44 0 0 0 42.688 0l320-335.872 319.872 335.872a29.44 29.44 0 0 0 42.688 0l.384-.384a32 32 0 0 0 0-44.16L535.168 344.32a32 32 0 0 0-46.336 0z"
+}, null, -1) ];
+
+var arrow_up_default = export_helper_default(arrow_up_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_112, _hoisted_312);
+} ], [ "__file", "arrow-up.vue" ] ]), back_vue_vue_type_script_lang_default = {
+    name: "Back"
+}, _hoisted_114 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_44 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
+}, null, -1), createElementVNode("path", {
+    fill: "currentColor",
+    d: "m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
+}, null, -1) ];
+
+var back_default = export_helper_default(back_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_114, _hoisted_44);
+} ], [ "__file", "back.vue" ] ]), close_vue_vue_type_script_lang_default = {
+    name: "Close"
+}, _hoisted_156 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_355 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z"
+}, null, -1) ];
+
+var close_default = export_helper_default(close_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_156, _hoisted_355);
+} ], [ "__file", "close.vue" ] ]), d_arrow_left_vue_vue_type_script_lang_default = {
+    name: "DArrowLeft"
+}, _hoisted_172 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_371 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M529.408 149.376a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L259.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L197.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224zm256 0a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L515.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L453.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224z"
+}, null, -1) ];
+
+var d_arrow_left_default = export_helper_default(d_arrow_left_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_172, _hoisted_371);
+} ], [ "__file", "d-arrow-left.vue" ] ]), d_arrow_right_vue_vue_type_script_lang_default = {
+    name: "DArrowRight"
+}, _hoisted_173 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_372 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M452.864 149.312a29.12 29.12 0 0 1 41.728.064L826.24 489.664a32 32 0 0 1 0 44.672L494.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L764.736 512 452.864 192a30.592 30.592 0 0 1 0-42.688zm-256 0a29.12 29.12 0 0 1 41.728.064L570.24 489.664a32 32 0 0 1 0 44.672L238.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L508.736 512 196.864 192a30.592 30.592 0 0 1 0-42.688z"
+}, null, -1) ];
+
+var d_arrow_right_default = export_helper_default(d_arrow_right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_173, _hoisted_372);
+} ], [ "__file", "d-arrow-right.vue" ] ]), delete_vue_vue_type_script_lang_default = {
+    name: "Delete"
+}, _hoisted_180 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_379 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
+}, null, -1) ];
+
+var delete_default = export_helper_default(delete_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_180, _hoisted_379);
+} ], [ "__file", "delete.vue" ] ]), edit_pen_vue_vue_type_script_lang_default = {
+    name: "EditPen"
+}, _hoisted_193 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_392 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m199.04 672.64 193.984 112 224-387.968-193.92-112-224 388.032zm-23.872 60.16 32.896 148.288 144.896-45.696L175.168 732.8zM455.04 229.248l193.92 112 56.704-98.112-193.984-112-56.64 98.112zM104.32 708.8l384-665.024 304.768 175.936L409.152 884.8h.064l-248.448 78.336L104.32 708.8zm384 254.272v-64h448v64h-448z"
+}, null, -1) ];
+
+var edit_pen_default = export_helper_default(edit_pen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_193, _hoisted_392);
+} ], [ "__file", "edit-pen.vue" ] ]), full_screen_vue_vue_type_script_lang_default = {
+    name: "FullScreen"
+}, _hoisted_1118 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3117 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m160 96.064 192 .192a32 32 0 0 1 0 64l-192-.192V352a32 32 0 0 1-64 0V96h64v.064zm0 831.872V928H96V672a32 32 0 1 1 64 0v191.936l192-.192a32 32 0 1 1 0 64l-192 .192zM864 96.064V96h64v256a32 32 0 1 1-64 0V160.064l-192 .192a32 32 0 1 1 0-64l192-.192zm0 831.872-192-.192a32 32 0 0 1 0-64l192 .192V672a32 32 0 1 1 64 0v256h-64v-.064z"
+}, null, -1) ];
+
+var full_screen_default = export_helper_default(full_screen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1118, _hoisted_3117);
+} ], [ "__file", "full-screen.vue" ] ]), info_filled_vue_vue_type_script_lang_default = {
+    name: "InfoFilled"
+}, _hoisted_1143 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3142 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344zM590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"
+}, null, -1) ];
+
+var info_filled_default = export_helper_default(info_filled_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1143, _hoisted_3142);
+} ], [ "__file", "info-filled.vue" ] ]), moon_night_vue_vue_type_script_lang_default = {
+    name: "MoonNight"
+}, _hoisted_1172 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_449 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M384 512a448 448 0 0 1 215.872-383.296A384 384 0 0 0 213.76 640h188.8A448.256 448.256 0 0 1 384 512zM171.136 704a448 448 0 0 1 636.992-575.296A384 384 0 0 0 499.328 704h-328.32z"
+}, null, -1), createElementVNode("path", {
+    fill: "currentColor",
+    d: "M32 640h960q32 0 32 32t-32 32H32q-32 0-32-32t32-32zm128 128h384a32 32 0 1 1 0 64H160a32 32 0 1 1 0-64zm160 127.68 224 .256a32 32 0 0 1 32 32V928a32 32 0 0 1-32 32l-224-.384a32 32 0 0 1-32-32v-.064a32 32 0 0 1 32-32z"
+}, null, -1) ];
+
+var moon_night_default = export_helper_default(moon_night_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1172, _hoisted_449);
+} ], [ "__file", "moon-night.vue" ] ]), plus_vue_vue_type_script_lang_default = {
+    name: "Plus"
+}, _hoisted_1201 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3200 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"
+}, null, -1) ];
+
+var plus_default = export_helper_default(plus_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1201, _hoisted_3200);
+} ], [ "__file", "plus.vue" ] ]), refresh_vue_vue_type_script_lang_default = {
+    name: "Refresh"
+}, _hoisted_1217 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3216 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M771.776 794.88A384 384 0 0 1 128 512h64a320 320 0 0 0 555.712 216.448H654.72a32 32 0 1 1 0-64h149.056a32 32 0 0 1 32 32v148.928a32 32 0 1 1-64 0v-50.56zM276.288 295.616h92.992a32 32 0 0 1 0 64H220.16a32 32 0 0 1-32-32V178.56a32 32 0 0 1 64 0v50.56A384 384 0 0 1 896.128 512h-64a320 320 0 0 0-555.776-216.384z"
+}, null, -1) ];
+
+var refresh_default = export_helper_default(refresh_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1217, _hoisted_3216);
+} ], [ "__file", "refresh.vue" ] ]), right_vue_vue_type_script_lang_default = {
+    name: "Right"
+}, _hoisted_1221 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3220 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M754.752 480H160a32 32 0 1 0 0 64h594.752L521.344 777.344a32 32 0 0 0 45.312 45.312l288-288a32 32 0 0 0 0-45.312l-288-288a32 32 0 1 0-45.312 45.312L754.752 480z"
+}, null, -1) ];
+
+var right_default = export_helper_default(right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1221, _hoisted_3220);
+} ], [ "__file", "right.vue" ] ]), search_vue_vue_type_script_lang_default = {
+    name: "Search"
+}, _hoisted_1225 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3224 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m795.904 750.72 124.992 124.928a32 32 0 0 1-45.248 45.248L750.656 795.904a416 416 0 1 1 45.248-45.248zM480 832a352 352 0 1 0 0-704 352 352 0 0 0 0 704z"
+}, null, -1) ];
+
+var search_default = export_helper_default(search_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1225, _hoisted_3224);
+} ], [ "__file", "search.vue" ] ]), setting_vue_vue_type_script_lang_default = {
+    name: "Setting"
+}, _hoisted_1231 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3230 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384zm0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256z"
+}, null, -1) ];
+
+var setting_default = export_helper_default(setting_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1231, _hoisted_3230);
+} ], [ "__file", "setting.vue" ] ]), sunny_vue_vue_type_script_lang_default = {
+    name: "Sunny"
+}, _hoisted_1253 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3252 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M512 704a192 192 0 1 0 0-384 192 192 0 0 0 0 384zm0 64a256 256 0 1 1 0-512 256 256 0 0 1 0 512zm0-704a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32zm0 768a32 32 0 0 1 32 32v64a32 32 0 1 1-64 0v-64a32 32 0 0 1 32-32zM195.2 195.2a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 1 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248zm543.104 543.104a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 0 1-45.248 45.248l-45.248-45.248a32 32 0 0 1 0-45.248zM64 512a32 32 0 0 1 32-32h64a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32zm768 0a32 32 0 0 1 32-32h64a32 32 0 1 1 0 64h-64a32 32 0 0 1-32-32zM195.2 828.8a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248L240.448 828.8a32 32 0 0 1-45.248 0zm543.104-543.104a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248l-45.248 45.248a32 32 0 0 1-45.248 0z"
+}, null, -1) ];
+
+var sunny_default = export_helper_default(sunny_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1253, _hoisted_3252);
+} ], [ "__file", "sunny.vue" ] ]), tools_vue_vue_type_script_lang_default = {
+    name: "Tools"
+}, _hoisted_1264 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3263 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M764.416 254.72a351.68 351.68 0 0 1 86.336 149.184H960v192.064H850.752a351.68 351.68 0 0 1-86.336 149.312l54.72 94.72-166.272 96-54.592-94.72a352.64 352.64 0 0 1-172.48 0L371.136 936l-166.272-96 54.72-94.72a351.68 351.68 0 0 1-86.336-149.312H64v-192h109.248a351.68 351.68 0 0 1 86.336-149.312L204.8 160l166.208-96h.192l54.656 94.592a352.64 352.64 0 0 1 172.48 0L652.8 64h.128L819.2 160l-54.72 94.72zM704 499.968a192 192 0 1 0-384 0 192 192 0 0 0 384 0z"
+}, null, -1) ];
+
+var tools_default = export_helper_default(tools_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1264, _hoisted_3263);
+} ], [ "__file", "tools.vue" ] ]), view_vue_vue_type_script_lang_default = {
+    name: "View"
+}, _hoisted_1283 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3282 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M512 160c320 0 512 352 512 352S832 864 512 864 0 512 0 512s192-352 512-352zm0 64c-225.28 0-384.128 208.064-436.8 288 52.608 79.872 211.456 288 436.8 288 225.28 0 384.128-208.064 436.8-288-52.608-79.872-211.456-288-436.8-288zm0 64a224 224 0 1 1 0 448 224 224 0 0 1 0-448zm0 64a160.192 160.192 0 0 0-160 160c0 88.192 71.744 160 160 160s160-71.808 160-160-71.744-160-160-160z"
+}, null, -1) ];
+
+var view_default = export_helper_default(view_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1283, _hoisted_3282);
+} ], [ "__file", "view.vue" ] ]), LayoutSetting = defineComponent({
     setup() {},
     render() {
         const _slots = inject("__slots__", {}), _ns = inject("__ns__", {}), _config = inject("options", {}), _updateOptions = inject("updateOptions", null), settingConfig = reactive({
@@ -1189,8 +1423,8 @@ var defaultConfig$2 = {
                 "onUpdate:modelValue": $event => settingConfig.isDark = $event,
                 "inline-prompt": !0,
                 size: "large",
-                "active-icon": MoonNight,
-                "inactive-icon": Sunny,
+                "active-icon": moon_night_default,
+                "inactive-icon": sunny_default,
                 "active-color": "#1f1f1f",
                 "inactive-color": "#dcdfe6",
                 onChange: _onChangeSwitchDark
@@ -1370,7 +1604,7 @@ var HeaderTools = defineComponent({
             }, null) : null, createVNode("span", null, [ createTextVNode("Admin") ]), createVNode(ElIcon, {
                 class: "el-icon--right"
             }, {
-                default: () => [ createVNode(ArrowDown, null, null) ]
+                default: () => [ createVNode(arrow_down_default, null, null) ]
             }) ]),
             dropdown: () => createVNode(ElDropdownMenu, null, {
                 default: () => [ _userDropdown?.map((item => {
@@ -1394,7 +1628,7 @@ var HeaderTools = defineComponent({
         }, [ createVNode(ElIcon, {
             size: 16
         }, {
-            default: () => [ createVNode(Setting, null, null) ]
+            default: () => [ createVNode(setting_default, null, null) ]
         }) ]) ]) ]), createVNode(Teleport, {
             to: "body"
         }, {
@@ -1519,8 +1753,8 @@ const NextMenu = withInstall(defineComponent({
     },
     setup(props) {
         provide("ns", ns$e);
-        const _menuTree = props.menuTree, router = useRouter(), currentPath = router?.currentRoute?.value.fullPath, activePath = ref(currentPath);
-        watch((() => router?.currentRoute?.value), (to => {
+        const router = getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = ref(currentPath);
+        watch((() => router.currentRoute?.value), (to => {
             activePath.value = to.fullPath;
         }));
         return () => createVNode(Fragment, null, [ createVNode(ElMenu, {
@@ -1842,7 +2076,7 @@ var Element$4 = defineComponent({
     },
     emits: [ "change", "select", "close" ],
     setup(props, {emit: emit}) {
-        const router = useRouter(), {t: t} = useLocale(), _activeTab = computed((() => router.currentRoute.value.fullPath)), _tabs = computed((() => props.tabs)), defaultIndex = _tabs.value?.findIndex((v => v.path === _activeTab.value));
+        const {t: t} = useLocale(), router = getCurrentInstance().appContext.config.globalProperties.$router, _activeTab = computed((() => router.currentRoute.value.fullPath)), _tabs = computed((() => props.tabs)), defaultIndex = _tabs.value?.findIndex((v => v.path === _activeTab.value));
         if (defaultIndex < 0) {
             const tab = _tabs.value[0];
             tab && tab.path && router.replace({
@@ -1884,7 +2118,7 @@ var Element$4 = defineComponent({
             };
             router.push(to);
         };
-        watch((() => router?.currentRoute?.value), (to => {
+        watch((() => router.currentRoute?.value), (to => {
             const {tagTitle: tagTitle} = to.query, activeRoute = {
                 name: to.name,
                 title: tagTitle || to.meta?.title,
@@ -1925,7 +2159,7 @@ var Element$4 = defineComponent({
             }, [ createVNode(ElIcon, {
                 class: "tab-close"
             }, {
-                default: () => [ createVNode(Close, null, null) ]
+                default: () => [ createVNode(close_default, null, null) ]
             }) ]) ]) : null)) ]) ]
         }), createVNode(ElDropdown, {
             "show-timeout": 80,
@@ -1944,25 +2178,25 @@ var Element$4 = defineComponent({
                     command: "other"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Close, null, null) ]
+                        default: () => [ createVNode(close_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsOther") ]) ]
                 }), createVNode(ElDropdownItem, {
                     command: "left"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Back, null, null) ]
+                        default: () => [ createVNode(back_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsLeft") ]) ]
                 }), createVNode(ElDropdownItem, {
                     command: "right"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Right, null, null) ]
+                        default: () => [ createVNode(right_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsRight") ]) ]
                 }), createVNode(ElDropdownItem, {
                     command: "all"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Close, null, null) ]
+                        default: () => [ createVNode(close_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsAll") ]) ]
                 }) ]
             })
@@ -3191,14 +3425,14 @@ var HeaderSearch = defineComponent({
                             onClick: onConfirmSearch
                         }, {
                             icon: () => createVNode(ElIcon, null, {
-                                default: () => [ createVNode(Search, null, null) ]
+                                default: () => [ createVNode(search_default, null, null) ]
                             }),
                             default: () => t("next.table.search")
                         }), createVNode(ElButton, {
                             onClick: onClearSearch
                         }, {
                             icon: () => createVNode(ElIcon, null, {
-                                default: () => [ createVNode(Delete, null, null) ]
+                                default: () => [ createVNode(delete_default, null, null) ]
                             }),
                             default: () => t("next.table.clear")
                         }), moreColumns.value.length ? isColumnMinWidth.value ? createVNode(ElButton, {
@@ -3209,7 +3443,7 @@ var HeaderSearch = defineComponent({
                             class: ns.b("header-search-expandBtn"),
                             onClick: onSwitchExpand
                         }, {
-                            icon: () => isExpand.value ? createVNode(DArrowLeft, null, null) : createVNode(DArrowRight, null, null)
+                            icon: () => isExpand.value ? createVNode(d_arrow_left_default, null, null) : createVNode(d_arrow_right_default, null, null)
                         }) : createVNode(ElButton, {
                             type: "primary",
                             text: !0,
@@ -3218,9 +3452,9 @@ var HeaderSearch = defineComponent({
                             onClick: onSwitchExpand
                         }, {
                             icon: () => isExpand.value ? createVNode(ElIcon, null, {
-                                default: () => [ createVNode(ArrowUp, null, null) ]
+                                default: () => [ createVNode(arrow_up_default, null, null) ]
                             }) : createVNode(ElIcon, null, {
-                                default: () => [ createVNode(ArrowDown, null, null) ]
+                                default: () => [ createVNode(arrow_down_default, null, null) ]
                             }),
                             default: () => isExpand.value ? t("next.table.foldSearch") : t("next.table.unfoldSearch")
                         }) : null ]
@@ -3314,7 +3548,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Plus, null, null) ]
+                default: () => [ createVNode(plus_default, null, null) ]
             }),
             default: () => t("next.table.add")
         }), options.batchDelBtn && createVNode(ElButton, {
@@ -3339,7 +3573,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Delete, null, null) ]
+                default: () => [ createVNode(delete_default, null, null) ]
             }),
             default: () => t("next.table.batchDelete")
         }), this.$slots["menu-left-suffix"]?.() ]), createVNode("div", {
@@ -3351,7 +3585,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Refresh, null, null) ]
+                default: () => [ createVNode(refresh_default, null, null) ]
             })
         }), options.settingBtn && createVNode(ElButton, {
             circle: !0,
@@ -3360,7 +3594,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Tools, null, null) ]
+                default: () => [ createVNode(tools_default, null, null) ]
             })
         }), this.$slots["menu-right-suffix"]?.() ]), createVNode(DrawerSetting, {
             ref: drawerSettingRef
@@ -3444,7 +3678,7 @@ var TableColumnOperations = defineComponent({
                     })(scoped)
                 }, {
                     icon: () => createVNode(ElIcon, null, {
-                        default: () => [ createVNode(EditPen, null, null) ]
+                        default: () => [ createVNode(edit_pen_default, null, null) ]
                     }),
                     default: () => t("next.table.edit")
                 }) ]
@@ -3466,7 +3700,7 @@ var TableColumnOperations = defineComponent({
                     })(scoped)
                 }, {
                     icon: () => createVNode(ElIcon, null, {
-                        default: () => [ createVNode(View, null, null) ]
+                        default: () => [ createVNode(view_default, null, null) ]
                     }),
                     default: () => t("next.table.view")
                 }) ]
@@ -3501,7 +3735,7 @@ var TableColumnOperations = defineComponent({
                     })(scoped)
                 }, {
                     icon: () => createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Delete, null, null) ]
+                        default: () => [ createVNode(delete_default, null, null) ]
                     }),
                     default: () => t("next.table.delete")
                 }) ]
@@ -3623,14 +3857,14 @@ var NextDialog$1 = defineComponent({
                 class: "icon-fullscreen",
                 onClick: () => isFullscreen.value = !isFullscreen.value
             }, [ createVNode(ElIcon, null, {
-                default: () => [ createVNode(FullScreen, null, null) ]
+                default: () => [ createVNode(full_screen_default, null, null) ]
             }) ]), createVNode("span", {
                 class: "icon-close",
                 onClick: close
             }, [ createVNode(ElIcon, {
                 size: "18"
             }, {
-                default: () => [ createVNode(Close, null, null) ]
+                default: () => [ createVNode(close_default, null, null) ]
             }) ]) ]) ])
         }) ]);
     }
@@ -3809,7 +4043,7 @@ const ns$2 = useNamespace("form"), InputTableSelect = defineComponent({
                 type: "primary",
                 class: ns$2.em("input-table", "append"),
                 disabled: _disabled,
-                icon: Search,
+                icon: search_default,
                 onClick: onClickTableDialog
             }, null) ]), createVNode(NextDialog, {
                 modelValue: tableSelectDialog.visible,
@@ -4169,7 +4403,7 @@ var Element$1 = defineComponent({
                                 },
                                 color: "#f3d19e"
                             }, {
-                                default: () => [ createVNode(InfoFilled, null, null) ]
+                                default: () => [ createVNode(info_filled_default, null, null) ]
                             }) ]
                         }) : null ]) : null,
                         default: () => renderFormItem(column)
@@ -4544,7 +4778,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.0.13", install = function(app) {
+}, version = "0.0.14", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -4554,7 +4788,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.0.13",
+    version: "0.0.14",
     install: install
 };
 

@@ -1,5 +1,5 @@
-import { defineComponent, markRaw, ref, watchEffect, h, PropType, CSSProperties, provide, computed, watch } from 'vue';
-import type { Component } from 'vue';
+import { defineComponent, markRaw, ref, watchEffect, h, provide, computed, watch } from 'vue';
+import type { PropType, CSSProperties, Component } from 'vue';
 import { useNamespace } from 'packages/hooks';
 import { merge } from 'lodash-unified';
 import defaultConfig from './config';

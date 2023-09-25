@@ -20,6 +20,12 @@ import fs from 'fs';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
+const globals_cfg = {
+	vue: 'Vue',
+	'element-plus': 'ElementPlus',
+	'vue-router': 'VueRouter',
+	'@vueuse/core': 'VueuseCore',
+};
 const terserPlugin = terser({
 	output: {
 		comments: false, // 移除注释
@@ -28,7 +34,7 @@ const terserPlugin = terser({
 		warnings: false,
 		drop_console: true,
 		drop_debugger: true,
-		pure_funcs: ['console.log'], //移除console
+		// pure_funcs: ['console.log'], //移除console
 	},
 });
 const outDir = './dist';
@@ -62,10 +68,7 @@ const output = [
 		entryFileNames: '[name].umd.js',
 		name: 'NEXT_ELEMENT',
 		exports: 'named', // 该选项用于指定导出模式
-		globals: {
-			vue: 'Vue',
-			'element-plus': 'ElementPlus',
-		},
+		globals: globals_cfg,
 		assetFileNames: 'assets/[name].[hash][extname]',
 		plugins: [
 			terser({
@@ -83,10 +86,7 @@ const output = [
 		entryFileNames: '[name].umd.min.js',
 		name: 'NEXT_ELEMENT',
 		exports: 'named',
-		globals: {
-			vue: 'Vue',
-			'element-plus': 'ElementPlus',
-		},
+		globals: globals_cfg,
 		assetFileNames: 'assets/[name].[hash][extname]',
 		plugins: [terserPlugin],
 	},
@@ -194,7 +194,7 @@ export default {
 		},
 	],
 	// 声明外部依赖，不会被打包进组件库
-	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus'],
+	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus', 'vue-i18n'],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {
 			if (warning.names.includes('resolveDirective')) {

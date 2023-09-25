@@ -1,4 +1,4 @@
-import { PropType, CSSProperties } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 declare const _default: {
     className: {
         type: StringConstructor;
