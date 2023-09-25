@@ -1,0 +1,6 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+
+$block: 'upload'; 
+.#{bf($block)} {
+
+}

@@ -44,6 +44,7 @@ export default {
 			reset: '重 置',
 			confirm: '确 定',
 			tableSelect: ' 选择',
+			selectFile: '选择文件',
 		},
 		date: {
 			oneWeekAge: '一周以前',

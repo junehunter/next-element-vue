@@ -44,6 +44,7 @@ export default {
 			reset: 'reset',
 			confirm: 'confirm',
 			tableSelect: ' select',
+			selectFile: 'select file',
 		},
 		date: {
 			oneWeekAge: 'one week age',

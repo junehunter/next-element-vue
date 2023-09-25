@@ -44,6 +44,7 @@ declare const _default: {
             reset: string;
             confirm: string;
             tableSelect: string;
+            selectFile: string;
         };
         date: {
             oneWeekAge: string;

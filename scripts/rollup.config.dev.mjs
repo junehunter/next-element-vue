@@ -140,7 +140,7 @@ export default {
 	],
 	cache: true,
 	// 声明外部依赖，不会被打包进组件库
-	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus', 'vue-i18n', '@element-plus/icons-vue'],
+	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus', '@element-plus/icons-vue'],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {
 			if (warning.names.includes('resolveDirective')) {

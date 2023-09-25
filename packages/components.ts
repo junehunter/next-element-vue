@@ -7,3 +7,4 @@ export * from './components/menu';
 export * from './components/dialog';
 export * from './components/text-ellipsis';
 export * from './components/spin-loading';
+export * from './components/upload';

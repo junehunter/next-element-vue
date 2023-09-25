@@ -34,7 +34,7 @@ const terserPlugin = terser({
 		warnings: false,
 		drop_console: true,
 		drop_debugger: true,
-		// pure_funcs: ['console.log'], //移除console
+		pure_funcs: ['console.log'], //移除console
 	},
 });
 const outDir = './dist';
@@ -194,7 +194,7 @@ export default {
 		},
 	],
 	// 声明外部依赖，不会被打包进组件库
-	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus', 'vue-i18n'],
+	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus'],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {
 			if (warning.names.includes('resolveDirective')) {

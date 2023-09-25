@@ -11,7 +11,7 @@ import App from './App/vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import NextElement from 'next-element-vue';
-import 'next-element-vue/index.css';
+import 'next-element-vue/dist/index.css';
 
 const app = createApp(App)
 app.use(ElementPlus)
