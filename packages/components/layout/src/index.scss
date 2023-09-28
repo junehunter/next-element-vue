@@ -1,6 +1,6 @@
 @use 'packages/theme-chalk/mixins/index' as *;
+@use 'packages/theme-chalk/mixins/_var' as *;
 @import 'packages/theme-chalk/varilable';
-@import 'packages/theme-chalk/common.scss';
 @import './transverse/index.scss';
 @import './columns/index.scss';
 @import './classic/index.scss';

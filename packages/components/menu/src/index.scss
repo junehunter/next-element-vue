@@ -1,6 +1,5 @@
 @use 'packages/theme-chalk/mixins/index' as *;
 @import 'packages/theme-chalk/varilable.scss';
-@import 'packages/theme-chalk/common.scss';
 
 $block: 'menu';
 .active-menu-item {

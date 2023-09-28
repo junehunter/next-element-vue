@@ -7,7 +7,7 @@ import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, updateColSpan, elementResize, isValueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
 import defaultConfig from './config';
 import type { FormItemProps, DicData } from './config';
-import { NextTextEllipsis } from 'packages/components/text-ellipsis/index';
+import { NextTextEllipsis, NextUpload } from 'packages/components';
 import { formSlotName } from 'packages/components/crud-table/src/hook';
 import NumberRangePicker from './widgets/number-range-picker';
 import InputTableSelect from './widgets/input-table-select';
@@ -335,6 +335,8 @@ export default defineComponent({
 				return <NumberRangePicker v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => _onChangeNumberRange(event, col.prop)}></NumberRangePicker>;
 			} else if (col.type === 'inputTableSelect') {
 				return <InputTableSelect v-model={formParams[col.prop]} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>;
+			} else if (col.type === 'upload') {
+				return <NextUpload></NextUpload>;
 			}
 		};
 		const renderContent = () => {

@@ -1,5 +1,5 @@
 @use 'packages/theme-chalk/mixins/index' as *;
-@import 'packages/theme-chalk/common.scss';
+@use 'packages/theme-chalk/mixins/_var' as *;
 
 $block: 'crud-table';
 .#{bem($block)} {

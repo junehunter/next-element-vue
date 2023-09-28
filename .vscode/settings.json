@@ -48,5 +48,9 @@
     "eslint.enable": true,
     "vite.autoStart": false,
     "volar.inlayHints.eventArgumentInInlineHandlers": false,
-    "vue.codeActions.enabled": false
+    "vue.codeActions.enabled": false,
+    "i18n-ally.localesPaths": [
+        "packages/locale",
+        "packages/locale/lang"
+    ]
 }
