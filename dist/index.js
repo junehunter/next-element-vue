@@ -4854,7 +4854,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.0.15", install = function(app) {
+}, version = "0.0.16", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -4864,7 +4864,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.0.15",
+    version: "0.0.16",
     install: install
 };
 

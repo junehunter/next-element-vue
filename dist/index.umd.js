@@ -4664,7 +4664,7 @@
         })(app);
     };
     var index = {
-        version: "0.0.15",
+        version: "0.0.16",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4675,7 +4675,7 @@
     exports.install = install, exports.localeContextKey = localeContextKey, exports.namespaceContextKey = namespaceContextKey, 
     exports.nextUseCssTheme = nextUseCssTheme, exports.nextUseCssVar = nextUseCssVar, 
     exports.translate = translate, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
-    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.15", 
+    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.16", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });
