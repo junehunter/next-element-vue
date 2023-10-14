@@ -103,6 +103,10 @@ const createdSidebar = () => {
 					text: 'NextTextEllipsis 文本溢出',
 					link: 'text-ellipsis',
 				},
+				{
+					text: 'NextVideoPlayer 视频播放器',
+					link: 'video-player',
+				},
 			],
 		},
 	};

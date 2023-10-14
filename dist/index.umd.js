@@ -1,7 +1,22 @@
 !function(global, factory) {
-    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore);
-}(this, (function(exports, vue, elementPlus, core) {
+    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("video.js"), require("video.js/dist/video-js.css"), require("video.js/dist/lang/zh-CN.json"), require("video.js/dist/lang/en.json"), require("video.js/dist/lang/zh-TW.json"), require("@tensorflow/tfjs")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "video.js", "video.js/dist/video-js.css", "video.js/dist/lang/zh-CN.json", "video.js/dist/lang/en.json", "video.js/dist/lang/zh-TW.json", "@tensorflow/tfjs" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore, global.videojs, null, global.zhCN, global.En, global.zhTW, global.tf);
+}(this, (function(exports, vue, elementPlus, core, videojs, videoJs_css, zhCN, En, zhTW, tf) {
     "use strict";
+    function _interopNamespaceDefault(e) {
+        var n = Object.create(null);
+        return e && Object.keys(e).forEach((function(k) {
+            if ("default" !== k) {
+                var d = Object.getOwnPropertyDescriptor(e, k);
+                Object.defineProperty(n, k, d.get ? d : {
+                    enumerable: !0,
+                    get: function() {
+                        return e[k];
+                    }
+                });
+            }
+        })), n.default = e, Object.freeze(n);
+    }
+    var tf__namespace = _interopNamespaceDefault(tf);
     const _bem = (namespace, block, blockSuffix, element, modifier) => {
         let cls = `${namespace}-${block}`;
         return blockSuffix && (cls += `-${blockSuffix}`), element && (cls += `__${element}`), 
@@ -919,7 +934,7 @@
         };
     }, localeContextKey = elementPlus.localeContextKey, useLocale = localeOverrides => {
         const locale = localeOverrides || vue.inject(localeContextKey, vue.ref());
-        return buildLocaleContext(vue.computed((() => locale.value || zhcnLocale)));
+        return buildLocaleContext(vue.computed((() => locale?.value || zhcnLocale)));
     };
     function useChangeColor() {
         return {
@@ -1609,7 +1624,7 @@
                 }, null) ]
             }))) ]) ]);
         }
-    }), ns$f = useNamespace("menu");
+    }), ns$g = useNamespace("menu");
     const NextMenu = withInstall(vue.defineComponent({
         name: "NextMenu",
         props: {
@@ -1628,20 +1643,20 @@
             }
         },
         setup(props) {
-            vue.provide("ns", ns$f);
+            vue.provide("ns", ns$g);
             const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
             vue.watch((() => router.currentRoute?.value), (to => {
                 activePath.value = to.fullPath;
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
-                class: ns$f.b(),
+                class: ns$g.b(),
                 defaultActive: activePath.value,
                 router: props.router,
                 mode: props.mode,
                 ellipsis: !0
             }, {
                 default: () => [ vue.createVNode(vue.Fragment, null, [ _menuTree.map((item => item.children?.length ? vue.createVNode(elementPlus.ElSubMenu, {
-                    "popper-class": ns$f.b("popper"),
+                    "popper-class": ns$g.b("popper"),
                     index: item.path || item.id,
                     teleported: !0
                 }, {
@@ -1652,7 +1667,7 @@
                         menuData: item.children
                     }, null)
                 }) : vue.createVNode(elementPlus.ElMenuItem, {
-                    "popper-class": ns$f.b("popper"),
+                    "popper-class": ns$g.b("popper"),
                     index: item.path
                 }, {
                     default: () => [ vue.createVNode(MenuItemTitle, {
@@ -1678,24 +1693,24 @@
             }) ]);
         }
     });
-    const ns$e = useNamespace("layout-defaults");
+    const ns$f = useNamespace("layout-defaults");
     var defaults = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$e), {}),
+        setup: () => (vue.provide("ns", ns$f), {}),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {});
             slots.menu;
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
-                class: ns$e.b()
+                class: ns$f.b()
             }, {
                 default: () => [ vue.createVNode(Sidebar$2, null, null), vue.createVNode("div", {
-                    class: [ ns$e.b("content") ]
+                    class: [ ns$f.b("content") ]
                 }, [ vue.createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                     tabs: _config.tabs,
                     activeTab: _config.activeTab
                 }, null) : null, vue.createVNode("main", {
-                    class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
+                    class: [ ns$f.bf("main"), ns$f.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ]
             });
         }
@@ -1723,10 +1738,10 @@
             }) ]) ]) ]);
         }
     });
-    const ns$d = useNamespace("layout-transverse");
+    const ns$e = useNamespace("layout-transverse");
     var transverse = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$d), {}),
+        setup: () => (vue.provide("ns", ns$e), {}),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {}), __slots_header = {};
             slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1740,7 +1755,7 @@
                 tabs: _config.tabs,
                 activeTab: _config.activeTab
             }, null) : null, vue.createVNode("main", {
-                class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
+                class: [ ns$e.b("main"), ns$e.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]);
             var s;
         }
@@ -1779,10 +1794,10 @@
             }, null) ]);
         }
     });
-    const ns$c = useNamespace("layout-columns");
+    const ns$d = useNamespace("layout-columns");
     var columns = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$c), {}),
+        setup: () => (vue.provide("ns", ns$d), {}),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {}), __slots_header = {};
             slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1790,18 +1805,18 @@
             slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
-                class: ns$c.b()
+                class: ns$d.b()
             }, {
                 default: () => {
                     return [ vue.createVNode(Sidebar$1, null, null), vue.createVNode("div", {
-                        class: [ ns$c.b("content") ]
+                        class: [ ns$d.b("content") ]
                     }, [ vue.createVNode(Header$1, null, (s = __slots_header, "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? __slots_header : {
                         default: () => [ __slots_header ]
                     })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                         tabs: _config.tabs,
                         activeTab: _config.activeTab
                     }, null) : null, vue.createVNode("main", {
-                        class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
+                        class: [ ns$d.bf("main"), ns$d.is("layout-tabs", isTabs.value) ]
                     }, [ slots.default?.() ]) ]) ];
                     var s;
                 }
@@ -1844,29 +1859,29 @@
             }) ]);
         }
     });
-    const ns$b = useNamespace("layout-classic");
+    const ns$c = useNamespace("layout-classic");
     var classic = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$b), {
-            ns: ns$b
+        setup: () => (vue.provide("ns", ns$c), {
+            ns: ns$c
         }),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {});
             slots.menu;
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header, null, null), vue.createVNode("div", {
-                class: [ ns$b.b("content"), ns$b.is("layout-tabs", isTabs.value) ]
+                class: [ ns$c.b("content"), ns$c.is("layout-tabs", isTabs.value) ]
             }, [ vue.createVNode(Sidebar, null, null), vue.createVNode("div", {
-                class: ns$b.b("container")
+                class: ns$c.b("container")
             }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                 tabs: _config.tabs,
                 activeTab: _config.activeTab
             }, null) : null, vue.createVNode("main", {
-                class: [ ns$b.b("main") ]
+                class: [ ns$c.b("main") ]
             }, [ slots.default?.() ]) ]) ]) ]);
         }
     });
-    const ns$a = useNamespace("layout"), layouts = {
+    const ns$b = useNamespace("layout"), layouts = {
         defaults: vue.markRaw(defaults),
         transverse: vue.markRaw(transverse),
         columns: vue.markRaw(columns),
@@ -1891,7 +1906,7 @@
         emits: [ "changeLanguage", "changeUserDropdown" ],
         setup(props, {slots: slots, emit: emit}) {
             const _config = vue.ref(merge$1(defaultConfig$2, props.options)), options = vue.computed((() => _config.value)).value;
-            vue.provide("options", options), vue.provide("__ns__", ns$a), vue.provide("__emit__", emit), 
+            vue.provide("options", options), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
             vue.provide("__slots__", slots);
             const updateOptions = cfg => {
                 _config.value = merge$1(options, cfg);
@@ -1913,14 +1928,14 @@
             const _activeSlots = {};
             for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
             return vue.createVNode("div", {
-                class: [ ns$a.b(), props.className ],
+                class: [ ns$b.b(), props.className ],
                 style: props.style
             }, [ vue.h(activeLayout.value, {}, {
                 ..._activeSlots
             }) ]);
         }
-    })), ns$9 = useNamespace("tabs");
-    var Element$5 = vue.defineComponent({
+    })), ns$a = useNamespace("tabs");
+    var Element$6 = vue.defineComponent({
         name: "NextTabs",
         props: {
             activeTab: {
@@ -1989,12 +2004,12 @@
                 tabsView.value.push(activeRoute));
             }));
             const renderContent = () => vue.createVNode("nav", {
-                class: ns$9.b()
+                class: ns$a.b()
             }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
                 default: () => [ vue.createVNode("ul", {
-                    class: ns$9.b("list")
+                    class: ns$a.b("list")
                 }, [ tabsView.value.map(((tab, index) => tab ? vue.createVNode("li", {
-                    class: [ "tab-item", ns$9.is("active", activeIndex.value === index) ],
+                    class: [ "tab-item", ns$a.is("active", activeIndex.value === index) ],
                     onClick: event => onClickTabItem(event, tab, index)
                 }, [ vue.createVNode("i", {
                     class: [ "tab-icon", tab.meta?.icon ]
@@ -2025,11 +2040,11 @@
                 onCommand: onChange
             }, {
                 default: () => vue.createVNode("span", {
-                    class: ns$9.b("tab-more")
+                    class: ns$a.b("tab-more")
                 }, [ vue.createVNode("i", {
-                    class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "top") ]
+                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "top") ]
                 }, null), vue.createVNode("i", {
-                    class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "bottom") ]
+                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "bottom") ]
                 }, null) ]),
                 dropdown: () => vue.createVNode(elementPlus.ElDropdownMenu, null, {
                     default: () => [ vue.createVNode(elementPlus.ElDropdownItem, {
@@ -2062,7 +2077,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
-    const NextTabs = withInstall(Element$5), ns$8 = useNamespace("container");
+    const NextTabs = withInstall(Element$6), ns$9 = useNamespace("container");
     const NextContainer = withInstall(vue.defineComponent({
         name: "NextContainer",
         props: {
@@ -2100,18 +2115,18 @@
                 }), style;
             }));
             return () => props.scrollbar ? vue.createVNode(elementPlus.ElScrollbar, {
-                class: [ ns$8.b(), props.className ],
+                class: [ ns$9.b(), props.className ],
                 style: props.style
             }, {
                 default: () => [ slots.default?.() ]
             }) : vue.createVNode("div", {
-                class: [ ns$8.b(), props.className ],
+                class: [ ns$9.b(), props.className ],
                 style: {
                     ...styles.value,
                     ...props.style
                 }
             }, [ props.card ? vue.createVNode("div", {
-                class: ns$8.b("card")
+                class: ns$9.b("card")
             }, [ slots.default?.() ]) : slots.default?.() ]);
         }
     }));
@@ -2867,7 +2882,7 @@
         formSpan: 12,
         formColumnMinWidth: 350
     };
-    const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$7 = useNamespace("spin-loading");
+    const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$8 = useNamespace("spin-loading");
     var SpinLoading = vue.defineComponent({
         name: "NextSpinLoading",
         props: {
@@ -2889,25 +2904,25 @@
         render() {
             const _t = this.t, slots = this.$slots, props = this.$props, loadingText = props.tip || _t("next.loading");
             return vue.createVNode("div", {
-                class: ns$7.b()
+                class: ns$8.b()
             }, [ props.loading ? vue.createVNode("div", {
-                class: ns$7.b("mask")
+                class: ns$8.b("mask")
             }, [ vue.createVNode("span", {
-                class: ns$7.b("mask-dot")
+                class: ns$8.b("mask-dot")
             }, [ vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null), vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null), vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null), vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null) ]), vue.createVNode("span", {
-                class: ns$7.be("mask", "text")
+                class: ns$8.be("mask", "text")
             }, [ loadingText ]) ]) : null, slots.default?.() ]);
         }
     });
-    const ns$6 = useNamespace("text-ellipsis");
+    const ns$7 = useNamespace("text-ellipsis");
     const NextTextEllipsis = withInstall(vue.defineComponent({
         name: "NextTextEllipsis",
         props: {
@@ -2953,7 +2968,7 @@
                 }
             };
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
-                class: [ ns$6.b(), props.class ],
+                class: [ ns$7.b(), props.class ],
                 style: setWidth.value,
                 onMouseenter: onMouseenter
             }, [ isTip.value ? vue.createVNode(elementPlus.ElTooltip, {
@@ -2963,11 +2978,11 @@
                 disabled: props.disabled
             }, {
                 default: () => [ vue.createVNode("span", {
-                    class: ns$6.e("text"),
+                    class: ns$7.e("text"),
                     ref: ellipsisRef
                 }, [ slots.default ? slots.default() : props.content ]) ]
             }) : vue.createVNode("span", {
-                class: ns$6.e("text"),
+                class: ns$7.e("text"),
                 ref: ellipsisRef
             }, [ slots.default ? slots.default() : props.content ]) ]) ]);
         }
@@ -3597,7 +3612,7 @@
             }, null) ]);
         }
     });
-    const ns$5 = useNamespace("dialog");
+    const ns$6 = useNamespace("dialog");
     var NextDialog$1 = vue.defineComponent({
         name: "Dialog",
         props: {
@@ -3654,7 +3669,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElDialog, {
                 modelValue: visible.value,
                 "onUpdate:modelValue": $event => visible.value = $event,
-                class: ns$5.b(),
+                class: ns$6.b(),
                 title: props.title,
                 appendToBody: props.appendToBody,
                 "destroy-on-close": !0,
@@ -3670,12 +3685,12 @@
             }, {
                 default: () => [ slots.default?.() ],
                 header: ({close: close, titleId: titleId, titleClass: titleClass}) => vue.createVNode("div", {
-                    class: ns$5.b("header")
+                    class: ns$6.b("header")
                 }, [ vue.createVNode("h4", {
                     id: titleId,
                     class: titleClass
                 }, [ props.title ]), vue.createVNode("div", {
-                    class: ns$5.e("header-right")
+                    class: ns$6.e("header-right")
                 }, [ props.fullscreenBtn && vue.createVNode("span", {
                     class: "icon-fullscreen",
                     onClick: () => isFullscreen.value = !isFullscreen.value
@@ -3716,7 +3731,7 @@
         formDatum: {},
         tableSelectConfig: tableSelectConfig
     };
-    const ns$4 = useNamespace("form");
+    const ns$5 = useNamespace("form");
     var NumberRangePicker = vue.defineComponent({
         name: "NumberRangePicker",
         props: {
@@ -3755,7 +3770,7 @@
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: numberRangeRef,
-                class: ns$4.e("number-range")
+                class: ns$5.e("number-range")
             }, [ vue.createVNode(elementPlus.ElInputNumber, {
                 modelValue: startNumber.value,
                 "onUpdate:modelValue": $event => startNumber.value = $event,
@@ -3765,7 +3780,7 @@
                 disabled: disabled,
                 onChange: onChangeStart
             }, null), vue.createVNode("span", {
-                class: ns$4.em("number-range", "division")
+                class: ns$5.em("number-range", "division")
             }, [ t("next.date.rangeSeparator") ]), vue.createVNode(elementPlus.ElInputNumber, {
                 modelValue: endNumber.value,
                 "onUpdate:modelValue": $event => endNumber.value = $event,
@@ -3781,7 +3796,7 @@
     function _isSlot$2(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
-    const ns$3 = useNamespace("form"), InputTableSelect = vue.defineComponent({
+    const ns$4 = useNamespace("form"), InputTableSelect = vue.defineComponent({
         name: "InputTableSelect",
         props: {
             modelValue: {
@@ -3848,16 +3863,16 @@
             }, renderContent = () => {
                 let _slot, _slot2;
                 return vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
-                    class: [ "el-input", ns$3.e("input-table"), ns$3.is("disabled", _disabled) ]
+                    class: [ "el-input", ns$4.e("input-table"), ns$4.is("disabled", _disabled) ]
                 }, [ vue.createVNode("div", {
                     class: "el-input__wrapper"
                 }, [ props.modelValue ? vue.createVNode("span", {
-                    class: ns$3.em("input-table", "value")
+                    class: ns$4.em("input-table", "value")
                 }, [ props.modelValue ]) : vue.createVNode("span", {
-                    class: ns$3.em("input-table", "placeholder")
+                    class: ns$4.em("input-table", "placeholder")
                 }, [ _placeholder ]) ]), vue.createVNode(elementPlus.ElButton, {
                     type: "primary",
-                    class: ns$3.em("input-table", "append"),
+                    class: ns$4.em("input-table", "append"),
                     disabled: _disabled,
                     icon: search_default,
                     onClick: onClickTableDialog
@@ -3870,7 +3885,7 @@
                     onClose: onCloseTableDialog
                 }, {
                     default: () => [ vue.createVNode("div", {
-                        class: ns$3.em("input-table", "content")
+                        class: ns$4.em("input-table", "content")
                     }, [ vue.createVNode(elementPlus.ElRadioGroup, {
                         modelValue: sinleSelection.value
                     }, {
@@ -3893,7 +3908,7 @@
                             }) ]
                         }) ]
                     }) ]), vue.createVNode("div", {
-                        class: ns$3.em("input-table", "footer")
+                        class: ns$4.em("input-table", "footer")
                     }, [ vue.createVNode(elementPlus.ElButton, {
                         onClick: onResetTableSelect
                     }, _isSlot$2(_slot = t("next.form.reset")) ? _slot : {
@@ -3913,8 +3928,8 @@
     function _isSlot$1(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
-    const ns$2 = useNamespace("form");
-    var Element$2 = vue.defineComponent({
+    const ns$3 = useNamespace("form");
+    var Element$3 = vue.defineComponent({
         name: "NextForm",
         props: {
             options: {
@@ -4184,7 +4199,7 @@
                 let _slot, _slot2, _slot3;
                 return vue.createVNode(elementPlus.ElForm, {
                     ref: ruleFormRef,
-                    class: ns$2.b(),
+                    class: ns$3.b(),
                     inline: !1,
                     model: formParams,
                     size: options.size
@@ -4204,7 +4219,7 @@
                         }, {
                             label: () => column.label ? vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextTextEllipsis, {
                                 content: t(column.label),
-                                class: ns$2.e("item-label")
+                                class: ns$3.e("item-label")
                             }, null), column.tip ? vue.createVNode(elementPlus.ElTooltip, {
                                 effect: "dark",
                                 content: column.tip,
@@ -4224,7 +4239,7 @@
                     })))) ? _slot : {
                         default: () => [ _slot ]
                     }), _isEditing.value && vue.createVNode("div", {
-                        class: ns$2.e("footer")
+                        class: ns$3.e("footer")
                     }, [ vue.createVNode(elementPlus.ElButton, {
                         type: "primary",
                         loading: submitLoading.value,
@@ -4241,7 +4256,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
-    const NextForm = withInstall(Element$2);
+    const NextForm = withInstall(Element$3);
     var AddEditForm = vue.defineComponent({
         name: "AddEditForm",
         props: {
@@ -4296,8 +4311,8 @@
     function _isSlot(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
-    const ns$1 = useNamespace("crud-table");
-    var Element$1 = vue.defineComponent({
+    const ns$2 = useNamespace("crud-table");
+    var Element$2 = vue.defineComponent({
         name: "NextCrudTable",
         props: defaultPropsConfig,
         emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "click-add-edit", "close-add-edit", "delete-rows", "delete-row", "submit-form" ],
@@ -4306,7 +4321,7 @@
                 const cfg = vue.unref(props.options);
                 return merge$1(_config, cfg);
             })), options = vue.unref(_options);
-            vue.provide("options", vue.computed((() => _options.value))), vue.provide("ns", ns$1);
+            vue.provide("options", vue.computed((() => _options.value))), vue.provide("ns", ns$2);
             const {t: t} = useLocale(), columns = vue.ref(options.columns), searchColumn = vue.ref([]);
             (() => {
                 searchColumn.value = options.searchColumn.map(((col, index) => ({
@@ -4446,11 +4461,11 @@
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: crudTableRef,
-                class: [ ns$1.b(), props.className ],
+                class: [ ns$2.b(), props.className ],
                 style: props.style
             }, [ options.showSearchForm || options.showHeaderMenu ? vue.createVNode("header", {
                 ref: headerRef,
-                class: ns$1.b("header")
+                class: ns$2.b("header")
             }, [ options.showSearchForm && vue.createVNode(HeaderSearch, {
                 columns: searchColumn.value,
                 onZoomResize: updateTableContentHeight,
@@ -4469,7 +4484,7 @@
             }, {
                 default: () => [ vue.createVNode("div", {
                     ref: tableRef,
-                    class: ns$1.b("content")
+                    class: ns$2.b("content")
                 }, [ vue.createVNode(elementPlus.ElTable, {
                     data: tableData.value,
                     height: tableContentHeight.value,
@@ -4513,7 +4528,7 @@
                 }) ]) ]
             }), options.isPagination ? vue.createVNode("div", {
                 ref: footerRef,
-                class: ns$1.b("footer")
+                class: ns$2.b("footer")
             }, [ vue.createVNode(FooterPagination, {
                 page: props.page,
                 onChange: onChangePagination
@@ -4538,7 +4553,7 @@
             }) ]) ]) ]);
         }
     });
-    const NextCrudTable = withInstall(Element$1), NextSpinLoading = withInstall(SpinLoading), ns = useNamespace("upload");
+    const NextCrudTable = withInstall(Element$2), NextSpinLoading = withInstall(SpinLoading), ns$1 = useNamespace("upload");
     const NextUpload = withInstall(vue.defineComponent({
         name: "NextUpload",
         props: {
@@ -4571,7 +4586,7 @@
             const slots = this.$slots, props = this.$props, _t = this.t, uploadfilesPreview = vue.ref([]), body = document.getElementsByTagName("body")[0];
             let previewImagesContainer = null;
             return vue.createVNode(elementPlus.ElUpload, {
-                class: [ ns.b(), props.className ],
+                class: [ ns$1.b(), props.className ],
                 style: props.style,
                 "list-type": props.listType,
                 "auto-upload": !1,
@@ -4609,7 +4624,152 @@
                 })
             });
         }
-    }));
+    })), ns = useNamespace("video-player");
+    var Element = vue.defineComponent({
+        name: "NextVideoPlayer",
+        props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
+            type: {
+                type: String,
+                default: "mp4",
+                values: [ "mp4", "m3u8", "flv" ]
+            },
+            src: {
+                type: String,
+                default: "",
+                required: !0
+            },
+            tensorflow: {
+                type: Object,
+                default: () => ({
+                    modelUrl: "",
+                    classNames: [],
+                    tf: null
+                })
+            }
+        },
+        emits: [ "play", "detector" ],
+        setup(props, {emit: emit}) {
+            const {lang: lang} = useLocale(), localeLang = {
+                "zh-cn": zhCN,
+                en: En,
+                "zh-tw": zhTW
+            };
+            localeLang[lang.value] ? videojs.addLanguage("zh-CN", localeLang[lang.value]) : videojs.addLanguage("zh-CN", zhCN);
+            const videoSrc = vue.toRaw(props.src), videoBoxRef = vue.ref(), player = vue.ref(), playerFlv = vue.ref(), modelRef = vue.ref(null), _loadModelDetectFrame = (container, video) => {
+                if (!props.tensorflow) return;
+                const {modelUrl: modelUrl, classNames: classNames} = props.tensorflow;
+                if (!modelUrl) throw new Error("模型文件地址不能未空！");
+                if (!classNames || !classNames.length) throw new Error("模型类别不能未空！");
+                tf__namespace.loadGraphModel(modelUrl).then((model => {
+                    const canvas = document.createElement("canvas");
+                    canvas.className = ns.b("recongition");
+                    container.children[0].appendChild(canvas);
+                    const ctx = canvas.getContext("2d");
+                    video.ontimeupdate = () => {
+                        const {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
+                        canvas.width = videoWidth, canvas.height = videoHeight, canvas.style.top = offsetTop + "px", 
+                        canvas.style.left = offsetLeft + "px", _detectFrame(video, model, ctx, tf__namespace, classNames);
+                    }, modelRef.value = model;
+                }));
+            }, _detectFrame = async (video, model, ctx, tf, classNames) => {
+                const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
+                let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
+                ctx.clearRect(0, 0, videoWidth, videoHeight), await model.executeAsync(input).then((res => {
+                    let [boxes, scores, classes, valid_detections] = res;
+                    for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
+                        let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
+                        x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
+                        y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
+                        x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
+                        y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
+                        const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
+                        let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
+                        if (score > .5) {
+                            const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
+                            ctx.strokeStyle = color, ctx.lineWidth = 3, ctx.beginPath(), ctx.rect(left, top, width, height), 
+                            ctx.stroke();
+                            const name = classNames[cls];
+                            ctx.font = "bold 20px Arial", ctx.fillStyle = color, ctx.fillText(`${name} 相似度：${(100 * score).toFixed(2)}%`, left + 10, top < 20 ? 20 : top - 10);
+                        }
+                    }
+                    boxes.dispose(), scores.dispose(), classes.dispose(), valid_detections.dispose(), 
+                    input.dispose(), tf.dispose(res);
+                }));
+            };
+            vue.onUnmounted((() => {
+                player.value && (player.value.mse && (player.value.mse.endOfStream(), player.value.mse.unload(), 
+                player.value.mse = null), player.value.pause(), player.value.dispose(), player.value = null), 
+                playerFlv.value && (playerFlv.value.pause(), playerFlv.value.unload(), playerFlv.value.detachMediaElement(), 
+                playerFlv.value.destroy(), playerFlv.value = null), modelRef.value && (modelRef.value.dispose(), 
+                modelRef.value = null), videoBoxRef.value && vue.render(null, videoBoxRef.value);
+            }));
+            const switchVideo = url => {
+                const type = props.type;
+                "m3u8" === type ? (url => {
+                    const container = videoBoxRef.value, video = document.createElement("video");
+                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    const options = {
+                        techOrder: [ "html5" ],
+                        flvjs: {
+                            mediaDataSource: {
+                                cors: !0,
+                                withCredentials: !1
+                            }
+                        },
+                        controls: !0,
+                        fluid: !0,
+                        preload: "auto",
+                        language: "zh-CN",
+                        sources: [ {
+                            src: url,
+                            type: "application/x-mpegURL"
+                        } ]
+                    };
+                    player.value = videojs(video, options), player.value.on("play", (() => {
+                        emit("play", video, container), _loadModelDetectFrame(container, video);
+                    }));
+                })(url) : "mp4" === type && (url => {
+                    const container = videoBoxRef.value, video = document.createElement("video");
+                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    const options = {
+                        techOrder: [ "html5" ],
+                        controls: !0,
+                        fluid: !0,
+                        preload: "auto",
+                        language: "zh-CN",
+                        sources: [ {
+                            src: url,
+                            type: "video/mp4"
+                        } ]
+                    };
+                    player.value = videojs(video, options), player.value.on("play", (() => {
+                        emit("play", video, container), _loadModelDetectFrame(container, video);
+                    }));
+                })(url);
+            };
+            vue.onMounted((() => {
+                vue.nextTick((() => {
+                    switchVideo(videoSrc);
+                }));
+            }));
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
+                ref: videoBoxRef,
+                class: [ ns.b(), props.className ],
+                style: props.style
+            }, null) ]);
+        }
+    });
+    const NextVideoPlayer = withInstall(Element);
     var components = Object.freeze({
         __proto__: null,
         NextContainer: NextContainer,
@@ -4621,7 +4781,8 @@
         NextSpinLoading: NextSpinLoading,
         NextTabs: NextTabs,
         NextTextEllipsis: NextTextEllipsis,
-        NextUpload: NextUpload
+        NextUpload: NextUpload,
+        NextVideoPlayer: NextVideoPlayer
     });
     const zoomDialog = app => {
         app.directive("zoom", {
@@ -4664,18 +4825,18 @@
         })(app);
     };
     var index = {
-        version: "0.0.16",
+        version: "0.0.18",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
     exports.NextForm = NextForm, exports.NextLayout = NextLayout, exports.NextMenu = NextMenu, 
     exports.NextSpinLoading = NextSpinLoading, exports.NextTabs = NextTabs, exports.NextTextEllipsis = NextTextEllipsis, 
-    exports.NextUpload = NextUpload, exports.buildLocaleContext = buildLocaleContext, 
+    exports.NextUpload = NextUpload, exports.NextVideoPlayer = NextVideoPlayer, exports.buildLocaleContext = buildLocaleContext, 
     exports.buildTranslator = buildTranslator, exports.default = index, exports.defaultNamespace = "next", 
     exports.install = install, exports.localeContextKey = localeContextKey, exports.namespaceContextKey = namespaceContextKey, 
     exports.nextUseCssTheme = nextUseCssTheme, exports.nextUseCssVar = nextUseCssVar, 
     exports.translate = translate, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
-    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.16", 
+    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.18", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

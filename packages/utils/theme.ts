@@ -61,3 +61,12 @@ export function useChangeColor() {
 		getLightColor,
 	};
 }
+
+export function randomColor16() {
+	const r = Math.floor(Math.random() * 256);
+	const g = Math.floor(Math.random() * 256);
+	const b = Math.floor(Math.random() * 256);
+	// const color = `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+	const hexColor = `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
+	return hexColor;
+}

@@ -38,6 +38,7 @@ const terserPlugin = terser({
 	},
 });
 const outDir = './dist';
+// const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
 const outputDir = path.resolve(outDir);
 const output = [
 	{
@@ -147,7 +148,7 @@ export default {
 			targets: [
 				{
 					src: 'packages/assets/*',
-					dest: path.resolve(outDir, 'assets'),
+					dest: path.resolve(outDir, 'assets/'),
 				},
 			],
 		}),
@@ -194,7 +195,18 @@ export default {
 		},
 	],
 	// 声明外部依赖，不会被打包进组件库
-	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus'],
+	external: [
+		'vue',
+		'@vueuse/core',
+		'vue-router',
+		'element-plus',
+		'video.js',
+		'video.js/dist/video-js.css',
+		'video.js/dist/lang/zh-CN.json',
+		'video.js/dist/lang/en.json',
+		'video.js/dist/lang/zh-TW.json',
+		'@tensorflow/tfjs',
+	],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {
 			if (warning.names.includes('resolveDirective')) {

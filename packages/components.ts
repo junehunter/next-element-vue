@@ -8,3 +8,4 @@ export * from './components/dialog';
 export * from './components/text-ellipsis';
 export * from './components/spin-loading';
 export * from './components/upload';
+export * from './components/video-player';

@@ -21,7 +21,8 @@ import fs from 'fs';
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
 
-const outDir = './dist';
+// const outDir = './dist';
+const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
 const outputDir = path.resolve(outDir);
 const output = [
 	{
@@ -73,6 +74,7 @@ export default {
 		json(),
 		babel({
 			babelHelpers: 'bundled',
+			include: [],
 			// 只转换源代码，不运行外部依赖
 			exclude: 'node_modules/**',
 			// babel 默认不支持 ts 需要手动添加
@@ -80,16 +82,13 @@ export default {
 			plugins: ['@vue/babel-plugin-jsx'],
 		}),
 		alias({
-			entries: {
-				'@': './src',
-				packages: path.resolve('packages'),
-			},
+			entries: [{ find: 'packages', replacement: './packages' }],
 		}),
 		copy({
 			targets: [
 				{
 					src: 'packages/assets/*',
-					dest: path.resolve(outDir, 'assets'),
+					dest: path.resolve(outDir, 'assets/'),
 				},
 			],
 		}),
@@ -140,7 +139,19 @@ export default {
 	],
 	cache: true,
 	// 声明外部依赖，不会被打包进组件库
-	external: ['vue', '@vueuse/core', 'vue-router', 'element-plus', '@element-plus/icons-vue'],
+	external: [
+		'vue',
+		'@vueuse/core',
+		'vue-router',
+		'element-plus',
+		'@element-plus/icons-vue',
+		'video.js',
+		'video.js/dist/video-js.css',
+		'video.js/dist/lang/zh-CN.json',
+		'video.js/dist/lang/en.json',
+		'video.js/dist/lang/zh-TW.json',
+		'@tensorflow/tfjs',
+	],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {
 			if (warning.names.includes('resolveDirective')) {
