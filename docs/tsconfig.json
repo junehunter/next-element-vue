@@ -11,7 +11,9 @@
         "noImplicitAny": false,
         "skipLibCheck": true,
         "lib": [
-            "WebWorker"
+            "WebWorker",
+            "ESNext",
+            "DOM",
         ],
         "paths": {
             "~/*": [

@@ -7,6 +7,8 @@ $block: 'video-player';
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+    min-height: 200px;
+    border-radius: 5px;
     .vjs-default-skin {
 		position: absolute;
 		left: 0px;
@@ -37,6 +39,14 @@ $block: 'video-player';
 		cursor: pointer;
 		opacity: 0;
 		transition: all 0.5s ease-in-out;
+        i {
+            transition: all 0.3s ease-in-out;
+        }
+        &:hover {
+            i {
+                transform: scale(1.1);
+            }
+        }
 	}
 	&:hover {
 		.screemshot-btn {

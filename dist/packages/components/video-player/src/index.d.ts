@@ -24,10 +24,9 @@ declare const _default: import("vue").DefineComponent<{
         default: () => {
             modelUrl: string;
             classNames: any[];
-            tf: any;
         };
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("play" | "detector")[], "play" | "detector", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("play" | "error" | "detector")[], "play" | "error" | "detector", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;
@@ -51,11 +50,11 @@ declare const _default: import("vue").DefineComponent<{
         default: () => {
             modelUrl: string;
             classNames: any[];
-            tf: any;
         };
     };
 }>> & {
     onPlay?: (...args: any[]) => any;
+    onError?: (...args: any[]) => any;
     onDetector?: (...args: any[]) => any;
 }, {
     className: string;

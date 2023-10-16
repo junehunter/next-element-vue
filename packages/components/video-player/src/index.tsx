@@ -2,7 +2,7 @@
  * 中文文档
  * https://videojs.moyutime.cn/
  */
-import { defineComponent, ref, toRaw, onMounted, onUnmounted, render, nextTick } from 'vue';
+import { defineComponent, ref, toRaw, onMounted, onUnmounted, render, nextTick, createVNode, h } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -10,8 +10,10 @@ import zhCN from 'video.js/dist/lang/zh-CN.json';
 import En from 'video.js/dist/lang/en.json';
 import zhTW from 'video.js/dist/lang/zh-TW.json';
 import { useNamespace, useLocale } from 'packages/hooks';
-import { randomColor16 } from 'packages/utils/theme';
 import * as tf from '@tensorflow/tfjs';
+import { screenshotVideoDetectFrame, detectVideoFrame } from './hook';
+import { ElIcon } from 'element-plus';
+import { Camera } from '@element-plus/icons-vue';
 
 const ns = useNamespace('video-player');
 // const enum VideoType {
@@ -33,7 +35,7 @@ export default defineComponent({
 		type: {
 			type: String,
 			default: 'mp4',
-			values: ['mp4', 'm3u8', 'flv'],
+			values: ['mp4', 'm3u8', 'flv', 'mpegts'],
 		},
 		src: {
 			type: String,
@@ -46,12 +48,11 @@ export default defineComponent({
 				return {
 					modelUrl: '',
 					classNames: [],
-					tf: null,
 				};
 			},
 		},
 	},
-	emits: ['play', 'detector'],
+	emits: ['play', 'error', 'detector'],
 	setup(props, { emit }) {
 		const { lang } = useLocale();
 		const localeLang = {
@@ -68,7 +69,22 @@ export default defineComponent({
 		const videoBoxRef = ref<HTMLElement>();
 		const player = ref<any>();
 		const playerFlv = ref<any>();
+		const playerMpgets = ref<any>();
 		const modelRef = ref(null);
+		const detectFrameCanvas = ref<HTMLCanvasElement>(null);
+		// 创建截图按钮
+		const _createScreenshotBtn = (container: HTMLElement) => {
+			const screenshotBtn = createVNode({
+				render() {
+					return h('span', { class: 'screemshot-btn', onClick: () => screenshotVideoDetectFrame(player.value, detectFrameCanvas.value) }, [
+						h(ElIcon, { color: '#FFFFFF', size: '22px' }, { default: () => h(Camera) }),
+					]);
+				},
+			});
+			player.value.on('loadedmetadata', () => {
+				render(screenshotBtn, container);
+			});
+		};
 		const loadVideo_mp4 = (url: string) => {
 			const container = videoBoxRef.value as HTMLElement;
 			const video = document.createElement('video');
@@ -90,10 +106,14 @@ export default defineComponent({
 				],
 			};
 			player.value = videojs(video, options);
+			const canvasContainer = document.createElement('div');
+			const palyerContainer = container.children[0];
+			palyerContainer.appendChild(canvasContainer);
 			player.value.on('play', () => {
 				emit('play', video, container);
-				_loadModelDetectFrame(container, video);
+				_loadModelDetectFrame(canvasContainer, video);
 			});
+			_createScreenshotBtn(container);
 		};
 		const loadVideo_m3u8 = (url: string) => {
 			const container = videoBoxRef.value as HTMLElement;
@@ -122,22 +142,83 @@ export default defineComponent({
 				],
 			};
 			player.value = videojs(video, options);
+			const canvasContainer = document.createElement('div');
+			const palyerContainer = container.children[0];
+			palyerContainer.appendChild(canvasContainer);
 			player.value.on('play', () => {
 				emit('play', video, container);
-				_loadModelDetectFrame(container, video);
+				_loadModelDetectFrame(canvasContainer, video);
 			});
+			_createScreenshotBtn(container);
 		};
 		const loadVideo_flv = (url: string) => {
-			const mediaDataSource = {
-				type: 'flv',
-				cors: true,
-				isLive: true,
-				hasVideo: true,
-				hasAudio: false,
-				autoCleanupSourceBuffer: true, // 对SourceBuffer进行自动清理
-				url: url,
+			const container = videoBoxRef.value as HTMLElement;
+			const video = document.createElement('video');
+			video.className = 'video-js vjs-default-skin';
+			video.setAttribute('autoplay', 'true');
+			video.setAttribute('muted', 'true');
+			container.appendChild(video);
+			const options = {
+				techOrder: ['html5'],
+				flvjs: {
+					mediaDataSource: {
+						cors: true,
+						withCredentials: false,
+					},
+				},
+				controls: true,
+				fluid: true, // 自适应宽高
+				preload: 'auto',
+				language: 'zh-CN',
+				sources: [
+					{
+						src: url,
+						type: 'video/x-flv',
+					},
+				],
 			};
-			return mediaDataSource;
+			player.value = videojs(video, options);
+			const canvasContainer = document.createElement('div');
+			const palyerContainer = container.children[0];
+			palyerContainer.appendChild(canvasContainer);
+			player.value.on('play', () => {
+				emit('play', video, container);
+				_loadModelDetectFrame(canvasContainer, video);
+			});
+			_createScreenshotBtn(container);
+		};
+		const loadVideo_mpegts = (url: string) => {
+			const mpegts = (window as any).mpegts;
+			if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
+				const container = videoBoxRef.value as HTMLElement;
+				const video = document.createElement('video');
+				video.className = 'video-js vjs-default-skin';
+				video.setAttribute('autoplay', 'true');
+				video.setAttribute('muted', 'true');
+				container.appendChild(video);
+				const defaultOptions = {
+					controls: true, // 显示控制栏
+					autoplay: true, // 自动播放
+					fluid: true, // 自适应宽高
+					muted: true, // 禁音播放
+					liveui: true,
+					preload: 'auto',
+					language: 'zh-CN', // 语言设置
+				};
+				player.value = videojs(video, defaultOptions);
+				playerMpgets.value = mpegts.createPlayer({
+					type: 'flv', // could also be mpegts, m2ts, flv
+					isLive: true,
+					url: url,
+				});
+				playerMpgets.value.attachMediaElement(video as HTMLVideoElement);
+				playerMpgets.value.load();
+				playerMpgets.value.play();
+				playerMpgets.value.on('error', () => {
+					emit('error', video);
+				});
+				_createScreenshotBtn(container);
+			}
 		};
 		const _loadModelDetectFrame = (container: HTMLElement, video: HTMLVideoElement) => {
 			if (!props.tensorflow) return;
@@ -148,11 +229,11 @@ export default defineComponent({
 			if (!classNames || !classNames.length) {
 				throw new Error('模型类别不能未空！');
 			}
+			container.innerHTML = '';
 			tf.loadGraphModel(modelUrl).then(model => {
 				const canvas = document.createElement('canvas') as HTMLCanvasElement;
 				canvas.className = ns.b('recongition');
-				const palyerContainer = container.children[0];
-				palyerContainer.appendChild(canvas);
+				container.appendChild(canvas);
 				const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 				video.ontimeupdate = () => {
 					const { videoWidth, videoHeight, offsetTop, offsetLeft } = video;
@@ -160,12 +241,18 @@ export default defineComponent({
 					canvas.height = videoHeight;
 					canvas.style.top = offsetTop + 'px';
 					canvas.style.left = offsetLeft + 'px';
-					_detectFrame(video, model, ctx, tf, classNames);
+					detectVideoFrame(video, model, ctx, tf, classNames);
 				};
 				modelRef.value = model;
+				detectFrameCanvas.value = canvas;
 			});
 		};
 		const _destroyPlayer = () => {
+			if (modelRef.value) {
+				tf.dispose();
+				modelRef.value.dispose();
+				modelRef.value = null;
+			}
 			if (player.value) {
 				if (player.value.mse) {
 					player.value.mse.endOfStream();
@@ -183,54 +270,6 @@ export default defineComponent({
 				playerFlv.value.destroy();
 				playerFlv.value = null;
 			}
-			if (modelRef.value) {
-				modelRef.value.dispose();
-				modelRef.value = null;
-			}
-		};
-		const _detectFrame = async (video: HTMLVideoElement, model: any, ctx: CanvasRenderingContext2D, tf: any, classNames: any[]) => {
-			const { videoWidth, videoHeight } = video;
-			let [modelWeight, modelHeight] = (model as any).inputs[0].shape.slice(1, 3);
-			let input = tf.tidy(() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [modelWeight, modelHeight]).div(255.0).expandDims(0));
-			ctx.clearRect(0, 0, videoWidth, videoHeight);
-			await model.executeAsync(input).then((res: any) => {
-				let [boxes, scores, classes, valid_detections] = res;
-				for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
-					let [x0, y0, x1, y1] = boxes.dataSync().slice(i * 4, (i + 1) * 4);
-					x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0;
-					x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1;
-					y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0;
-					y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1;
-					x0 = Math.round(Math.abs(x0) * videoWidth);
-					x1 = Math.round(Math.abs(x1) * videoWidth);
-					y0 = Math.round(Math.abs(y0) * videoHeight);
-					y1 = Math.round(Math.abs(y1) * videoHeight);
-					const width = x1 - x0;
-					const height = y1 - y0;
-					const left = x0;
-					const top = y0;
-					let cls = classes.dataSync()[i]; // 类别
-					let score = scores.dataSync()[i].toFixed(2); // 置信度
-					if (score > 0.5) {
-						const color = randomColor16();
-						ctx.strokeStyle = color;
-						ctx.lineWidth = 3;
-						ctx.beginPath();
-						ctx.rect(left, top, width, height);
-						ctx.stroke();
-						const name = classNames[cls];
-						ctx.font = 'bold 20px Arial';
-						ctx.fillStyle = color;
-						ctx.fillText(`${name} 相似度：${(score * 100).toFixed(2)}%`, left + 10, top < 20 ? 20 : top - 10);
-					}
-				}
-				boxes.dispose();
-				scores.dispose();
-				classes.dispose();
-				valid_detections.dispose();
-				input.dispose();
-				tf.dispose(res);
-			});
 		};
 		onUnmounted(() => {
 			_destroyPlayer();
@@ -244,7 +283,9 @@ export default defineComponent({
 				loadVideo_m3u8(url);
 			} else if (type === 'mp4') {
 				loadVideo_mp4(url);
-			} else {
+			} else if (type === 'mpegts') {
+				loadVideo_mpegts(url);
+			} else if (type === 'flv') {
 				loadVideo_flv(url);
 			}
 		};

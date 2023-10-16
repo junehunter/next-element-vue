@@ -21,8 +21,8 @@ import fs from 'fs';
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
 
-// const outDir = './dist';
-const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
+const outDir = './dist';
+// const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
 const outputDir = path.resolve(outDir);
 const output = [
 	{
@@ -42,7 +42,9 @@ const output = [
 	},
 ];
 export default {
-	input: 'packages/index.ts',
+	input: {
+		index: 'packages/index.ts',
+	},
 	output: output,
 	plugins: [
 		nodeResolve({
@@ -56,7 +58,7 @@ export default {
 					declaration: true, // 打包后是否输出d.ts文件，设置为true则输出
 					noUnusedLocals: false,
 				},
-				exclude: ['src', 'packages/**/*.test.ts'], // 忽略文件输出d.ts文件
+				exclude: ['packages/**/*.test.ts'], // 忽略文件输出d.ts文件
 			},
 		}),
 		vuePlugin({
@@ -90,6 +92,10 @@ export default {
 					src: 'packages/assets/*',
 					dest: path.resolve(outDir, 'assets/'),
 				},
+				{
+					src: 'packages/index.d.ts',
+					dest: 'dist',
+				},
 			],
 		}),
 		replace({
@@ -114,16 +120,19 @@ export default {
 			// 在打包完成后的钩子中监听输出文件的更改
 			// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 			writeBundle: (options, bundle) => {
-				const inputPath = path.resolve(outDir, 'index.d.ts');
-				for (let i = 0; i < output.length; i++) {
-					const entryFileNames = output[i].entryFileNames;
-					if (entryFileNames) {
-						const pathFile = entryFileNames.replace(/\[name\]/g, 'index');
-						const name = pathFile.replace(/\.[^.]+$/, '.d.ts');
-						const outputPath = path.resolve(outDir, name);
-						fs.copyFileSync(inputPath, outputPath);
+				try {
+					const inputPath = path.resolve(outDir, 'index.d.ts');
+					for (let i = 0; i < output.length; i++) {
+						const entryFileNames = output[i].entryFileNames;
+						if (entryFileNames) {
+							const pathFile = entryFileNames.replace(/\[name\]/g, 'index');
+							const name = pathFile.replace(/\.[^.]+$/, '.d.ts');
+							const outputPath = path.resolve(outDir, name);
+							fs.copyFileSync(inputPath, outputPath);
+						}
 					}
-				}
+					// eslint-disable-next-line no-empty
+				} catch (error) {}
 			},
 		},
 		serve({

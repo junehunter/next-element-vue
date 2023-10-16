@@ -25,6 +25,11 @@ const globals_cfg = {
 	'element-plus': 'ElementPlus',
 	'vue-router': 'VueRouter',
 	'@vueuse/core': 'VueuseCore',
+	'video.js': 'videojs',
+	'video.js/dist/lang/zh-CN.json': 'zhCN',
+	'video.js/dist/lang/en.json': 'En',
+	'video.js/dist/lang/zh-TW.json': 'zhTW',
+	'@tensorflow/tfjs': 'tf',
 };
 const terserPlugin = terser({
 	output: {
@@ -149,6 +154,10 @@ export default {
 				{
 					src: 'packages/assets/*',
 					dest: path.resolve(outDir, 'assets/'),
+				},
+				{
+					src: 'packages/index.d.ts',
+					dest: 'dist',
 				},
 			],
 		}),

@@ -2,7 +2,7 @@ import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponen
 
 import { localeContextKey as localeContextKey$1, ElMessage, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElTooltip, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElTimeSelect, ElEmpty, ElUpload, ElImageViewer } from "element-plus";
 
-import { useFullscreen } from "@vueuse/core";
+import { useFullscreen, useDateFormat, useNow } from "@vueuse/core";
 
 import videojs from "video.js";
 
@@ -1177,7 +1177,19 @@ var arrow_up_default = export_helper_default(arrow_up_vue_vue_type_script_lang_d
 
 var back_default = export_helper_default(back_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_114, _hoisted_44);
-} ], [ "__file", "back.vue" ] ]), close_vue_vue_type_script_lang_default = {
+} ], [ "__file", "back.vue" ] ]), camera_vue_vue_type_script_lang_default = {
+    name: "Camera"
+}, _hoisted_131 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_330 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M896 256H128v576h768V256zm-199.424-64-32.064-64h-304.96l-32 64h369.024zM96 192h160l46.336-92.608A64 64 0 0 1 359.552 64h304.96a64 64 0 0 1 57.216 35.328L768.192 192H928a32 32 0 0 1 32 32v640a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V224a32 32 0 0 1 32-32zm416 512a160 160 0 1 0 0-320 160 160 0 0 0 0 320zm0 64a224 224 0 1 1 0-448 224 224 0 0 1 0 448z"
+}, null, -1) ];
+
+var camera_default = export_helper_default(camera_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_131, _hoisted_330);
+} ], [ "__file", "camera.vue" ] ]), close_vue_vue_type_script_lang_default = {
     name: "Close"
 }, _hoisted_156 = {
     xmlns: "http://www.w3.org/2000/svg",
@@ -4834,7 +4846,7 @@ var Element = defineComponent({
         type: {
             type: String,
             default: "mp4",
-            values: [ "mp4", "m3u8", "flv" ]
+            values: [ "mp4", "m3u8", "flv", "mpegts" ]
         },
         src: {
             type: String,
@@ -4845,12 +4857,11 @@ var Element = defineComponent({
             type: Object,
             default: () => ({
                 modelUrl: "",
-                classNames: [],
-                tf: null
+                classNames: []
             })
         }
     },
-    emits: [ "play", "detector" ],
+    emits: [ "play", "error", "detector" ],
     setup(props, {emit: emit}) {
         const {lang: lang} = useLocale(), localeLang = {
             "zh-cn": zhCN,
@@ -4858,53 +4869,82 @@ var Element = defineComponent({
             "zh-tw": zhTW
         };
         localeLang[lang.value] ? videojs.addLanguage("zh-CN", localeLang[lang.value]) : videojs.addLanguage("zh-CN", zhCN);
-        const videoSrc = toRaw(props.src), videoBoxRef = ref(), player = ref(), playerFlv = ref(), modelRef = ref(null), _loadModelDetectFrame = (container, video) => {
+        const videoSrc = toRaw(props.src), videoBoxRef = ref(), player = ref(), playerFlv = ref(), playerMpgets = ref(), modelRef = ref(null), detectFrameCanvas = ref(null), _createScreenshotBtn = container => {
+            const screenshotBtn = createVNode({
+                render: () => h("span", {
+                    class: "screemshot-btn",
+                    onClick: () => ((player, detectFrameCanvas) => {
+                        const time = useDateFormat(useNow(), "YYYY-MM-DD_HH-mm-ss").value, videoElement = player.el().getElementsByTagName("video")[0], canvas = document.createElement("canvas"), width = videoElement.videoWidth, height = videoElement.videoHeight;
+                        canvas.width = width, canvas.height = height;
+                        const ctx = canvas.getContext("2d"), mediaRatio = width / height, canvasRatio = canvas.width / canvas.height, sw = width, sh = height;
+                        let dx, dy, dw, dh;
+                        mediaRatio > canvasRatio ? (dw = canvas.width, dh = canvas.width / mediaRatio, dx = 0, 
+                        dy = Math.round((canvas.height - dh) / 2)) : mediaRatio === canvasRatio ? (dw = canvas.width, 
+                        dh = canvas.height, dx = 0, dy = 0) : mediaRatio < canvasRatio && (dw = canvas.height * mediaRatio, 
+                        dh = canvas.height, dx = Math.round((canvas.width - dw) / 2), dy = 0), ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), 
+                        detectFrameCanvas && ctx.drawImage(detectFrameCanvas, 0, 0);
+                        let imageDataURL = canvas.toDataURL("image/png", .92).replace("image/png", "image/octet-stream");
+                        imageDataURL = imageDataURL.replace(/^data:image\/[^;]+/, "data:application/octet-stream");
+                        const downloadLink = document.createElement("a");
+                        downloadLink.href = imageDataURL, downloadLink.download = time + "_screenshot.png", 
+                        downloadLink.click();
+                    })(player.value, detectFrameCanvas.value)
+                }, [ h(ElIcon, {
+                    color: "#FFFFFF",
+                    size: "22px"
+                }, {
+                    default: () => h(camera_default)
+                }) ])
+            });
+            player.value.on("loadedmetadata", (() => {
+                render(screenshotBtn, container);
+            }));
+        }, _loadModelDetectFrame = (container, video) => {
             if (!props.tensorflow) return;
             const {modelUrl: modelUrl, classNames: classNames} = props.tensorflow;
             if (!modelUrl) throw new Error("模型文件地址不能未空！");
             if (!classNames || !classNames.length) throw new Error("模型类别不能未空！");
-            tf.loadGraphModel(modelUrl).then((model => {
+            container.innerHTML = "", tf.loadGraphModel(modelUrl).then((model => {
                 const canvas = document.createElement("canvas");
-                canvas.className = ns.b("recongition");
-                container.children[0].appendChild(canvas);
+                canvas.className = ns.b("recongition"), container.appendChild(canvas);
                 const ctx = canvas.getContext("2d");
                 video.ontimeupdate = () => {
                     const {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
                     canvas.width = videoWidth, canvas.height = videoHeight, canvas.style.top = offsetTop + "px", 
-                    canvas.style.left = offsetLeft + "px", _detectFrame(video, model, ctx, tf, classNames);
-                }, modelRef.value = model;
-            }));
-        }, _detectFrame = async (video, model, ctx, tf, classNames) => {
-            const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
-            let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
-            ctx.clearRect(0, 0, videoWidth, videoHeight), await model.executeAsync(input).then((res => {
-                let [boxes, scores, classes, valid_detections] = res;
-                for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
-                    let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
-                    x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
-                    y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
-                    x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
-                    y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
-                    const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
-                    let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
-                    if (score > .5) {
-                        const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
-                        ctx.strokeStyle = color, ctx.lineWidth = 3, ctx.beginPath(), ctx.rect(left, top, width, height), 
-                        ctx.stroke();
-                        const name = classNames[cls];
-                        ctx.font = "bold 20px Arial", ctx.fillStyle = color, ctx.fillText(`${name} 相似度：${(100 * score).toFixed(2)}%`, left + 10, top < 20 ? 20 : top - 10);
-                    }
-                }
-                boxes.dispose(), scores.dispose(), classes.dispose(), valid_detections.dispose(), 
-                input.dispose(), tf.dispose(res);
+                    canvas.style.left = offsetLeft + "px", (async (video, model, ctx, tf, classNames) => {
+                        const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
+                        if (!videoWidth || !videoHeight) return;
+                        let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
+                        ctx.clearRect(0, 0, videoWidth, videoHeight), await model.executeAsync(input).then((res => {
+                            let [boxes, scores, classes, valid_detections] = res;
+                            for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
+                                let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
+                                x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
+                                y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
+                                x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
+                                y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
+                                const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
+                                let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
+                                if (score > .5) {
+                                    const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
+                                    ctx.strokeStyle = color, ctx.lineWidth = 3, ctx.beginPath(), ctx.rect(left, top, width, height), 
+                                    ctx.stroke();
+                                    const name = classNames[cls];
+                                    ctx.font = "bold 20px Arial", ctx.fillStyle = color, ctx.fillText(`${name} 相似度：${(100 * score).toFixed(2)}%`, left + 10, top < 20 ? 20 : top - 10);
+                                }
+                            }
+                            input.dispose(), tf.dispose(res);
+                        }));
+                    })(video, model, ctx, tf, classNames);
+                }, modelRef.value = model, detectFrameCanvas.value = canvas;
             }));
         };
         onUnmounted((() => {
+            modelRef.value && (tf.dispose(), modelRef.value.dispose(), modelRef.value = null), 
             player.value && (player.value.mse && (player.value.mse.endOfStream(), player.value.mse.unload(), 
             player.value.mse = null), player.value.pause(), player.value.dispose(), player.value = null), 
             playerFlv.value && (playerFlv.value.pause(), playerFlv.value.unload(), playerFlv.value.detachMediaElement(), 
-            playerFlv.value.destroy(), playerFlv.value = null), modelRef.value && (modelRef.value.dispose(), 
-            modelRef.value = null), videoBoxRef.value && render(null, videoBoxRef.value);
+            playerFlv.value.destroy(), playerFlv.value = null), videoBoxRef.value && render(null, videoBoxRef.value);
         }));
         const switchVideo = url => {
             const type = props.type;
@@ -4929,10 +4969,12 @@ var Element = defineComponent({
                         type: "application/x-mpegURL"
                     } ]
                 };
-                player.value = videojs(video, options), player.value.on("play", (() => {
-                    emit("play", video, container), _loadModelDetectFrame(container, video);
-                }));
-            })(url) : "mp4" === type && (url => {
+                player.value = videojs(video, options);
+                const canvasContainer = document.createElement("div");
+                container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
+                    emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
+                })), _createScreenshotBtn(container);
+            })(url) : "mp4" === type ? (url => {
                 const container = videoBoxRef.value, video = document.createElement("video");
                 video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
                 video.setAttribute("muted", "true"), container.appendChild(video);
@@ -4947,9 +4989,61 @@ var Element = defineComponent({
                         type: "video/mp4"
                     } ]
                 };
-                player.value = videojs(video, options), player.value.on("play", (() => {
-                    emit("play", video, container), _loadModelDetectFrame(container, video);
-                }));
+                player.value = videojs(video, options);
+                const canvasContainer = document.createElement("div");
+                container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
+                    emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
+                })), _createScreenshotBtn(container);
+            })(url) : "mpegts" === type ? (url => {
+                const mpegts = window.mpegts;
+                if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
+                    const container = videoBoxRef.value, video = document.createElement("video");
+                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    const defaultOptions = {
+                        controls: !0,
+                        autoplay: !0,
+                        fluid: !0,
+                        muted: !0,
+                        liveui: !0,
+                        preload: "auto",
+                        language: "zh-CN"
+                    };
+                    player.value = videojs(video, defaultOptions), playerMpgets.value = mpegts.createPlayer({
+                        type: "flv",
+                        isLive: !0,
+                        url: url
+                    }), playerMpgets.value.attachMediaElement(video), playerMpgets.value.load(), playerMpgets.value.play(), 
+                    playerMpgets.value.on("error", (() => {
+                        emit("error", video);
+                    })), _createScreenshotBtn(container);
+                }
+            })(url) : "flv" === type && (url => {
+                const container = videoBoxRef.value, video = document.createElement("video");
+                video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                video.setAttribute("muted", "true"), container.appendChild(video);
+                const options = {
+                    techOrder: [ "html5" ],
+                    flvjs: {
+                        mediaDataSource: {
+                            cors: !0,
+                            withCredentials: !1
+                        }
+                    },
+                    controls: !0,
+                    fluid: !0,
+                    preload: "auto",
+                    language: "zh-CN",
+                    sources: [ {
+                        src: url,
+                        type: "video/x-flv"
+                    } ]
+                };
+                player.value = videojs(video, options);
+                const canvasContainer = document.createElement("div");
+                container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
+                    emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
+                })), _createScreenshotBtn(container);
             })(url);
         };
         onMounted((() => {
@@ -5014,7 +5108,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.0.18", install = function(app) {
+}, version = "0.0.19", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5024,7 +5118,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.0.18",
+    version: "0.0.19",
     install: install
 };
 

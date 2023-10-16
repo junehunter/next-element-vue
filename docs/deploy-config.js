@@ -18,7 +18,7 @@ execSync('pnpm run build', { stdio: 'inherit' });
 // 切换到构建结果目录
 process.chdir('.vitepress/dist');
 
-// 初始化 Git 仓库
+// // 初始化 Git 仓库
 execSync('git init', { stdio: 'inherit' });
 
 // 添加所有文件到暂存区
@@ -35,3 +35,17 @@ process.chdir('../..');
 
 // 清理构建结果
 execSync('rimraf ./.vitepress/dist', { stdio: 'inherit' });
+
+/**
+ *  OpenSSL SSL_read: Connection was reset, errno 10054
+ *  .git config 添加下面配置
+
+
+[http]
+ sslverify = false
+
+[https]
+ sslverify = false
+
+
+ */
