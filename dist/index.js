@@ -1032,6 +1032,9 @@ const localeLang = {
 }, localeContextKey = localeContextKey$1, useLocale = localeOverrides => {
     const locale = localeOverrides || inject(localeContextKey, ref());
     return buildLocaleContext(computed((() => locale?.value || zhcnLocale)));
+}, onChangeLanguage = (locale, lang) => {
+    const localeRef = isRef(locale) ? locale : ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
+    localeRef.value.next = nextLang.next;
 };
 
 function useChangeColor() {
@@ -1527,8 +1530,9 @@ function _isSlot$7(s) {
 
 var HeaderTools = defineComponent({
     setup() {
-        const config = inject("options", {}), {t: t} = useLocale(), {toggle: toggle, isFullscreen: isFullscreen} = useFullscreen(), language = ref(computed((() => config.language)).value), settingDrawer = ref(!1);
+        const locale = inject(localeContextKey, ref()), config = inject("options", {}), {t: t} = useLocale(), {toggle: toggle, isFullscreen: isFullscreen} = useFullscreen(), language = ref(computed((() => config.language)).value), settingDrawer = ref(!1);
         return {
+            locale: locale,
             config: config,
             t: t,
             toggle: toggle,
@@ -1538,7 +1542,7 @@ var HeaderTools = defineComponent({
         };
     },
     render() {
-        const _ns = inject("__ns__", {}), _config = this.config, _emit = inject("__emit__", {}), slots = this.$slots, _t = this.t, isFullscreen = this.isFullscreen, profile_url = _config.profile, _userDropdown = _config.userDropdown, _languageDropdown = _config.languageDropdown, _closeSettingDrawer = () => {
+        const _ns = inject("__ns__", {}), _config = this.config, _emit = inject("__emit__", {}), slots = this.$slots, _t = this.t, isFullscreen = this.isFullscreen, profile_url = _config.profile, _userDropdown = _config.userDropdown, _languageDropdown = _config.languageDropdown, _locale = this.locale, _closeSettingDrawer = () => {
             this.settingDrawer = !1;
         };
         return createVNode(Fragment, null, [ createVNode("ul", {
@@ -1548,7 +1552,8 @@ var HeaderTools = defineComponent({
             "hide-timeout": 50,
             trigger: "click",
             onCommand: command => {
-                this.language = command, _emit("changeLanguage", command), _config.onChangeLanguage && _config.onChangeLanguage(command);
+                this.language = command, onChangeLanguage(_locale, command), _emit("changeLanguage", command), 
+                _config.onChangeLanguage && _config.onChangeLanguage(command);
             }
         }, {
             default: () => createVNode("div", null, [ createVNode(ElIcon, {
@@ -5108,7 +5113,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.0.19", install = function(app) {
+}, version = "0.0.20", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5118,8 +5123,8 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.0.19",
+    version: "0.0.20",
     install: install
 };
 
-export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, useGetDerivedNamespace, useLocale, useNamespace, version };
+export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, onChangeLanguage, translate, useGetDerivedNamespace, useLocale, useNamespace, version };

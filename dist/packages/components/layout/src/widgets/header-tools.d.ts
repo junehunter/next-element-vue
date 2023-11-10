@@ -1,4 +1,5 @@
 declare const _default: import("vue").DefineComponent<{}, {
+    locale: import("vue").Ref<import("../../../../locale").Language>;
     config: any;
     t: import("packages/hooks").Translator;
     toggle: () => Promise<void>;

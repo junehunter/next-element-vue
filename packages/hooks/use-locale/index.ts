@@ -9,7 +9,7 @@ import zhcnLocale from 'packages/locale/lang/zh-cn';
 import enLocale from 'packages/locale/lang/en';
 import zhtwLocale from 'packages/locale/lang/zh-tw';
 
-const localeLang = {
+export const localeLang = {
 	[zhcnLocale.name]: {
 		...zhcnLocale,
 	},
@@ -52,4 +52,10 @@ export const localeContextKey: InjectionKey<Ref<Language | undefined>> = localeK
 export const useLocale = (localeOverrides?: Ref<Language | undefined>) => {
 	const locale = localeOverrides || inject(localeContextKey, ref())!;
 	return buildLocaleContext(computed(() => locale?.value || zhcnLocale));
+};
+
+export const onChangeLanguage = (locale: MaybeRef<Language>, lang: string) => {
+	const localeRef = isRef(locale) ? locale : ref(locale);
+	const nextLang = localeLang[lang] || localeLang['zh-cn'];
+	localeRef.value.next = nextLang.next;
 };
