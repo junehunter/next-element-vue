@@ -935,9 +935,6 @@
     }, localeContextKey = elementPlus.localeContextKey, useLocale = localeOverrides => {
         const locale = localeOverrides || vue.inject(localeContextKey, vue.ref());
         return buildLocaleContext(vue.computed((() => locale?.value || zhcnLocale)));
-    }, onChangeLanguage = (locale, lang) => {
-        const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
-        localeRef.value.next = nextLang.next;
     };
     function useChangeColor() {
         return {
@@ -1421,7 +1418,7 @@
             };
         },
         render() {
-            const _ns = vue.inject("__ns__", {}), _config = this.config, _emit = vue.inject("__emit__", {}), slots = this.$slots, _t = this.t, isFullscreen = this.isFullscreen, profile_url = _config.profile, _userDropdown = _config.userDropdown, _languageDropdown = _config.languageDropdown, _locale = this.locale, _closeSettingDrawer = () => {
+            const _ns = vue.inject("__ns__", {}), _config = this.config, _emit = vue.inject("__emit__", {}), slots = this.$slots, _t = this.t, isFullscreen = this.isFullscreen, profile_url = _config.profile, _userDropdown = _config.userDropdown, _languageDropdown = _config.languageDropdown, _closeSettingDrawer = () => {
                 this.settingDrawer = !1;
             };
             return vue.createVNode(vue.Fragment, null, [ vue.createVNode("ul", {
@@ -1431,8 +1428,7 @@
                 "hide-timeout": 50,
                 trigger: "click",
                 onCommand: command => {
-                    this.language = command, onChangeLanguage(_locale, command), _emit("changeLanguage", command), 
-                    _config.onChangeLanguage && _config.onChangeLanguage(command);
+                    this.language = command, _emit("changeLanguage", command), _config.onChangeLanguage && _config.onChangeLanguage(command);
                 }
             }, {
                 default: () => vue.createVNode("div", null, [ vue.createVNode(elementPlus.ElIcon, {
@@ -4923,7 +4919,7 @@
         })(app);
     };
     var index = {
-        version: "0.0.20",
+        version: "0.0.22",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4933,9 +4929,11 @@
     exports.buildTranslator = buildTranslator, exports.default = index, exports.defaultNamespace = "next", 
     exports.install = install, exports.localeContextKey = localeContextKey, exports.localeLang = localeLang, 
     exports.namespaceContextKey = namespaceContextKey, exports.nextUseCssTheme = nextUseCssTheme, 
-    exports.nextUseCssVar = nextUseCssVar, exports.onChangeLanguage = onChangeLanguage, 
-    exports.translate = translate, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
-    exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.20", 
+    exports.nextUseCssVar = nextUseCssVar, exports.translate = translate, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
+    exports.useLanguage = (locale, lang) => {
+        const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
+        localeRef.value.name = lang, localeRef.value.next = nextLang.next;
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.22", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

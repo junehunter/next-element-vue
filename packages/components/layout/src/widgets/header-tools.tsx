@@ -2,7 +2,7 @@ import { computed, defineComponent, inject, ref, Teleport } from 'vue';
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElDrawer } from 'element-plus';
 import { ArrowDown, Setting } from '@element-plus/icons-vue';
 import { useFullscreen } from '@vueuse/core';
-import { useLocale, localeContextKey, onChangeLanguage } from 'packages/hooks';
+import { useLocale, localeContextKey } from 'packages/hooks';
 import { slots_config } from '../config';
 import LayoutSetting from './layout-setting';
 
@@ -26,10 +26,8 @@ export default defineComponent({
 		const profile_url = _config.profile;
 		const _userDropdown = _config.userDropdown;
 		const _languageDropdown = _config.languageDropdown;
-		const _locale = this.locale;
-		const onLanguageChange = command => {
+		const _onChangeLanguage = command => {
 			this.language = command;
-			onChangeLanguage(_locale, command);
 			_emit('changeLanguage', command);
 			if (_config.onChangeLanguage) {
 				_config.onChangeLanguage(command);
@@ -52,7 +50,7 @@ export default defineComponent({
 				<ul class={_ns.b('header-tools')}>
 					{slots[slots_config.headerToolsPrefix]?.()}
 					<li>
-						<ElDropdown show-timeout={70} hide-timeout={50} trigger="click" onCommand={onLanguageChange}>
+						<ElDropdown show-timeout={70} hide-timeout={50} trigger="click" onCommand={_onChangeLanguage}>
 							{{
 								default: () => (
 									<div>

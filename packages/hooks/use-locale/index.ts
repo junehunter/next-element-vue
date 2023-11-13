@@ -54,8 +54,9 @@ export const useLocale = (localeOverrides?: Ref<Language | undefined>) => {
 	return buildLocaleContext(computed(() => locale?.value || zhcnLocale));
 };
 
-export const onChangeLanguage = (locale: MaybeRef<Language>, lang: string) => {
+export const useLanguage = (locale: MaybeRef<Language>, lang: string) => {
 	const localeRef = isRef(locale) ? locale : ref(locale);
 	const nextLang = localeLang[lang] || localeLang['zh-cn'];
+	localeRef.value.name = lang;
 	localeRef.value.next = nextLang.next;
 };

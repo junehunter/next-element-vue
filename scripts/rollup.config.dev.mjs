@@ -22,6 +22,7 @@ const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
 
 const outDir = './dist';
+// const outDir = '../next-element-admin/src/assets/next-element';
 // const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
 const outputDir = path.resolve(outDir);
 const output = [

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
+import { useLanguage, localeContextKey } from '../../../../dist/index.js';
 
+const locale = inject(localeContextKey, ref())!;
 const layout = ref<string>('transverse');
 const isTabs = ref<boolean>(true);
 const menuTree = [];
@@ -22,6 +24,9 @@ const onChangeTab = val => {
 	layoutOptions.value.showTabs = val;
 	// layoutRef.value.options.showTabs = isTabs.value;
 };
+const onChangeLanguage = (langue: string) => {
+	useLanguage(locale, langue);
+};
 </script>
 
 <template>
@@ -38,7 +43,7 @@ const onChangeTab = val => {
 				<el-switch v-model="isTabs" @change="onChangeTab" />
 			</div>
 		</div>
-		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions">
+		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions" @changeLanguage="onChangeLanguage">
 			<template v-if="isTabs" #tabs>
 				<NextTabs :tabs="layoutOptions.tabs"></NextTabs>
 			</template>

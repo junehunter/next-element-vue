@@ -85,4 +85,4 @@ export declare const buildTranslator: (locale: MaybeRef<Language>) => Translator
 export declare const buildLocaleContext: (locale: MaybeRef<Language>) => LocaleContext;
 export declare const localeContextKey: InjectionKey<Ref<Language | undefined>>;
 export declare const useLocale: (localeOverrides?: Ref<Language | undefined>) => LocaleContext;
-export declare const onChangeLanguage: (locale: MaybeRef<Language>, lang: string) => void;
+export declare const useLanguage: (locale: MaybeRef<Language>, lang: string) => void;

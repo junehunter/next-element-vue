@@ -1032,9 +1032,9 @@ const localeLang = {
 }, localeContextKey = localeContextKey$1, useLocale = localeOverrides => {
     const locale = localeOverrides || inject(localeContextKey, ref());
     return buildLocaleContext(computed((() => locale?.value || zhcnLocale)));
-}, onChangeLanguage = (locale, lang) => {
+}, useLanguage = (locale, lang) => {
     const localeRef = isRef(locale) ? locale : ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
-    localeRef.value.next = nextLang.next;
+    localeRef.value.name = lang, localeRef.value.next = nextLang.next;
 };
 
 function useChangeColor() {
@@ -1542,7 +1542,7 @@ var HeaderTools = defineComponent({
         };
     },
     render() {
-        const _ns = inject("__ns__", {}), _config = this.config, _emit = inject("__emit__", {}), slots = this.$slots, _t = this.t, isFullscreen = this.isFullscreen, profile_url = _config.profile, _userDropdown = _config.userDropdown, _languageDropdown = _config.languageDropdown, _locale = this.locale, _closeSettingDrawer = () => {
+        const _ns = inject("__ns__", {}), _config = this.config, _emit = inject("__emit__", {}), slots = this.$slots, _t = this.t, isFullscreen = this.isFullscreen, profile_url = _config.profile, _userDropdown = _config.userDropdown, _languageDropdown = _config.languageDropdown, _closeSettingDrawer = () => {
             this.settingDrawer = !1;
         };
         return createVNode(Fragment, null, [ createVNode("ul", {
@@ -1552,8 +1552,7 @@ var HeaderTools = defineComponent({
             "hide-timeout": 50,
             trigger: "click",
             onCommand: command => {
-                this.language = command, onChangeLanguage(_locale, command), _emit("changeLanguage", command), 
-                _config.onChangeLanguage && _config.onChangeLanguage(command);
+                this.language = command, _emit("changeLanguage", command), _config.onChangeLanguage && _config.onChangeLanguage(command);
             }
         }, {
             default: () => createVNode("div", null, [ createVNode(ElIcon, {
@@ -5113,7 +5112,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.0.20", install = function(app) {
+}, version = "0.0.22", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5123,8 +5122,8 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.0.20",
+    version: "0.0.22",
     install: install
 };
 
-export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, onChangeLanguage, translate, useGetDerivedNamespace, useLocale, useNamespace, version };
+export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };
