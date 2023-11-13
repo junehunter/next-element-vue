@@ -19,6 +19,7 @@ $block: 'layout';
         }
         &__title {
             @extend .text-ellipsis;
+            max-width: 300px;
         }
     }
     .#{is($block, 'tabs')} {

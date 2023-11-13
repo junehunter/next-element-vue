@@ -1,6 +1,6 @@
 import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, nextTick, render } from "vue";
 
-import { localeContextKey as localeContextKey$1, ElMessage, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElTooltip, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElTimeSelect, ElEmpty, ElUpload, ElImageViewer } from "element-plus";
+import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElTimeSelect, ElEmpty, ElUpload, ElImageViewer } from "element-plus";
 
 import { useFullscreen, useDateFormat, useNow } from "@vueuse/core";
 
@@ -1124,9 +1124,78 @@ var defaultConfig$2 = {
         isAsidebarColorGradual: !1,
         isDark: !1
     }
-}, LogoView = defineComponent({
+};
+
+const ns$g = useNamespace("text-ellipsis");
+
+const NextTextEllipsis = withInstall(defineComponent({
+    name: "NextTextEllipsis",
+    props: {
+        content: {
+            type: String,
+            default: ""
+        },
+        disabled: {
+            type: Boolean,
+            default: !1
+        },
+        width: {
+            type: [ String, Number ],
+            default: ""
+        },
+        placement: {
+            type: String,
+            default: "top"
+        },
+        textAlign: {
+            type: String,
+            default: "left"
+        },
+        class: {
+            type: String,
+            default: ""
+        }
+    },
+    setup(props, {slots: slots}) {
+        const isTip = ref(!1), setWidth = computed((() => {
+            const width = props.width;
+            let style = {
+                textAlign: props.textAlign
+            };
+            return width && ("string" == typeof width ? style.width = width : "number" == typeof width && (style.width = width + "px")), 
+            style;
+        })), ellipsisRef = ref(), onMouseenter = () => {
+            try {
+                const dom = ellipsisRef.value;
+                dom && dom.scrollWidth && dom.scrollWidth > dom.offsetWidth ? isTip.value = !0 : isTip.value = !1;
+            } catch (err) {
+                isTip.value = !1;
+            }
+        };
+        return () => createVNode(Fragment, null, [ createVNode("div", {
+            class: [ ns$g.b(), props.class ],
+            style: setWidth.value,
+            onMouseenter: onMouseenter
+        }, [ isTip.value ? createVNode(ElTooltip, {
+            effect: "dark",
+            content: props.content,
+            placement: props.placement,
+            disabled: props.disabled
+        }, {
+            default: () => [ createVNode("span", {
+                class: ns$g.e("text"),
+                ref: ellipsisRef
+            }, [ slots.default ? slots.default() : props.content ]) ]
+        }) : createVNode("span", {
+            class: ns$g.e("text"),
+            ref: ellipsisRef
+        }, [ slots.default ? slots.default() : props.content ]) ]) ]);
+    }
+}));
+
+var LogoView = defineComponent({
     setup() {
-        const ns = inject("__ns__", {}), _options = inject("options", {});
+        const ns = inject("__ns__", {}), _options = inject("options", {}), {t: t} = useLocale();
         return () => createVNode(Fragment, null, [ createVNode("div", {
             class: ns.bf("header", "logo")
         }, [ _options.logo && createVNode("img", {
@@ -1135,7 +1204,9 @@ var defaultConfig$2 = {
             alt: "logo"
         }, null), _options.title && createVNode("p", {
             class: ns.be("header-logo", "title")
-        }, [ _options.title ]) ]) ]);
+        }, [ createVNode(NextTextEllipsis, {
+            content: t(_options.title)
+        }, null) ]) ]) ]);
     }
 }), export_helper_default = (sfc, props) => {
     let target = sfc.__vccOpts || sfc;
@@ -1763,7 +1834,7 @@ const NextMenuItem = defineComponent({
             }, null) ]
         }))) ]) ]);
     }
-}), ns$g = useNamespace("menu");
+}), ns$f = useNamespace("menu");
 
 const NextMenu = withInstall(defineComponent({
     name: "NextMenu",
@@ -1783,20 +1854,20 @@ const NextMenu = withInstall(defineComponent({
         }
     },
     setup(props) {
-        provide("ns", ns$g);
+        provide("ns", ns$f);
         const router = getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = ref(currentPath);
         watch((() => router.currentRoute?.value), (to => {
             activePath.value = to.fullPath;
         }));
         return () => createVNode(Fragment, null, [ createVNode(ElMenu, {
-            class: ns$g.b(),
+            class: ns$f.b(),
             defaultActive: activePath.value,
             router: props.router,
             mode: props.mode,
             ellipsis: !0
         }, {
             default: () => [ createVNode(Fragment, null, [ _menuTree.map((item => item.children?.length ? createVNode(ElSubMenu, {
-                "popper-class": ns$g.b("popper"),
+                "popper-class": ns$f.b("popper"),
                 index: item.path || item.id,
                 teleported: !0
             }, {
@@ -1807,7 +1878,7 @@ const NextMenu = withInstall(defineComponent({
                     menuData: item.children
                 }, null)
             }) : createVNode(ElMenuItem, {
-                "popper-class": ns$g.b("popper"),
+                "popper-class": ns$f.b("popper"),
                 index: item.path
             }, {
                 default: () => [ createVNode(MenuItemTitle, {
@@ -1835,25 +1906,25 @@ var Sidebar$2 = defineComponent({
     }
 });
 
-const ns$f = useNamespace("layout-defaults");
+const ns$e = useNamespace("layout-defaults");
 
 var defaults = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$f), {}),
+    setup: () => (provide("ns", ns$e), {}),
     render() {
         const slots = this.$slots, _config = inject("options", {});
         slots.menu;
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(ElContainer, {
-            class: ns$f.b()
+            class: ns$e.b()
         }, {
             default: () => [ createVNode(Sidebar$2, null, null), createVNode("div", {
-                class: [ ns$f.b("content") ]
+                class: [ ns$e.b("content") ]
             }, [ createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
                 tabs: _config.tabs,
                 activeTab: _config.activeTab
             }, null) : null, createVNode("main", {
-                class: [ ns$f.bf("main"), ns$f.is("layout-tabs", isTabs.value) ]
+                class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]) ]
         });
     }
@@ -1884,11 +1955,11 @@ var Header$2 = defineComponent({
     }
 });
 
-const ns$e = useNamespace("layout-transverse");
+const ns$d = useNamespace("layout-transverse");
 
 var transverse = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$e), {}),
+    setup: () => (provide("ns", ns$d), {}),
     render() {
         const slots = this.$slots, _config = inject("options", {}), __slots_header = {};
         slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1902,7 +1973,7 @@ var transverse = defineComponent({
             tabs: _config.tabs,
             activeTab: _config.activeTab
         }, null) : null, createVNode("main", {
-            class: [ ns$e.b("main"), ns$e.is("layout-tabs", isTabs.value) ]
+            class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
         }, [ slots.default?.() ]) ]);
         var s;
     }
@@ -1944,11 +2015,11 @@ var Header$1 = defineComponent({
     }
 });
 
-const ns$d = useNamespace("layout-columns");
+const ns$c = useNamespace("layout-columns");
 
 var columns = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$d), {}),
+    setup: () => (provide("ns", ns$c), {}),
     render() {
         const slots = this.$slots, _config = inject("options", {}), __slots_header = {};
         slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1956,18 +2027,18 @@ var columns = defineComponent({
         slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(ElContainer, {
-            class: ns$d.b()
+            class: ns$c.b()
         }, {
             default: () => {
                 return [ createVNode(Sidebar$1, null, null), createVNode("div", {
-                    class: [ ns$d.b("content") ]
+                    class: [ ns$c.b("content") ]
                 }, [ createVNode(Header$1, null, (s = __slots_header, "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s) ? __slots_header : {
                     default: () => [ __slots_header ]
                 })), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
                     tabs: _config.tabs,
                     activeTab: _config.activeTab
                 }, null) : null, createVNode("main", {
-                    class: [ ns$d.bf("main"), ns$d.is("layout-tabs", isTabs.value) ]
+                    class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ];
                 var s;
             }
@@ -2013,31 +2084,31 @@ var Header = defineComponent({
     }
 });
 
-const ns$c = useNamespace("layout-classic");
+const ns$b = useNamespace("layout-classic");
 
 var classic = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$c), {
-        ns: ns$c
+    setup: () => (provide("ns", ns$b), {
+        ns: ns$b
     }),
     render() {
         const slots = this.$slots, _config = inject("options", {});
         slots.menu;
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(Fragment, null, [ createVNode(Header, null, null), createVNode("div", {
-            class: [ ns$c.b("content"), ns$c.is("layout-tabs", isTabs.value) ]
+            class: [ ns$b.b("content"), ns$b.is("layout-tabs", isTabs.value) ]
         }, [ createVNode(Sidebar, null, null), createVNode("div", {
-            class: ns$c.b("container")
+            class: ns$b.b("container")
         }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
             tabs: _config.tabs,
             activeTab: _config.activeTab
         }, null) : null, createVNode("main", {
-            class: [ ns$c.b("main") ]
+            class: [ ns$b.b("main") ]
         }, [ slots.default?.() ]) ]) ]) ]);
     }
 });
 
-const ns$b = useNamespace("layout"), layouts = {
+const ns$a = useNamespace("layout"), layouts = {
     defaults: markRaw(defaults),
     transverse: markRaw(transverse),
     columns: markRaw(columns),
@@ -2063,7 +2134,7 @@ const NextLayout = withInstall(defineComponent({
     emits: [ "changeLanguage", "changeUserDropdown" ],
     setup(props, {slots: slots, emit: emit}) {
         const _config = ref(merge$1(defaultConfig$2, props.options)), options = computed((() => _config.value)).value;
-        provide("options", options), provide("__ns__", ns$b), provide("__emit__", emit), 
+        provide("options", options), provide("__ns__", ns$a), provide("__emit__", emit), 
         provide("__slots__", slots);
         const updateOptions = cfg => {
             _config.value = merge$1(options, cfg);
@@ -2085,15 +2156,15 @@ const NextLayout = withInstall(defineComponent({
         const _activeSlots = {};
         for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
         return createVNode("div", {
-            class: [ ns$b.b(), props.className ],
+            class: [ ns$a.b(), props.className ],
             style: props.style
         }, [ h(activeLayout.value, {}, {
             ..._activeSlots
         }) ]);
     }
-})), ns$a = useNamespace("tabs");
+})), ns$9 = useNamespace("tabs");
 
-var Element$6 = defineComponent({
+var Element$5 = defineComponent({
     name: "NextTabs",
     props: {
         activeTab: {
@@ -2162,12 +2233,12 @@ var Element$6 = defineComponent({
             tabsView.value.push(activeRoute));
         }));
         const renderContent = () => createVNode("nav", {
-            class: ns$a.b()
+            class: ns$9.b()
         }, [ createVNode(ElScrollbar, null, {
             default: () => [ createVNode("ul", {
-                class: ns$a.b("list")
+                class: ns$9.b("list")
             }, [ tabsView.value.map(((tab, index) => tab ? createVNode("li", {
-                class: [ "tab-item", ns$a.is("active", activeIndex.value === index) ],
+                class: [ "tab-item", ns$9.is("active", activeIndex.value === index) ],
                 onClick: event => onClickTabItem(event, tab, index)
             }, [ createVNode("i", {
                 class: [ "tab-icon", tab.meta?.icon ]
@@ -2198,11 +2269,11 @@ var Element$6 = defineComponent({
             onCommand: onChange
         }, {
             default: () => createVNode("span", {
-                class: ns$a.b("tab-more")
+                class: ns$9.b("tab-more")
             }, [ createVNode("i", {
-                class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "top") ]
+                class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "top") ]
             }, null), createVNode("i", {
-                class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "bottom") ]
+                class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "bottom") ]
             }, null) ]),
             dropdown: () => createVNode(ElDropdownMenu, null, {
                 default: () => [ createVNode(ElDropdownItem, {
@@ -2236,7 +2307,7 @@ var Element$6 = defineComponent({
     }
 });
 
-const NextTabs = withInstall(Element$6), ns$9 = useNamespace("container");
+const NextTabs = withInstall(Element$5), ns$8 = useNamespace("container");
 
 const NextContainer = withInstall(defineComponent({
     name: "NextContainer",
@@ -2275,18 +2346,18 @@ const NextContainer = withInstall(defineComponent({
             }), style;
         }));
         return () => props.scrollbar ? createVNode(ElScrollbar, {
-            class: [ ns$9.b(), props.className ],
+            class: [ ns$8.b(), props.className ],
             style: props.style
         }, {
             default: () => [ slots.default?.() ]
         }) : createVNode("div", {
-            class: [ ns$9.b(), props.className ],
+            class: [ ns$8.b(), props.className ],
             style: {
                 ...styles.value,
                 ...props.style
             }
         }, [ props.card ? createVNode("div", {
-            class: ns$9.b("card")
+            class: ns$8.b("card")
         }, [ slots.default?.() ]) : slots.default?.() ]);
     }
 }));
@@ -3065,7 +3136,7 @@ var defaultConfig$1 = {
     formColumnMinWidth: 350
 };
 
-const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$8 = useNamespace("spin-loading");
+const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$7 = useNamespace("spin-loading");
 
 var SpinLoading = defineComponent({
     name: "NextSpinLoading",
@@ -3088,93 +3159,24 @@ var SpinLoading = defineComponent({
     render() {
         const _t = this.t, slots = this.$slots, props = this.$props, loadingText = props.tip || _t("next.loading");
         return createVNode("div", {
-            class: ns$8.b()
+            class: ns$7.b()
         }, [ props.loading ? createVNode("div", {
-            class: ns$8.b("mask")
+            class: ns$7.b("mask")
         }, [ createVNode("span", {
-            class: ns$8.b("mask-dot")
+            class: ns$7.b("mask-dot")
         }, [ createVNode("i", {
-            class: ns$8.be("mask", "dot-item")
+            class: ns$7.be("mask", "dot-item")
         }, null), createVNode("i", {
-            class: ns$8.be("mask", "dot-item")
+            class: ns$7.be("mask", "dot-item")
         }, null), createVNode("i", {
-            class: ns$8.be("mask", "dot-item")
+            class: ns$7.be("mask", "dot-item")
         }, null), createVNode("i", {
-            class: ns$8.be("mask", "dot-item")
+            class: ns$7.be("mask", "dot-item")
         }, null) ]), createVNode("span", {
-            class: ns$8.be("mask", "text")
+            class: ns$7.be("mask", "text")
         }, [ loadingText ]) ]) : null, slots.default?.() ]);
     }
-});
-
-const ns$7 = useNamespace("text-ellipsis");
-
-const NextTextEllipsis = withInstall(defineComponent({
-    name: "NextTextEllipsis",
-    props: {
-        content: {
-            type: String,
-            default: ""
-        },
-        disabled: {
-            type: Boolean,
-            default: !1
-        },
-        width: {
-            type: [ String, Number ],
-            default: ""
-        },
-        placement: {
-            type: String,
-            default: "top"
-        },
-        textAlign: {
-            type: String,
-            default: "left"
-        },
-        class: {
-            type: String,
-            default: ""
-        }
-    },
-    setup(props, {slots: slots}) {
-        const isTip = ref(!1), setWidth = computed((() => {
-            const width = props.width;
-            let style = {
-                textAlign: props.textAlign
-            };
-            return width && ("string" == typeof width ? style.width = width : "number" == typeof width && (style.width = width + "px")), 
-            style;
-        })), ellipsisRef = ref(), onMouseenter = () => {
-            try {
-                const dom = ellipsisRef.value;
-                dom && dom.scrollWidth && dom.scrollWidth > dom.offsetWidth ? isTip.value = !0 : isTip.value = !1;
-            } catch (err) {
-                isTip.value = !1;
-            }
-        };
-        return () => createVNode(Fragment, null, [ createVNode("div", {
-            class: [ ns$7.b(), props.class ],
-            style: setWidth.value,
-            onMouseenter: onMouseenter
-        }, [ isTip.value ? createVNode(ElTooltip, {
-            effect: "dark",
-            content: props.content,
-            placement: props.placement,
-            disabled: props.disabled
-        }, {
-            default: () => [ createVNode("span", {
-                class: ns$7.e("text"),
-                ref: ellipsisRef
-            }, [ slots.default ? slots.default() : props.content ]) ]
-        }) : createVNode("span", {
-            class: ns$7.e("text"),
-            ref: ellipsisRef
-        }, [ slots.default ? slots.default() : props.content ]) ]) ]);
-    }
-}));
-
-var SearchColumn = defineComponent({
+}), SearchColumn = defineComponent({
     name: "SearchColumn",
     props: {
         searchSpan: {

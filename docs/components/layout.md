@@ -12,6 +12,26 @@ layout/basic
 
 :::
 
+> App.vue
+```vue
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import { useLanguage } from 'next-element-vue';
+
+const { messages, locale } = useI18n();
+const getGlobalI18n = computed(() => {
+	const localeLang = messages.value[locale.value];
+	useLanguage(localeLang, locale.value);
+	return localeLang;
+});
+</script>
+
+<template>
+	<el-config-provider :locale="getGlobalI18n">
+		<router-view></router-view>
+	</el-config-provider>
+</template>
+```
 
 ## Layout 属性
 
