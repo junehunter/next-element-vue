@@ -35,7 +35,7 @@ export default defineComponent({
 			},
 		},
 	},
-	emits: ['changeLanguage', 'changeUserDropdown'],
+	emits: ['changeLanguage', 'changeUserDropdown', 'tabsChange', 'tabsSelect', 'tabsClose'],
 	setup(props, { slots, emit }) {
 		const _config = ref<any>(merge(defaultConfig, props.options));
 		const options = computed(() => _config.value).value;

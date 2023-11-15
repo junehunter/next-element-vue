@@ -35,9 +35,9 @@ export default defineComponent({
 							<NextTabs
 								tabs={_config.tabs}
 								activeTab={_config.activeTab}
-								onChange={(...arg) => _emit('tabs-change', ...arg)}
-								onSelect={(...arg) => _emit('tabs-select', ...arg)}
-								onClose={(...arg) => _emit('tabs-close', ...arg)}
+								onChange={(...arg) => _emit('tabsChange', ...arg)}
+								onSelect={(...arg) => _emit('tabsSelect', ...arg)}
+								onClose={(...arg) => _emit('tabsClose', ...arg)}
 							></NextTabs>
 						)
 					) : null}

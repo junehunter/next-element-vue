@@ -1789,9 +1789,9 @@
                 }, [ vue.createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                     tabs: _config.tabs,
                     activeTab: _config.activeTab,
-                    onChange: (...arg) => _emit("tabs-change", ...arg),
-                    onSelect: (...arg) => _emit("tabs-select", ...arg),
-                    onClose: (...arg) => _emit("tabs-close", ...arg)
+                    onChange: (...arg) => _emit("tabsChange", ...arg),
+                    onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                    onClose: (...arg) => _emit("tabsClose", ...arg)
                 }, null) : null, vue.createVNode("main", {
                     class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ]
@@ -1837,9 +1837,9 @@
             })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                 tabs: _config.tabs,
                 activeTab: _config.activeTab,
-                onChange: (...arg) => _emit("tabs-change", ...arg),
-                onSelect: (...arg) => _emit("tabs-select", ...arg),
-                onClose: (...arg) => _emit("tabs-close", ...arg)
+                onChange: (...arg) => _emit("tabsChange", ...arg),
+                onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                onClose: (...arg) => _emit("tabsClose", ...arg)
             }, null) : null, vue.createVNode("main", {
                 class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]);
@@ -1901,9 +1901,9 @@
                     })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                         tabs: _config.tabs,
                         activeTab: _config.activeTab,
-                        onChange: (...arg) => _emit("tabs-change", ...arg),
-                        onSelect: (...arg) => _emit("tabs-select", ...arg),
-                        onClose: (...arg) => _emit("tabs-close", ...arg)
+                        onChange: (...arg) => _emit("tabsChange", ...arg),
+                        onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                        onClose: (...arg) => _emit("tabsClose", ...arg)
                     }, null) : null, vue.createVNode("main", {
                         class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
                     }, [ slots.default?.() ]) ]) ];
@@ -1965,9 +1965,9 @@
             }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                 tabs: _config.tabs,
                 activeTab: _config.activeTab,
-                onChange: (...arg) => _emit("tabs-change", ...arg),
-                onSelect: (...arg) => _emit("tabs-select", ...arg),
-                onClose: (...arg) => _emit("tabs-close", ...arg)
+                onChange: (...arg) => _emit("tabsChange", ...arg),
+                onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                onClose: (...arg) => _emit("tabsClose", ...arg)
             }, null) : null, vue.createVNode("main", {
                 class: [ ns$b.b("main") ]
             }, [ slots.default?.() ]) ]) ]) ]);
@@ -1995,7 +1995,7 @@
                 default: () => ({})
             }
         },
-        emits: [ "changeLanguage", "changeUserDropdown" ],
+        emits: [ "changeLanguage", "changeUserDropdown", "tabsChange", "tabsSelect", "tabsClose" ],
         setup(props, {slots: slots, emit: emit}) {
             const _config = vue.ref(merge$1(defaultConfig$2, props.options)), options = vue.computed((() => _config.value)).value;
             vue.provide("options", options), vue.provide("__ns__", ns$a), vue.provide("__emit__", emit), 
@@ -4933,7 +4933,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.0",
+        version: "0.1.1",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4947,7 +4947,7 @@
     exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.0", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.1", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });
