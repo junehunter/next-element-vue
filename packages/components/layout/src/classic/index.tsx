@@ -15,6 +15,7 @@ export default defineComponent({
 	render() {
 		const slots = this.$slots;
 		const _config = inject('options', {} as any);
+		const _emit = inject('__emit__', {} as any);
 		const __slots_header: any = {};
 		if (slots.menu) __slots_header.menu = () => slots.menu();
 		const isTabs = ref<boolean>(!!slots.tabs);
@@ -27,7 +28,19 @@ export default defineComponent({
 				<div class={[ns.b('content'), ns.is('layout-tabs', isTabs.value)]}>
 					<Sidebar></Sidebar>
 					<div class={ns.b('container')}>
-						{_config.showTabs ? slots.tabs ? slots.tabs?.() : <NextTabs tabs={_config.tabs} activeTab={_config.activeTab}></NextTabs> : null}
+						{_config.showTabs ? (
+							slots.tabs ? (
+								slots.tabs?.()
+							) : (
+								<NextTabs
+									tabs={_config.tabs}
+									activeTab={_config.activeTab}
+									onChange={(...arg) => _emit('tabs-change', ...arg)}
+									onSelect={(...arg) => _emit('tabs-select', ...arg)}
+									onClose={(...arg) => _emit('tabs-close', ...arg)}
+								></NextTabs>
+							)
+						) : null}
 						<main class={[ns.b('main')]}>{slots['default']?.()}</main>
 					</div>
 				</div>

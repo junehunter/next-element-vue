@@ -82,6 +82,7 @@ export default defineComponent({
 				params: tab.params,
 			};
 			router.push(to);
+			emit('select', tab, index);
 		};
 		const onCloseTab = (event: MouseEvent, tab: TabInterface, index: number) => {
 			event.stopPropagation();
@@ -102,6 +103,7 @@ export default defineComponent({
 			} else {
 				activeIndex.value = 0;
 			}
+			emit('change', activeIndex.value, tabsView.value, 'close');
 		};
 		watch(
 			() => router.currentRoute?.value,
@@ -123,6 +125,7 @@ export default defineComponent({
 					activeIndex.value = tabsView.value.length;
 					tabsView.value.push(activeRoute);
 				}
+				emit('change', activeIndex.value, tabsView.value, 'add');
 			}
 		);
 		const renderContent = () => {

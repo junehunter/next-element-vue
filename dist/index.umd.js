@@ -1778,7 +1778,7 @@
         props: {},
         setup: () => (vue.provide("ns", ns$e), {}),
         render() {
-            const slots = this.$slots, _config = vue.inject("options", {});
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
             slots.menu;
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
@@ -1788,7 +1788,10 @@
                     class: [ ns$e.b("content") ]
                 }, [ vue.createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                     tabs: _config.tabs,
-                    activeTab: _config.activeTab
+                    activeTab: _config.activeTab,
+                    onChange: (...arg) => _emit("tabs-change", ...arg),
+                    onSelect: (...arg) => _emit("tabs-select", ...arg),
+                    onClose: (...arg) => _emit("tabs-close", ...arg)
                 }, null) : null, vue.createVNode("main", {
                     class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ]
@@ -1823,7 +1826,7 @@
         props: {},
         setup: () => (vue.provide("ns", ns$d), {}),
         render() {
-            const slots = this.$slots, _config = vue.inject("options", {}), __slots_header = {};
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
             slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
             slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
             slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
@@ -1833,7 +1836,10 @@
                 default: () => [ __slots_header ]
             })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                 tabs: _config.tabs,
-                activeTab: _config.activeTab
+                activeTab: _config.activeTab,
+                onChange: (...arg) => _emit("tabs-change", ...arg),
+                onSelect: (...arg) => _emit("tabs-select", ...arg),
+                onClose: (...arg) => _emit("tabs-close", ...arg)
             }, null) : null, vue.createVNode("main", {
                 class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]);
@@ -1879,7 +1885,7 @@
         props: {},
         setup: () => (vue.provide("ns", ns$c), {}),
         render() {
-            const slots = this.$slots, _config = vue.inject("options", {}), __slots_header = {};
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
             slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
             slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
             slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
@@ -1894,7 +1900,10 @@
                         default: () => [ __slots_header ]
                     })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                         tabs: _config.tabs,
-                        activeTab: _config.activeTab
+                        activeTab: _config.activeTab,
+                        onChange: (...arg) => _emit("tabs-change", ...arg),
+                        onSelect: (...arg) => _emit("tabs-select", ...arg),
+                        onClose: (...arg) => _emit("tabs-close", ...arg)
                     }, null) : null, vue.createVNode("main", {
                         class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
                     }, [ slots.default?.() ]) ]) ];
@@ -1946,7 +1955,7 @@
             ns: ns$b
         }),
         render() {
-            const slots = this.$slots, _config = vue.inject("options", {});
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
             slots.menu;
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header, null, null), vue.createVNode("div", {
@@ -1955,7 +1964,10 @@
                 class: ns$b.b("container")
             }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                 tabs: _config.tabs,
-                activeTab: _config.activeTab
+                activeTab: _config.activeTab,
+                onChange: (...arg) => _emit("tabs-change", ...arg),
+                onSelect: (...arg) => _emit("tabs-select", ...arg),
+                onClose: (...arg) => _emit("tabs-close", ...arg)
             }, null) : null, vue.createVNode("main", {
                 class: [ ns$b.b("main") ]
             }, [ slots.default?.() ]) ]) ]) ]);
@@ -2069,7 +2081,7 @@
                     query: tab.query,
                     params: tab.params
                 };
-                router.push(to);
+                router.push(to), emit("select", tab, index);
             };
             vue.watch((() => router.currentRoute?.value), (to => {
                 const {tagTitle: tagTitle} = to.query, activeRoute = {
@@ -2081,7 +2093,7 @@
                     query: to.query
                 }, i = tabsView.value.findIndex((v => v.path === to.path));
                 i > -1 ? (activeIndex.value = i, tabsView.value[i] = activeRoute) : (activeIndex.value = tabsView.value.length, 
-                tabsView.value.push(activeRoute));
+                tabsView.value.push(activeRoute)), emit("change", activeIndex.value, tabsView.value, "add");
             }));
             const renderContent = () => vue.createVNode("nav", {
                 class: ns$9.b()
@@ -2107,7 +2119,7 @@
                         }
                         tabsView.value.splice(index, 1);
                         const i = tabsView.value.findIndex((v => v.path === active)) || 0;
-                        activeIndex.value = i > -1 ? i : 0;
+                        activeIndex.value = i > -1 ? i : 0, emit("change", activeIndex.value, tabsView.value, "close");
                     })(event, tab, index)
                 }, [ vue.createVNode(elementPlus.ElIcon, {
                     class: "tab-close"
@@ -4921,7 +4933,7 @@
         })(app);
     };
     var index = {
-        version: "0.0.22",
+        version: "0.1.0",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4935,7 +4947,7 @@
     exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.0.22", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.0", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

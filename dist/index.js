@@ -1912,7 +1912,7 @@ var defaults = defineComponent({
     props: {},
     setup: () => (provide("ns", ns$e), {}),
     render() {
-        const slots = this.$slots, _config = inject("options", {});
+        const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {});
         slots.menu;
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(ElContainer, {
@@ -1922,7 +1922,10 @@ var defaults = defineComponent({
                 class: [ ns$e.b("content") ]
             }, [ createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
                 tabs: _config.tabs,
-                activeTab: _config.activeTab
+                activeTab: _config.activeTab,
+                onChange: (...arg) => _emit("tabs-change", ...arg),
+                onSelect: (...arg) => _emit("tabs-select", ...arg),
+                onClose: (...arg) => _emit("tabs-close", ...arg)
             }, null) : null, createVNode("main", {
                 class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]) ]
@@ -1961,7 +1964,7 @@ var transverse = defineComponent({
     props: {},
     setup: () => (provide("ns", ns$d), {}),
     render() {
-        const slots = this.$slots, _config = inject("options", {}), __slots_header = {};
+        const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {}), __slots_header = {};
         slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
         slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
         slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
@@ -1971,7 +1974,10 @@ var transverse = defineComponent({
             default: () => [ __slots_header ]
         })), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
             tabs: _config.tabs,
-            activeTab: _config.activeTab
+            activeTab: _config.activeTab,
+            onChange: (...arg) => _emit("tabs-change", ...arg),
+            onSelect: (...arg) => _emit("tabs-select", ...arg),
+            onClose: (...arg) => _emit("tabs-close", ...arg)
         }, null) : null, createVNode("main", {
             class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
         }, [ slots.default?.() ]) ]);
@@ -2021,7 +2027,7 @@ var columns = defineComponent({
     props: {},
     setup: () => (provide("ns", ns$c), {}),
     render() {
-        const slots = this.$slots, _config = inject("options", {}), __slots_header = {};
+        const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {}), __slots_header = {};
         slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
         slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
         slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
@@ -2036,7 +2042,10 @@ var columns = defineComponent({
                     default: () => [ __slots_header ]
                 })), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
                     tabs: _config.tabs,
-                    activeTab: _config.activeTab
+                    activeTab: _config.activeTab,
+                    onChange: (...arg) => _emit("tabs-change", ...arg),
+                    onSelect: (...arg) => _emit("tabs-select", ...arg),
+                    onClose: (...arg) => _emit("tabs-close", ...arg)
                 }, null) : null, createVNode("main", {
                     class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ];
@@ -2092,7 +2101,7 @@ var classic = defineComponent({
         ns: ns$b
     }),
     render() {
-        const slots = this.$slots, _config = inject("options", {});
+        const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {});
         slots.menu;
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(Fragment, null, [ createVNode(Header, null, null), createVNode("div", {
@@ -2101,7 +2110,10 @@ var classic = defineComponent({
             class: ns$b.b("container")
         }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
             tabs: _config.tabs,
-            activeTab: _config.activeTab
+            activeTab: _config.activeTab,
+            onChange: (...arg) => _emit("tabs-change", ...arg),
+            onSelect: (...arg) => _emit("tabs-select", ...arg),
+            onClose: (...arg) => _emit("tabs-close", ...arg)
         }, null) : null, createVNode("main", {
             class: [ ns$b.b("main") ]
         }, [ slots.default?.() ]) ]) ]) ]);
@@ -2218,7 +2230,7 @@ var Element$5 = defineComponent({
                 query: tab.query,
                 params: tab.params
             };
-            router.push(to);
+            router.push(to), emit("select", tab, index);
         };
         watch((() => router.currentRoute?.value), (to => {
             const {tagTitle: tagTitle} = to.query, activeRoute = {
@@ -2230,7 +2242,7 @@ var Element$5 = defineComponent({
                 query: to.query
             }, i = tabsView.value.findIndex((v => v.path === to.path));
             i > -1 ? (activeIndex.value = i, tabsView.value[i] = activeRoute) : (activeIndex.value = tabsView.value.length, 
-            tabsView.value.push(activeRoute));
+            tabsView.value.push(activeRoute)), emit("change", activeIndex.value, tabsView.value, "add");
         }));
         const renderContent = () => createVNode("nav", {
             class: ns$9.b()
@@ -2256,7 +2268,7 @@ var Element$5 = defineComponent({
                     }
                     tabsView.value.splice(index, 1);
                     const i = tabsView.value.findIndex((v => v.path === active)) || 0;
-                    activeIndex.value = i > -1 ? i : 0;
+                    activeIndex.value = i > -1 ? i : 0, emit("change", activeIndex.value, tabsView.value, "close");
                 })(event, tab, index)
             }, [ createVNode(ElIcon, {
                 class: "tab-close"
@@ -5114,7 +5126,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.0.22", install = function(app) {
+}, version = "0.1.0", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5124,7 +5136,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.0.22",
+    version: "0.1.0",
     install: install
 };
 
