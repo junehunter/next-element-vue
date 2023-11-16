@@ -3640,7 +3640,7 @@
     });
     const ns$6 = useNamespace("dialog");
     var NextDialog$1 = vue.defineComponent({
-        name: "Dialog",
+        name: "NextDialog",
         props: {
             modelValue: {
                 type: Boolean,
@@ -3972,7 +3972,7 @@
             }
         },
         emits: [ "submit", "close" ],
-        setup(props, {slots: slots, emit: emit}) {
+        setup(props, {slots: slots, emit: emit, expose: expose}) {
             const _config = deepClone(defaultConfig), options = vue.reactive(merge$1(_config, props.options)), _isEditing = vue.computed((() => "boolean" != typeof options.isEditing || options.isEditing)), {t: t} = useLocale(), colSpan = vue.ref(options.colSpan), formDatum = vue.reactive(props.formDatum) || {}, formParams = vue.reactive(merge$1({}, formDatum)), _formColumns = vue.ref([]), formRules = vue.reactive({});
             (() => {
                 const columns = props.columns;
@@ -4052,7 +4052,8 @@
                 }
             } ], renderFormItem = col => {
                 if (slots[formSlotName(col.prop)]) return slots[formSlotName(col.prop)]({
-                    column: col
+                    column: col,
+                    formParams: formParams
                 });
                 if ("input" === col.type || !col.type) {
                     const placeholder = col.placeholder || t("next.form.input") + col.label;
@@ -4064,8 +4065,10 @@
                         placeholder: placeholder,
                         onChange: event => col.onChange?.(event, col)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("inputInteger" === col.type) {
@@ -4082,8 +4085,10 @@
                         })(event, col.prop),
                         onChange: event => col.onChange?.(event, col)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("inputNumber" === col.type) {
@@ -4102,8 +4107,10 @@
                         })(event, col.prop),
                         onChange: event => col.onChange?.(event, col)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("textarea" === col.type) {
@@ -4117,8 +4124,10 @@
                         placeholder: placeholder,
                         onChange: event => col.onChange?.(event, col)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("select" === col.type) {
@@ -4151,8 +4160,8 @@
                         placeholder: placeholder,
                         onChange: event => col.onChange?.(event, col)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: () => col.prefix ? col.prefix(formParams, col) : null,
+                        suffix: () => col.suffix ? col.suffix(formParams, col) : null
                     });
                 }
                 if ("radio" === col.type) return vue.createVNode(elementPlus.ElRadioGroup, {
@@ -4221,7 +4230,12 @@
                         formParams[col.prop] = names.join(",");
                     })(rows, col)
                 }, null) : "upload" === col.type ? vue.createVNode(NextUpload, null, null) : void 0;
-            }, renderContent = () => {
+            };
+            expose({
+                formParams: vue.toRaw(formParams),
+                ruleFormRef: ruleFormRef
+            });
+            const renderContent = () => {
                 let _slot, _slot2, _slot3;
                 return vue.createVNode(elementPlus.ElForm, {
                     ref: ruleFormRef,
@@ -4300,7 +4314,7 @@
             vue.inject("addEditFormSlots").value.forEach((slotName => {}));
             const _options = vue.inject("options", {}), options = deepClone(vue.isRef(_options) ? vue.unref(_options) : _options);
             options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-            const _columns = vue.toRaw(options.columns), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), loopFormColumns = list => {
+            const _columns = vue.toRaw(options.columns), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), formRef = vue.ref(), loopFormColumns = list => {
                 let cols = [];
                 return list.forEach((col => {
                     cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
@@ -4315,7 +4329,9 @@
                 required: valueExist(col.formRequired, col.required, !1),
                 sort: valueExist(col.formSort, col.sort, null),
                 prefix: valueExist(col.formPrefix, col.prefix, null),
-                suffix: valueExist(col.formSuffix, null),
+                suffix: valueExist(col.formSuffix, col.suffix, null),
+                prepend: valueExist(col.formPrepend, col.prepend, null),
+                append: valueExist(col.formAppend, col.append, null),
                 hide: valueExist(col.formHide, !1),
                 disabled: valueExist(col.formDisabled, col.disabled, !1),
                 span: valueExist(col.formSpan, col.span, null),
@@ -4326,6 +4342,7 @@
                 emit("submit", ...arg);
             };
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextForm, {
+                ref: formRef,
                 options: options,
                 columns: _formColumnsLast,
                 formDatum: formDatum,
@@ -4342,7 +4359,7 @@
         name: "NextCrudTable",
         props: defaultPropsConfig,
         emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "click-add-edit", "close-add-edit", "delete-rows", "delete-row", "submit-form" ],
-        setup(props, {emit: emit, slots: slots}) {
+        setup(props, {emit: emit, slots: slots, expose: expose}) {
             const _config = deepClone(defaultConfig$1), _options = vue.computed((() => {
                 const cfg = vue.unref(props.options);
                 return merge$1(_config, cfg);
@@ -4399,7 +4416,7 @@
             }), {
                 immediate: !0
             });
-            const tableContentHeight = vue.ref(options.defaultContentHeight), crudTableRef = vue.ref(), headerRef = vue.ref(), tableRef = vue.ref(), footerRef = vue.ref(), addEditRef = vue.ref(), updateTableContentHeight = () => {
+            const tableContentHeight = vue.ref(options.defaultContentHeight), crudTableRef = vue.ref(), headerRef = vue.ref(), tableRef = vue.ref(), footerRef = vue.ref(), addEditFormRef = vue.ref(null), updateTableContentHeight = () => {
                 vue.nextTick((() => {
                     const contentHeight = (crudTableRef.value?.clientHeight || 0) - ((headerRef.value?.clientHeight || 0) + (footerRef.value?.clientHeight || 0));
                     tableContentHeight.value = contentHeight;
@@ -4432,7 +4449,7 @@
                 const {dialogTitle: dialogTitle} = options;
                 addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.add"), 
                 vue.nextTick((() => {
-                    emit("click-add-edit", {}, addEditRef.value?.formParams);
+                    emit("click-add-edit", {});
                 }));
             }, onClickDeleteRows = rows => {
                 emit("delete-rows", rows, (() => {
@@ -4446,7 +4463,7 @@
                 const {dialogTitle: dialogTitle} = options;
                 addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.edit"), 
                 addEditDialog.rowInfo = scoped.row, vue.nextTick((() => {
-                    emit("click-add-edit", scoped.row, addEditRef.value?.formParams);
+                    emit("click-add-edit", scoped.row);
                 }));
             }, onClickRowView = scoped => {
                 const {dialogTitle: dialogTitle} = options;
@@ -4484,7 +4501,9 @@
             const headerMenu_solts = {};
             header_menu_solts_key.forEach((slotName => {
                 headerMenu_solts[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
-            }));
+            })), expose({
+                addEditFormRef: addEditFormRef
+            });
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: crudTableRef,
                 class: [ ns$2.b(), props.className ],
@@ -4568,7 +4587,7 @@
                 onClose: onCloseAddEditDialog
             }, {
                 default: () => vue.createVNode(AddEditForm, {
-                    ref: addEditRef,
+                    ref: addEditFormRef,
                     formDatum: addEditDialog.rowInfo,
                     isEditing: addEditDialog.isEditing,
                     onClose: onCloseAddEditDialog,
@@ -4933,7 +4952,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.1",
+        version: "0.1.2",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4947,7 +4966,7 @@
     exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.1", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.2", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

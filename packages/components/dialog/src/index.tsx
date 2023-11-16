@@ -5,7 +5,7 @@ import { useNamespace } from 'packages/hooks/use-namespace/index';
 
 const ns = useNamespace('dialog');
 export default defineComponent({
-	name: 'Dialog',
+	name: 'NextDialog',
 	props: {
 		modelValue: {
 			type: Boolean,

@@ -3821,7 +3821,7 @@ var TableColumnOperations = defineComponent({
 const ns$6 = useNamespace("dialog");
 
 var NextDialog$1 = defineComponent({
-    name: "Dialog",
+    name: "NextDialog",
     props: {
         modelValue: {
             type: Boolean,
@@ -4163,7 +4163,7 @@ var Element$3 = defineComponent({
         }
     },
     emits: [ "submit", "close" ],
-    setup(props, {slots: slots, emit: emit}) {
+    setup(props, {slots: slots, emit: emit, expose: expose}) {
         const _config = deepClone(defaultConfig), options = reactive(merge$1(_config, props.options)), _isEditing = computed((() => "boolean" != typeof options.isEditing || options.isEditing)), {t: t} = useLocale(), colSpan = ref(options.colSpan), formDatum = reactive(props.formDatum) || {}, formParams = reactive(merge$1({}, formDatum)), _formColumns = ref([]), formRules = reactive({});
         (() => {
             const columns = props.columns;
@@ -4243,7 +4243,8 @@ var Element$3 = defineComponent({
             }
         } ], renderFormItem = col => {
             if (slots[formSlotName(col.prop)]) return slots[formSlotName(col.prop)]({
-                column: col
+                column: col,
+                formParams: formParams
             });
             if ("input" === col.type || !col.type) {
                 const placeholder = col.placeholder || t("next.form.input") + col.label;
@@ -4255,8 +4256,10 @@ var Element$3 = defineComponent({
                     placeholder: placeholder,
                     onChange: event => col.onChange?.(event, col)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("inputInteger" === col.type) {
@@ -4273,8 +4276,10 @@ var Element$3 = defineComponent({
                     })(event, col.prop),
                     onChange: event => col.onChange?.(event, col)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("inputNumber" === col.type) {
@@ -4293,8 +4298,10 @@ var Element$3 = defineComponent({
                     })(event, col.prop),
                     onChange: event => col.onChange?.(event, col)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("textarea" === col.type) {
@@ -4308,8 +4315,10 @@ var Element$3 = defineComponent({
                     placeholder: placeholder,
                     onChange: event => col.onChange?.(event, col)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("select" === col.type) {
@@ -4342,8 +4351,8 @@ var Element$3 = defineComponent({
                     placeholder: placeholder,
                     onChange: event => col.onChange?.(event, col)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: () => col.prefix ? col.prefix(formParams, col) : null,
+                    suffix: () => col.suffix ? col.suffix(formParams, col) : null
                 });
             }
             if ("radio" === col.type) return createVNode(ElRadioGroup, {
@@ -4412,7 +4421,12 @@ var Element$3 = defineComponent({
                     formParams[col.prop] = names.join(",");
                 })(rows, col)
             }, null) : "upload" === col.type ? createVNode(NextUpload, null, null) : void 0;
-        }, renderContent = () => {
+        };
+        expose({
+            formParams: toRaw(formParams),
+            ruleFormRef: ruleFormRef
+        });
+        const renderContent = () => {
             let _slot, _slot2, _slot3;
             return createVNode(ElForm, {
                 ref: ruleFormRef,
@@ -4493,7 +4507,7 @@ var AddEditForm = defineComponent({
         inject("addEditFormSlots").value.forEach((slotName => {}));
         const _options = inject("options", {}), options = deepClone(isRef(_options) ? unref(_options) : _options);
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-        const _columns = toRaw(options.columns), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), loopFormColumns = list => {
+        const _columns = toRaw(options.columns), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), formRef = ref(), loopFormColumns = list => {
             let cols = [];
             return list.forEach((col => {
                 cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
@@ -4508,7 +4522,9 @@ var AddEditForm = defineComponent({
             required: valueExist(col.formRequired, col.required, !1),
             sort: valueExist(col.formSort, col.sort, null),
             prefix: valueExist(col.formPrefix, col.prefix, null),
-            suffix: valueExist(col.formSuffix, null),
+            suffix: valueExist(col.formSuffix, col.suffix, null),
+            prepend: valueExist(col.formPrepend, col.prepend, null),
+            append: valueExist(col.formAppend, col.append, null),
             hide: valueExist(col.formHide, !1),
             disabled: valueExist(col.formDisabled, col.disabled, !1),
             span: valueExist(col.formSpan, col.span, null),
@@ -4519,6 +4535,7 @@ var AddEditForm = defineComponent({
             emit("submit", ...arg);
         };
         return () => createVNode(Fragment, null, [ createVNode(NextForm, {
+            ref: formRef,
             options: options,
             columns: _formColumnsLast,
             formDatum: formDatum,
@@ -4538,7 +4555,7 @@ var Element$2 = defineComponent({
     name: "NextCrudTable",
     props: defaultPropsConfig,
     emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "click-add-edit", "close-add-edit", "delete-rows", "delete-row", "submit-form" ],
-    setup(props, {emit: emit, slots: slots}) {
+    setup(props, {emit: emit, slots: slots, expose: expose}) {
         const _config = deepClone(defaultConfig$1), _options = computed((() => {
             const cfg = unref(props.options);
             return merge$1(_config, cfg);
@@ -4595,7 +4612,7 @@ var Element$2 = defineComponent({
         }), {
             immediate: !0
         });
-        const tableContentHeight = ref(options.defaultContentHeight), crudTableRef = ref(), headerRef = ref(), tableRef = ref(), footerRef = ref(), addEditRef = ref(), updateTableContentHeight = () => {
+        const tableContentHeight = ref(options.defaultContentHeight), crudTableRef = ref(), headerRef = ref(), tableRef = ref(), footerRef = ref(), addEditFormRef = ref(null), updateTableContentHeight = () => {
             nextTick((() => {
                 const contentHeight = (crudTableRef.value?.clientHeight || 0) - ((headerRef.value?.clientHeight || 0) + (footerRef.value?.clientHeight || 0));
                 tableContentHeight.value = contentHeight;
@@ -4628,7 +4645,7 @@ var Element$2 = defineComponent({
             const {dialogTitle: dialogTitle} = options;
             addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.add"), 
             nextTick((() => {
-                emit("click-add-edit", {}, addEditRef.value?.formParams);
+                emit("click-add-edit", {});
             }));
         }, onClickDeleteRows = rows => {
             emit("delete-rows", rows, (() => {
@@ -4642,7 +4659,7 @@ var Element$2 = defineComponent({
             const {dialogTitle: dialogTitle} = options;
             addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.edit"), 
             addEditDialog.rowInfo = scoped.row, nextTick((() => {
-                emit("click-add-edit", scoped.row, addEditRef.value?.formParams);
+                emit("click-add-edit", scoped.row);
             }));
         }, onClickRowView = scoped => {
             const {dialogTitle: dialogTitle} = options;
@@ -4680,7 +4697,9 @@ var Element$2 = defineComponent({
         const headerMenu_solts = {};
         header_menu_solts_key.forEach((slotName => {
             headerMenu_solts[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
-        }));
+        })), expose({
+            addEditFormRef: addEditFormRef
+        });
         return () => createVNode(Fragment, null, [ createVNode(Fragment, null, [ createVNode("div", {
             ref: crudTableRef,
             class: [ ns$2.b(), props.className ],
@@ -4764,7 +4783,7 @@ var Element$2 = defineComponent({
             onClose: onCloseAddEditDialog
         }, {
             default: () => createVNode(AddEditForm, {
-                ref: addEditRef,
+                ref: addEditFormRef,
                 formDatum: addEditDialog.rowInfo,
                 isEditing: addEditDialog.isEditing,
                 onClose: onCloseAddEditDialog,
@@ -5126,7 +5145,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.1", install = function(app) {
+}, version = "0.1.2", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5136,7 +5155,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.1",
+    version: "0.1.2",
     install: install
 };
 

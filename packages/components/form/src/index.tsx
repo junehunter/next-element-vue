@@ -34,7 +34,7 @@ export default defineComponent({
 		},
 	},
 	emits: ['submit', 'close'],
-	setup(props, { slots, emit }) {
+	setup(props, { slots, emit, expose }) {
 		const _config = deepClone(defaultConfig);
 		const options = reactive(merge(_config, props.options));
 		const _isEditing = computed(() => {
@@ -198,14 +198,16 @@ export default defineComponent({
 		];
 		const renderFormItem = (col: FormItemProps) => {
 			if (slots[formSlotName(col.prop)]) {
-				return slots[formSlotName(col.prop)]({ column: col });
+				return slots[formSlotName(col.prop)]({ column: col, formParams });
 			} else if (col.type === 'input' || !col.type) {
 				const placeholder = col.placeholder || t('next.form.input') + col.label;
 				return (
 					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} onChange={event => col.onChange?.(event, col)}>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);
@@ -221,8 +223,10 @@ export default defineComponent({
 						onChange={event => col.onChange?.(event, col)}
 					>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);
@@ -238,8 +242,10 @@ export default defineComponent({
 						onChange={event => col.onChange?.(event, col)}
 					>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);
@@ -248,8 +254,10 @@ export default defineComponent({
 				return (
 					<ElInput v-model={formParams[col.prop]} type="textarea" clearable disabled={col.disabled} placeholder={placeholder} onChange={event => col.onChange?.(event, col)}>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);
@@ -277,8 +285,8 @@ export default defineComponent({
 						onChange={event => col.onChange?.(event, col)}
 					>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: () => (col.prefix ? col.prefix(formParams, col) : null),
+							suffix: () => (col.suffix ? col.suffix(formParams, col) : null),
 						}}
 					</ElTimeSelect>
 				);
@@ -339,6 +347,10 @@ export default defineComponent({
 				return <NextUpload></NextUpload>;
 			}
 		};
+		expose({
+			formParams: toRaw(formParams),
+			ruleFormRef,
+		});
 		const renderContent = () => {
 			return (
 				<ElForm ref={ruleFormRef} class={ns.b()} inline={false} model={formParams} size={options.size}>

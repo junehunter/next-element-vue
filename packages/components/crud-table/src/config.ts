@@ -13,8 +13,10 @@ export declare interface Column {
 	defaultValue?: any;
 	labelWidth?: string | number;
 	multiple?: boolean;
-	prefix?: string;
-	suffix?: string;
+	prefix?: Function;
+	suffix?: Function;
+	prepend?: Function;
+	append?: Function;
 	sort?: number;
 	required?: boolean;
 	span?: number;
@@ -36,8 +38,8 @@ export interface SearchColumnProps extends Column {
 	searchMin?: number;
 	searchMax?: number;
 	searchPlaceholder?: string;
-	searchPrefix?: string;
-	searchSuffix?: string;
+	searchPrefix?: Function;
+	searchSuffix?: Function;
 	searchDicData?: DictData[];
 	onChangeSearch?: Function;
 }
@@ -50,8 +52,10 @@ export interface FormColunmProps extends Column {
 	formDisabled?: string;
 	formRequired?: boolean;
 	formHide?: boolean;
-	formPrefix?: string;
-	formSuffix?: string;
+	formPrefix?: Function;
+	formSuffix?: Function;
+	formPrepend?: Function;
+	formAppend?: Function;
 	formSpan?: number;
 	formTip?: string;
 	formLabel?: string;

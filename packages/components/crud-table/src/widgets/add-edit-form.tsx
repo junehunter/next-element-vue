@@ -1,4 +1,4 @@
-import { defineComponent, isRef, unref, inject, toRaw } from 'vue';
+import { defineComponent, isRef, unref, inject, toRaw, ref } from 'vue';
 import { NextForm } from 'packages/components/form';
 import { deepClone, valueExist } from 'packages/hooks/global-hook';
 import type { FormColunmProps, TableColumnProps } from '../config';
@@ -29,7 +29,7 @@ export default defineComponent({
 		options.isEditing = props.isEditing;
 		const _columns = toRaw(options.columns);
 		const formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum);
-
+		const formRef = ref();
 		const loopFormColumns = (list: TableColumnProps[]) => {
 			let cols = [];
 			list.forEach((col: TableColumnProps) => {
@@ -53,7 +53,9 @@ export default defineComponent({
 				required: valueExist(col.formRequired, col.required, false),
 				sort: valueExist(col.formSort, col.sort, null),
 				prefix: valueExist(col.formPrefix, col.prefix, null),
-				suffix: valueExist(col.formSuffix, null),
+				suffix: valueExist(col.formSuffix, col.suffix, null),
+				prepend: valueExist(col.formPrepend, col.prepend, null),
+				append: valueExist(col.formAppend, col.append, null),
 				hide: valueExist(col.formHide, false),
 				disabled: valueExist(col.formDisabled, col.disabled, false),
 				span: valueExist(col.formSpan, col.span, null),
@@ -70,7 +72,7 @@ export default defineComponent({
 			emit('submit', ...arg);
 		};
 		const renderContent = () => {
-			return <NextForm options={options} columns={_formColumnsLast} formDatum={formDatum} onClose={() => emit('close')} onSubmit={onSubmit}></NextForm>;
+			return <NextForm ref={formRef} options={options} columns={_formColumnsLast} formDatum={formDatum} onClose={() => emit('close')} onSubmit={onSubmit}></NextForm>;
 		};
 		return () => <>{renderContent()}</>;
 	},

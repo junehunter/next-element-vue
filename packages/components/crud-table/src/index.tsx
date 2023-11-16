@@ -22,7 +22,7 @@ export default defineComponent({
 	name: 'NextCrudTable',
 	props: defaultPropsConfig,
 	emits: ['confirm-search', 'clear-search', 'change-pagination', 'selection-change', 'row-click', 'click-add-edit', 'close-add-edit', 'delete-rows', 'delete-row', 'submit-form'],
-	setup(props, { emit, slots }) {
+	setup(props, { emit, slots, expose }) {
 		const _config = deepClone(defaultConfig);
 		const _options = computed(() => {
 			const cfg = unref(props.options);
@@ -118,7 +118,7 @@ export default defineComponent({
 		const headerRef = ref<HTMLElement>();
 		const tableRef = ref<HTMLElement>();
 		const footerRef = ref<HTMLDivElement>();
-		const addEditRef = ref<any>();
+		const addEditFormRef = ref<any>(null);
 		const updateTableContentHeight = () => {
 			nextTick(() => {
 				const layoutCrudHeight = (crudTableRef.value as HTMLDivElement)?.clientHeight || 0;
@@ -176,7 +176,7 @@ export default defineComponent({
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.add');
 			nextTick(() => {
-				emit('click-add-edit', {}, addEditRef.value?.formParams);
+				emit('click-add-edit', {});
 			});
 		};
 		const onClickDeleteRows = (rows: any) => {
@@ -197,7 +197,7 @@ export default defineComponent({
 			addEditDialog.rowInfo = scoped.row;
 			// 将编辑弹框中的表单数据传出去
 			nextTick(() => {
-				emit('click-add-edit', scoped.row, addEditRef.value?.formParams);
+				emit('click-add-edit', scoped.row);
 			});
 		};
 		const onClickRowView = (scoped: any) => {
@@ -264,6 +264,9 @@ export default defineComponent({
 		const headerMenu_solts = {};
 		header_menu_solts_key.forEach(slotName => {
 			headerMenu_solts[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
+		});
+		expose({
+			addEditFormRef: addEditFormRef,
 		});
 		const renderContent = () => {
 			return (
@@ -346,7 +349,13 @@ export default defineComponent({
 						>
 							{{
 								default: () => (
-									<AddEditForm ref={addEditRef} formDatum={addEditDialog.rowInfo} isEditing={addEditDialog.isEditing} onClose={onCloseAddEditDialog} onSubmit={onSubmitAddEditDialog}>
+									<AddEditForm
+										ref={addEditFormRef}
+										formDatum={addEditDialog.rowInfo}
+										isEditing={addEditDialog.isEditing}
+										onClose={onCloseAddEditDialog}
+										onSubmit={onSubmitAddEditDialog}
+									>
 										{addEditForm_slots}
 									</AddEditForm>
 								),

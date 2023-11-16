@@ -12,8 +12,10 @@ export interface FormItemProps {
 	placeholder?: string;
 	disabled?: boolean;
 	required?: boolean;
-	prefix?: string;
-	suffix?: string;
+	prefix?: Function;
+	suffix?: Function;
+	prepend?: Function;
+	append?: Function;
 	tip?: string;
 	format?: string;
 	readonly?: boolean;
