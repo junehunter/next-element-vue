@@ -7,6 +7,10 @@ declare const _default: import("vue").DefineComponent<{
         type: BooleanConstructor;
         default: boolean;
     };
+    columns: {
+        type: ArrayConstructor;
+        default: () => any[];
+    };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("close" | "submit")[], "close" | "submit", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     formDatum: {
         type: ObjectConstructor;
@@ -16,11 +20,16 @@ declare const _default: import("vue").DefineComponent<{
         type: BooleanConstructor;
         default: boolean;
     };
+    columns: {
+        type: ArrayConstructor;
+        default: () => any[];
+    };
 }>> & {
     onClose?: (...args: any[]) => any;
     onSubmit?: (...args: any[]) => any;
 }, {
     formDatum: Record<string, any>;
     isEditing: boolean;
+    columns: unknown[];
 }, {}>;
 export default _default;

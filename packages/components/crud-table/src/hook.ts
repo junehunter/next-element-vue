@@ -1,3 +1,7 @@
+import type { FormItemProps } from 'packages/components/form/src/config';
+import type { FormColunmProps, TableColumnProps, SearchColumnProps } from './config';
+import { deepClone, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
+import { toRaw, ref } from 'vue';
 /**
  * 自定义table中column的slot name
  * @param prop
@@ -94,4 +98,102 @@ export const getDefaultExpandedKeys = (treeData: any): string[] => {
 	};
 	const checkNode = getTreeDataLevel(treeData, level > 3 ? 3 : level);
 	return checkNode;
+};
+/**
+ * 获取筛选表单和新增编辑表单 columns
+ * @param options
+ * @returns
+ */
+export const useFormColumns = options => {
+	// 获取表单模块column
+	const _columns = toRaw(options.columns);
+	const loopFormColumns = (list: TableColumnProps[]) => {
+		let cols = [];
+		list.forEach((col: TableColumnProps) => {
+			cols.push(col);
+			if (col.children?.length) {
+				cols.push(...loopFormColumns(col.children));
+				if (col.children) delete col.children;
+			}
+		});
+		return cols;
+	};
+	const evenColumns = loopFormColumns(_columns);
+	const formColumns = toRaw(options.formColumns);
+	const mergeColumns = evenColumns.concat(formColumns).map((col: FormColunmProps) => {
+		const item: FormItemProps = {
+			prop: col.prop,
+			label: valueExist(col.formLabel, col.label, ''),
+			type: valueExist(col.formType, col.type, ''),
+			defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ''),
+			placeholder: valueExist(col.formPlaceholder, ''),
+			required: valueExist(col.formRequired, col.required, false),
+			sort: valueExist(col.formSort, col.sort, null),
+			prefix: valueExist(col.formPrefix, col.prefix, null),
+			suffix: valueExist(col.formSuffix, col.suffix, null),
+			prepend: valueExist(col.formPrepend, col.prepend, null),
+			append: valueExist(col.formAppend, col.append, null),
+			hide: valueExist(col.formHide, false),
+			disabled: valueExist(col.formDisabled, col.disabled, false),
+			span: valueExist(col.formSpan, col.span, null),
+			dicData: valueExist(col.formDicData, col.dicData, []),
+			loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
+			onChange: valueExist(col.onChangeForm, col.onChange, null),
+			tableSelect: valueExist(col.tableSelect, {}),
+		};
+		return item;
+	});
+	const filterColumns = mergeColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];
+	const formColumnsLast = filterColumns.sort((a: FormItemProps, b: FormItemProps) => a.sort - b.sort);
+	const _formColumnsLast: FormItemProps[] = deepClone(formColumnsLast);
+	_formColumnsLast.forEach((col: FormItemProps) => {
+		if (!col.dicData?.length && col.loadDicData) {
+			col.loadDicData(col);
+		}
+	});
+	// 获取筛选表单column
+	const searchColumn = ref<SearchColumnProps[]>([]);
+	searchColumn.value = options.searchColumn.map((col: SearchColumnProps, index: number) => {
+		const item = {
+			...col,
+			sort: index,
+		};
+		return item;
+	});
+	const searchColumnLength = searchColumn.value.length;
+	const loopColumns = (list: TableColumnProps[]) => {
+		let cols = [];
+		list.forEach((col: TableColumnProps, index: number) => {
+			if (col.searchType) {
+				const item: SearchColumnProps = {
+					prop: col.prop,
+					type: valueExist(col.searchType, col.type),
+					label: valueExist(col.searchLabel, col.label),
+					defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
+					placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
+					dicData: valueExist(col.searchDicData, col.dicData, []),
+					disabled: valueExist(col.searchDisabled, col.disabled, false),
+					prefix: valueExist(col.searchPrefix, col.prefix, null),
+					suffix: valueExist(col.searchSuffix, col.suffix, null),
+					prepend: valueExist(col.searchPrepend, col.prepend, null),
+					append: valueExist(col.searchAppend, col.append, null),
+					sort: valueExist(col.searchSort, col.sort, searchColumnLength + index),
+				};
+				cols.push(item);
+			}
+			if (col.children?.length) {
+				cols.push(...loopColumns(col.children));
+			}
+		});
+		return cols;
+	};
+	searchColumn.value.push(...loopColumns(_columns));
+	searchColumn.value = arrayObjNoRepeat(
+		searchColumn.value.sort((a: SearchColumnProps, b: SearchColumnProps) => a.sort - b.sort),
+		'prop'
+	);
+	return {
+		formColumns: _formColumnsLast,
+		searchColumns: searchColumn.value,
+	};
 };

@@ -3,11 +3,11 @@ import { useNamespace, useLocale } from 'packages/hooks';
 import { ElTable, ElEmpty, ElTableColumn } from 'element-plus';
 import { merge } from 'lodash-unified';
 import isEqual from 'lodash-es/isequal';
-import { deepClone, elementResize, isValueExist, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
+import { deepClone, elementResize, isValueExist } from 'packages/hooks/global-hook';
 import defaultPropsConfig from './props';
 import defaultConfig, { header_menu_solts_key } from './config';
 import type { TableColumnProps, SearchColumnProps } from './config';
-import { columnSlotNamePrefix, searchFormSlotNamePrefix, formSlotNamePrefix } from './hook';
+import { columnSlotNamePrefix, searchFormSlotNamePrefix, formSlotNamePrefix, useFormColumns } from './hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
 import HeaderSearch from './header-search';
 import HeaderMenu from './header-menu';
@@ -34,47 +34,9 @@ export default defineComponent({
 		const { t } = useLocale();
 		const columns = ref<TableColumnProps[]>(options.columns);
 		const searchColumn = ref<SearchColumnProps[]>([]);
+		const { formColumns, searchColumns } = useFormColumns(options);
 		// 获取搜索栏数据
-		const _formatSearchColumns = () => {
-			searchColumn.value = options.searchColumn.map((col: SearchColumnProps, index: number) => {
-				const item = {
-					...col,
-					sort: index,
-				};
-				return item;
-			});
-			const searchColumnLength = searchColumn.value.length;
-			const loopColumns = (list: TableColumnProps[]) => {
-				let cols = [];
-				list.forEach((col: TableColumnProps, index: number) => {
-					if (col.searchType) {
-						const item: SearchColumnProps = {
-							prop: col.prop,
-							type: valueExist(col.searchType, col.type),
-							label: valueExist(col.searchLabel, col.label),
-							defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
-							placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
-							dicData: valueExist(col.searchDicData, col.dicData, []),
-							disabled: valueExist(col.searchDisabled, col.disabled, false),
-							prefix: valueExist(col.searchPrefix, col.prefix, null),
-							suffix: valueExist(col.searchSuffix, col.suffix, null),
-							sort: valueExist(col.searchSort, col.sort, searchColumnLength + index),
-						};
-						cols.push(item);
-					}
-					if (col.children?.length) {
-						cols.push(...loopColumns(col.children));
-					}
-				});
-				return cols;
-			};
-			searchColumn.value.push(...loopColumns(columns.value));
-			searchColumn.value = arrayObjNoRepeat(
-				searchColumn.value.sort((a: SearchColumnProps, b: SearchColumnProps) => a.sort - b.sort),
-				'prop'
-			);
-		};
-		_formatSearchColumns();
+		searchColumn.value = searchColumns;
 		const tableData = ref(props.data);
 		const _getDefaultSearchFormParams = () => {
 			const list = searchColumn.value;
@@ -352,6 +314,7 @@ export default defineComponent({
 									<AddEditForm
 										ref={addEditFormRef}
 										formDatum={addEditDialog.rowInfo}
+										columns={formColumns}
 										isEditing={addEditDialog.isEditing}
 										onClose={onCloseAddEditDialog}
 										onSubmit={onSubmitAddEditDialog}

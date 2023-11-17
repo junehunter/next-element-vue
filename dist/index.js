@@ -1,4 +1,4 @@
-import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, nextTick, render } from "vue";
+import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, toRaw, onMounted, nextTick, render } from "vue";
 
 import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElTimeSelect, ElEmpty, ElUpload, ElImageViewer } from "element-plus";
 
@@ -2143,13 +2143,13 @@ const NextLayout = withInstall(defineComponent({
             default: () => ({})
         }
     },
-    emits: [ "changeLanguage", "changeUserDropdown", "tabsChange", "tabsSelect", "tabsClose" ],
+    emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
     setup(props, {slots: slots, emit: emit}) {
         const _config = ref(merge$1(defaultConfig$2, props.options)), options = computed((() => _config.value)).value;
         provide("options", options), provide("__ns__", ns$a), provide("__emit__", emit), 
         provide("__slots__", slots);
         const updateOptions = cfg => {
-            _config.value = merge$1(options, cfg);
+            _config.value = merge$1(options, cfg), emit("changeOptions", _config.value);
         };
         return provide("updateOptions", updateOptions), watch((() => props.options), (cfg => {
             updateOptions(cfg);
@@ -3256,8 +3256,10 @@ var SpinLoading = defineComponent({
                     disabled: col.disabled,
                     placeholder: placeholder
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("inputInteger" === col.type) {
@@ -3273,8 +3275,10 @@ var SpinLoading = defineComponent({
                         formParams.value[key] = value;
                     })(e, col.prop)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("inputNumber" === col.type) {
@@ -3292,8 +3296,10 @@ var SpinLoading = defineComponent({
                         formParams.value[key] = value;
                     })(e, col.prop)
                 }, {
-                    prefix: () => col.prefix ? col.prefix : "",
-                    suffix: () => col.suffix ? col.suffix : ""
+                    prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                    suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                    prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                    append: col.append ? () => col.append(formParams, col) : null
                 });
             }
             if ("select" === col.type) {
@@ -4180,6 +4186,7 @@ var Element$3 = defineComponent({
                         trigger: [ "blur", "change" ]
                     }), formRules[col.prop] = rule;
                 }
+                !col.dicData?.length && col.loadDicData && col.loadDicData(col);
             }
             "boolean" == typeof _isEditing.value && !1 === _isEditing.value && (_formColumns.value = _formColumns.value.map((col => (col.disabled = !0, 
             col))));
@@ -4383,6 +4390,21 @@ var Element$3 = defineComponent({
                     editable: col.editable
                 }, null);
             }
+            if ("datetime" === col.type) {
+                const placeholder = col.placeholder || t("next.form.select") + col.label;
+                return createVNode(ElDatePicker, {
+                    modelValue: formParams[col.prop],
+                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                    placeholder: placeholder,
+                    type: "datetime",
+                    valueFormat: col.format || "YYYY-MM-DD HH:mm:ss",
+                    format: col.format || "YYYY-MM-DD HH:mm:ss",
+                    clearable: !0,
+                    disabledDate: col.disabledDate || _defaultDisabledDate,
+                    disabled: col.disabled,
+                    editable: col.editable
+                }, null);
+            }
             if ("datetimerange" === col.type) {
                 const placeholder = col.placeholder || t("next.form.select") + col.label;
                 return createVNode(ElDatePicker, {
@@ -4420,7 +4442,9 @@ var Element$3 = defineComponent({
                     const names = rows.map((o => o.name));
                     formParams[col.prop] = names.join(",");
                 })(rows, col)
-            }, null) : "upload" === col.type ? createVNode(NextUpload, null, null) : void 0;
+            }, null) : "upload" === col.type ? createVNode(NextUpload, {
+                onChange: (...arg) => col.onChange?.(...arg, formParams, col)
+            }, null) : void 0;
         };
         expose({
             formParams: toRaw(formParams),
@@ -4445,7 +4469,7 @@ var Element$3 = defineComponent({
                         required: column.required,
                         rules: formRules[column.prop],
                         style: {
-                            "--form-label-width": options.labelWidth
+                            "--form-label-width": valueExist(options.formLabelWidth, options.labelWidth)
                         }
                     }, {
                         label: () => column.label ? createVNode(Fragment, null, [ createVNode(NextTextEllipsis, {
@@ -4500,6 +4524,10 @@ var AddEditForm = defineComponent({
         isEditing: {
             type: Boolean,
             default: !0
+        },
+        columns: {
+            type: Array,
+            default: () => []
         }
     },
     emits: [ "close", "submit" ],
@@ -4507,37 +4535,13 @@ var AddEditForm = defineComponent({
         inject("addEditFormSlots").value.forEach((slotName => {}));
         const _options = inject("options", {}), options = deepClone(isRef(_options) ? unref(_options) : _options);
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-        const _columns = toRaw(options.columns), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), formRef = ref(), loopFormColumns = list => {
-            let cols = [];
-            return list.forEach((col => {
-                cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
-                col.children && delete col.children);
-            })), cols;
-        }, columns = loopFormColumns(_columns), formColumns = toRaw(options.formColumns), formColumnsLast = columns.concat(formColumns).map((col => ({
-            prop: col.prop,
-            label: valueExist(col.formLabel, col.label, ""),
-            type: valueExist(col.formType, col.type, ""),
-            defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
-            placeholder: valueExist(col.formPlaceholder, ""),
-            required: valueExist(col.formRequired, col.required, !1),
-            sort: valueExist(col.formSort, col.sort, null),
-            prefix: valueExist(col.formPrefix, col.prefix, null),
-            suffix: valueExist(col.formSuffix, col.suffix, null),
-            prepend: valueExist(col.formPrepend, col.prepend, null),
-            append: valueExist(col.formAppend, col.append, null),
-            hide: valueExist(col.formHide, !1),
-            disabled: valueExist(col.formDisabled, col.disabled, !1),
-            span: valueExist(col.formSpan, col.span, null),
-            dicData: valueExist(col.formDicData, col.dicData, []),
-            onChange: col.onChangeForm || null,
-            tableSelect: valueExist(col.tableSelect, {})
-        }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast), onSubmit = (...arg) => {
+        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = toRaw(props.columns), onSubmit = (...arg) => {
             emit("submit", ...arg);
         };
         return () => createVNode(Fragment, null, [ createVNode(NextForm, {
             ref: formRef,
             options: options,
-            columns: _formColumnsLast,
+            columns: _columns,
             formDatum: formDatum,
             onClose: () => emit("close"),
             onSubmit: onSubmit
@@ -4561,8 +4565,37 @@ var Element$2 = defineComponent({
             return merge$1(_config, cfg);
         })), options = unref(_options);
         provide("options", computed((() => _options.value))), provide("ns", ns$2);
-        const {t: t} = useLocale(), columns = ref(options.columns), searchColumn = ref([]);
-        (() => {
+        const {t: t} = useLocale(), columns = ref(options.columns), searchColumn = ref([]), {formColumns: formColumns, searchColumns: searchColumns} = (options => {
+            const _columns = toRaw(options.columns), loopFormColumns = list => {
+                let cols = [];
+                return list.forEach((col => {
+                    cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
+                    col.children && delete col.children);
+                })), cols;
+            }, evenColumns = loopFormColumns(_columns), formColumns = toRaw(options.formColumns), formColumnsLast = evenColumns.concat(formColumns).map((col => ({
+                prop: col.prop,
+                label: valueExist(col.formLabel, col.label, ""),
+                type: valueExist(col.formType, col.type, ""),
+                defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
+                placeholder: valueExist(col.formPlaceholder, ""),
+                required: valueExist(col.formRequired, col.required, !1),
+                sort: valueExist(col.formSort, col.sort, null),
+                prefix: valueExist(col.formPrefix, col.prefix, null),
+                suffix: valueExist(col.formSuffix, col.suffix, null),
+                prepend: valueExist(col.formPrepend, col.prepend, null),
+                append: valueExist(col.formAppend, col.append, null),
+                hide: valueExist(col.formHide, !1),
+                disabled: valueExist(col.formDisabled, col.disabled, !1),
+                span: valueExist(col.formSpan, col.span, null),
+                dicData: valueExist(col.formDicData, col.dicData, []),
+                loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
+                onChange: valueExist(col.onChangeForm, col.onChange, null),
+                tableSelect: valueExist(col.tableSelect, {})
+            }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast);
+            _formColumnsLast.forEach((col => {
+                !col.dicData?.length && col.loadDicData && col.loadDicData(col);
+            }));
+            const searchColumn = ref([]);
             searchColumn.value = options.searchColumn.map(((col, index) => ({
                 ...col,
                 sort: index
@@ -4581,6 +4614,8 @@ var Element$2 = defineComponent({
                             disabled: valueExist(col.searchDisabled, col.disabled, !1),
                             prefix: valueExist(col.searchPrefix, col.prefix, null),
                             suffix: valueExist(col.searchSuffix, col.suffix, null),
+                            prepend: valueExist(col.searchPrepend, col.prepend, null),
+                            append: valueExist(col.searchAppend, col.append, null),
                             sort: valueExist(col.searchSort, col.sort, searchColumnLength + index)
                         };
                         cols.push(item);
@@ -4588,8 +4623,13 @@ var Element$2 = defineComponent({
                     col.children?.length && cols.push(...loopColumns(col.children));
                 })), cols;
             };
-            searchColumn.value.push(...loopColumns(columns.value)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop");
-        })();
+            return searchColumn.value.push(...loopColumns(_columns)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop"), 
+            {
+                formColumns: _formColumnsLast,
+                searchColumns: searchColumn.value
+            };
+        })(options);
+        searchColumn.value = searchColumns;
         const tableData = ref(props.data), _searchFormParams = ref((() => {
             const list = searchColumn.value;
             let params = {};
@@ -4785,6 +4825,7 @@ var Element$2 = defineComponent({
             default: () => createVNode(AddEditForm, {
                 ref: addEditFormRef,
                 formDatum: addEditDialog.rowInfo,
+                columns: formColumns,
                 isEditing: addEditDialog.isEditing,
                 onClose: onCloseAddEditDialog,
                 onSubmit: onSubmitAddEditDialog
@@ -4818,6 +4859,7 @@ const NextUpload = withInstall(defineComponent({
             default: "image/*"
         }
     },
+    emits: [ "change" ],
     setup() {
         const {appContext: appContext} = getCurrentInstance(), {t: t} = useLocale();
         return {
@@ -4826,7 +4868,7 @@ const NextUpload = withInstall(defineComponent({
         };
     },
     render() {
-        const slots = this.$slots, props = this.$props, _t = this.t, uploadfilesPreview = ref([]), body = document.getElementsByTagName("body")[0];
+        const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, uploadfilesPreview = ref([]), body = document.getElementsByTagName("body")[0];
         let previewImagesContainer = null;
         return createVNode(ElUpload, {
             class: [ ns$1.b(), props.className ],
@@ -4851,7 +4893,7 @@ const NextUpload = withInstall(defineComponent({
                 previewImagesContainer.appContext = this.appContext, render(previewComponent, previewImagesContainer);
             },
             onChange: (uploadfile, uploadfiles) => {
-                uploadfilesPreview.value = uploadfiles;
+                uploadfilesPreview.value = uploadfiles, emit("change", uploadfile, uploadfiles);
             }
         }, {
             trigger: () => slots.default ? slots.default() : "picture-card" === props.listType ? createVNode(ElIcon, null, {
@@ -5145,7 +5187,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.2", install = function(app) {
+}, version = "0.1.3", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5155,7 +5197,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.2",
+    version: "0.1.3",
     install: install
 };
 

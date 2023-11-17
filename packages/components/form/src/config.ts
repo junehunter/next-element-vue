@@ -22,6 +22,7 @@ export interface FormItemProps {
 	filterable?: boolean;
 	clearable?: boolean;
 	dicData?: DicData[];
+	loadDicData?: Function;
 	hide?: boolean;
 	multiple?: boolean;
 	editable?: boolean;

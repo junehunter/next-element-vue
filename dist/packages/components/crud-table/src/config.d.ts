@@ -8,6 +8,7 @@ export declare interface Column {
     type?: string;
     placeholder?: string;
     dicData?: DictData[];
+    loadDicData?: Function;
     disabled?: boolean;
     defaultValue?: any;
     labelWidth?: string | number;
@@ -20,6 +21,7 @@ export declare interface Column {
     required?: boolean;
     span?: number;
     tableSelect?: any;
+    onChange?: Function;
 }
 export interface SearchColumnProps extends Column {
     searchType?: string;
@@ -38,6 +40,8 @@ export interface SearchColumnProps extends Column {
     searchPlaceholder?: string;
     searchPrefix?: Function;
     searchSuffix?: Function;
+    searchPrepend?: Function;
+    searchAppend?: Function;
     searchDicData?: DictData[];
     onChangeSearch?: Function;
 }
@@ -61,6 +65,7 @@ export interface FormColunmProps extends Column {
     formRemark?: string;
     formRules?: any[];
     formDicData?: DictData[];
+    formLoadDicData?: Function;
     onChangeForm?: Function;
 }
 export interface TableColumnProps extends SearchColumnProps, FormColunmProps {

@@ -4,7 +4,7 @@ import { InfoFilled } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
 import type { FormInstance, FormRules } from 'element-plus';
 import { useNamespace, useLocale } from 'packages/hooks';
-import { deepClone, updateColSpan, elementResize, isValueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
+import { deepClone, updateColSpan, elementResize, isValueExist, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
 import defaultConfig from './config';
 import type { FormItemProps, DicData } from './config';
 import { NextTextEllipsis, NextUpload } from 'packages/components';
@@ -74,6 +74,9 @@ export default defineComponent({
 						trigger: ['blur', 'change'],
 					});
 					formRules[col.prop] = rule;
+				}
+				if (!col.dicData?.length && col.loadDicData) {
+					col.loadDicData(col);
 				}
 			}
 			if (typeof _isEditing.value === 'boolean' && _isEditing.value === false) {
@@ -319,6 +322,22 @@ export default defineComponent({
 						onUpdate:modelValue={event => col.onChange?.(event, col)}
 					></ElDatePicker>
 				);
+			} else if (col.type === 'datetime') {
+				const placeholder = col.placeholder || t('next.form.select') + col.label;
+				return (
+					<ElDatePicker
+						v-model={formParams[col.prop]}
+						placeholder={placeholder}
+						type="datetime"
+						valueFormat={col.format || 'YYYY-MM-DD HH:mm:ss'}
+						format={col.format || 'YYYY-MM-DD HH:mm:ss'}
+						clearable
+						disabledDate={col.disabledDate || _defaultDisabledDate}
+						disabled={col.disabled}
+						editable={col.editable}
+						onUpdate:modelValue={event => col.onChange?.(event, col)}
+					></ElDatePicker>
+				);
 			} else if (col.type === 'datetimerange') {
 				const placeholder = col.placeholder || t('next.form.select') + col.label;
 				return (
@@ -344,7 +363,7 @@ export default defineComponent({
 			} else if (col.type === 'inputTableSelect') {
 				return <InputTableSelect v-model={formParams[col.prop]} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>;
 			} else if (col.type === 'upload') {
-				return <NextUpload></NextUpload>;
+				return <NextUpload onChange={(...arg) => col.onChange?.(...arg, formParams, col)}></NextUpload>;
 			}
 		};
 		expose({
@@ -359,7 +378,12 @@ export default defineComponent({
 							return (
 								!column.hide && (
 									<ElCol span={column.span || colSpan.value}>
-										<ElFormItem prop={column.prop} required={column.required} rules={formRules[column.prop]} style={{ '--form-label-width': options.labelWidth }}>
+										<ElFormItem
+											prop={column.prop}
+											required={column.required}
+											rules={formRules[column.prop]}
+											style={{ '--form-label-width': valueExist(options.formLabelWidth, options.labelWidth) }}
+										>
 											{{
 												label: () =>
 													column.label ? (

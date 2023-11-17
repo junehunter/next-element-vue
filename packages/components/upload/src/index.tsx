@@ -27,6 +27,7 @@ export default defineComponent({
 			default: 'image/*',
 		},
 	},
+	emits: ['change'],
 	setup() {
 		const { appContext } = getCurrentInstance()! as any;
 		const { t } = useLocale();
@@ -35,10 +36,12 @@ export default defineComponent({
 	render() {
 		const slots = this.$slots;
 		const props = this.$props;
+		const emit = this.$emit;
 		const _t = this.t;
 		const uploadfilesPreview = ref<UploadUserFile[]>([]);
 		const _onChange = (uploadfile, uploadfiles) => {
 			uploadfilesPreview.value = uploadfiles;
+			emit('change', uploadfile, uploadfiles);
 		};
 		const body = document.getElementsByTagName('body')[0];
 		let previewImagesContainer: any = null;

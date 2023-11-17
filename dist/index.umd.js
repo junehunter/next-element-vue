@@ -1995,13 +1995,13 @@
                 default: () => ({})
             }
         },
-        emits: [ "changeLanguage", "changeUserDropdown", "tabsChange", "tabsSelect", "tabsClose" ],
+        emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
         setup(props, {slots: slots, emit: emit}) {
             const _config = vue.ref(merge$1(defaultConfig$2, props.options)), options = vue.computed((() => _config.value)).value;
             vue.provide("options", options), vue.provide("__ns__", ns$a), vue.provide("__emit__", emit), 
             vue.provide("__slots__", slots);
             const updateOptions = cfg => {
-                _config.value = merge$1(options, cfg);
+                _config.value = merge$1(options, cfg), emit("changeOptions", _config.value);
             };
             return vue.provide("updateOptions", updateOptions), vue.watch((() => props.options), (cfg => {
                 updateOptions(cfg);
@@ -3081,8 +3081,10 @@
                         disabled: col.disabled,
                         placeholder: placeholder
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("inputInteger" === col.type) {
@@ -3098,8 +3100,10 @@
                             formParams.value[key] = value;
                         })(e, col.prop)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("inputNumber" === col.type) {
@@ -3117,8 +3121,10 @@
                             formParams.value[key] = value;
                         })(e, col.prop)
                     }, {
-                        prefix: () => col.prefix ? col.prefix : "",
-                        suffix: () => col.suffix ? col.suffix : ""
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
                 if ("select" === col.type) {
@@ -3989,6 +3995,7 @@
                             trigger: [ "blur", "change" ]
                         }), formRules[col.prop] = rule;
                     }
+                    !col.dicData?.length && col.loadDicData && col.loadDicData(col);
                 }
                 "boolean" == typeof _isEditing.value && !1 === _isEditing.value && (_formColumns.value = _formColumns.value.map((col => (col.disabled = !0, 
                 col))));
@@ -4192,6 +4199,21 @@
                         editable: col.editable
                     }, null);
                 }
+                if ("datetime" === col.type) {
+                    const placeholder = col.placeholder || t("next.form.select") + col.label;
+                    return vue.createVNode(elementPlus.ElDatePicker, {
+                        modelValue: formParams[col.prop],
+                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                        placeholder: placeholder,
+                        type: "datetime",
+                        valueFormat: col.format || "YYYY-MM-DD HH:mm:ss",
+                        format: col.format || "YYYY-MM-DD HH:mm:ss",
+                        clearable: !0,
+                        disabledDate: col.disabledDate || _defaultDisabledDate,
+                        disabled: col.disabled,
+                        editable: col.editable
+                    }, null);
+                }
                 if ("datetimerange" === col.type) {
                     const placeholder = col.placeholder || t("next.form.select") + col.label;
                     return vue.createVNode(elementPlus.ElDatePicker, {
@@ -4229,7 +4251,9 @@
                         const names = rows.map((o => o.name));
                         formParams[col.prop] = names.join(",");
                     })(rows, col)
-                }, null) : "upload" === col.type ? vue.createVNode(NextUpload, null, null) : void 0;
+                }, null) : "upload" === col.type ? vue.createVNode(NextUpload, {
+                    onChange: (...arg) => col.onChange?.(...arg, formParams, col)
+                }, null) : void 0;
             };
             expose({
                 formParams: vue.toRaw(formParams),
@@ -4254,7 +4278,7 @@
                             required: column.required,
                             rules: formRules[column.prop],
                             style: {
-                                "--form-label-width": options.labelWidth
+                                "--form-label-width": valueExist(options.formLabelWidth, options.labelWidth)
                             }
                         }, {
                             label: () => column.label ? vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextTextEllipsis, {
@@ -4307,6 +4331,10 @@
             isEditing: {
                 type: Boolean,
                 default: !0
+            },
+            columns: {
+                type: Array,
+                default: () => []
             }
         },
         emits: [ "close", "submit" ],
@@ -4314,37 +4342,13 @@
             vue.inject("addEditFormSlots").value.forEach((slotName => {}));
             const _options = vue.inject("options", {}), options = deepClone(vue.isRef(_options) ? vue.unref(_options) : _options);
             options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-            const _columns = vue.toRaw(options.columns), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), formRef = vue.ref(), loopFormColumns = list => {
-                let cols = [];
-                return list.forEach((col => {
-                    cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
-                    col.children && delete col.children);
-                })), cols;
-            }, columns = loopFormColumns(_columns), formColumns = vue.toRaw(options.formColumns), formColumnsLast = columns.concat(formColumns).map((col => ({
-                prop: col.prop,
-                label: valueExist(col.formLabel, col.label, ""),
-                type: valueExist(col.formType, col.type, ""),
-                defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
-                placeholder: valueExist(col.formPlaceholder, ""),
-                required: valueExist(col.formRequired, col.required, !1),
-                sort: valueExist(col.formSort, col.sort, null),
-                prefix: valueExist(col.formPrefix, col.prefix, null),
-                suffix: valueExist(col.formSuffix, col.suffix, null),
-                prepend: valueExist(col.formPrepend, col.prepend, null),
-                append: valueExist(col.formAppend, col.append, null),
-                hide: valueExist(col.formHide, !1),
-                disabled: valueExist(col.formDisabled, col.disabled, !1),
-                span: valueExist(col.formSpan, col.span, null),
-                dicData: valueExist(col.formDicData, col.dicData, []),
-                onChange: col.onChangeForm || null,
-                tableSelect: valueExist(col.tableSelect, {})
-            }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast), onSubmit = (...arg) => {
+            const formRef = vue.ref(), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), _columns = vue.toRaw(props.columns), onSubmit = (...arg) => {
                 emit("submit", ...arg);
             };
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextForm, {
                 ref: formRef,
                 options: options,
-                columns: _formColumnsLast,
+                columns: _columns,
                 formDatum: formDatum,
                 onClose: () => emit("close"),
                 onSubmit: onSubmit
@@ -4365,8 +4369,37 @@
                 return merge$1(_config, cfg);
             })), options = vue.unref(_options);
             vue.provide("options", vue.computed((() => _options.value))), vue.provide("ns", ns$2);
-            const {t: t} = useLocale(), columns = vue.ref(options.columns), searchColumn = vue.ref([]);
-            (() => {
+            const {t: t} = useLocale(), columns = vue.ref(options.columns), searchColumn = vue.ref([]), {formColumns: formColumns, searchColumns: searchColumns} = (options => {
+                const _columns = vue.toRaw(options.columns), loopFormColumns = list => {
+                    let cols = [];
+                    return list.forEach((col => {
+                        cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
+                        col.children && delete col.children);
+                    })), cols;
+                }, evenColumns = loopFormColumns(_columns), formColumns = vue.toRaw(options.formColumns), formColumnsLast = evenColumns.concat(formColumns).map((col => ({
+                    prop: col.prop,
+                    label: valueExist(col.formLabel, col.label, ""),
+                    type: valueExist(col.formType, col.type, ""),
+                    defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
+                    placeholder: valueExist(col.formPlaceholder, ""),
+                    required: valueExist(col.formRequired, col.required, !1),
+                    sort: valueExist(col.formSort, col.sort, null),
+                    prefix: valueExist(col.formPrefix, col.prefix, null),
+                    suffix: valueExist(col.formSuffix, col.suffix, null),
+                    prepend: valueExist(col.formPrepend, col.prepend, null),
+                    append: valueExist(col.formAppend, col.append, null),
+                    hide: valueExist(col.formHide, !1),
+                    disabled: valueExist(col.formDisabled, col.disabled, !1),
+                    span: valueExist(col.formSpan, col.span, null),
+                    dicData: valueExist(col.formDicData, col.dicData, []),
+                    loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
+                    onChange: valueExist(col.onChangeForm, col.onChange, null),
+                    tableSelect: valueExist(col.tableSelect, {})
+                }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast);
+                _formColumnsLast.forEach((col => {
+                    !col.dicData?.length && col.loadDicData && col.loadDicData(col);
+                }));
+                const searchColumn = vue.ref([]);
                 searchColumn.value = options.searchColumn.map(((col, index) => ({
                     ...col,
                     sort: index
@@ -4385,6 +4418,8 @@
                                 disabled: valueExist(col.searchDisabled, col.disabled, !1),
                                 prefix: valueExist(col.searchPrefix, col.prefix, null),
                                 suffix: valueExist(col.searchSuffix, col.suffix, null),
+                                prepend: valueExist(col.searchPrepend, col.prepend, null),
+                                append: valueExist(col.searchAppend, col.append, null),
                                 sort: valueExist(col.searchSort, col.sort, searchColumnLength + index)
                             };
                             cols.push(item);
@@ -4392,8 +4427,13 @@
                         col.children?.length && cols.push(...loopColumns(col.children));
                     })), cols;
                 };
-                searchColumn.value.push(...loopColumns(columns.value)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop");
-            })();
+                return searchColumn.value.push(...loopColumns(_columns)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop"), 
+                {
+                    formColumns: _formColumnsLast,
+                    searchColumns: searchColumn.value
+                };
+            })(options);
+            searchColumn.value = searchColumns;
             const tableData = vue.ref(props.data), _searchFormParams = vue.ref((() => {
                 const list = searchColumn.value;
                 let params = {};
@@ -4589,6 +4629,7 @@
                 default: () => vue.createVNode(AddEditForm, {
                     ref: addEditFormRef,
                     formDatum: addEditDialog.rowInfo,
+                    columns: formColumns,
                     isEditing: addEditDialog.isEditing,
                     onClose: onCloseAddEditDialog,
                     onSubmit: onSubmitAddEditDialog
@@ -4620,6 +4661,7 @@
                 default: "image/*"
             }
         },
+        emits: [ "change" ],
         setup() {
             const {appContext: appContext} = vue.getCurrentInstance(), {t: t} = useLocale();
             return {
@@ -4628,7 +4670,7 @@
             };
         },
         render() {
-            const slots = this.$slots, props = this.$props, _t = this.t, uploadfilesPreview = vue.ref([]), body = document.getElementsByTagName("body")[0];
+            const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, uploadfilesPreview = vue.ref([]), body = document.getElementsByTagName("body")[0];
             let previewImagesContainer = null;
             return vue.createVNode(elementPlus.ElUpload, {
                 class: [ ns$1.b(), props.className ],
@@ -4653,7 +4695,7 @@
                     previewImagesContainer.appContext = this.appContext, vue.render(previewComponent, previewImagesContainer);
                 },
                 onChange: (uploadfile, uploadfiles) => {
-                    uploadfilesPreview.value = uploadfiles;
+                    uploadfilesPreview.value = uploadfiles, emit("change", uploadfile, uploadfiles);
                 }
             }, {
                 trigger: () => slots.default ? slots.default() : "picture-card" === props.listType ? vue.createVNode(elementPlus.ElIcon, null, {
@@ -4952,7 +4994,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.2",
+        version: "0.1.3",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -4966,7 +5008,7 @@
     exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.2", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.3", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

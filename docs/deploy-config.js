@@ -8,9 +8,13 @@ const day = date.getDate();
 const hours = date.getHours();
 const minutes = date.getMinutes();
 const time = year + '-' + (month > 0 ? month : '0' + month) + '-' + (day > 0 ? day : '0' + day) + ' ' + (hours > 0 ? hours : '0' + hours) + ' ' + (minutes > 0 ? minutes : '0' + minutes);
-const config = {
+const githubConfig = {
 	repositoryUrl: 'https://github.com/junehunter/next-element-vue',
 	branchName: 'gh-pages',
+};
+const giteeConfig = {
+	repositoryUrl: 'https://gitee.com/htengweb/next-element-admin.git',
+	branchName: 'doc',
 };
 // 执行文档构建
 execSync('pnpm run build', { stdio: 'inherit' });
@@ -28,7 +32,9 @@ execSync('git add -A', { stdio: 'inherit' });
 execSync(`git commit -m "文档自动部署 ${time}"`, { stdio: 'inherit' });
 
 // 强制推送到指定的 GitHub Pages 分支
-execSync(`git push -f ${config.repositoryUrl} master:${config.branchName}`, { stdio: 'inherit' });
+execSync(`git push -f ${githubConfig.repositoryUrl} master:${githubConfig.branchName}`, { stdio: 'inherit' });
+// 强制推送到指定的 gitee doc 分支
+execSync(`git push -f ${giteeConfig.repositoryUrl} master:${giteeConfig.branchName}`, { stdio: 'inherit' });
 
 // 切换回原始目录
 process.chdir('../..');

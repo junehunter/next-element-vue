@@ -113,8 +113,10 @@ export default defineComponent({
 				return (
 					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder}>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);
@@ -123,8 +125,10 @@ export default defineComponent({
 				return (
 					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} onInput={e => _onInputInteger(e, col.prop)}>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);
@@ -133,8 +137,10 @@ export default defineComponent({
 				return (
 					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} onInput={e => _onInputNumber(e, col.prop)}>
 						{{
-							prefix: () => (col.prefix ? col.prefix : ''),
-							suffix: () => (col.suffix ? col.suffix : ''),
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
 						}}
 					</ElInput>
 				);

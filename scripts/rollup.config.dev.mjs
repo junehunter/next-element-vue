@@ -11,7 +11,7 @@ import terser from '@rollup/plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import { babel } from '@rollup/plugin-babel';
 import alias from '@rollup/plugin-alias';
-import serve from 'rollup-plugin-serve';
+// import serve from 'rollup-plugin-serve';
 import copy from 'rollup-plugin-copy';
 import url from '@rollup/plugin-url';
 import replace from '@rollup/plugin-replace';
@@ -136,16 +136,16 @@ export default {
 				} catch (error) {}
 			},
 		},
-		serve({
-			// open: true,
-			// openPage: '/examples', // 默认启动打开的页面
-			contentBase: ['dist'], // 提供服务的文件夹
-			// historyApiFallback: true, // 设置true返回index.html，而不是错误404
-			port: 10001, // 默认端口
-			headers: {
-				'Access-Control-Allow-Origin': '*',
-			},
-		}),
+		// serve({
+		// 	// open: true,
+		// 	// openPage: '/examples', // 默认启动打开的页面
+		// 	contentBase: ['dist'], // 提供服务的文件夹
+		// 	// historyApiFallback: true, // 设置true返回index.html，而不是错误404
+		// 	port: 10001, // 默认端口
+		// 	headers: {
+		// 		'Access-Control-Allow-Origin': '*',
+		// 	},
+		// }),
 	],
 	cache: true,
 	// 声明外部依赖，不会被打包进组件库

@@ -71,16 +71,23 @@ const options = reactive({
 			searchType: 'select',
 			type: 'select',
 			multiple: true,
-			dicData: [
-				{
-					value: '1',
-					label: '计算机/互联网/通信',
-				},
-				{
-					value: '2',
-					label: '生产/工艺/制造',
-				},
-			],
+			dicData: [],
+			formSort: 6,
+			loadDicData: col => {
+				console.log(col);
+				setTimeout(() => {
+					col.dicData = [
+						{
+							value: '1',
+							label: '计算机/互联网/通信',
+						},
+						{
+							value: '2',
+							label: '生产/工艺/制造',
+						},
+					];
+				}, 3000);
+			},
 		},
 		{
 			prop: '权限角色',
@@ -139,6 +146,16 @@ const options = reactive({
 						label: '创建时间',
 					},
 				],
+			},
+		},
+		{
+			prop: 'image',
+			label: '上传图片',
+			type: 'upload',
+			sort: 20,
+			span: 24,
+			onChange: (...arg) => {
+				console.log(...arg);
 			},
 		},
 		{

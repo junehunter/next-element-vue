@@ -35,7 +35,7 @@ export default defineComponent({
 			},
 		},
 	},
-	emits: ['changeLanguage', 'changeUserDropdown', 'tabsChange', 'tabsSelect', 'tabsClose'],
+	emits: ['changeLanguage', 'changeUserDropdown', 'changeOptions', 'tabsChange', 'tabsSelect', 'tabsClose'],
 	setup(props, { slots, emit }) {
 		const _config = ref<any>(merge(defaultConfig, props.options));
 		const options = computed(() => _config.value).value;
@@ -45,6 +45,7 @@ export default defineComponent({
 		provide('__slots__', slots);
 		const updateOptions = (cfg: any) => {
 			_config.value = merge(options, cfg);
+			emit('changeOptions', _config.value);
 		};
 		provide('updateOptions', updateOptions);
 		// 外部props数据触发更新
