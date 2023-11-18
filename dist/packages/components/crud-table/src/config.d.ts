@@ -81,7 +81,8 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
     sortable?: boolean;
     children?: TableColumnProps[];
 }
-export declare const header_menu_solts_key: string[];
+export declare const header_menu_slots_key: string[];
+export declare const operation_column_slots_key: string[];
 declare const _default: {
     initLoadData: boolean;
     defaultContentHeight: number;
@@ -113,9 +114,10 @@ declare const _default: {
     refreshBtn: boolean;
     settingBtn: boolean;
     operations: boolean;
+    operationsWidth: number;
     operationsBtnPlain: boolean;
     operationsBtnText: boolean;
-    operationsWidth: number;
+    operationsBtnSize: string;
     addBtnText: string;
     isPagination: boolean;
     dialogTitle: string;

@@ -5,7 +5,7 @@ import { merge } from 'lodash-unified';
 import isEqual from 'lodash-es/isequal';
 import { deepClone, elementResize, isValueExist } from 'packages/hooks/global-hook';
 import defaultPropsConfig from './props';
-import defaultConfig, { header_menu_solts_key } from './config';
+import defaultConfig, { header_menu_slots_key, operation_column_slots_key } from './config';
 import type { TableColumnProps, SearchColumnProps, FormColunmProps } from './config';
 import { columnSlotNamePrefix, searchFormSlotNamePrefix, formSlotNamePrefix, updateFormColumns } from './hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
@@ -230,8 +230,12 @@ export default defineComponent({
 			addEditForm_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
 		});
 		const headerMenu_solts = {};
-		header_menu_solts_key.forEach(slotName => {
+		header_menu_slots_key.forEach(slotName => {
 			headerMenu_solts[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
+		});
+		const operation_column_slots = {};
+		operation_column_slots_key.forEach(slotName => {
+			operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
 		});
 		expose({
 			addEditFormRef: addEditFormRef,
@@ -301,7 +305,11 @@ export default defineComponent({
 											</TableColumnDynamic>
 										);
 									})}
-									{options.operations ? <TableColumnOperations onEditRow={onClickRowEdit} onViewRow={onClickRowView} onDeleteRow={onClickDeleteRow}></TableColumnOperations> : null}
+									{options.operations ? (
+										<TableColumnOperations onEditRow={onClickRowEdit} onViewRow={onClickRowView} onDeleteRow={onClickDeleteRow}>
+											{operation_column_slots}
+										</TableColumnOperations>
+									) : null}
 								</ElTable>
 							</div>
 						</NextSpinLoading>

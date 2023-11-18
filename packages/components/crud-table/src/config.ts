@@ -86,7 +86,8 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
 	children?: TableColumnProps[];
 }
 
-export const header_menu_solts_key = ['menu-left-prefix', 'menu-left-suffix', 'menu-right-prefix', 'menu-right-suffix'];
+export const header_menu_slots_key = ['menu-left-prefix', 'menu-left-suffix', 'menu-right-prefix', 'menu-right-suffix'];
+export const operation_column_slots_key = ['operation-column-prefix', 'operation-column-suffix'];
 
 export default {
 	initLoadData: true, // 初始是否默认加载数据
@@ -121,9 +122,10 @@ export default {
 	refreshBtn: true, // table刷新按钮
 	settingBtn: true, // table设置按钮
 	operations: true, // 是否显示操作栏
+	operationsWidth: 260,
 	operationsBtnPlain: false,
 	operationsBtnText: true,
-	operationsWidth: 260,
+	operationsBtnSize: 'small', // large / default / small
 	addBtnText: '', // 新增按钮名称
 	// 分页
 	isPagination: true,

@@ -6,7 +6,7 @@ import { useLocale } from 'packages/hooks';
 export default defineComponent({
 	name: 'TableColumnOperations',
 	emits: ['editRow', 'viewRow', 'deleteRow'],
-	setup(props, { emit }) {
+	setup(props, { emit, slots }) {
 		const _options = inject('options') as any;
 		const options = isRef(_options) ? unref(_options) : _options;
 		const { t } = useLocale();
@@ -39,18 +39,22 @@ export default defineComponent({
 				});
 		};
 		const renderContent = () => {
+			const btnText = options.operationsBtnText;
+			const btnPlain = options.operationsBtnPlain;
+			const btnSize = options.operationsBtnSize;
 			return (
 				<ElTableColumn fixed="right" label={t('next.table.operation')} width={options.operationsWidth} headerAlign={options.headerAlign} align={options.cellAlign}>
 					{{
 						default: scoped => (
 							<>
+								{slots['operation-column-prefix']?.(scoped, { text: btnText, plain: btnPlain, size: btnSize })}
 								{options.editBtn ? (
 									<ElTooltip enterable={false} effect="dark" content={t('next.table.edit')} placement="top" disabled={operationsShowText.value}>
 										<ElButton
-											text={options.operationsBtnText}
-											plain={options.operationsBtnPlain}
+											text={btnText}
+											plain={btnPlain}
 											class={!operationsShowText.value ? 'operations-btn' : ''}
-											size="small"
+											size={btnSize}
 											type="primary"
 											onClick={() => onClickRowEdit(scoped)}
 										>
@@ -68,10 +72,10 @@ export default defineComponent({
 								{options.viewBtn ? (
 									<ElTooltip enterable={false} effect="dark" content={t('next.table.view')} placement="top" disabled={operationsShowText.value}>
 										<ElButton
-											text={options.operationsBtnText}
-											plain={options.operationsBtnPlain}
+											text={btnText}
+											plain={btnPlain}
 											class={!operationsShowText.value ? 'operations-btn' : ''}
-											size="small"
+											size={btnSize}
 											type="primary"
 											onClick={() => onClickRowView(scoped)}
 										>
@@ -89,10 +93,10 @@ export default defineComponent({
 								{options.delBtn ? (
 									<ElTooltip enterable={false} effect="dark" content={t('next.table.delete')} placement="top" disabled={operationsShowText.value}>
 										<ElButton
-											text={options.operationsBtnText}
-											plain={options.operationsBtnPlain}
+											text={btnText}
+											plain={btnPlain}
 											class={!operationsShowText.value ? 'operations-btn' : ''}
-											size="small"
+											size={btnSize}
 											type="danger"
 											onClick={() => onClickRowDel(scoped)}
 										>
@@ -107,6 +111,7 @@ export default defineComponent({
 										</ElButton>
 									</ElTooltip>
 								) : null}
+								{slots['operation-column-suffix']?.(scoped, { text: btnText, plain: btnPlain, size: btnSize })}
 							</>
 						),
 					}}

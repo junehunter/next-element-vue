@@ -3104,7 +3104,7 @@ var defaultPropsConfig = {
     }
 };
 
-const header_menu_solts_key = [ "menu-left-prefix", "menu-left-suffix", "menu-right-prefix", "menu-right-suffix" ];
+const header_menu_slots_key = [ "menu-left-prefix", "menu-left-suffix", "menu-right-prefix", "menu-right-suffix" ], operation_column_slots_key = [ "operation-column-prefix", "operation-column-suffix" ];
 
 var defaultConfig$1 = {
     initLoadData: !0,
@@ -3137,9 +3137,10 @@ var defaultConfig$1 = {
     refreshBtn: !0,
     settingBtn: !0,
     operations: !0,
+    operationsWidth: 260,
     operationsBtnPlain: !1,
     operationsBtnText: !0,
-    operationsWidth: 260,
+    operationsBtnSize: "small",
     addBtnText: "",
     isPagination: !0,
     dialogTitle: "",
@@ -3704,98 +3705,109 @@ const TableColumnDynamic = defineComponent({
 var TableColumnOperations = defineComponent({
     name: "TableColumnOperations",
     emits: [ "editRow", "viewRow", "deleteRow" ],
-    setup(props, {emit: emit}) {
+    setup(props, {emit: emit, slots: slots}) {
         const _options = inject("options"), options = isRef(_options) ? unref(_options) : _options, {t: t} = useLocale(), operationsShowText = computed((() => {
             const {operationsBtnPlain: operationsBtnPlain, operationsBtnText: operationsBtnText} = options;
             return operationsBtnText || operationsBtnPlain;
-        })), renderContent = () => createVNode(ElTableColumn, {
-            fixed: "right",
-            label: t("next.table.operation"),
-            width: options.operationsWidth,
-            headerAlign: options.headerAlign,
-            align: options.cellAlign
-        }, {
-            default: scoped => createVNode(Fragment, null, [ options.editBtn ? createVNode(ElTooltip, {
-                enterable: !1,
-                effect: "dark",
-                content: t("next.table.edit"),
-                placement: "top",
-                disabled: operationsShowText.value
+        })), renderContent = () => {
+            const btnText = options.operationsBtnText, btnPlain = options.operationsBtnPlain, btnSize = options.operationsBtnSize;
+            return createVNode(ElTableColumn, {
+                fixed: "right",
+                label: t("next.table.operation"),
+                width: options.operationsWidth,
+                headerAlign: options.headerAlign,
+                align: options.cellAlign
             }, {
-                default: () => [ createVNode(ElButton, {
-                    text: options.operationsBtnText,
-                    plain: options.operationsBtnPlain,
-                    class: operationsShowText.value ? "" : "operations-btn",
-                    size: "small",
-                    type: "primary",
-                    onClick: () => (scoped => {
-                        emit("editRow", scoped);
-                    })(scoped)
+                default: scoped => createVNode(Fragment, null, [ slots["operation-column-prefix"]?.(scoped, {
+                    text: btnText,
+                    plain: btnPlain,
+                    size: btnSize
+                }), options.editBtn ? createVNode(ElTooltip, {
+                    enterable: !1,
+                    effect: "dark",
+                    content: t("next.table.edit"),
+                    placement: "top",
+                    disabled: operationsShowText.value
                 }, {
-                    icon: () => createVNode(ElIcon, null, {
-                        default: () => [ createVNode(edit_pen_default, null, null) ]
-                    }),
-                    default: () => t("next.table.edit")
-                }) ]
-            }) : null, options.viewBtn ? createVNode(ElTooltip, {
-                enterable: !1,
-                effect: "dark",
-                content: t("next.table.view"),
-                placement: "top",
-                disabled: operationsShowText.value
-            }, {
-                default: () => [ createVNode(ElButton, {
-                    text: options.operationsBtnText,
-                    plain: options.operationsBtnPlain,
-                    class: operationsShowText.value ? "" : "operations-btn",
-                    size: "small",
-                    type: "primary",
-                    onClick: () => (scoped => {
-                        emit("viewRow", scoped);
-                    })(scoped)
+                    default: () => [ createVNode(ElButton, {
+                        text: btnText,
+                        plain: btnPlain,
+                        class: operationsShowText.value ? "" : "operations-btn",
+                        size: btnSize,
+                        type: "primary",
+                        onClick: () => (scoped => {
+                            emit("editRow", scoped);
+                        })(scoped)
+                    }, {
+                        icon: () => createVNode(ElIcon, null, {
+                            default: () => [ createVNode(edit_pen_default, null, null) ]
+                        }),
+                        default: () => t("next.table.edit")
+                    }) ]
+                }) : null, options.viewBtn ? createVNode(ElTooltip, {
+                    enterable: !1,
+                    effect: "dark",
+                    content: t("next.table.view"),
+                    placement: "top",
+                    disabled: operationsShowText.value
                 }, {
-                    icon: () => createVNode(ElIcon, null, {
-                        default: () => [ createVNode(view_default, null, null) ]
-                    }),
-                    default: () => t("next.table.view")
-                }) ]
-            }) : null, options.delBtn ? createVNode(ElTooltip, {
-                enterable: !1,
-                effect: "dark",
-                content: t("next.table.delete"),
-                placement: "top",
-                disabled: operationsShowText.value
-            }, {
-                default: () => [ createVNode(ElButton, {
-                    text: options.operationsBtnText,
-                    plain: options.operationsBtnPlain,
-                    class: operationsShowText.value ? "" : "operations-btn",
-                    size: "small",
-                    type: "danger",
-                    onClick: () => (scoped => {
-                        ElMessageBox.confirm(t("next.table.message.deleteTip"), t("next.table.message.tip"), {
-                            type: "warning",
-                            showClose: !1,
-                            center: !1,
-                            confirmButtonText: t("next.table.message.confirmButtonText"),
-                            cancelButtonText: t("next.table.message.cancelButtonText")
-                        }).then((() => {
-                            emit("deleteRow", scoped);
-                        })).catch((() => {
-                            ElMessage({
-                                type: "info",
-                                message: t("next.table.message.cancelDelete")
-                            });
-                        }));
-                    })(scoped)
+                    default: () => [ createVNode(ElButton, {
+                        text: btnText,
+                        plain: btnPlain,
+                        class: operationsShowText.value ? "" : "operations-btn",
+                        size: btnSize,
+                        type: "primary",
+                        onClick: () => (scoped => {
+                            emit("viewRow", scoped);
+                        })(scoped)
+                    }, {
+                        icon: () => createVNode(ElIcon, null, {
+                            default: () => [ createVNode(view_default, null, null) ]
+                        }),
+                        default: () => t("next.table.view")
+                    }) ]
+                }) : null, options.delBtn ? createVNode(ElTooltip, {
+                    enterable: !1,
+                    effect: "dark",
+                    content: t("next.table.delete"),
+                    placement: "top",
+                    disabled: operationsShowText.value
                 }, {
-                    icon: () => createVNode(ElIcon, null, {
-                        default: () => [ createVNode(delete_default, null, null) ]
-                    }),
-                    default: () => t("next.table.delete")
-                }) ]
-            }) : null ])
-        });
+                    default: () => [ createVNode(ElButton, {
+                        text: btnText,
+                        plain: btnPlain,
+                        class: operationsShowText.value ? "" : "operations-btn",
+                        size: btnSize,
+                        type: "danger",
+                        onClick: () => (scoped => {
+                            ElMessageBox.confirm(t("next.table.message.deleteTip"), t("next.table.message.tip"), {
+                                type: "warning",
+                                showClose: !1,
+                                center: !1,
+                                confirmButtonText: t("next.table.message.confirmButtonText"),
+                                cancelButtonText: t("next.table.message.cancelButtonText")
+                            }).then((() => {
+                                emit("deleteRow", scoped);
+                            })).catch((() => {
+                                ElMessage({
+                                    type: "info",
+                                    message: t("next.table.message.cancelDelete")
+                                });
+                            }));
+                        })(scoped)
+                    }, {
+                        icon: () => createVNode(ElIcon, null, {
+                            default: () => [ createVNode(delete_default, null, null) ]
+                        }),
+                        default: () => t("next.table.delete")
+                    }) ]
+                }) : null, slots["operation-column-suffix"]?.(scoped, {
+                    text: btnText,
+                    plain: btnPlain,
+                    size: btnSize
+                }) ])
+            });
+        };
         return () => createVNode(Fragment, null, [ renderContent() ]);
     }
 }), FooterPagination = defineComponent({
@@ -4741,8 +4753,12 @@ var Element$2 = defineComponent({
             addEditForm_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
         }));
         const headerMenu_solts = {};
-        header_menu_solts_key.forEach((slotName => {
+        header_menu_slots_key.forEach((slotName => {
             headerMenu_solts[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
+        }));
+        const operation_column_slots = {};
+        operation_column_slots_key.forEach((slotName => {
+            operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
         })), expose({
             addEditFormRef: addEditFormRef
         });
@@ -4808,7 +4824,9 @@ var Element$2 = defineComponent({
                     onEditRow: onClickRowEdit,
                     onViewRow: onClickRowView,
                     onDeleteRow: onClickDeleteRow
-                }, null) : null ],
+                }, _isSlot(operation_column_slots) ? operation_column_slots : {
+                    default: () => [ operation_column_slots ]
+                }) : null ],
                 empty: () => createVNode(ElEmpty, {
                     imageSize: tableContentHeight.value > 220 ? 100 : 50,
                     description: t("next.table.notData")
