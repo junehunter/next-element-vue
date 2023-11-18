@@ -49,7 +49,7 @@ export interface SearchColumnProps extends Column {
 }
 
 export interface FormColunmProps extends Column {
-	formSort: number;
+	formSort?: number;
 	formType?: string;
 	formDefaultValue?: any;
 	formPlaceholder?: string;

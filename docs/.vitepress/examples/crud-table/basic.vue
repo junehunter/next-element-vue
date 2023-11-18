@@ -61,16 +61,22 @@ const options = reactive({
 			sortable: true,
 			formSort: 3,
 			formType: 'select',
-			dicData: [
-				{
-					value: '1',
-					label: '男',
-				},
-				{
-					value: '2',
-					label: '女',
-				},
-			],
+			dicData: [],
+			loadDicData: (col, done) => {
+				setTimeout(() => {
+					const dicData = [
+						{
+							value: '1',
+							label: '男',
+						},
+						{
+							value: '2',
+							label: '女',
+						},
+					];
+					done(dicData);
+				}, 3000);
+			},
 		},
 		{
 			prop: 'job',
@@ -78,16 +84,26 @@ const options = reactive({
 			searchType: 'select',
 			type: 'select',
 			multiple: true,
-			dicData: [
-				{
-					value: '1',
-					label: '计算机/互联网/通信',
-				},
-				{
-					value: '2',
-					label: '生产/工艺/制造',
-				},
-			],
+			dicData: [],
+			loadDicData: (col, done) => {
+				setTimeout(() => {
+					const dicData = [
+						{
+							value: '1',
+							label: '董事长',
+						},
+						{
+							value: '2',
+							label: '总经理',
+						},
+						{
+							value: '3',
+							label: '财务总监',
+						},
+					];
+					done(dicData);
+				}, 3000);
+			},
 		},
 		{
 			prop: '权限角色',
@@ -133,7 +149,7 @@ const tableReactive = reactive({
 			username: 'zhngsan',
 			sex: '1',
 			phone: '1888888888',
-			job: '董事长',
+			job: '1',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
 			children: [
@@ -144,7 +160,7 @@ const tableReactive = reactive({
 					username: 'zhngsan',
 					sex: '1',
 					phone: '1888888888',
-					job: '董事',
+					job: '3',
 					startDate: '2023-9-7 12:00:00',
 					endDate: '2023-9-9 12:00:00',
 				},
@@ -157,7 +173,18 @@ const tableReactive = reactive({
 			username: 'zhngsan',
 			sex: '1',
 			phone: '1888888888',
-			job: '普通员工',
+			job: '2',
+			startDate: '2023-9-7 12:00:00',
+			endDate: '2023-9-9 12:00:00',
+		},
+		{
+			id: 5,
+			name: '王丽',
+			email: 'zhangsan@XXX.com',
+			username: 'zhngsan',
+			sex: '2',
+			phone: '1888888888',
+			job: '3',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
 		},

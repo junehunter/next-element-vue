@@ -20,7 +20,7 @@ export declare const NextUpload: import("../../utils/install").SFCWithInstall<im
 }, {
     t: import("../..").Translator;
     appContext: any;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "change"[], "change", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;
@@ -38,7 +38,9 @@ export declare const NextUpload: import("../../utils/install").SFCWithInstall<im
         type: StringConstructor;
         default: string;
     };
-}>>, {
+}>> & {
+    onChange?: (...args: any[]) => any;
+}, {
     className: string;
     style: import("vue").CSSProperties;
     listType: string;

@@ -1,7 +1,7 @@
 import type { FormItemProps } from 'packages/components/form/src/config';
 import type { FormColunmProps, TableColumnProps, SearchColumnProps } from './config';
 import { deepClone, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
-import { toRaw, ref } from 'vue';
+import { reactive, ref } from 'vue';
 /**
  * 自定义table中column的slot name
  * @param prop
@@ -104,12 +104,17 @@ export const getDefaultExpandedKeys = (treeData: any): string[] => {
  * @param options
  * @returns
  */
-export const useFormColumns = options => {
+export const updateFormColumns = async (options: any, cb: Function) => {
 	// 获取表单模块column
-	const _columns = toRaw(options.columns);
+	const _columns = reactive(options.columns);
 	const loopFormColumns = (list: TableColumnProps[]) => {
 		let cols = [];
-		list.forEach((col: TableColumnProps) => {
+		list.forEach(async (col: TableColumnProps) => {
+			if (!col.dicData?.length && col.loadDicData) {
+				await col.loadDicData(col, data => {
+					if (data?.length) col.dicData = data;
+				});
+			}
 			cols.push(col);
 			if (col.children?.length) {
 				cols.push(...loopFormColumns(col.children));
@@ -118,8 +123,8 @@ export const useFormColumns = options => {
 		});
 		return cols;
 	};
-	const evenColumns = loopFormColumns(_columns);
-	const formColumns = toRaw(options.formColumns);
+	const evenColumns = await loopFormColumns(_columns);
+	const formColumns = options.formColumns;
 	const mergeColumns = evenColumns.concat(formColumns).map((col: FormColunmProps) => {
 		const item: FormItemProps = {
 			prop: col.prop,
@@ -146,11 +151,7 @@ export const useFormColumns = options => {
 	const filterColumns = mergeColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];
 	const formColumnsLast = filterColumns.sort((a: FormItemProps, b: FormItemProps) => a.sort - b.sort);
 	const _formColumnsLast: FormItemProps[] = deepClone(formColumnsLast);
-	_formColumnsLast.forEach((col: FormItemProps) => {
-		if (!col.dicData?.length && col.loadDicData) {
-			col.loadDicData(col);
-		}
-	});
+
 	// 获取筛选表单column
 	const searchColumn = ref<SearchColumnProps[]>([]);
 	searchColumn.value = options.searchColumn.map((col: SearchColumnProps, index: number) => {
@@ -192,8 +193,10 @@ export const useFormColumns = options => {
 		searchColumn.value.sort((a: SearchColumnProps, b: SearchColumnProps) => a.sort - b.sort),
 		'prop'
 	);
-	return {
+	const params = {
 		formColumns: _formColumnsLast,
 		searchColumns: searchColumn.value,
+		columns: _columns,
 	};
+	cb && cb(params);
 };

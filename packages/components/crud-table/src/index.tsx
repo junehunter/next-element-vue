@@ -6,8 +6,8 @@ import isEqual from 'lodash-es/isequal';
 import { deepClone, elementResize, isValueExist } from 'packages/hooks/global-hook';
 import defaultPropsConfig from './props';
 import defaultConfig, { header_menu_solts_key } from './config';
-import type { TableColumnProps, SearchColumnProps } from './config';
-import { columnSlotNamePrefix, searchFormSlotNamePrefix, formSlotNamePrefix, useFormColumns } from './hook';
+import type { TableColumnProps, SearchColumnProps, FormColunmProps } from './config';
+import { columnSlotNamePrefix, searchFormSlotNamePrefix, formSlotNamePrefix, updateFormColumns } from './hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
 import HeaderSearch from './header-search';
 import HeaderMenu from './header-menu';
@@ -32,14 +32,20 @@ export default defineComponent({
 		provide('options', computed(() => _options.value)); // prettier-ignore
 		provide('ns', ns);
 		const { t } = useLocale();
-		const columns = ref<TableColumnProps[]>(options.columns);
-		const searchColumn = ref<SearchColumnProps[]>([]);
-		const { formColumns, searchColumns } = useFormColumns(options);
-		// 获取搜索栏数据
-		searchColumn.value = searchColumns;
+		const _columns = ref<TableColumnProps[]>(options.columns);
+		const _searchColumns = ref<SearchColumnProps[]>([]);
+		const _formColumns = ref<FormColunmProps[]>([]);
+		updateFormColumns(options, ({ formColumns, searchColumns, columns }) => {
+			// 获取搜索栏数据
+			_searchColumns.value = searchColumns;
+			// 获取新增编辑表单栏数据
+			_formColumns.value = formColumns;
+			// 获取table column数据
+			_columns.value = columns;
+		});
 		const tableData = ref(props.data);
 		const _getDefaultSearchFormParams = () => {
-			const list = searchColumn.value;
+			const list = _searchColumns.value;
 			let params: { [key: string]: any } = {};
 			for (let i = 0; i < list.length; i++) {
 				const item = list[i];
@@ -237,7 +243,7 @@ export default defineComponent({
 						{options.showSearchForm || options.showHeaderMenu ? (
 							<header ref={headerRef} class={ns.b('header')}>
 								{options.showSearchForm && (
-									<HeaderSearch columns={searchColumn.value} onZoomResize={updateTableContentHeight} onConfirmSearch={onConfirmSearch} onClearSearch={onClearSearch}>
+									<HeaderSearch columns={_searchColumns.value} onZoomResize={updateTableContentHeight} onConfirmSearch={onConfirmSearch} onClearSearch={onClearSearch}>
 										{searchFrom_slots}
 									</HeaderSearch>
 								)}
@@ -288,8 +294,12 @@ export default defineComponent({
 										></ElTableColumn>
 									) : null}
 									{slots.default?.()}
-									{(columns.value as TableColumnProps[]).map(col => {
-										return <TableColumnDynamic columnOption={col}>{column_slots}</TableColumnDynamic>;
+									{(_columns.value as TableColumnProps[]).map(col => {
+										return (
+											<TableColumnDynamic columnOption={col} key={col.prop}>
+												{column_slots}
+											</TableColumnDynamic>
+										);
 									})}
 									{options.operations ? <TableColumnOperations onEditRow={onClickRowEdit} onViewRow={onClickRowView} onDeleteRow={onClickDeleteRow}></TableColumnOperations> : null}
 								</ElTable>
@@ -314,7 +324,7 @@ export default defineComponent({
 									<AddEditForm
 										ref={addEditFormRef}
 										formDatum={addEditDialog.rowInfo}
-										columns={formColumns}
+										columns={_formColumns.value}
 										isEditing={addEditDialog.isEditing}
 										onClose={onCloseAddEditDialog}
 										onSubmit={onSubmitAddEditDialog}

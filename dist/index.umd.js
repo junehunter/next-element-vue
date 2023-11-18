@@ -4369,14 +4369,17 @@
                 return merge$1(_config, cfg);
             })), options = vue.unref(_options);
             vue.provide("options", vue.computed((() => _options.value))), vue.provide("ns", ns$2);
-            const {t: t} = useLocale(), columns = vue.ref(options.columns), searchColumn = vue.ref([]), {formColumns: formColumns, searchColumns: searchColumns} = (options => {
-                const _columns = vue.toRaw(options.columns), loopFormColumns = list => {
+            const {t: t} = useLocale(), _columns = vue.ref(options.columns), _searchColumns = vue.ref([]), _formColumns = vue.ref([]);
+            (async (options, cb) => {
+                const _columns = vue.reactive(options.columns), loopFormColumns = list => {
                     let cols = [];
-                    return list.forEach((col => {
-                        cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
+                    return list.forEach((async col => {
+                        !col.dicData?.length && col.loadDicData && await col.loadDicData(col, (data => {
+                            data?.length && (col.dicData = data);
+                        })), cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
                         col.children && delete col.children);
                     })), cols;
-                }, evenColumns = loopFormColumns(_columns), formColumns = vue.toRaw(options.formColumns), formColumnsLast = evenColumns.concat(formColumns).map((col => ({
+                }, evenColumns = await loopFormColumns(_columns), formColumns = options.formColumns, formColumnsLast = evenColumns.concat(formColumns).map((col => ({
                     prop: col.prop,
                     label: valueExist(col.formLabel, col.label, ""),
                     type: valueExist(col.formType, col.type, ""),
@@ -4395,11 +4398,7 @@
                     loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
                     onChange: valueExist(col.onChangeForm, col.onChange, null),
                     tableSelect: valueExist(col.tableSelect, {})
-                }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast);
-                _formColumnsLast.forEach((col => {
-                    !col.dicData?.length && col.loadDicData && col.loadDicData(col);
-                }));
-                const searchColumn = vue.ref([]);
+                }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast), searchColumn = vue.ref([]);
                 searchColumn.value = options.searchColumn.map(((col, index) => ({
                     ...col,
                     sort: index
@@ -4427,15 +4426,18 @@
                         col.children?.length && cols.push(...loopColumns(col.children));
                     })), cols;
                 };
-                return searchColumn.value.push(...loopColumns(_columns)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop"), 
-                {
+                searchColumn.value.push(...loopColumns(_columns)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop");
+                const params = {
                     formColumns: _formColumnsLast,
-                    searchColumns: searchColumn.value
+                    searchColumns: searchColumn.value,
+                    columns: _columns
                 };
-            })(options);
-            searchColumn.value = searchColumns;
+                cb && cb(params);
+            })(options, (({formColumns: formColumns, searchColumns: searchColumns, columns: columns}) => {
+                _searchColumns.value = searchColumns, _formColumns.value = formColumns, _columns.value = columns;
+            }));
             const tableData = vue.ref(props.data), _searchFormParams = vue.ref((() => {
-                const list = searchColumn.value;
+                const list = _searchColumns.value;
                 let params = {};
                 for (let i = 0; i < list.length; i++) {
                     const item = list[i];
@@ -4552,7 +4554,7 @@
                 ref: headerRef,
                 class: ns$2.b("header")
             }, [ options.showSearchForm && vue.createVNode(HeaderSearch, {
-                columns: searchColumn.value,
+                columns: _searchColumns.value,
                 onZoomResize: updateTableContentHeight,
                 onConfirmSearch: onConfirmSearch,
                 onClearSearch: onClearSearch
@@ -4597,8 +4599,9 @@
                         width: 55,
                         headerAlign: options.headerAlign,
                         align: options.cellAlign
-                    }, null) : null, slots.default?.(), columns.value.map((col => vue.createVNode(TableColumnDynamic, {
-                        columnOption: col
+                    }, null) : null, slots.default?.(), _columns.value.map((col => vue.createVNode(TableColumnDynamic, {
+                        columnOption: col,
+                        key: col.prop
                     }, _isSlot(column_slots) ? column_slots : {
                         default: () => [ column_slots ]
                     }))), options.operations ? vue.createVNode(TableColumnOperations, {
@@ -4629,7 +4632,7 @@
                 default: () => vue.createVNode(AddEditForm, {
                     ref: addEditFormRef,
                     formDatum: addEditDialog.rowInfo,
-                    columns: formColumns,
+                    columns: _formColumns.value,
                     isEditing: addEditDialog.isEditing,
                     onClose: onCloseAddEditDialog,
                     onSubmit: onSubmitAddEditDialog

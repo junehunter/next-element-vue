@@ -46,7 +46,7 @@ export interface SearchColumnProps extends Column {
     onChangeSearch?: Function;
 }
 export interface FormColunmProps extends Column {
-    formSort: number;
+    formSort?: number;
     formType?: string;
     formDefaultValue?: any;
     formPlaceholder?: string;

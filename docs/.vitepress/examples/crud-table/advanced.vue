@@ -73,21 +73,40 @@ const options = reactive({
 			multiple: true,
 			dicData: [],
 			formSort: 6,
-			loadDicData: col => {
-				console.log(col);
+			loadDicData: (col, done) => {
 				setTimeout(() => {
-					col.dicData = [
+					const dicData = [
 						{
 							value: '1',
-							label: '计算机/互联网/通信',
+							label: '董事长',
 						},
 						{
 							value: '2',
-							label: '生产/工艺/制造',
+							label: '总经理',
+						},
+						{
+							value: '3',
+							label: '财务总监',
 						},
 					];
+					done(dicData);
 				}, 3000);
 			},
+		},
+		{
+			prop: 'industry',
+			label: '行业',
+			minWidth: '120px',
+			dicData: [
+				{
+					value: '1',
+					label: '计算机/互联网/通信',
+				},
+				{
+					value: '2',
+					label: '生产/工艺/制造',
+				},
+			],
 		},
 		{
 			prop: '权限角色',
@@ -199,7 +218,8 @@ const tableReactive = reactive({
 			username: 'zhngsan',
 			sex: '1',
 			phone: '1888888888',
-			job: '董事长',
+			job: '1',
+			industry: '1',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
 			children: [
@@ -210,7 +230,7 @@ const tableReactive = reactive({
 					username: 'zhngsan',
 					sex: '1',
 					phone: '1888888888',
-					job: '董事',
+					job: '3',
 					startDate: '2023-9-7 12:00:00',
 					endDate: '2023-9-9 12:00:00',
 				},
@@ -223,7 +243,8 @@ const tableReactive = reactive({
 			username: 'zhngsan',
 			sex: '1',
 			phone: '1888888888',
-			job: '普通员工',
+			job: '2',
+			industry: '2',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
 		},
