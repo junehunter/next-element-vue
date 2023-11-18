@@ -1077,6 +1077,8 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
     nextUseCssVar(cssvar, value);
     for (let i = 1; i < 10; i++) nextUseCssVar(cssvar + "-light-" + i, getLightColor$4(value, i / 10));
     nextUseCssVar(`${cssvar}-dark-2`, value);
+}, updateThemeColor = color => {
+    color && nextUseCssTheme("--el-color-primary", color);
 }, withInstall = (main, extra) => {
     if (main.install = app => {
         for (const comp of [ main, ...Object.values(extra ?? {}) ]) app.component(comp.name, comp);
@@ -2149,12 +2151,14 @@ const NextLayout = withInstall(defineComponent({
         provide("options", options), provide("__ns__", ns$a), provide("__emit__", emit), 
         provide("__slots__", slots);
         const updateOptions = cfg => {
-            _config.value = merge$1(options, cfg), emit("changeOptions", _config.value);
+            _config.value = merge$1(options, cfg), updateThemeColor(_config.value.setting?.themeColor), 
+            emit("changeOptions", _config.value);
         };
         return provide("updateOptions", updateOptions), watch((() => props.options), (cfg => {
             updateOptions(cfg);
         }), {
-            deep: !0
+            deep: !0,
+            immediate: !0
         }), {
             options: options,
             updateOptions: updateOptions
@@ -5190,7 +5194,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.3", install = function(app) {
+}, version = "0.1.4", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5200,8 +5204,8 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.3",
+    version: "0.1.4",
     install: install
 };
 
-export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };
+export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, updateThemeColor, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };

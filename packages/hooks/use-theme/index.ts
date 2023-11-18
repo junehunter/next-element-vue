@@ -13,3 +13,8 @@ export const nextUseCssTheme = (cssvar: string, value: string) => {
 	}
 	nextUseCssVar(`${cssvar}-dark-2`, value);
 };
+
+export const updateThemeColor = (color: string) => {
+	if (!color) return;
+	nextUseCssTheme('--el-color-primary', color);
+};

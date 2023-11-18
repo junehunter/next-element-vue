@@ -13,7 +13,9 @@ const layoutOptions = ref<any>({
 	menuTree: menuTree,
 	showTabs: isTabs.value,
 	tabs: [],
-	setting: {},
+	setting: {
+		themeColor: '#1E90FF',
+	},
 });
 const layoutRef = ref<any>();
 const onChangeLayout = (val: string) => {

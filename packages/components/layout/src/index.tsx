@@ -1,6 +1,6 @@
 import { defineComponent, markRaw, ref, watchEffect, h, provide, computed, watch } from 'vue';
 import type { PropType, CSSProperties, Component } from 'vue';
-import { useNamespace } from 'packages/hooks';
+import { useNamespace, updateThemeColor } from 'packages/hooks';
 import { merge } from 'lodash-unified';
 import defaultConfig from './config';
 import defaults from './defaults/index';
@@ -45,6 +45,7 @@ export default defineComponent({
 		provide('__slots__', slots);
 		const updateOptions = (cfg: any) => {
 			_config.value = merge(options, cfg);
+			updateThemeColor(_config.value.setting?.themeColor);
 			emit('changeOptions', _config.value);
 		};
 		provide('updateOptions', updateOptions);
@@ -56,6 +57,7 @@ export default defineComponent({
 			},
 			{
 				deep: true,
+				immediate: true,
 			}
 		);
 		return { options, updateOptions };
