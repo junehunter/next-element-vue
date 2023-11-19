@@ -8,6 +8,7 @@ export const slots_config = {
 export default {
 	logo: '',
 	title: 'Next Element Vue',
+	userName: 'Admin',
 	language: 'zh-cn', // zh-cn en zh-tw
 	languageDropdown: [
 		{

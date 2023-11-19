@@ -114,7 +114,7 @@ export default defineComponent({
 								default: () => (
 									<span class={_ns.be('header-tools', 'user')}>
 										{profile_url ? <img class="user-photo" src={profile_url} /> : null}
-										<span>Admin</span>
+										<span>{_config.userName}</span>
 										<ElIcon class="el-icon--right">
 											<ArrowDown />
 										</ElIcon>

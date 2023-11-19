@@ -1,7 +1,7 @@
 import type { FormItemProps } from 'packages/components/form/src/config';
 import type { FormColunmProps, TableColumnProps, SearchColumnProps } from './config';
-import { deepClone, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
-import { reactive, ref } from 'vue';
+import { valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
+import { reactive } from 'vue';
 /**
  * 自定义table中column的slot name
  * @param prop
@@ -63,18 +63,15 @@ export const getDefaultExpandedKeys = (treeData: any): string[] => {
 			if (depth > maxDepth) {
 				maxDepth = depth;
 			}
-
 			if (node.children && node.children.length > 0) {
 				for (let child of node.children) {
 					traverse(child, depth + 1);
 				}
 			}
 		}
-
 		for (let node of tree) {
 			traverse(node, 1);
 		}
-
 		return maxDepth;
 	};
 	const level = loopTreeLevle(treeData);
@@ -83,7 +80,6 @@ export const getDefaultExpandedKeys = (treeData: any): string[] => {
 		function traverse(node: any, depth: any) {
 			if (depth <= levels) {
 				result.push(node.id);
-
 				if (node.children && node.children.length > 0) {
 					for (let child of node.children) {
 						traverse(child, depth + 1);
@@ -104,28 +100,34 @@ export const getDefaultExpandedKeys = (treeData: any): string[] => {
  * @param options
  * @returns
  */
-export const updateFormColumns = async (options: any, cb: Function) => {
-	// 获取表单模块column
+export const updateFormColumns = (options: any, cb: Function) => {
+	// 处理表单模块column，这里使用reactive是关键，当数据更新后界面更新
 	const _columns = reactive(options.columns);
-	const loopFormColumns = (list: TableColumnProps[]) => {
+	const _loadDicData = (col: any) => {
+		if (!col.dicData?.length && col.loadDicData) {
+			col.loadDicData(col, data => {
+				if (data?.length) col.dicData = data;
+			});
+		}
+	};
+	const loopTableColumns = (list: TableColumnProps[]) => {
 		let cols = [];
-		list.forEach(async (col: TableColumnProps) => {
-			if (!col.dicData?.length && col.loadDicData) {
-				await col.loadDicData(col, data => {
-					if (data?.length) col.dicData = data;
-				});
-			}
+		list.forEach((col: TableColumnProps) => {
+			_loadDicData(col);
 			cols.push(col);
 			if (col.children?.length) {
-				cols.push(...loopFormColumns(col.children));
+				cols.push(...loopTableColumns(col.children));
 				if (col.children) delete col.children;
 			}
 		});
 		return cols;
 	};
-	const evenColumns = await loopFormColumns(_columns);
-	const formColumns = options.formColumns;
-	const mergeColumns = evenColumns.concat(formColumns).map((col: FormColunmProps) => {
+	const evenTableColumns = loopTableColumns(_columns);
+	const formColumns = options.formColumns.map((col: FormItemProps) => {
+		_loadDicData(col);
+		return col;
+	});
+	const mergeFormColumns = evenTableColumns.concat(formColumns).map((col: FormColunmProps) => {
 		const item: FormItemProps = {
 			prop: col.prop,
 			label: valueExist(col.formLabel, col.label, ''),
@@ -146,56 +148,53 @@ export const updateFormColumns = async (options: any, cb: Function) => {
 			onChange: valueExist(col.onChangeForm, col.onChange, null),
 			tableSelect: valueExist(col.tableSelect, {}),
 		};
-		return item;
+		// 对应属性指向原数据，search和form共享数据和方法
+		return Object.assign(col, item);
 	});
-	const filterColumns = mergeColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];
-	const formColumnsLast = filterColumns.sort((a: FormItemProps, b: FormItemProps) => a.sort - b.sort);
-	const _formColumnsLast: FormItemProps[] = deepClone(formColumnsLast);
-
-	// 获取筛选表单column
-	const searchColumn = ref<SearchColumnProps[]>([]);
-	searchColumn.value = options.searchColumn.map((col: SearchColumnProps, index: number) => {
-		const item = {
-			...col,
-			sort: index,
+	const filterFormColumns = mergeFormColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];
+	const _formColumns = filterFormColumns.sort((a: FormItemProps, b: FormItemProps) => a.sort - b.sort);
+	// 处理查询表单column
+	const _formatSearchColumn = (col: SearchColumnProps, index: number) => {
+		const item: SearchColumnProps = {
+			prop: col.prop,
+			type: valueExist(col.searchType, col.type),
+			label: valueExist(col.searchLabel, col.label),
+			defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
+			placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
+			dicData: valueExist(col.searchDicData, col.dicData, []),
+			loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
+			disabled: valueExist(col.searchDisabled, col.disabled, false),
+			prefix: valueExist(col.searchPrefix, col.prefix, null),
+			suffix: valueExist(col.searchSuffix, col.suffix, null),
+			prepend: valueExist(col.searchPrepend, col.prepend, null),
+			append: valueExist(col.searchAppend, col.append, null),
+			sort: valueExist(col.searchSort, col.sort, index),
 		};
-		return item;
+		// 对应属性指向原数据，search和form共享数据和方法
+		return Object.assign(col, item);
+	};
+	const initSearchColumns = options.searchColumns.map((col: SearchColumnProps, index: number) => {
+		_loadDicData(col);
+		return _formatSearchColumn(col, index);
 	});
-	const searchColumnLength = searchColumn.value.length;
-	const loopColumns = (list: TableColumnProps[]) => {
+	const initSearchColumnsLength = initSearchColumns.length;
+	const filterTableSearchColumns = (list: TableColumnProps[]) => {
 		let cols = [];
 		list.forEach((col: TableColumnProps, index: number) => {
 			if (col.searchType) {
-				const item: SearchColumnProps = {
-					prop: col.prop,
-					type: valueExist(col.searchType, col.type),
-					label: valueExist(col.searchLabel, col.label),
-					defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
-					placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
-					dicData: valueExist(col.searchDicData, col.dicData, []),
-					disabled: valueExist(col.searchDisabled, col.disabled, false),
-					prefix: valueExist(col.searchPrefix, col.prefix, null),
-					suffix: valueExist(col.searchSuffix, col.suffix, null),
-					prepend: valueExist(col.searchPrepend, col.prepend, null),
-					append: valueExist(col.searchAppend, col.append, null),
-					sort: valueExist(col.searchSort, col.sort, searchColumnLength + index),
-				};
-				cols.push(item);
-			}
-			if (col.children?.length) {
-				cols.push(...loopColumns(col.children));
+				cols.push(_formatSearchColumn(col, index + initSearchColumnsLength));
 			}
 		});
 		return cols;
 	};
-	searchColumn.value.push(...loopColumns(_columns));
-	searchColumn.value = arrayObjNoRepeat(
-		searchColumn.value.sort((a: SearchColumnProps, b: SearchColumnProps) => a.sort - b.sort),
+	const mergeSearchColumns = initSearchColumns.concat(filterTableSearchColumns(evenTableColumns));
+	const _searchColumns = arrayObjNoRepeat(
+		mergeSearchColumns.sort((a: SearchColumnProps, b: SearchColumnProps) => a.sort - b.sort),
 		'prop'
 	);
 	const params = {
-		formColumns: _formColumnsLast,
-		searchColumns: searchColumn.value,
+		formColumns: _formColumns,
+		searchColumns: _searchColumns,
 		columns: _columns,
 	};
 	cb && cb(params);

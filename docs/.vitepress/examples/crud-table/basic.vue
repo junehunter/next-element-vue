@@ -15,7 +15,7 @@ const options = reactive({
 	delBtn: true,
 	viewBtn: true,
 	batchDelBtn: true,
-	searchColumn: [
+	searchColumns: [
 		{
 			type: 'datetimerange',
 			prop: 'timeRange',
@@ -85,6 +85,7 @@ const options = reactive({
 			type: 'select',
 			multiple: true,
 			dicData: [],
+			sort: 5,
 			loadDicData: (col, done) => {
 				setTimeout(() => {
 					const dicData = [
@@ -101,6 +102,7 @@ const options = reactive({
 							label: '财务总监',
 						},
 					];
+					console.log('更新了数据');
 					done(dicData);
 				}, 3000);
 			},

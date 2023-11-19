@@ -7,6 +7,7 @@ export declare const slots_config: {
 declare const _default: {
     logo: string;
     title: string;
+    userName: string;
     language: string;
     languageDropdown: {
         value: string;

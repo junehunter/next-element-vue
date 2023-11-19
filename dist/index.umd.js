@@ -987,6 +987,7 @@
     var defaultConfig$2 = {
         logo: "",
         title: "Next Element Vue",
+        userName: "Admin",
         language: "zh-cn",
         languageDropdown: [ {
             value: "zh-cn",
@@ -1578,7 +1579,7 @@
                 }, [ profile_url ? vue.createVNode("img", {
                     class: "user-photo",
                     src: profile_url
-                }, null) : null, vue.createVNode("span", null, [ vue.createTextVNode("Admin") ]), vue.createVNode(elementPlus.ElIcon, {
+                }, null) : null, vue.createVNode("span", null, [ _config.userName ]), vue.createVNode(elementPlus.ElIcon, {
                     class: "el-icon--right"
                 }, {
                     default: () => [ vue.createVNode(arrow_down_default, null, null) ]
@@ -2954,7 +2955,7 @@
         searchGutter: 20,
         searchLabelWidth: "5em",
         searchColumnMinWidth: 300,
-        searchColumn: [],
+        searchColumns: [],
         searchMore: !0,
         addBtn: !0,
         viewBtn: !0,
@@ -4011,7 +4012,9 @@
                             trigger: [ "blur", "change" ]
                         }), formRules[col.prop] = rule;
                     }
-                    !col.dicData?.length && col.loadDicData && col.loadDicData(col);
+                    !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
+                        data?.length && (col.dicData = data);
+                    }));
                 }
                 "boolean" == typeof _isEditing.value && !1 === _isEditing.value && (_formColumns.value = _formColumns.value.map((col => (col.disabled = !0, 
                 col))));
@@ -4037,6 +4040,8 @@
                         const params = vue.toRaw(formParams);
                         submitLoading.value = !0, emit("submit", params, (() => {
                             submitLoading.value = !1, emit("close");
+                        }), (() => {
+                            submitLoading.value = !1;
                         }));
                     } else console.error("error submit!", fields);
                 }));
@@ -4161,6 +4166,8 @@
                         placeholder: placeholder,
                         clearable: !0,
                         disabled: col.disabled,
+                        multiple: valueExist(col.multiple, !1),
+                        "collapse-tags-tooltip": !0,
                         onChange: event => col.onChange?.(event, col)
                     }, {
                         default: () => [ col.dicData && col.dicData.map((item => vue.createVNode(elementPlus.ElOption, {
@@ -4194,6 +4201,20 @@
                     onChange: event => col.onChange?.(event, col)
                 }, {
                     default: () => [ col.dicData && col.dicData.map((item => vue.createVNode(elementPlus.ElRadio, {
+                        key: item.value,
+                        label: item.value
+                    }, {
+                        default: () => [ item.label ]
+                    }))) ]
+                });
+                if ("checkbox" === col.type) return isValueExist(formParams[col.prop]) || (formParams[col.prop] = []), 
+                vue.createVNode(elementPlus.ElCheckboxGroup, {
+                    modelValue: formParams[col.prop],
+                    "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                    disabled: col.disabled,
+                    onChange: event => col.onChange?.(event, col)
+                }, {
+                    default: () => [ col.dicData && col.dicData.map((item => vue.createVNode(elementPlus.ElCheckbox, {
                         key: item.value,
                         label: item.value
                     }, {
@@ -4287,7 +4308,7 @@
                     default: () => [ vue.createVNode(elementPlus.ElRow, {
                         gutter: 20
                     }, _isSlot$1(_slot = formColumns.map((column => !column.hide && vue.createVNode(elementPlus.ElCol, {
-                        span: column.span || colSpan.value
+                        span: valueExist(column.span, colSpan.value)
                     }, {
                         default: () => [ vue.createVNode(elementPlus.ElFormItem, {
                             prop: column.prop,
@@ -4386,69 +4407,69 @@
             })), options = vue.unref(_options);
             vue.provide("options", vue.computed((() => _options.value))), vue.provide("ns", ns$2);
             const {t: t} = useLocale(), _columns = vue.ref(options.columns), _searchColumns = vue.ref([]), _formColumns = vue.ref([]);
-            (async (options, cb) => {
-                const _columns = vue.reactive(options.columns), loopFormColumns = list => {
+            ((options, cb) => {
+                const _columns = vue.reactive(options.columns), _loadDicData = col => {
+                    !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
+                        data?.length && (col.dicData = data);
+                    }));
+                }, loopTableColumns = list => {
                     let cols = [];
-                    return list.forEach((async col => {
-                        !col.dicData?.length && col.loadDicData && await col.loadDicData(col, (data => {
-                            data?.length && (col.dicData = data);
-                        })), cols.push(col), col.children?.length && (cols.push(...loopFormColumns(col.children)), 
+                    return list.forEach((col => {
+                        _loadDicData(col), cols.push(col), col.children?.length && (cols.push(...loopTableColumns(col.children)), 
                         col.children && delete col.children);
                     })), cols;
-                }, evenColumns = await loopFormColumns(_columns), formColumns = options.formColumns, formColumnsLast = evenColumns.concat(formColumns).map((col => ({
-                    prop: col.prop,
-                    label: valueExist(col.formLabel, col.label, ""),
-                    type: valueExist(col.formType, col.type, ""),
-                    defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
-                    placeholder: valueExist(col.formPlaceholder, ""),
-                    required: valueExist(col.formRequired, col.required, !1),
-                    sort: valueExist(col.formSort, col.sort, null),
-                    prefix: valueExist(col.formPrefix, col.prefix, null),
-                    suffix: valueExist(col.formSuffix, col.suffix, null),
-                    prepend: valueExist(col.formPrepend, col.prepend, null),
-                    append: valueExist(col.formAppend, col.append, null),
-                    hide: valueExist(col.formHide, !1),
-                    disabled: valueExist(col.formDisabled, col.disabled, !1),
-                    span: valueExist(col.formSpan, col.span, null),
-                    dicData: valueExist(col.formDicData, col.dicData, []),
-                    loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
-                    onChange: valueExist(col.onChangeForm, col.onChange, null),
-                    tableSelect: valueExist(col.tableSelect, {})
-                }))).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formColumnsLast = deepClone(formColumnsLast), searchColumn = vue.ref([]);
-                searchColumn.value = options.searchColumn.map(((col, index) => ({
-                    ...col,
-                    sort: index
-                })));
-                const searchColumnLength = searchColumn.value.length, loopColumns = list => {
+                }, evenTableColumns = loopTableColumns(_columns), formColumns = options.formColumns.map((col => (_loadDicData(col), 
+                col))), _formColumns = evenTableColumns.concat(formColumns).map((col => {
+                    const item = {
+                        prop: col.prop,
+                        label: valueExist(col.formLabel, col.label, ""),
+                        type: valueExist(col.formType, col.type, ""),
+                        defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
+                        placeholder: valueExist(col.formPlaceholder, ""),
+                        required: valueExist(col.formRequired, col.required, !1),
+                        sort: valueExist(col.formSort, col.sort, null),
+                        prefix: valueExist(col.formPrefix, col.prefix, null),
+                        suffix: valueExist(col.formSuffix, col.suffix, null),
+                        prepend: valueExist(col.formPrepend, col.prepend, null),
+                        append: valueExist(col.formAppend, col.append, null),
+                        hide: valueExist(col.formHide, !1),
+                        disabled: valueExist(col.formDisabled, col.disabled, !1),
+                        span: valueExist(col.formSpan, col.span, null),
+                        dicData: valueExist(col.formDicData, col.dicData, []),
+                        loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
+                        onChange: valueExist(col.onChangeForm, col.onChange, null),
+                        tableSelect: valueExist(col.tableSelect, {})
+                    };
+                    return Object.assign(col, item);
+                })).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formatSearchColumn = (col, index) => {
+                    const item = {
+                        prop: col.prop,
+                        type: valueExist(col.searchType, col.type),
+                        label: valueExist(col.searchLabel, col.label),
+                        defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
+                        placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
+                        dicData: valueExist(col.searchDicData, col.dicData, []),
+                        loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
+                        disabled: valueExist(col.searchDisabled, col.disabled, !1),
+                        prefix: valueExist(col.searchPrefix, col.prefix, null),
+                        suffix: valueExist(col.searchSuffix, col.suffix, null),
+                        prepend: valueExist(col.searchPrepend, col.prepend, null),
+                        append: valueExist(col.searchAppend, col.append, null),
+                        sort: valueExist(col.searchSort, col.sort, index)
+                    };
+                    return Object.assign(col, item);
+                }, initSearchColumns = options.searchColumns.map(((col, index) => (_loadDicData(col), 
+                _formatSearchColumn(col, index)))), initSearchColumnsLength = initSearchColumns.length, mergeSearchColumns = initSearchColumns.concat((list => {
                     let cols = [];
                     return list.forEach(((col, index) => {
-                        if (col.searchType) {
-                            const item = {
-                                prop: col.prop,
-                                type: valueExist(col.searchType, col.type),
-                                label: valueExist(col.searchLabel, col.label),
-                                defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
-                                placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
-                                dicData: valueExist(col.searchDicData, col.dicData, []),
-                                disabled: valueExist(col.searchDisabled, col.disabled, !1),
-                                prefix: valueExist(col.searchPrefix, col.prefix, null),
-                                suffix: valueExist(col.searchSuffix, col.suffix, null),
-                                prepend: valueExist(col.searchPrepend, col.prepend, null),
-                                append: valueExist(col.searchAppend, col.append, null),
-                                sort: valueExist(col.searchSort, col.sort, searchColumnLength + index)
-                            };
-                            cols.push(item);
-                        }
-                        col.children?.length && cols.push(...loopColumns(col.children));
+                        col.searchType && cols.push(_formatSearchColumn(col, index + initSearchColumnsLength));
                     })), cols;
-                };
-                searchColumn.value.push(...loopColumns(_columns)), searchColumn.value = arrayObjNoRepeat(searchColumn.value.sort(((a, b) => a.sort - b.sort)), "prop");
-                const params = {
-                    formColumns: _formColumnsLast,
-                    searchColumns: searchColumn.value,
+                })(evenTableColumns)), _searchColumns = arrayObjNoRepeat(mergeSearchColumns.sort(((a, b) => a.sort - b.sort)), "prop");
+                cb && cb({
+                    formColumns: _formColumns,
+                    searchColumns: _searchColumns,
                     columns: _columns
-                };
-                cb && cb(params);
+                });
             })(options, (({formColumns: formColumns, searchColumns: searchColumns, columns: columns}) => {
                 _searchColumns.value = searchColumns, _formColumns.value = formColumns, _columns.value = columns;
             }));
@@ -5019,7 +5040,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.4",
+        version: "0.1.5",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5033,7 +5054,7 @@
     exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.4", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.5", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

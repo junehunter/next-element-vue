@@ -16,7 +16,9 @@ $block: 'form';
             }
         }
         .el-form-item__content {
-            .el-input,.el-select {
+            .el-input,
+            .el-select,
+            .el-checkbox-group {
                 width: 100%;
             }
         }

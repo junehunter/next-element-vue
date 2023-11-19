@@ -1,5 +1,22 @@
 import { defineComponent, reactive, ref, toRaw, onMounted, computed } from 'vue';
-import { ElForm, ElFormItem, ElRow, ElCol, ElInput, ElTooltip, ElIcon, ElButton, ElSelect, ElOption, ElTimeSelect, ElRadioGroup, ElRadio, ElDatePicker } from 'element-plus';
+import {
+	ElForm,
+	ElFormItem,
+	ElRow,
+	ElCol,
+	ElInput,
+	ElTooltip,
+	ElIcon,
+	ElButton,
+	ElSelect,
+	ElOption,
+	ElTimeSelect,
+	ElRadioGroup,
+	ElRadio,
+	ElDatePicker,
+	ElCheckboxGroup,
+	ElCheckbox,
+} from 'element-plus';
 import { InfoFilled } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
 import type { FormInstance, FormRules } from 'element-plus';
@@ -76,7 +93,9 @@ export default defineComponent({
 					formRules[col.prop] = rule;
 				}
 				if (!col.dicData?.length && col.loadDicData) {
-					col.loadDicData(col);
+					col.loadDicData(col, data => {
+						if (data?.length) col.dicData = data;
+					});
 				}
 			}
 			if (typeof _isEditing.value === 'boolean' && _isEditing.value === false) {
@@ -111,10 +130,17 @@ export default defineComponent({
 				if (valid) {
 					const params = toRaw(formParams);
 					submitLoading.value = true;
-					emit('submit', params, () => {
-						submitLoading.value = false;
-						onCancel();
-					});
+					emit(
+						'submit',
+						params,
+						() => {
+							submitLoading.value = false;
+							onCancel();
+						},
+						() => {
+							submitLoading.value = false;
+						}
+					);
 				} else {
 					// eslint-disable-next-line no-console
 					console.error('error submit!', fields);
@@ -267,7 +293,15 @@ export default defineComponent({
 			} else if (col.type === 'select') {
 				const placeholder = col.placeholder || t('next.form.select') + col.label;
 				return (
-					<ElSelect v-model={formParams[col.prop]} placeholder={placeholder} clearable disabled={col.disabled} onChange={event => col.onChange?.(event, col)}>
+					<ElSelect
+						v-model={formParams[col.prop]}
+						placeholder={placeholder}
+						clearable
+						disabled={col.disabled}
+						multiple={valueExist(col.multiple, false)}
+						collapse-tags-tooltip
+						onChange={event => col.onChange?.(event, col)}
+					>
 						{col.dicData &&
 							(col.dicData as DicData[]).map((item: DicData) => {
 								return <ElOption key={item.value} value={item.value} label={item.label}></ElOption>;
@@ -305,6 +339,22 @@ export default defineComponent({
 								);
 							})}
 					</ElRadioGroup>
+				);
+			} else if (col.type === 'checkbox') {
+				if (!isValueExist(formParams[col.prop])) {
+					formParams[col.prop] = [];
+				}
+				return (
+					<ElCheckboxGroup v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => col.onChange?.(event, col)}>
+						{col.dicData &&
+							(col.dicData as DicData[]).map((item: DicData) => {
+								return (
+									<ElCheckbox key={item.value} label={item.value}>
+										{item.label}
+									</ElCheckbox>
+								);
+							})}
+					</ElCheckboxGroup>
 				);
 			} else if (col.type === 'date') {
 				const placeholder = col.placeholder || t('next.form.select') + col.label;
@@ -377,7 +427,7 @@ export default defineComponent({
 						{formColumns.map(column => {
 							return (
 								!column.hide && (
-									<ElCol span={column.span || colSpan.value}>
+									<ElCol span={valueExist(column.span, colSpan.value)}>
 										<ElFormItem
 											prop={column.prop}
 											required={column.required}

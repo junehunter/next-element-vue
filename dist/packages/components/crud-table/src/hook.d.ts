@@ -38,4 +38,4 @@ export declare const getDefaultExpandedKeys: (treeData: any) => string[];
  * @param options
  * @returns
  */
-export declare const updateFormColumns: (options: any, cb: Function) => Promise<void>;
+export declare const updateFormColumns: (options: any, cb: Function) => void;

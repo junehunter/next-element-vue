@@ -45,6 +45,7 @@ export interface SearchColumnProps extends Column {
 	searchPrepend?: Function;
 	searchAppend?: Function;
 	searchDicData?: DictData[];
+	searchLoadDicData?: Function;
 	onChangeSearch?: Function;
 }
 
@@ -111,7 +112,7 @@ export default {
 	searchGutter: 20,
 	searchLabelWidth: '5em',
 	searchColumnMinWidth: 300, // 搜索栏最小宽度
-	searchColumn: <SearchColumnProps | unknown>[],
+	searchColumns: <SearchColumnProps | unknown>[],
 	searchMore: true, // 更多查询按钮显示
 	// 操作栏显示按钮
 	addBtn: true,

@@ -43,6 +43,7 @@ export interface SearchColumnProps extends Column {
     searchPrepend?: Function;
     searchAppend?: Function;
     searchDicData?: DictData[];
+    searchLoadDicData?: Function;
     onChangeSearch?: Function;
 }
 export interface FormColunmProps extends Column {
@@ -104,7 +105,7 @@ declare const _default: {
     searchGutter: number;
     searchLabelWidth: string;
     searchColumnMinWidth: number;
-    searchColumn: unknown;
+    searchColumns: unknown;
     searchMore: boolean;
     addBtn: boolean;
     viewBtn: boolean;
