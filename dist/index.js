@@ -1,6 +1,6 @@
-import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, nextTick, render } from "vue";
+import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, render, nextTick } from "vue";
 
-import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElTimeSelect, ElCheckboxGroup, ElEmpty, ElUpload, ElImageViewer } from "element-plus";
+import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElUpload, ElImage, ElImageViewer, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
 
 import { useFullscreen, useDateFormat, useNow } from "@vueuse/core";
 
@@ -1129,7 +1129,7 @@ var defaultConfig$2 = {
     }
 };
 
-const ns$g = useNamespace("text-ellipsis");
+const ns$h = useNamespace("text-ellipsis");
 
 const NextTextEllipsis = withInstall(defineComponent({
     name: "NextTextEllipsis",
@@ -1176,7 +1176,7 @@ const NextTextEllipsis = withInstall(defineComponent({
             }
         };
         return () => createVNode(Fragment, null, [ createVNode("div", {
-            class: [ ns$g.b(), props.class ],
+            class: [ ns$h.b(), props.class ],
             style: setWidth.value,
             onMouseenter: onMouseenter
         }, [ isTip.value ? createVNode(ElTooltip, {
@@ -1186,11 +1186,11 @@ const NextTextEllipsis = withInstall(defineComponent({
             disabled: props.disabled
         }, {
             default: () => [ createVNode("span", {
-                class: ns$g.e("text"),
+                class: ns$h.e("text"),
                 ref: ellipsisRef
             }, [ slots.default ? slots.default() : props.content ]) ]
         }) : createVNode("span", {
-            class: ns$g.e("text"),
+            class: ns$h.e("text"),
             ref: ellipsisRef
         }, [ slots.default ? slots.default() : props.content ]) ]) ]);
     }
@@ -1365,7 +1365,22 @@ var info_filled_default = export_helper_default(info_filled_vue_vue_type_script_
 
 var moon_night_default = export_helper_default(moon_night_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1172, _hoisted_449);
-} ], [ "__file", "moon-night.vue" ] ]), plus_vue_vue_type_script_lang_default = {
+} ], [ "__file", "moon-night.vue" ] ]), picture_vue_vue_type_script_lang_default = {
+    name: "Picture"
+}, _hoisted_1197 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_460 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M160 160v704h704V160H160zm-32-64h768a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H128a32 32 0 0 1-32-32V128a32 32 0 0 1 32-32z"
+}, null, -1), createElementVNode("path", {
+    fill: "currentColor",
+    d: "M384 288q64 0 64 64t-64 64q-64 0-64-64t64-64zM185.408 876.992l-50.816-38.912L350.72 556.032a96 96 0 0 1 134.592-17.856l1.856 1.472 122.88 99.136a32 32 0 0 0 44.992-4.864l216-269.888 49.92 39.936-215.808 269.824-.256.32a96 96 0 0 1-135.04 14.464l-122.88-99.072-.64-.512a32 32 0 0 0-44.8 5.952L185.408 876.992z"
+}, null, -1) ];
+
+var picture_default = export_helper_default(picture_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1197, _hoisted_460);
+} ], [ "__file", "picture.vue" ] ]), plus_vue_vue_type_script_lang_default = {
     name: "Plus"
 }, _hoisted_1201 = {
     xmlns: "http://www.w3.org/2000/svg",
@@ -1837,7 +1852,7 @@ const NextMenuItem = defineComponent({
             }, null) ]
         }))) ]) ]);
     }
-}), ns$f = useNamespace("menu");
+}), ns$g = useNamespace("menu");
 
 const NextMenu = withInstall(defineComponent({
     name: "NextMenu",
@@ -1857,20 +1872,20 @@ const NextMenu = withInstall(defineComponent({
         }
     },
     setup(props) {
-        provide("ns", ns$f);
+        provide("ns", ns$g);
         const router = getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = ref(currentPath);
         watch((() => router.currentRoute?.value), (to => {
             activePath.value = to.fullPath;
         }));
         return () => createVNode(Fragment, null, [ createVNode(ElMenu, {
-            class: ns$f.b(),
+            class: ns$g.b(),
             defaultActive: activePath.value,
             router: props.router,
             mode: props.mode,
             ellipsis: !0
         }, {
             default: () => [ createVNode(Fragment, null, [ _menuTree.map((item => item.children?.length ? createVNode(ElSubMenu, {
-                "popper-class": ns$f.b("popper"),
+                "popper-class": ns$g.b("popper"),
                 index: item.path || item.id,
                 teleported: !0
             }, {
@@ -1881,7 +1896,7 @@ const NextMenu = withInstall(defineComponent({
                     menuData: item.children
                 }, null)
             }) : createVNode(ElMenuItem, {
-                "popper-class": ns$f.b("popper"),
+                "popper-class": ns$g.b("popper"),
                 index: item.path
             }, {
                 default: () => [ createVNode(MenuItemTitle, {
@@ -1909,20 +1924,20 @@ var Sidebar$2 = defineComponent({
     }
 });
 
-const ns$e = useNamespace("layout-defaults");
+const ns$f = useNamespace("layout-defaults");
 
 var defaults = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$e), {}),
+    setup: () => (provide("ns", ns$f), {}),
     render() {
         const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {});
         slots.menu;
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(ElContainer, {
-            class: ns$e.b()
+            class: ns$f.b()
         }, {
             default: () => [ createVNode(Sidebar$2, null, null), createVNode("div", {
-                class: [ ns$e.b("content") ]
+                class: [ ns$f.b("content") ]
             }, [ createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
                 tabs: _config.tabs,
                 activeTab: _config.activeTab,
@@ -1930,7 +1945,7 @@ var defaults = defineComponent({
                 onSelect: (...arg) => _emit("tabsSelect", ...arg),
                 onClose: (...arg) => _emit("tabsClose", ...arg)
             }, null) : null, createVNode("main", {
-                class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
+                class: [ ns$f.bf("main"), ns$f.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]) ]
         });
     }
@@ -1961,11 +1976,11 @@ var Header$2 = defineComponent({
     }
 });
 
-const ns$d = useNamespace("layout-transverse");
+const ns$e = useNamespace("layout-transverse");
 
 var transverse = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$d), {}),
+    setup: () => (provide("ns", ns$e), {}),
     render() {
         const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {}), __slots_header = {};
         slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1982,7 +1997,7 @@ var transverse = defineComponent({
             onSelect: (...arg) => _emit("tabsSelect", ...arg),
             onClose: (...arg) => _emit("tabsClose", ...arg)
         }, null) : null, createVNode("main", {
-            class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
+            class: [ ns$e.b("main"), ns$e.is("layout-tabs", isTabs.value) ]
         }, [ slots.default?.() ]) ]);
         var s;
     }
@@ -2024,11 +2039,11 @@ var Header$1 = defineComponent({
     }
 });
 
-const ns$c = useNamespace("layout-columns");
+const ns$d = useNamespace("layout-columns");
 
 var columns = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$c), {}),
+    setup: () => (provide("ns", ns$d), {}),
     render() {
         const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {}), __slots_header = {};
         slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -2036,11 +2051,11 @@ var columns = defineComponent({
         slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(ElContainer, {
-            class: ns$c.b()
+            class: ns$d.b()
         }, {
             default: () => {
                 return [ createVNode(Sidebar$1, null, null), createVNode("div", {
-                    class: [ ns$c.b("content") ]
+                    class: [ ns$d.b("content") ]
                 }, [ createVNode(Header$1, null, (s = __slots_header, "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s) ? __slots_header : {
                     default: () => [ __slots_header ]
                 })), _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
@@ -2050,7 +2065,7 @@ var columns = defineComponent({
                     onSelect: (...arg) => _emit("tabsSelect", ...arg),
                     onClose: (...arg) => _emit("tabsClose", ...arg)
                 }, null) : null, createVNode("main", {
-                    class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
+                    class: [ ns$d.bf("main"), ns$d.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ];
                 var s;
             }
@@ -2096,21 +2111,21 @@ var Header = defineComponent({
     }
 });
 
-const ns$b = useNamespace("layout-classic");
+const ns$c = useNamespace("layout-classic");
 
 var classic = defineComponent({
     props: {},
-    setup: () => (provide("ns", ns$b), {
-        ns: ns$b
+    setup: () => (provide("ns", ns$c), {
+        ns: ns$c
     }),
     render() {
         const slots = this.$slots, _config = inject("options", {}), _emit = inject("__emit__", {});
         slots.menu;
         const isTabs = ref(!!slots.tabs);
         return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), createVNode(Fragment, null, [ createVNode(Header, null, null), createVNode("div", {
-            class: [ ns$b.b("content"), ns$b.is("layout-tabs", isTabs.value) ]
+            class: [ ns$c.b("content"), ns$c.is("layout-tabs", isTabs.value) ]
         }, [ createVNode(Sidebar, null, null), createVNode("div", {
-            class: ns$b.b("container")
+            class: ns$c.b("container")
         }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : createVNode(NextTabs, {
             tabs: _config.tabs,
             activeTab: _config.activeTab,
@@ -2118,12 +2133,12 @@ var classic = defineComponent({
             onSelect: (...arg) => _emit("tabsSelect", ...arg),
             onClose: (...arg) => _emit("tabsClose", ...arg)
         }, null) : null, createVNode("main", {
-            class: [ ns$b.b("main") ]
+            class: [ ns$c.b("main") ]
         }, [ slots.default?.() ]) ]) ]) ]);
     }
 });
 
-const ns$a = useNamespace("layout"), layouts = {
+const ns$b = useNamespace("layout"), layouts = {
     defaults: markRaw(defaults),
     transverse: markRaw(transverse),
     columns: markRaw(columns),
@@ -2149,7 +2164,7 @@ const NextLayout = withInstall(defineComponent({
     emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
     setup(props, {slots: slots, emit: emit}) {
         const _config = ref(merge$1(defaultConfig$2, props.options)), options = computed((() => _config.value)).value;
-        provide("options", options), provide("__ns__", ns$a), provide("__emit__", emit), 
+        provide("options", options), provide("__ns__", ns$b), provide("__emit__", emit), 
         provide("__slots__", slots);
         const updateOptions = cfg => {
             _config.value = merge$1(options, cfg), updateThemeColor(_config.value.setting?.themeColor), 
@@ -2173,13 +2188,13 @@ const NextLayout = withInstall(defineComponent({
         const _activeSlots = {};
         for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
         return createVNode("div", {
-            class: [ ns$a.b(), props.className ],
+            class: [ ns$b.b(), props.className ],
             style: props.style
         }, [ h(activeLayout.value, {}, {
             ..._activeSlots
         }) ]);
     }
-})), ns$9 = useNamespace("tabs");
+})), ns$a = useNamespace("tabs");
 
 var Element$5 = defineComponent({
     name: "NextTabs",
@@ -2250,12 +2265,12 @@ var Element$5 = defineComponent({
             tabsView.value.push(activeRoute)), emit("change", activeIndex.value, tabsView.value, "add");
         }));
         const renderContent = () => createVNode("nav", {
-            class: ns$9.b()
+            class: ns$a.b()
         }, [ createVNode(ElScrollbar, null, {
             default: () => [ createVNode("ul", {
-                class: ns$9.b("list")
+                class: ns$a.b("list")
             }, [ tabsView.value.map(((tab, index) => tab ? createVNode("li", {
-                class: [ "tab-item", ns$9.is("active", activeIndex.value === index) ],
+                class: [ "tab-item", ns$a.is("active", activeIndex.value === index) ],
                 onClick: event => onClickTabItem(event, tab, index)
             }, [ createVNode("i", {
                 class: [ "tab-icon", tab.meta?.icon ]
@@ -2286,11 +2301,11 @@ var Element$5 = defineComponent({
             onCommand: onChange
         }, {
             default: () => createVNode("span", {
-                class: ns$9.b("tab-more")
+                class: ns$a.b("tab-more")
             }, [ createVNode("i", {
-                class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "top") ]
+                class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "top") ]
             }, null), createVNode("i", {
-                class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "bottom") ]
+                class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "bottom") ]
             }, null) ]),
             dropdown: () => createVNode(ElDropdownMenu, null, {
                 default: () => [ createVNode(ElDropdownItem, {
@@ -2324,7 +2339,7 @@ var Element$5 = defineComponent({
     }
 });
 
-const NextTabs = withInstall(Element$5), ns$8 = useNamespace("container");
+const NextTabs = withInstall(Element$5), ns$9 = useNamespace("container");
 
 const NextContainer = withInstall(defineComponent({
     name: "NextContainer",
@@ -2363,18 +2378,18 @@ const NextContainer = withInstall(defineComponent({
             }), style;
         }));
         return () => props.scrollbar ? createVNode(ElScrollbar, {
-            class: [ ns$8.b(), props.className ],
+            class: [ ns$9.b(), props.className ],
             style: props.style
         }, {
             default: () => [ slots.default?.() ]
         }) : createVNode("div", {
-            class: [ ns$8.b(), props.className ],
+            class: [ ns$9.b(), props.className ],
             style: {
                 ...styles.value,
                 ...props.style
             }
         }, [ props.card ? createVNode("div", {
-            class: ns$8.b("card")
+            class: ns$9.b("card")
         }, [ slots.default?.() ]) : slots.default?.() ]);
     }
 }));
@@ -3154,7 +3169,7 @@ var defaultConfig$1 = {
     formColumnMinWidth: 350
 };
 
-const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$7 = useNamespace("spin-loading");
+const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$8 = useNamespace("spin-loading");
 
 var SpinLoading = defineComponent({
     name: "NextSpinLoading",
@@ -3177,21 +3192,21 @@ var SpinLoading = defineComponent({
     render() {
         const _t = this.t, slots = this.$slots, props = this.$props, loadingText = props.tip || _t("next.loading");
         return createVNode("div", {
-            class: ns$7.b()
+            class: ns$8.b()
         }, [ props.loading ? createVNode("div", {
-            class: ns$7.b("mask")
+            class: ns$8.b("mask")
         }, [ createVNode("span", {
-            class: ns$7.b("mask-dot")
+            class: ns$8.b("mask-dot")
         }, [ createVNode("i", {
-            class: ns$7.be("mask", "dot-item")
+            class: ns$8.be("mask", "dot-item")
         }, null), createVNode("i", {
-            class: ns$7.be("mask", "dot-item")
+            class: ns$8.be("mask", "dot-item")
         }, null), createVNode("i", {
-            class: ns$7.be("mask", "dot-item")
+            class: ns$8.be("mask", "dot-item")
         }, null), createVNode("i", {
-            class: ns$7.be("mask", "dot-item")
+            class: ns$8.be("mask", "dot-item")
         }, null) ]), createVNode("span", {
-            class: ns$7.be("mask", "text")
+            class: ns$8.be("mask", "text")
         }, [ loadingText ]) ]) : null, slots.default?.() ]);
     }
 }), SearchColumn = defineComponent({
@@ -3841,7 +3856,7 @@ var TableColumnOperations = defineComponent({
     }
 });
 
-const ns$6 = useNamespace("dialog");
+const ns$7 = useNamespace("dialog");
 
 var NextDialog$1 = defineComponent({
     name: "NextDialog",
@@ -3899,7 +3914,7 @@ var NextDialog$1 = defineComponent({
         return () => createVNode(Fragment, null, [ createVNode(ElDialog, {
             modelValue: visible.value,
             "onUpdate:modelValue": $event => visible.value = $event,
-            class: ns$6.b(),
+            class: ns$7.b(),
             title: props.title,
             appendToBody: props.appendToBody,
             "destroy-on-close": !0,
@@ -3915,12 +3930,12 @@ var NextDialog$1 = defineComponent({
         }, {
             default: () => [ slots.default?.() ],
             header: ({close: close, titleId: titleId, titleClass: titleClass}) => createVNode("div", {
-                class: ns$6.b("header")
+                class: ns$7.b("header")
             }, [ createVNode("h4", {
                 id: titleId,
                 class: titleClass
             }, [ props.title ]), createVNode("div", {
-                class: ns$6.e("header-right")
+                class: ns$7.e("header-right")
             }, [ props.fullscreenBtn && createVNode("span", {
                 class: "icon-fullscreen",
                 onClick: () => isFullscreen.value = !isFullscreen.value
@@ -3964,7 +3979,7 @@ var defaultConfig = {
     tableSelectConfig: tableSelectConfig
 };
 
-const ns$5 = useNamespace("form");
+const ns$6 = useNamespace("form");
 
 var NumberRangePicker = defineComponent({
     name: "NumberRangePicker",
@@ -4004,7 +4019,7 @@ var NumberRangePicker = defineComponent({
         }));
         return () => createVNode(Fragment, null, [ createVNode("div", {
             ref: numberRangeRef,
-            class: ns$5.e("number-range")
+            class: ns$6.e("number-range")
         }, [ createVNode(ElInputNumber, {
             modelValue: startNumber.value,
             "onUpdate:modelValue": $event => startNumber.value = $event,
@@ -4014,7 +4029,7 @@ var NumberRangePicker = defineComponent({
             disabled: disabled,
             onChange: onChangeStart
         }, null), createVNode("span", {
-            class: ns$5.em("number-range", "division")
+            class: ns$6.em("number-range", "division")
         }, [ t("next.date.rangeSeparator") ]), createVNode(ElInputNumber, {
             modelValue: endNumber.value,
             "onUpdate:modelValue": $event => endNumber.value = $event,
@@ -4033,7 +4048,7 @@ function _isSlot$2(s) {
     return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s);
 }
 
-const ns$4 = useNamespace("form"), InputTableSelect = defineComponent({
+const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
     name: "InputTableSelect",
     props: {
         modelValue: {
@@ -4100,16 +4115,16 @@ const ns$4 = useNamespace("form"), InputTableSelect = defineComponent({
         }, renderContent = () => {
             let _slot, _slot2;
             return createVNode(Fragment, null, [ createVNode("div", {
-                class: [ "el-input", ns$4.e("input-table"), ns$4.is("disabled", _disabled) ]
+                class: [ "el-input", ns$5.e("input-table"), ns$5.is("disabled", _disabled) ]
             }, [ createVNode("div", {
                 class: "el-input__wrapper"
             }, [ props.modelValue ? createVNode("span", {
-                class: ns$4.em("input-table", "value")
+                class: ns$5.em("input-table", "value")
             }, [ props.modelValue ]) : createVNode("span", {
-                class: ns$4.em("input-table", "placeholder")
+                class: ns$5.em("input-table", "placeholder")
             }, [ _placeholder ]) ]), createVNode(ElButton, {
                 type: "primary",
-                class: ns$4.em("input-table", "append"),
+                class: ns$5.em("input-table", "append"),
                 disabled: _disabled,
                 icon: search_default,
                 onClick: onClickTableDialog
@@ -4122,7 +4137,7 @@ const ns$4 = useNamespace("form"), InputTableSelect = defineComponent({
                 onClose: onCloseTableDialog
             }, {
                 default: () => [ createVNode("div", {
-                    class: ns$4.em("input-table", "content")
+                    class: ns$5.em("input-table", "content")
                 }, [ createVNode(ElRadioGroup, {
                     modelValue: sinleSelection.value
                 }, {
@@ -4145,7 +4160,7 @@ const ns$4 = useNamespace("form"), InputTableSelect = defineComponent({
                         }) ]
                     }) ]
                 }) ]), createVNode("div", {
-                    class: ns$4.em("input-table", "footer")
+                    class: ns$5.em("input-table", "footer")
                 }, [ createVNode(ElButton, {
                     onClick: onResetTableSelect
                 }, _isSlot$2(_slot = t("next.form.reset")) ? _slot : {
@@ -4160,6 +4175,100 @@ const ns$4 = useNamespace("form"), InputTableSelect = defineComponent({
             }) ]);
         };
         return () => createVNode(Fragment, null, [ renderContent() ]);
+    }
+}), ns$4 = useNamespace("form");
+
+var UploadImage = defineComponent({
+    name: "UploadImage",
+    props: {
+        className: {
+            type: String,
+            default: ""
+        },
+        style: {
+            type: Object,
+            default: () => ({})
+        },
+        modelValue: {
+            type: String,
+            default: ""
+        },
+        disabled: {
+            type: Boolean,
+            default: !1
+        },
+        listType: {
+            type: String,
+            values: [ "text", "picture", "picture-card" ],
+            default: "picture-card"
+        },
+        accept: {
+            type: String,
+            default: "image/*"
+        }
+    },
+    emits: [ "change" ],
+    setup() {
+        const {appContext: appContext} = getCurrentInstance(), {t: t} = useLocale();
+        return {
+            t: t,
+            appContext: appContext
+        };
+    },
+    render() {
+        const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = ref([]), body = document.getElementsByTagName("body")[0];
+        let previewImagesContainer = null;
+        return _disabled ? createVNode(ElImage, {
+            src: props.modelValue,
+            previewSrcList: [ props.modelValue ],
+            "preview-teleported": !0,
+            fit: "cover",
+            style: {
+                width: "148px",
+                height: "148px"
+            }
+        }, {
+            default: () => createVNode(ElIcon, null, {
+                default: () => [ createVNode(picture_default, null, null) ]
+            })
+        }) : createVNode(ElUpload, {
+            class: [ ns$4.b("upload-image"), props.className ],
+            style: props.style,
+            "list-type": props.listType,
+            "auto-upload": !1,
+            "on-preview": uploadFile => {
+                const initial = uploadfilesPreview.value.findIndex((file => file.url === uploadFile.url)) || 0;
+                previewImagesContainer && (render(null, previewImagesContainer), body.removeChild(previewImagesContainer)), 
+                previewImagesContainer = document.createElement("div"), body.appendChild(previewImagesContainer);
+                const previewComponent = createVNode({
+                    render: () => h(Teleport, {
+                        to: "body"
+                    }, [ h(ElImageViewer, {
+                        initialIndex: initial,
+                        "url-list": uploadfilesPreview.value.map((file => file.url)),
+                        onClose: () => {
+                            render(null, previewImagesContainer);
+                        }
+                    }) ])
+                });
+                previewImagesContainer.appContext = this.appContext, render(previewComponent, previewImagesContainer);
+            },
+            onChange: (uploadfile, uploadfiles) => {
+                uploadfilesPreview.value = uploadfiles, emit("change", uploadfile, uploadfiles);
+            }
+        }, {
+            trigger: () => slots.default ? slots.default() : "picture-card" === props.listType ? createVNode(ElIcon, null, {
+                default: () => [ createVNode(plus_default, null, null) ]
+            }) : createVNode(ElButton, {
+                link: !0,
+                text: !0,
+                type: "primary"
+            }, {
+                default: () => [ createVNode(ElIcon, null, {
+                    default: () => [ createVNode(plus_default, null, null) ]
+                }), createVNode("em", null, [ _t("next.form.selectFile") ]) ]
+            })
+        });
     }
 });
 
@@ -4207,8 +4316,8 @@ var Element$3 = defineComponent({
                     data?.length && (col.dicData = data);
                 }));
             }
-            "boolean" == typeof _isEditing.value && !1 === _isEditing.value && (_formColumns.value = _formColumns.value.map((col => (col.disabled = !0, 
-            col))));
+            _formColumns.value = _formColumns.value.map((col => (col.disabled = !_isEditing.value, 
+            col)));
         })();
         const formColumns = arrayObjNoRepeat(_formColumns.value, "prop");
         onMounted((() => {
@@ -4479,7 +4588,10 @@ var Element$3 = defineComponent({
                     const names = rows.map((o => o.name));
                     formParams[col.prop] = names.join(",");
                 })(rows, col)
-            }, null) : "upload" === col.type ? createVNode(NextUpload, {
+            }, null) : "upload" === col.type ? createVNode(UploadImage, {
+                modelValue: formParams[col.prop],
+                "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                disabled: col.disabled,
                 onChange: (...arg) => col.onChange?.(...arg, formParams, col)
             }, null) : void 0;
         };

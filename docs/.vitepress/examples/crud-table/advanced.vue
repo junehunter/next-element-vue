@@ -247,6 +247,7 @@ const tableReactive = reactive({
 			industry: '2',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
+			image: new URL('/logo.svg', import.meta.url).href,
 		},
 	],
 });

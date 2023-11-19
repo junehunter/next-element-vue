@@ -1026,7 +1026,7 @@
             isDark: !1
         }
     };
-    const ns$g = useNamespace("text-ellipsis");
+    const ns$h = useNamespace("text-ellipsis");
     const NextTextEllipsis = withInstall(vue.defineComponent({
         name: "NextTextEllipsis",
         props: {
@@ -1072,7 +1072,7 @@
                 }
             };
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
-                class: [ ns$g.b(), props.class ],
+                class: [ ns$h.b(), props.class ],
                 style: setWidth.value,
                 onMouseenter: onMouseenter
             }, [ isTip.value ? vue.createVNode(elementPlus.ElTooltip, {
@@ -1082,11 +1082,11 @@
                 disabled: props.disabled
             }, {
                 default: () => [ vue.createVNode("span", {
-                    class: ns$g.e("text"),
+                    class: ns$h.e("text"),
                     ref: ellipsisRef
                 }, [ slots.default ? slots.default() : props.content ]) ]
             }) : vue.createVNode("span", {
-                class: ns$g.e("text"),
+                class: ns$h.e("text"),
                 ref: ellipsisRef
             }, [ slots.default ? slots.default() : props.content ]) ]) ]);
         }
@@ -1248,7 +1248,21 @@
     }, null, -1) ];
     var moon_night_default = export_helper_default(moon_night_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
         return vue.openBlock(), vue.createElementBlock("svg", _hoisted_1172, _hoisted_449);
-    } ], [ "__file", "moon-night.vue" ] ]), plus_vue_vue_type_script_lang_default = {
+    } ], [ "__file", "moon-night.vue" ] ]), picture_vue_vue_type_script_lang_default = {
+        name: "Picture"
+    }, _hoisted_1197 = {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 1024 1024"
+    }, _hoisted_460 = [ vue.createElementVNode("path", {
+        fill: "currentColor",
+        d: "M160 160v704h704V160H160zm-32-64h768a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H128a32 32 0 0 1-32-32V128a32 32 0 0 1 32-32z"
+    }, null, -1), vue.createElementVNode("path", {
+        fill: "currentColor",
+        d: "M384 288q64 0 64 64t-64 64q-64 0-64-64t64-64zM185.408 876.992l-50.816-38.912L350.72 556.032a96 96 0 0 1 134.592-17.856l1.856 1.472 122.88 99.136a32 32 0 0 0 44.992-4.864l216-269.888 49.92 39.936-215.808 269.824-.256.32a96 96 0 0 1-135.04 14.464l-122.88-99.072-.64-.512a32 32 0 0 0-44.8 5.952L185.408 876.992z"
+    }, null, -1) ];
+    var picture_default = export_helper_default(picture_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+        return vue.openBlock(), vue.createElementBlock("svg", _hoisted_1197, _hoisted_460);
+    } ], [ "__file", "picture.vue" ] ]), plus_vue_vue_type_script_lang_default = {
         name: "Plus"
     }, _hoisted_1201 = {
         xmlns: "http://www.w3.org/2000/svg",
@@ -1707,7 +1721,7 @@
                 }, null) ]
             }))) ]) ]);
         }
-    }), ns$f = useNamespace("menu");
+    }), ns$g = useNamespace("menu");
     const NextMenu = withInstall(vue.defineComponent({
         name: "NextMenu",
         props: {
@@ -1726,20 +1740,20 @@
             }
         },
         setup(props) {
-            vue.provide("ns", ns$f);
+            vue.provide("ns", ns$g);
             const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
             vue.watch((() => router.currentRoute?.value), (to => {
                 activePath.value = to.fullPath;
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
-                class: ns$f.b(),
+                class: ns$g.b(),
                 defaultActive: activePath.value,
                 router: props.router,
                 mode: props.mode,
                 ellipsis: !0
             }, {
                 default: () => [ vue.createVNode(vue.Fragment, null, [ _menuTree.map((item => item.children?.length ? vue.createVNode(elementPlus.ElSubMenu, {
-                    "popper-class": ns$f.b("popper"),
+                    "popper-class": ns$g.b("popper"),
                     index: item.path || item.id,
                     teleported: !0
                 }, {
@@ -1750,7 +1764,7 @@
                         menuData: item.children
                     }, null)
                 }) : vue.createVNode(elementPlus.ElMenuItem, {
-                    "popper-class": ns$f.b("popper"),
+                    "popper-class": ns$g.b("popper"),
                     index: item.path
                 }, {
                     default: () => [ vue.createVNode(MenuItemTitle, {
@@ -1776,19 +1790,19 @@
             }) ]);
         }
     });
-    const ns$e = useNamespace("layout-defaults");
+    const ns$f = useNamespace("layout-defaults");
     var defaults = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$e), {}),
+        setup: () => (vue.provide("ns", ns$f), {}),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
             slots.menu;
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
-                class: ns$e.b()
+                class: ns$f.b()
             }, {
                 default: () => [ vue.createVNode(Sidebar$2, null, null), vue.createVNode("div", {
-                    class: [ ns$e.b("content") ]
+                    class: [ ns$f.b("content") ]
                 }, [ vue.createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                     tabs: _config.tabs,
                     activeTab: _config.activeTab,
@@ -1796,7 +1810,7 @@
                     onSelect: (...arg) => _emit("tabsSelect", ...arg),
                     onClose: (...arg) => _emit("tabsClose", ...arg)
                 }, null) : null, vue.createVNode("main", {
-                    class: [ ns$e.bf("main"), ns$e.is("layout-tabs", isTabs.value) ]
+                    class: [ ns$f.bf("main"), ns$f.is("layout-tabs", isTabs.value) ]
                 }, [ slots.default?.() ]) ]) ]
             });
         }
@@ -1824,10 +1838,10 @@
             }) ]) ]) ]);
         }
     });
-    const ns$d = useNamespace("layout-transverse");
+    const ns$e = useNamespace("layout-transverse");
     var transverse = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$d), {}),
+        setup: () => (vue.provide("ns", ns$e), {}),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
             slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1844,7 +1858,7 @@
                 onSelect: (...arg) => _emit("tabsSelect", ...arg),
                 onClose: (...arg) => _emit("tabsClose", ...arg)
             }, null) : null, vue.createVNode("main", {
-                class: [ ns$d.b("main"), ns$d.is("layout-tabs", isTabs.value) ]
+                class: [ ns$e.b("main"), ns$e.is("layout-tabs", isTabs.value) ]
             }, [ slots.default?.() ]) ]);
             var s;
         }
@@ -1883,10 +1897,10 @@
             }, null) ]);
         }
     });
-    const ns$c = useNamespace("layout-columns");
+    const ns$d = useNamespace("layout-columns");
     var columns = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$c), {}),
+        setup: () => (vue.provide("ns", ns$d), {}),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
             slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
@@ -1894,11 +1908,11 @@
             slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
-                class: ns$c.b()
+                class: ns$d.b()
             }, {
                 default: () => {
                     return [ vue.createVNode(Sidebar$1, null, null), vue.createVNode("div", {
-                        class: [ ns$c.b("content") ]
+                        class: [ ns$d.b("content") ]
                     }, [ vue.createVNode(Header$1, null, (s = __slots_header, "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? __slots_header : {
                         default: () => [ __slots_header ]
                     })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
@@ -1908,7 +1922,7 @@
                         onSelect: (...arg) => _emit("tabsSelect", ...arg),
                         onClose: (...arg) => _emit("tabsClose", ...arg)
                     }, null) : null, vue.createVNode("main", {
-                        class: [ ns$c.bf("main"), ns$c.is("layout-tabs", isTabs.value) ]
+                        class: [ ns$d.bf("main"), ns$d.is("layout-tabs", isTabs.value) ]
                     }, [ slots.default?.() ]) ]) ];
                     var s;
                 }
@@ -1951,20 +1965,20 @@
             }) ]);
         }
     });
-    const ns$b = useNamespace("layout-classic");
+    const ns$c = useNamespace("layout-classic");
     var classic = vue.defineComponent({
         props: {},
-        setup: () => (vue.provide("ns", ns$b), {
-            ns: ns$b
+        setup: () => (vue.provide("ns", ns$c), {
+            ns: ns$c
         }),
         render() {
             const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
             slots.menu;
             const isTabs = vue.ref(!!slots.tabs);
             return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header, null, null), vue.createVNode("div", {
-                class: [ ns$b.b("content"), ns$b.is("layout-tabs", isTabs.value) ]
+                class: [ ns$c.b("content"), ns$c.is("layout-tabs", isTabs.value) ]
             }, [ vue.createVNode(Sidebar, null, null), vue.createVNode("div", {
-                class: ns$b.b("container")
+                class: ns$c.b("container")
             }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
                 tabs: _config.tabs,
                 activeTab: _config.activeTab,
@@ -1972,11 +1986,11 @@
                 onSelect: (...arg) => _emit("tabsSelect", ...arg),
                 onClose: (...arg) => _emit("tabsClose", ...arg)
             }, null) : null, vue.createVNode("main", {
-                class: [ ns$b.b("main") ]
+                class: [ ns$c.b("main") ]
             }, [ slots.default?.() ]) ]) ]) ]);
         }
     });
-    const ns$a = useNamespace("layout"), layouts = {
+    const ns$b = useNamespace("layout"), layouts = {
         defaults: vue.markRaw(defaults),
         transverse: vue.markRaw(transverse),
         columns: vue.markRaw(columns),
@@ -2001,7 +2015,7 @@
         emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
         setup(props, {slots: slots, emit: emit}) {
             const _config = vue.ref(merge$1(defaultConfig$2, props.options)), options = vue.computed((() => _config.value)).value;
-            vue.provide("options", options), vue.provide("__ns__", ns$a), vue.provide("__emit__", emit), 
+            vue.provide("options", options), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
             vue.provide("__slots__", slots);
             const updateOptions = cfg => {
                 _config.value = merge$1(options, cfg), updateThemeColor(_config.value.setting?.themeColor), 
@@ -2025,13 +2039,13 @@
             const _activeSlots = {};
             for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
             return vue.createVNode("div", {
-                class: [ ns$a.b(), props.className ],
+                class: [ ns$b.b(), props.className ],
                 style: props.style
             }, [ vue.h(activeLayout.value, {}, {
                 ..._activeSlots
             }) ]);
         }
-    })), ns$9 = useNamespace("tabs");
+    })), ns$a = useNamespace("tabs");
     var Element$5 = vue.defineComponent({
         name: "NextTabs",
         props: {
@@ -2101,12 +2115,12 @@
                 tabsView.value.push(activeRoute)), emit("change", activeIndex.value, tabsView.value, "add");
             }));
             const renderContent = () => vue.createVNode("nav", {
-                class: ns$9.b()
+                class: ns$a.b()
             }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
                 default: () => [ vue.createVNode("ul", {
-                    class: ns$9.b("list")
+                    class: ns$a.b("list")
                 }, [ tabsView.value.map(((tab, index) => tab ? vue.createVNode("li", {
-                    class: [ "tab-item", ns$9.is("active", activeIndex.value === index) ],
+                    class: [ "tab-item", ns$a.is("active", activeIndex.value === index) ],
                     onClick: event => onClickTabItem(event, tab, index)
                 }, [ vue.createVNode("i", {
                     class: [ "tab-icon", tab.meta?.icon ]
@@ -2137,11 +2151,11 @@
                 onCommand: onChange
             }, {
                 default: () => vue.createVNode("span", {
-                    class: ns$9.b("tab-more")
+                    class: ns$a.b("tab-more")
                 }, [ vue.createVNode("i", {
-                    class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "top") ]
+                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "top") ]
                 }, null), vue.createVNode("i", {
-                    class: [ ns$9.be("tab-more", "box"), ns$9.be("tab-more", "bottom") ]
+                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "bottom") ]
                 }, null) ]),
                 dropdown: () => vue.createVNode(elementPlus.ElDropdownMenu, null, {
                     default: () => [ vue.createVNode(elementPlus.ElDropdownItem, {
@@ -2174,7 +2188,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
-    const NextTabs = withInstall(Element$5), ns$8 = useNamespace("container");
+    const NextTabs = withInstall(Element$5), ns$9 = useNamespace("container");
     const NextContainer = withInstall(vue.defineComponent({
         name: "NextContainer",
         props: {
@@ -2212,18 +2226,18 @@
                 }), style;
             }));
             return () => props.scrollbar ? vue.createVNode(elementPlus.ElScrollbar, {
-                class: [ ns$8.b(), props.className ],
+                class: [ ns$9.b(), props.className ],
                 style: props.style
             }, {
                 default: () => [ slots.default?.() ]
             }) : vue.createVNode("div", {
-                class: [ ns$8.b(), props.className ],
+                class: [ ns$9.b(), props.className ],
                 style: {
                     ...styles.value,
                     ...props.style
                 }
             }, [ props.card ? vue.createVNode("div", {
-                class: ns$8.b("card")
+                class: ns$9.b("card")
             }, [ slots.default?.() ]) : slots.default?.() ]);
         }
     }));
@@ -2980,7 +2994,7 @@
         formSpan: 12,
         formColumnMinWidth: 350
     };
-    const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$7 = useNamespace("spin-loading");
+    const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$8 = useNamespace("spin-loading");
     var SpinLoading = vue.defineComponent({
         name: "NextSpinLoading",
         props: {
@@ -3002,21 +3016,21 @@
         render() {
             const _t = this.t, slots = this.$slots, props = this.$props, loadingText = props.tip || _t("next.loading");
             return vue.createVNode("div", {
-                class: ns$7.b()
+                class: ns$8.b()
             }, [ props.loading ? vue.createVNode("div", {
-                class: ns$7.b("mask")
+                class: ns$8.b("mask")
             }, [ vue.createVNode("span", {
-                class: ns$7.b("mask-dot")
+                class: ns$8.b("mask-dot")
             }, [ vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null), vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null), vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null), vue.createVNode("i", {
-                class: ns$7.be("mask", "dot-item")
+                class: ns$8.be("mask", "dot-item")
             }, null) ]), vue.createVNode("span", {
-                class: ns$7.be("mask", "text")
+                class: ns$8.be("mask", "text")
             }, [ loadingText ]) ]) : null, slots.default?.() ]);
         }
     }), SearchColumn = vue.defineComponent({
@@ -3661,7 +3675,7 @@
             }, null) ]);
         }
     });
-    const ns$6 = useNamespace("dialog");
+    const ns$7 = useNamespace("dialog");
     var NextDialog$1 = vue.defineComponent({
         name: "NextDialog",
         props: {
@@ -3718,7 +3732,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElDialog, {
                 modelValue: visible.value,
                 "onUpdate:modelValue": $event => visible.value = $event,
-                class: ns$6.b(),
+                class: ns$7.b(),
                 title: props.title,
                 appendToBody: props.appendToBody,
                 "destroy-on-close": !0,
@@ -3734,12 +3748,12 @@
             }, {
                 default: () => [ slots.default?.() ],
                 header: ({close: close, titleId: titleId, titleClass: titleClass}) => vue.createVNode("div", {
-                    class: ns$6.b("header")
+                    class: ns$7.b("header")
                 }, [ vue.createVNode("h4", {
                     id: titleId,
                     class: titleClass
                 }, [ props.title ]), vue.createVNode("div", {
-                    class: ns$6.e("header-right")
+                    class: ns$7.e("header-right")
                 }, [ props.fullscreenBtn && vue.createVNode("span", {
                     class: "icon-fullscreen",
                     onClick: () => isFullscreen.value = !isFullscreen.value
@@ -3780,7 +3794,7 @@
         formDatum: {},
         tableSelectConfig: tableSelectConfig
     };
-    const ns$5 = useNamespace("form");
+    const ns$6 = useNamespace("form");
     var NumberRangePicker = vue.defineComponent({
         name: "NumberRangePicker",
         props: {
@@ -3819,7 +3833,7 @@
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: numberRangeRef,
-                class: ns$5.e("number-range")
+                class: ns$6.e("number-range")
             }, [ vue.createVNode(elementPlus.ElInputNumber, {
                 modelValue: startNumber.value,
                 "onUpdate:modelValue": $event => startNumber.value = $event,
@@ -3829,7 +3843,7 @@
                 disabled: disabled,
                 onChange: onChangeStart
             }, null), vue.createVNode("span", {
-                class: ns$5.em("number-range", "division")
+                class: ns$6.em("number-range", "division")
             }, [ t("next.date.rangeSeparator") ]), vue.createVNode(elementPlus.ElInputNumber, {
                 modelValue: endNumber.value,
                 "onUpdate:modelValue": $event => endNumber.value = $event,
@@ -3845,7 +3859,7 @@
     function _isSlot$2(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
-    const ns$4 = useNamespace("form"), InputTableSelect = vue.defineComponent({
+    const ns$5 = useNamespace("form"), InputTableSelect = vue.defineComponent({
         name: "InputTableSelect",
         props: {
             modelValue: {
@@ -3912,16 +3926,16 @@
             }, renderContent = () => {
                 let _slot, _slot2;
                 return vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
-                    class: [ "el-input", ns$4.e("input-table"), ns$4.is("disabled", _disabled) ]
+                    class: [ "el-input", ns$5.e("input-table"), ns$5.is("disabled", _disabled) ]
                 }, [ vue.createVNode("div", {
                     class: "el-input__wrapper"
                 }, [ props.modelValue ? vue.createVNode("span", {
-                    class: ns$4.em("input-table", "value")
+                    class: ns$5.em("input-table", "value")
                 }, [ props.modelValue ]) : vue.createVNode("span", {
-                    class: ns$4.em("input-table", "placeholder")
+                    class: ns$5.em("input-table", "placeholder")
                 }, [ _placeholder ]) ]), vue.createVNode(elementPlus.ElButton, {
                     type: "primary",
-                    class: ns$4.em("input-table", "append"),
+                    class: ns$5.em("input-table", "append"),
                     disabled: _disabled,
                     icon: search_default,
                     onClick: onClickTableDialog
@@ -3934,7 +3948,7 @@
                     onClose: onCloseTableDialog
                 }, {
                     default: () => [ vue.createVNode("div", {
-                        class: ns$4.em("input-table", "content")
+                        class: ns$5.em("input-table", "content")
                     }, [ vue.createVNode(elementPlus.ElRadioGroup, {
                         modelValue: sinleSelection.value
                     }, {
@@ -3957,7 +3971,7 @@
                             }) ]
                         }) ]
                     }) ]), vue.createVNode("div", {
-                        class: ns$4.em("input-table", "footer")
+                        class: ns$5.em("input-table", "footer")
                     }, [ vue.createVNode(elementPlus.ElButton, {
                         onClick: onResetTableSelect
                     }, _isSlot$2(_slot = t("next.form.reset")) ? _slot : {
@@ -3972,6 +3986,99 @@
                 }) ]);
             };
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
+        }
+    }), ns$4 = useNamespace("form");
+    var UploadImage = vue.defineComponent({
+        name: "UploadImage",
+        props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
+            modelValue: {
+                type: String,
+                default: ""
+            },
+            disabled: {
+                type: Boolean,
+                default: !1
+            },
+            listType: {
+                type: String,
+                values: [ "text", "picture", "picture-card" ],
+                default: "picture-card"
+            },
+            accept: {
+                type: String,
+                default: "image/*"
+            }
+        },
+        emits: [ "change" ],
+        setup() {
+            const {appContext: appContext} = vue.getCurrentInstance(), {t: t} = useLocale();
+            return {
+                t: t,
+                appContext: appContext
+            };
+        },
+        render() {
+            const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = vue.ref([]), body = document.getElementsByTagName("body")[0];
+            let previewImagesContainer = null;
+            return _disabled ? vue.createVNode(elementPlus.ElImage, {
+                src: props.modelValue,
+                previewSrcList: [ props.modelValue ],
+                "preview-teleported": !0,
+                fit: "cover",
+                style: {
+                    width: "148px",
+                    height: "148px"
+                }
+            }, {
+                default: () => vue.createVNode(elementPlus.ElIcon, null, {
+                    default: () => [ vue.createVNode(picture_default, null, null) ]
+                })
+            }) : vue.createVNode(elementPlus.ElUpload, {
+                class: [ ns$4.b("upload-image"), props.className ],
+                style: props.style,
+                "list-type": props.listType,
+                "auto-upload": !1,
+                "on-preview": uploadFile => {
+                    const initial = uploadfilesPreview.value.findIndex((file => file.url === uploadFile.url)) || 0;
+                    previewImagesContainer && (vue.render(null, previewImagesContainer), body.removeChild(previewImagesContainer)), 
+                    previewImagesContainer = document.createElement("div"), body.appendChild(previewImagesContainer);
+                    const previewComponent = vue.createVNode({
+                        render: () => vue.h(vue.Teleport, {
+                            to: "body"
+                        }, [ vue.h(elementPlus.ElImageViewer, {
+                            initialIndex: initial,
+                            "url-list": uploadfilesPreview.value.map((file => file.url)),
+                            onClose: () => {
+                                vue.render(null, previewImagesContainer);
+                            }
+                        }) ])
+                    });
+                    previewImagesContainer.appContext = this.appContext, vue.render(previewComponent, previewImagesContainer);
+                },
+                onChange: (uploadfile, uploadfiles) => {
+                    uploadfilesPreview.value = uploadfiles, emit("change", uploadfile, uploadfiles);
+                }
+            }, {
+                trigger: () => slots.default ? slots.default() : "picture-card" === props.listType ? vue.createVNode(elementPlus.ElIcon, null, {
+                    default: () => [ vue.createVNode(plus_default, null, null) ]
+                }) : vue.createVNode(elementPlus.ElButton, {
+                    link: !0,
+                    text: !0,
+                    type: "primary"
+                }, {
+                    default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
+                        default: () => [ vue.createVNode(plus_default, null, null) ]
+                    }), vue.createVNode("em", null, [ _t("next.form.selectFile") ]) ]
+                })
+            });
         }
     });
     function _isSlot$1(s) {
@@ -4016,8 +4123,8 @@
                         data?.length && (col.dicData = data);
                     }));
                 }
-                "boolean" == typeof _isEditing.value && !1 === _isEditing.value && (_formColumns.value = _formColumns.value.map((col => (col.disabled = !0, 
-                col))));
+                _formColumns.value = _formColumns.value.map((col => (col.disabled = !_isEditing.value, 
+                col)));
             })();
             const formColumns = arrayObjNoRepeat(_formColumns.value, "prop");
             vue.onMounted((() => {
@@ -4288,7 +4395,10 @@
                         const names = rows.map((o => o.name));
                         formParams[col.prop] = names.join(",");
                     })(rows, col)
-                }, null) : "upload" === col.type ? vue.createVNode(NextUpload, {
+                }, null) : "upload" === col.type ? vue.createVNode(UploadImage, {
+                    modelValue: formParams[col.prop],
+                    "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                    disabled: col.disabled,
                     onChange: (...arg) => col.onChange?.(...arg, formParams, col)
                 }, null) : void 0;
             };

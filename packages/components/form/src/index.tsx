@@ -24,10 +24,11 @@ import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, updateColSpan, elementResize, isValueExist, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
 import defaultConfig from './config';
 import type { FormItemProps, DicData } from './config';
-import { NextTextEllipsis, NextUpload } from 'packages/components';
+import { NextTextEllipsis } from 'packages/components';
 import { formSlotName } from 'packages/components/crud-table/src/hook';
 import NumberRangePicker from './widgets/number-range-picker';
 import InputTableSelect from './widgets/input-table-select';
+import UploadImage from './widgets/upload-image';
 
 const ns = useNamespace('form');
 export default defineComponent({
@@ -98,12 +99,10 @@ export default defineComponent({
 					});
 				}
 			}
-			if (typeof _isEditing.value === 'boolean' && _isEditing.value === false) {
-				_formColumns.value = _formColumns.value.map((col: FormItemProps) => {
-					col.disabled = true;
-					return col;
-				});
-			}
+			_formColumns.value = _formColumns.value.map((col: FormItemProps) => {
+				col.disabled = !_isEditing.value;
+				return col;
+			});
 		};
 		_updateFormColumns();
 		const formColumns = arrayObjNoRepeat(_formColumns.value, 'prop');
@@ -413,7 +412,7 @@ export default defineComponent({
 			} else if (col.type === 'inputTableSelect') {
 				return <InputTableSelect v-model={formParams[col.prop]} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>;
 			} else if (col.type === 'upload') {
-				return <NextUpload onChange={(...arg) => col.onChange?.(...arg, formParams, col)}></NextUpload>;
+				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, formParams, col)}></UploadImage>;
 			}
 		};
 		expose({
