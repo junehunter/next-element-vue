@@ -33,6 +33,7 @@ const options = reactive({
 			label: '邮箱',
 			searchType: 'input',
 			minWidth: 200,
+			disabled: true,
 		},
 		{
 			prop: 'username',
@@ -123,6 +124,17 @@ const options = reactive({
 			label: '绑定用户',
 			type: 'inputTableSelect',
 			sort: 8,
+			tableSelectProps: {
+				value: 'id',
+				label: 'name',
+			},
+			onTableSelect: (formParams, rows, col) => {
+				console.log(formParams, rows, col);
+			},
+			tableSelectDefaultValue: (row, col, done) => {
+				const tags = row.slelectUserTags;
+				done(tags);
+			},
 			tableSelect: {
 				selectType: 'checkbox',
 				loadData: (searchParams, resolve) => {
@@ -130,17 +142,32 @@ const options = reactive({
 						const res = {
 							data: [
 								{
+									id: 1,
 									name: '张三',
 									type: '测试1',
 									createDate: '2023-9-7 12:00:00',
 								},
 								{
+									id: 2,
 									name: '李四',
 									type: '测试2',
 									createDate: '2023-9-7 12:20:00',
 								},
 								{
+									id: 3,
 									name: '王五',
+									type: '测试1',
+									createDate: '2023-9-7 12:00:00',
+								},
+								{
+									id: 4,
+									name: '李丽',
+									type: '测试1',
+									createDate: '2023-9-7 12:00:00',
+								},
+								{
+									id: 5,
+									name: '昊天',
 									type: '测试1',
 									createDate: '2023-9-7 12:00:00',
 								},
@@ -248,6 +275,21 @@ const tableReactive = reactive({
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
 			image: new URL('/logo.svg', import.meta.url).href,
+			slelectUser: [3, 4],
+			slelectUserTags: [
+				{
+					id: 3,
+					name: '王五',
+					type: '测试1',
+					createDate: '2023-9-7 12:00:00',
+				},
+				{
+					id: 4,
+					name: '李丽',
+					type: '测试1',
+					createDate: '2023-9-7 12:00:00',
+				},
+			],
 		},
 	],
 });

@@ -1,6 +1,6 @@
 import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, render, nextTick } from "vue";
 
-import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElRadioGroup, ElRadio, ElUpload, ElImage, ElImageViewer, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
+import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElTag, ElRadioGroup, ElRadio, ElUpload, ElImage, ElImageViewer, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
 
 import { useFullscreen, useDateFormat, useNow } from "@vueuse/core";
 
@@ -3900,6 +3900,10 @@ var NextDialog$1 = defineComponent({
         destroyOnClose: {
             type: Boolean,
             default: !0
+        },
+        modal: {
+            type: Boolean,
+            default: !0
         }
     },
     emits: [ "close" ],
@@ -3920,7 +3924,7 @@ var NextDialog$1 = defineComponent({
             "destroy-on-close": !0,
             fullscreen: isFullscreen.value,
             "lock-scroll": !0,
-            modal: !0,
+            modal: props.modal,
             "show-close": !1,
             closeOnClickModal: props.closeOnClickModal,
             width: props.width,
@@ -4054,7 +4058,7 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
         modelValue: {
             type: [ Array, String, Number, Boolean, Object ],
             default: function() {
-                return [ null, null ];
+                return [];
             }
         },
         column: {
@@ -4064,6 +4068,10 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
         disabled: {
             type: Boolean,
             default: !1
+        },
+        formParams: {
+            type: Object,
+            default: () => ({})
         }
     },
     emits: [ "select" ],
@@ -4089,13 +4097,17 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                 tableReactive.data = res.data || [], tableReactive.page.total = res.total || 0, 
                 tableReactive.loading = !1;
             }));
-        }, multipleSelection = ref([]), sinleSelection = ref(""), _disabledSelect = computed((() => "radio" === _options.selectType ? !sinleSelection.value : 0 === multipleSelection.value.length)), isSelected = row => multipleSelection.value.includes(row), onResetTableSelect = () => {
+        }, multipleSelection = ref([]);
+        _column.tableSelectDefaultValue?.(props.formParams, _column, (rows => {
+            rows?.length && (_column.tableSelectRows = rows, multipleSelection.value = rows);
+        }));
+        const sinleSelection = ref(""), _disabledSelect = computed((() => "radio" === _options.selectType ? !sinleSelection.value : 0 === multipleSelection.value.length)), isSelected = row => multipleSelection.value.includes(row), onResetTableSelect = () => {
             multipleSelection.value = [], sinleSelection.value = "";
         }, onConfirmSelect = () => {
             const rows = toRaw(multipleSelection.value);
             onCloseTableDialog(), emit("select", rows);
-        }, onClickAddEdit = (row, formParams) => {
-            _column.addEditData?.(row, formParams);
+        }, onClickAddEdit = (row, tableFormParams) => {
+            _column.addEditData?.(row, tableFormParams);
         }, renderSelectTypeContent = (row, index) => {
             const rowKey = _options.rowKey, value = valueExist(row[rowKey], index);
             return "checkbox" === _options.selectType ? createVNode(ElCheckbox, {
@@ -4112,15 +4124,36 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                     sinleSelection.value = value, multipleSelection.value = [ row ];
                 }
             }, null);
-        }, renderContent = () => {
+        }, {value: value, label: label} = _column.tableSelectProps || {}, tags = ref([]), _updateTags = () => {
+            const rows = arrayObjNoRepeat(multipleSelection.value, value);
+            tags.value = rows.map((row => ({
+                value: row[value || "value"],
+                label: row[label || "label"]
+            })));
+        };
+        watch((() => _column.tableSelectRows), (() => {
+            _updateTags();
+        }), {
+            deep: !0,
+            immediate: !0
+        });
+        const renderContent = () => {
             let _slot, _slot2;
             return createVNode(Fragment, null, [ createVNode("div", {
                 class: [ "el-input", ns$5.e("input-table"), ns$5.is("disabled", _disabled) ]
             }, [ createVNode("div", {
                 class: "el-input__wrapper"
-            }, [ props.modelValue ? createVNode("span", {
+            }, [ tags?.value.length ? createVNode("span", {
                 class: ns$5.em("input-table", "value")
-            }, [ props.modelValue ]) : createVNode("span", {
+            }, [ tags.value.map(((tag, index) => createVNode(ElTag, {
+                closable: !0,
+                onClose: () => ((tag, i) => {
+                    const rows = toRaw(multipleSelection.value);
+                    rows.splice(i, 1), multipleSelection.value = rows, _updateTags(), emit("select", rows);
+                })(0, index)
+            }, {
+                default: () => [ tag.label ]
+            }))) ]) : createVNode("span", {
                 class: ns$5.em("input-table", "placeholder")
             }, [ _placeholder ]) ]), createVNode(ElButton, {
                 type: "primary",
@@ -4134,6 +4167,7 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                 title: tableSelectDialog.title,
                 closeOnClickModal: _options.closeOnClickModal,
                 width: _options.dialogWidth,
+                modal: !1,
                 onClose: onCloseTableDialog
             }, {
                 default: () => [ createVNode("div", {
@@ -4314,10 +4348,8 @@ var Element$3 = defineComponent({
                 }
                 !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
                     data?.length && (col.dicData = data);
-                }));
+                })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
             }
-            _formColumns.value = _formColumns.value.map((col => (col.disabled = !_isEditing.value, 
-            col)));
         })();
         const formColumns = arrayObjNoRepeat(_formColumns.value, "prop");
         onMounted((() => {
@@ -4582,11 +4614,13 @@ var Element$3 = defineComponent({
             }, null) : "inputTableSelect" === col.type ? createVNode(InputTableSelect, {
                 modelValue: formParams[col.prop],
                 "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                formParams: formParams,
                 column: col,
                 disabled: col.disabled,
                 onSelect: rows => ((rows, col) => {
-                    const names = rows.map((o => o.name));
-                    formParams[col.prop] = names.join(",");
+                    rows && (col.tableSelectRows = rows);
+                    const {value: value} = col.tableSelectProps || {};
+                    formParams[col.prop] = rows.map((row => row[value || "value"])), col.onTableSelect?.(formParams, rows, col);
                 })(rows, col)
             }, null) : "upload" === col.type ? createVNode(UploadImage, {
                 modelValue: formParams[col.prop],
@@ -4684,7 +4718,7 @@ var AddEditForm = defineComponent({
         inject("addEditFormSlots").value.forEach((slotName => {}));
         const _options = inject("options", {}), options = deepClone(isRef(_options) ? unref(_options) : _options);
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = toRaw(props.columns), onSubmit = (...arg) => {
+        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
             emit("submit", ...arg);
         };
         return () => createVNode(Fragment, null, [ createVNode(NextForm, {
@@ -5345,7 +5379,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.5", install = function(app) {
+}, version = "0.1.8", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5355,7 +5389,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.5",
+    version: "0.1.8",
     install: install
 };
 

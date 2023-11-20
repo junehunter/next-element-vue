@@ -1,13 +1,14 @@
-import { defineComponent, reactive, ref, toRaw, computed } from 'vue';
-import { ElButton, ElTableColumn, ElCheckbox, ElRadioGroup, ElRadio } from 'element-plus';
+import { defineComponent, reactive, ref, toRaw, computed, watch } from 'vue';
+import { ElButton, ElTableColumn, ElCheckbox, ElRadioGroup, ElRadio, ElTag } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
 import { useNamespace, useLocale } from 'packages/hooks';
-import { deepClone, valueExist } from 'packages/hooks/global-hook';
+import { deepClone, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
 import tableDefaultConfig from 'packages/components/crud-table/src/config';
 import { tableSelectConfig } from '../config';
 import NextDialog from 'packages/components/dialog';
 import NextCrudTable from 'packages/components/crud-table';
+import type { DicData } from '../config';
 
 const ns = useNamespace('form');
 const InputTableSelect = defineComponent({
@@ -16,7 +17,7 @@ const InputTableSelect = defineComponent({
 		modelValue: {
 			type: [Array, String, Number, Boolean, Object],
 			default: function () {
-				return [null, null];
+				return [];
 			},
 		},
 		column: {
@@ -26,6 +27,10 @@ const InputTableSelect = defineComponent({
 		disabled: {
 			type: Boolean,
 			default: false,
+		},
+		formParams: {
+			type: Object,
+			default: () => ({}),
 		},
 	},
 	emits: ['select'],
@@ -66,6 +71,12 @@ const InputTableSelect = defineComponent({
 			});
 		};
 		const multipleSelection = ref<any[]>([]);
+		_column.tableSelectDefaultValue?.(props.formParams, _column, (rows: any[]) => {
+			if (rows?.length) {
+				_column.tableSelectRows = rows;
+				multipleSelection.value = rows;
+			}
+		});
 		const sinleSelection = ref<string | number>('');
 		const _disabledSelect = computed(() => {
 			if (_options.selectType === 'radio') {
@@ -96,8 +107,8 @@ const InputTableSelect = defineComponent({
 			onCloseTableDialog();
 			emit('select', rows);
 		};
-		const onClickAddEdit = (row, formParams) => {
-			_column.addEditData?.(row, formParams);
+		const onClickAddEdit = (row, tableFormParams) => {
+			_column.addEditData?.(row, tableFormParams);
 		};
 		const renderSelectTypeContent = (row, index) => {
 			const rowKey = _options.rowKey;
@@ -115,12 +126,52 @@ const InputTableSelect = defineComponent({
 				></ElRadio>
 			);
 		};
+		const { value, label } = _column.tableSelectProps || {};
+		const tags = ref<DicData[]>([]);
+		const _updateTags = () => {
+			const rows = arrayObjNoRepeat(multipleSelection.value, value);
+			tags.value = rows.map(row => {
+				return {
+					value: row[value || 'value'],
+					label: row[label || 'label'],
+				};
+			});
+		};
+		watch(
+			() => _column.tableSelectRows,
+			() => {
+				_updateTags();
+			},
+			{
+				deep: true,
+				immediate: true,
+			}
+		);
+		const _onCloseTag = (tag: DicData, i: number) => {
+			const rows = toRaw(multipleSelection.value);
+			rows.splice(i, 1);
+			multipleSelection.value = rows;
+			_updateTags();
+			emit('select', rows);
+		};
 		const renderContent = () => {
 			return (
 				<>
 					<div class={['el-input', ns.e('input-table'), ns.is('disabled', _disabled)]}>
 						<div class={'el-input__wrapper'}>
-							{props.modelValue ? <span class={ns.em('input-table', 'value')}>{props.modelValue}</span> : <span class={ns.em('input-table', 'placeholder')}>{_placeholder}</span>}
+							{tags?.value.length ? (
+								<span class={ns.em('input-table', 'value')}>
+									{tags.value.map((tag, index) => {
+										return (
+											<ElTag closable onClose={() => _onCloseTag(tag, index)}>
+												{tag.label}
+											</ElTag>
+										);
+									})}
+								</span>
+							) : (
+								<span class={ns.em('input-table', 'placeholder')}>{_placeholder}</span>
+							)}
 						</div>
 						<ElButton type="primary" class={ns.em('input-table', 'append')} disabled={_disabled} icon={Search} onClick={onClickTableDialog}></ElButton>
 					</div>
@@ -129,6 +180,7 @@ const InputTableSelect = defineComponent({
 						title={tableSelectDialog.title}
 						closeOnClickModal={_options.closeOnClickModal}
 						width={_options.dialogWidth}
+						modal={false}
 						onClose={onCloseTableDialog}
 					>
 						<div class={ns.em('input-table', 'content')}>

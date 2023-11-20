@@ -33,6 +33,13 @@ export interface FormItemProps {
 	remark?: string;
 	onChange?: Function;
 	tableSelect?: any;
+	onTableSelect?: Function;
+	tableSelectRows?: any[];
+	tableSelectProps?: {
+		label: string;
+		value: string | number;
+	};
+	tableSelectDefaultValue?: Function;
 }
 export const tableSelectConfig = {
 	selection: false, // 是否显示选项框

@@ -3718,6 +3718,10 @@
             destroyOnClose: {
                 type: Boolean,
                 default: !0
+            },
+            modal: {
+                type: Boolean,
+                default: !0
             }
         },
         emits: [ "close" ],
@@ -3738,7 +3742,7 @@
                 "destroy-on-close": !0,
                 fullscreen: isFullscreen.value,
                 "lock-scroll": !0,
-                modal: !0,
+                modal: props.modal,
                 "show-close": !1,
                 closeOnClickModal: props.closeOnClickModal,
                 width: props.width,
@@ -3865,7 +3869,7 @@
             modelValue: {
                 type: [ Array, String, Number, Boolean, Object ],
                 default: function() {
-                    return [ null, null ];
+                    return [];
                 }
             },
             column: {
@@ -3875,6 +3879,10 @@
             disabled: {
                 type: Boolean,
                 default: !1
+            },
+            formParams: {
+                type: Object,
+                default: () => ({})
             }
         },
         emits: [ "select" ],
@@ -3900,13 +3908,17 @@
                     tableReactive.data = res.data || [], tableReactive.page.total = res.total || 0, 
                     tableReactive.loading = !1;
                 }));
-            }, multipleSelection = vue.ref([]), sinleSelection = vue.ref(""), _disabledSelect = vue.computed((() => "radio" === _options.selectType ? !sinleSelection.value : 0 === multipleSelection.value.length)), isSelected = row => multipleSelection.value.includes(row), onResetTableSelect = () => {
+            }, multipleSelection = vue.ref([]);
+            _column.tableSelectDefaultValue?.(props.formParams, _column, (rows => {
+                rows?.length && (_column.tableSelectRows = rows, multipleSelection.value = rows);
+            }));
+            const sinleSelection = vue.ref(""), _disabledSelect = vue.computed((() => "radio" === _options.selectType ? !sinleSelection.value : 0 === multipleSelection.value.length)), isSelected = row => multipleSelection.value.includes(row), onResetTableSelect = () => {
                 multipleSelection.value = [], sinleSelection.value = "";
             }, onConfirmSelect = () => {
                 const rows = vue.toRaw(multipleSelection.value);
                 onCloseTableDialog(), emit("select", rows);
-            }, onClickAddEdit = (row, formParams) => {
-                _column.addEditData?.(row, formParams);
+            }, onClickAddEdit = (row, tableFormParams) => {
+                _column.addEditData?.(row, tableFormParams);
             }, renderSelectTypeContent = (row, index) => {
                 const rowKey = _options.rowKey, value = valueExist(row[rowKey], index);
                 return "checkbox" === _options.selectType ? vue.createVNode(elementPlus.ElCheckbox, {
@@ -3923,15 +3935,36 @@
                         sinleSelection.value = value, multipleSelection.value = [ row ];
                     }
                 }, null);
-            }, renderContent = () => {
+            }, {value: value, label: label} = _column.tableSelectProps || {}, tags = vue.ref([]), _updateTags = () => {
+                const rows = arrayObjNoRepeat(multipleSelection.value, value);
+                tags.value = rows.map((row => ({
+                    value: row[value || "value"],
+                    label: row[label || "label"]
+                })));
+            };
+            vue.watch((() => _column.tableSelectRows), (() => {
+                _updateTags();
+            }), {
+                deep: !0,
+                immediate: !0
+            });
+            const renderContent = () => {
                 let _slot, _slot2;
                 return vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                     class: [ "el-input", ns$5.e("input-table"), ns$5.is("disabled", _disabled) ]
                 }, [ vue.createVNode("div", {
                     class: "el-input__wrapper"
-                }, [ props.modelValue ? vue.createVNode("span", {
+                }, [ tags?.value.length ? vue.createVNode("span", {
                     class: ns$5.em("input-table", "value")
-                }, [ props.modelValue ]) : vue.createVNode("span", {
+                }, [ tags.value.map(((tag, index) => vue.createVNode(elementPlus.ElTag, {
+                    closable: !0,
+                    onClose: () => ((tag, i) => {
+                        const rows = vue.toRaw(multipleSelection.value);
+                        rows.splice(i, 1), multipleSelection.value = rows, _updateTags(), emit("select", rows);
+                    })(0, index)
+                }, {
+                    default: () => [ tag.label ]
+                }))) ]) : vue.createVNode("span", {
                     class: ns$5.em("input-table", "placeholder")
                 }, [ _placeholder ]) ]), vue.createVNode(elementPlus.ElButton, {
                     type: "primary",
@@ -3945,6 +3978,7 @@
                     title: tableSelectDialog.title,
                     closeOnClickModal: _options.closeOnClickModal,
                     width: _options.dialogWidth,
+                    modal: !1,
                     onClose: onCloseTableDialog
                 }, {
                     default: () => [ vue.createVNode("div", {
@@ -4121,10 +4155,8 @@
                     }
                     !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
                         data?.length && (col.dicData = data);
-                    }));
+                    })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
                 }
-                _formColumns.value = _formColumns.value.map((col => (col.disabled = !_isEditing.value, 
-                col)));
             })();
             const formColumns = arrayObjNoRepeat(_formColumns.value, "prop");
             vue.onMounted((() => {
@@ -4389,11 +4421,13 @@
                 }, null) : "inputTableSelect" === col.type ? vue.createVNode(InputTableSelect, {
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                    formParams: formParams,
                     column: col,
                     disabled: col.disabled,
                     onSelect: rows => ((rows, col) => {
-                        const names = rows.map((o => o.name));
-                        formParams[col.prop] = names.join(",");
+                        rows && (col.tableSelectRows = rows);
+                        const {value: value} = col.tableSelectProps || {};
+                        formParams[col.prop] = rows.map((row => row[value || "value"])), col.onTableSelect?.(formParams, rows, col);
                     })(rows, col)
                 }, null) : "upload" === col.type ? vue.createVNode(UploadImage, {
                     modelValue: formParams[col.prop],
@@ -4489,7 +4523,7 @@
             vue.inject("addEditFormSlots").value.forEach((slotName => {}));
             const _options = vue.inject("options", {}), options = deepClone(vue.isRef(_options) ? vue.unref(_options) : _options);
             options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-            const formRef = vue.ref(), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), _columns = vue.toRaw(props.columns), onSubmit = (...arg) => {
+            const formRef = vue.ref(), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
                 emit("submit", ...arg);
             };
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextForm, {
@@ -5150,7 +5184,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.5",
+        version: "0.1.8",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5164,7 +5198,7 @@
     exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.5", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.8", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

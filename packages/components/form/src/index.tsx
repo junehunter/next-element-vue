@@ -98,11 +98,11 @@ export default defineComponent({
 						if (data?.length) col.dicData = data;
 					});
 				}
+				// 当默认设置了disabled时不操作，只有当默认没有设置或者为false时才跟随isEditing
+				if (typeof col.disabled !== 'boolean' || !col.disabled) {
+					col.disabled = !_isEditing.value;
+				}
 			}
-			_formColumns.value = _formColumns.value.map((col: FormItemProps) => {
-				col.disabled = !_isEditing.value;
-				return col;
-			});
 		};
 		_updateFormColumns();
 		const formColumns = arrayObjNoRepeat(_formColumns.value, 'prop');
@@ -171,8 +171,10 @@ export default defineComponent({
 			formParams[key] = value;
 		};
 		const _onInputTableSelect = (rows, col) => {
-			const names = rows.map(o => o.name);
-			formParams[col.prop] = names.join(',');
+			if (rows) col.tableSelectRows = rows;
+			const { value } = col.tableSelectProps || {};
+			formParams[col.prop] = rows.map(row => row[value || 'value']);
+			col.onTableSelect?.(formParams, rows, col);
 		};
 		const _defaultDisabledDate = (time: Date) => {
 			return time.getTime() > Date.now();
@@ -410,7 +412,9 @@ export default defineComponent({
 			} else if (col.type === 'numberRange') {
 				return <NumberRangePicker v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => _onChangeNumberRange(event, col.prop)}></NumberRangePicker>;
 			} else if (col.type === 'inputTableSelect') {
-				return <InputTableSelect v-model={formParams[col.prop]} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>;
+				return (
+					<InputTableSelect v-model={formParams[col.prop]} formParams={formParams} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>
+				);
 			} else if (col.type === 'upload') {
 				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, formParams, col)}></UploadImage>;
 			}

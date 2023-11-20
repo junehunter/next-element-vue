@@ -15,7 +15,7 @@ $block: 'form';
                 box-sizing: border-box;
             }
         }
-        .el-form-item__content {
+        .el-form-item__content > {
             .el-input,
             .el-select,
             .el-checkbox-group {
@@ -61,6 +61,14 @@ $block: 'form';
         .#{bem($block, 'input-table', 'value')} {
             color: var(--el-input-text-color, var(--el-text-color-regular));
             @extend .text-ellipsis;
+            display: flex;
+            align-items: center;
+            >.el-tag {
+                margin-right: 6px;
+                &:last-child {
+                    margin-right: unset;
+                }
+            }
         }
         .#{bem($block, 'input-table', 'placeholder')} {
             color: var(--el-text-color-placeholder);

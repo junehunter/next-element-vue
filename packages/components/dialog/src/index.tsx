@@ -47,6 +47,10 @@ export default defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		modal: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	emits: ['close'],
 	setup(props, { emit, slots }) {
@@ -72,7 +76,7 @@ export default defineComponent({
 					destroy-on-close
 					fullscreen={isFullscreen.value}
 					lock-scroll={true}
-					modal={true}
+					modal={props.modal}
 					show-close={false}
 					closeOnClickModal={props.closeOnClickModal}
 					width={props.width}

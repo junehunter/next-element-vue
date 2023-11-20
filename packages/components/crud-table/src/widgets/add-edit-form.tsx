@@ -1,4 +1,4 @@
-import { defineComponent, isRef, unref, inject, toRaw, ref } from 'vue';
+import { defineComponent, isRef, unref, inject, ref } from 'vue';
 import { NextForm } from 'packages/components/form';
 import { deepClone } from 'packages/hooks/global-hook';
 
@@ -31,7 +31,8 @@ export default defineComponent({
 		options.isEditing = props.isEditing;
 		const formRef = ref();
 		const formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum);
-		const _columns = toRaw(props.columns);
+		// 这里columns与search栏的columns共享原始数据，这里单独分开，避免操作相互影响
+		const _columns = deepClone(props.columns);
 		const onSubmit = (...arg) => {
 			emit('submit', ...arg);
 		};
