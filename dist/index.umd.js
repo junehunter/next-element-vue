@@ -3796,7 +3796,9 @@
         columnMinWidth: 350,
         columns: [],
         formDatum: {},
-        tableSelectConfig: tableSelectConfig
+        tableSelectConfig: tableSelectConfig,
+        isEditing: !0,
+        showResetBtn: !0
     };
     const ns$6 = useNamespace("form");
     var NumberRangePicker = vue.defineComponent({
@@ -4060,7 +4062,7 @@
             };
         },
         render() {
-            const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = vue.ref([]), body = document.getElementsByTagName("body")[0];
+            const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = vue.ref([]);
             let previewImagesContainer = null;
             return _disabled ? vue.createVNode(elementPlus.ElImage, {
                 src: props.modelValue,
@@ -4081,7 +4083,7 @@
                 "list-type": props.listType,
                 "auto-upload": !1,
                 "on-preview": uploadFile => {
-                    const initial = uploadfilesPreview.value.findIndex((file => file.url === uploadFile.url)) || 0;
+                    const body = document.getElementsByTagName("body")[0], initial = uploadfilesPreview.value.findIndex((file => file.url === uploadFile.url)) || 0;
                     previewImagesContainer && (vue.render(null, previewImagesContainer), body.removeChild(previewImagesContainer)), 
                     previewImagesContainer = document.createElement("div"), body.appendChild(previewImagesContainer);
                     const previewComponent = vue.createVNode({
@@ -4138,26 +4140,31 @@
         emits: [ "submit", "close" ],
         setup(props, {slots: slots, emit: emit, expose: expose}) {
             const _config = deepClone(defaultConfig), options = vue.reactive(merge$1(_config, props.options)), _isEditing = vue.computed((() => "boolean" != typeof options.isEditing || options.isEditing)), {t: t} = useLocale(), colSpan = vue.ref(options.colSpan), formDatum = vue.reactive(props.formDatum) || {}, formParams = vue.reactive(merge$1({}, formDatum)), _formColumns = vue.ref([]), formRules = vue.reactive({});
-            (() => {
-                const columns = props.columns;
-                _formColumns.value = columns;
-                for (let i = 0; i < columns.length; i++) {
-                    const col = columns[i], value = formDatum[col.prop];
-                    isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
-                    const {label: label} = col;
-                    if (col.rules) formRules[col.prop] = col.rules; else if (col.required) {
-                        const rule = [];
-                        rule.push({
-                            required: !0,
-                            message: label + t("next.form.requiredInput"),
-                            trigger: [ "blur", "change" ]
-                        }), formRules[col.prop] = rule;
+            vue.watch((() => [ props.columns, props.formDatum ]), (() => {
+                (() => {
+                    const columns = props.columns;
+                    _formColumns.value = columns;
+                    for (let i = 0; i < columns.length; i++) {
+                        const col = columns[i], value = formDatum[col.prop];
+                        isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
+                        const {label: label} = col;
+                        if (col.rules) formRules[col.prop] = col.rules; else if (col.required) {
+                            const rule = [];
+                            rule.push({
+                                required: !0,
+                                message: label + t("next.form.requiredInput"),
+                                trigger: [ "blur", "change" ]
+                            }), formRules[col.prop] = rule;
+                        }
+                        !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
+                            data?.length && (col.dicData = data);
+                        })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
                     }
-                    !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
-                        data?.length && (col.dicData = data);
-                    })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
-                }
-            })();
+                })();
+            }), {
+                deep: !0,
+                immediate: !0
+            });
             const formColumns = arrayObjNoRepeat(_formColumns.value, "prop");
             vue.onMounted((() => {
                 const formEl = ruleFormRef.value?.$el;
@@ -4491,11 +4498,11 @@
                         onClick: onSubmitAddEdit
                     }, _isSlot$1(_slot2 = t("next.form.submit")) ? _slot2 : {
                         default: () => [ _slot2 ]
-                    }), vue.createVNode(elementPlus.ElButton, {
+                    }), options.showResetBtn ? vue.createVNode(elementPlus.ElButton, {
                         onClick: onResetForm
                     }, _isSlot$1(_slot3 = t("next.form.reset")) ? _slot3 : {
                         default: () => [ _slot3 ]
-                    }) ]) ]
+                    }) : null ]) ]
                 });
             };
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);

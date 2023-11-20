@@ -3980,7 +3980,9 @@ var defaultConfig = {
     columnMinWidth: 350,
     columns: [],
     formDatum: {},
-    tableSelectConfig: tableSelectConfig
+    tableSelectConfig: tableSelectConfig,
+    isEditing: !0,
+    showResetBtn: !0
 };
 
 const ns$6 = useNamespace("form");
@@ -4250,7 +4252,7 @@ var UploadImage = defineComponent({
         };
     },
     render() {
-        const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = ref([]), body = document.getElementsByTagName("body")[0];
+        const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = ref([]);
         let previewImagesContainer = null;
         return _disabled ? createVNode(ElImage, {
             src: props.modelValue,
@@ -4271,7 +4273,7 @@ var UploadImage = defineComponent({
             "list-type": props.listType,
             "auto-upload": !1,
             "on-preview": uploadFile => {
-                const initial = uploadfilesPreview.value.findIndex((file => file.url === uploadFile.url)) || 0;
+                const body = document.getElementsByTagName("body")[0], initial = uploadfilesPreview.value.findIndex((file => file.url === uploadFile.url)) || 0;
                 previewImagesContainer && (render(null, previewImagesContainer), body.removeChild(previewImagesContainer)), 
                 previewImagesContainer = document.createElement("div"), body.appendChild(previewImagesContainer);
                 const previewComponent = createVNode({
@@ -4331,26 +4333,31 @@ var Element$3 = defineComponent({
     emits: [ "submit", "close" ],
     setup(props, {slots: slots, emit: emit, expose: expose}) {
         const _config = deepClone(defaultConfig), options = reactive(merge$1(_config, props.options)), _isEditing = computed((() => "boolean" != typeof options.isEditing || options.isEditing)), {t: t} = useLocale(), colSpan = ref(options.colSpan), formDatum = reactive(props.formDatum) || {}, formParams = reactive(merge$1({}, formDatum)), _formColumns = ref([]), formRules = reactive({});
-        (() => {
-            const columns = props.columns;
-            _formColumns.value = columns;
-            for (let i = 0; i < columns.length; i++) {
-                const col = columns[i], value = formDatum[col.prop];
-                isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
-                const {label: label} = col;
-                if (col.rules) formRules[col.prop] = col.rules; else if (col.required) {
-                    const rule = [];
-                    rule.push({
-                        required: !0,
-                        message: label + t("next.form.requiredInput"),
-                        trigger: [ "blur", "change" ]
-                    }), formRules[col.prop] = rule;
+        watch((() => [ props.columns, props.formDatum ]), (() => {
+            (() => {
+                const columns = props.columns;
+                _formColumns.value = columns;
+                for (let i = 0; i < columns.length; i++) {
+                    const col = columns[i], value = formDatum[col.prop];
+                    isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
+                    const {label: label} = col;
+                    if (col.rules) formRules[col.prop] = col.rules; else if (col.required) {
+                        const rule = [];
+                        rule.push({
+                            required: !0,
+                            message: label + t("next.form.requiredInput"),
+                            trigger: [ "blur", "change" ]
+                        }), formRules[col.prop] = rule;
+                    }
+                    !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
+                        data?.length && (col.dicData = data);
+                    })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
                 }
-                !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
-                    data?.length && (col.dicData = data);
-                })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
-            }
-        })();
+            })();
+        }), {
+            deep: !0,
+            immediate: !0
+        });
         const formColumns = arrayObjNoRepeat(_formColumns.value, "prop");
         onMounted((() => {
             const formEl = ruleFormRef.value?.$el;
@@ -4684,11 +4691,11 @@ var Element$3 = defineComponent({
                     onClick: onSubmitAddEdit
                 }, _isSlot$1(_slot2 = t("next.form.submit")) ? _slot2 : {
                     default: () => [ _slot2 ]
-                }), createVNode(ElButton, {
+                }), options.showResetBtn ? createVNode(ElButton, {
                     onClick: onResetForm
                 }, _isSlot$1(_slot3 = t("next.form.reset")) ? _slot3 : {
                     default: () => [ _slot3 ]
-                }) ]) ]
+                }) : null ]) ]
             });
         };
         return () => createVNode(Fragment, null, [ renderContent() ]);

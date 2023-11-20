@@ -78,5 +78,7 @@ declare const _default: {
         settingBtn: boolean;
         operations: boolean;
     };
+    isEditing: boolean;
+    showResetBtn: boolean;
 };
 export default _default;

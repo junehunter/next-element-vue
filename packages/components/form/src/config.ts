@@ -65,4 +65,6 @@ export default {
 	columns: <FormItemProps | unknown>[],
 	formDatum: <any>{},
 	tableSelectConfig: tableSelectConfig,
+	isEditing: true, // 是否编辑
+	showResetBtn: true, // 是否显示重置按钮
 };

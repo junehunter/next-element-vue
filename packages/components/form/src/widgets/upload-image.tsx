@@ -52,9 +52,9 @@ export default defineComponent({
 			uploadfilesPreview.value = uploadfiles;
 			emit('change', uploadfile, uploadfiles);
 		};
-		const body = document.getElementsByTagName('body')[0];
 		let previewImagesContainer: any = null;
 		const _onPreview = uploadFile => {
+			const body = document.getElementsByTagName('body')[0];
 			const initial = uploadfilesPreview.value.findIndex(file => file.url === uploadFile.url) || 0;
 			if (previewImagesContainer) {
 				render(null, previewImagesContainer);

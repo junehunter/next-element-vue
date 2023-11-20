@@ -1,4 +1,4 @@
-import { defineComponent, reactive, ref, toRaw, onMounted, computed } from 'vue';
+import { defineComponent, reactive, ref, toRaw, onMounted, computed, watch } from 'vue';
 import {
 	ElForm,
 	ElFormItem,
@@ -104,7 +104,16 @@ export default defineComponent({
 				}
 			}
 		};
-		_updateFormColumns();
+		watch(
+			() => [props.columns, props.formDatum],
+			() => {
+				_updateFormColumns();
+			},
+			{
+				deep: true,
+				immediate: true,
+			}
+		);
 		const formColumns = arrayObjNoRepeat(_formColumns.value, 'prop');
 		onMounted(() => {
 			const formEl = ruleFormRef.value?.$el;
@@ -464,7 +473,7 @@ export default defineComponent({
 							<ElButton type="primary" loading={submitLoading.value} onClick={onSubmitAddEdit}>
 								{t('next.form.submit')}
 							</ElButton>
-							<ElButton onClick={onResetForm}>{t('next.form.reset')}</ElButton>
+							{options.showResetBtn ? <ElButton onClick={onResetForm}>{t('next.form.reset')}</ElButton> : null}
 						</div>
 					)}
 				</ElForm>
