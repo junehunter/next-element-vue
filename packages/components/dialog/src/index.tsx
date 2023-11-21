@@ -51,6 +51,10 @@ export default defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		top: {
+			type: String,
+			default: '15vh',
+		},
 	},
 	emits: ['close'],
 	setup(props, { emit, slots }) {
@@ -80,6 +84,7 @@ export default defineComponent({
 					show-close={false}
 					closeOnClickModal={props.closeOnClickModal}
 					width={props.width}
+					top={props.top}
 					draggable={props.draggable}
 					destroyOnClose={props.destroyOnClose}
 					onClose={onClose}

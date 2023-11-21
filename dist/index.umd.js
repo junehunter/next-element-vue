@@ -3722,6 +3722,10 @@
             modal: {
                 type: Boolean,
                 default: !0
+            },
+            top: {
+                type: String,
+                default: "15vh"
             }
         },
         emits: [ "close" ],
@@ -3746,6 +3750,7 @@
                 "show-close": !1,
                 closeOnClickModal: props.closeOnClickModal,
                 width: props.width,
+                top: props.top,
                 draggable: props.draggable,
                 destroyOnClose: props.destroyOnClose,
                 onClose: onClose
@@ -3937,12 +3942,13 @@
                         sinleSelection.value = value, multipleSelection.value = [ row ];
                     }
                 }, null);
-            }, {value: value, label: label} = _column.tableSelectProps || {}, tags = vue.ref([]), _updateTags = () => {
-                const rows = arrayObjNoRepeat(multipleSelection.value, value);
-                tags.value = rows.map((row => ({
+            }, {value: value, label: label} = _column.tableSelectProps || {}, tags = vue.ref([]), tagsMore = vue.ref([]), _updateTags = () => {
+                const rows = arrayObjNoRepeat(multipleSelection.value, value).map((row => ({
                     value: row[value || "value"],
                     label: row[label || "label"]
                 })));
+                rows.length > 1 ? (tags.value = rows.splice(0, 1), tagsMore.value = rows) : (tags.value = rows, 
+                tagsMore.value = []);
             };
             vue.watch((() => _column.tableSelectRows), (() => {
                 _updateTags();
@@ -3950,7 +3956,10 @@
                 deep: !0,
                 immediate: !0
             });
-            const renderContent = () => {
+            const _onCloseTag = (tag, i) => {
+                const rows = vue.toRaw(multipleSelection.value);
+                rows.splice(i, 1), multipleSelection.value = rows, _updateTags(), emit("select", rows);
+            }, renderContent = () => {
                 let _slot, _slot2;
                 return vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                     class: [ "el-input", ns$5.e("input-table"), ns$5.is("disabled", _disabled) ]
@@ -3959,14 +3968,25 @@
                 }, [ tags?.value.length ? vue.createVNode("span", {
                     class: ns$5.em("input-table", "value")
                 }, [ tags.value.map(((tag, index) => vue.createVNode(elementPlus.ElTag, {
-                    closable: !0,
-                    onClose: () => ((tag, i) => {
-                        const rows = vue.toRaw(multipleSelection.value);
-                        rows.splice(i, 1), multipleSelection.value = rows, _updateTags(), emit("select", rows);
-                    })(0, index)
+                    closable: !_disabled,
+                    onClose: () => _onCloseTag(0, index)
                 }, {
                     default: () => [ tag.label ]
-                }))) ]) : vue.createVNode("span", {
+                }))), tagsMore?.value?.length ? vue.createVNode(elementPlus.ElTooltip, {
+                    "popper-class": ns$5.e("tooltip-tags"),
+                    placement: "bottom",
+                    effect: "light"
+                }, {
+                    default: () => vue.createVNode(elementPlus.ElTag, null, {
+                        default: () => [ vue.createTextVNode("+ "), tagsMore.value.length ]
+                    }),
+                    content: () => tagsMore.value.map(((tag, index) => vue.createVNode(elementPlus.ElTag, {
+                        closable: !_disabled,
+                        onClose: () => _onCloseTag(0, index + 1)
+                    }, {
+                        default: () => [ tag.label ]
+                    })))
+                }) : null ]) : vue.createVNode("span", {
                     class: ns$5.em("input-table", "placeholder")
                 }, [ _placeholder ]) ]), vue.createVNode(elementPlus.ElButton, {
                     type: "primary",
@@ -4054,30 +4074,38 @@
             }
         },
         emits: [ "change" ],
-        setup() {
+        setup(props) {
             const {appContext: appContext} = vue.getCurrentInstance(), {t: t} = useLocale();
             return {
                 t: t,
-                appContext: appContext
+                appContext: appContext,
+                defaultPreviewSrcList: deepClone(props.modelValue),
+                uploadfilesPreview: vue.ref([])
             };
         },
         render() {
-            const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = vue.ref([]);
+            const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = this.uploadfilesPreview;
             let previewImagesContainer = null;
-            return _disabled ? vue.createVNode(elementPlus.ElImage, {
-                src: props.modelValue,
-                previewSrcList: [ props.modelValue ],
-                "preview-teleported": !0,
-                fit: "cover",
-                style: {
-                    width: "148px",
-                    height: "148px"
-                }
-            }, {
-                default: () => vue.createVNode(elementPlus.ElIcon, null, {
-                    default: () => [ vue.createVNode(picture_default, null, null) ]
-                })
-            }) : vue.createVNode(elementPlus.ElUpload, {
+            return vue.createVNode(vue.Fragment, null, [ (() => {
+                const value = this.defaultPreviewSrcList;
+                let urls = [];
+                return "string" == typeof value ? urls = [ value ] : "[object Array]" === Object.prototype.toString.call(value) && (urls = value), 
+                urls = urls.filter((url => !!url)), urls.length ? vue.createVNode(elementPlus.ElImage, {
+                    class: ns$4.e("preview-image"),
+                    src: urls[0],
+                    previewSrcList: urls,
+                    "preview-teleported": !0,
+                    fit: "cover",
+                    style: {
+                        width: "146px",
+                        height: "146px"
+                    }
+                }, {
+                    default: () => vue.createVNode(elementPlus.ElIcon, null, {
+                        default: () => [ vue.createVNode(picture_default, null, null) ]
+                    })
+                }) : null;
+            })(), _disabled ? null : vue.createVNode(elementPlus.ElUpload, {
                 class: [ ns$4.b("upload-image"), props.className ],
                 style: props.style,
                 "list-type": props.listType,
@@ -4114,7 +4142,7 @@
                         default: () => [ vue.createVNode(plus_default, null, null) ]
                     }), vue.createVNode("em", null, [ _t("next.form.selectFile") ]) ]
                 })
-            });
+            }) ]);
         }
     });
     function _isSlot$1(s) {
@@ -4436,7 +4464,7 @@
                         const {value: value} = col.tableSelectProps || {};
                         formParams[col.prop] = rows.map((row => row[value || "value"])), col.onTableSelect?.(formParams, rows, col);
                     })(rows, col)
-                }, null) : "upload" === col.type ? vue.createVNode(UploadImage, {
+                }, null) : "uploadImage" === col.type ? vue.createVNode(UploadImage, {
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     disabled: col.disabled,
@@ -5191,7 +5219,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.8",
+        version: "0.1.9",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5205,7 +5233,7 @@
     exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.8", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.9", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

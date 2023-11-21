@@ -197,11 +197,16 @@ const options = reactive({
 		{
 			prop: 'image',
 			label: '上传图片',
-			type: 'upload',
+			type: 'uploadImage',
 			sort: 20,
 			span: 24,
-			onChange: (...arg) => {
-				console.log(...arg);
+			onChangeForm: (file: any, files: any[], formParams: any) => {
+				const reader = new FileReader();
+				reader.readAsDataURL(file.raw);
+				reader.onload = (event: any) => {
+					const res = event.target.result;
+					formParams.image = res;
+				};
 			},
 		},
 		{
@@ -286,6 +291,12 @@ const tableReactive = reactive({
 				{
 					id: 4,
 					name: '李丽',
+					type: '测试1',
+					createDate: '2023-9-7 12:00:00',
+				},
+				{
+					id: 2,
+					name: '李四',
 					type: '测试1',
 					createDate: '2023-9-7 12:00:00',
 				},

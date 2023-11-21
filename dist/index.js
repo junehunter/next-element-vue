@@ -1,6 +1,6 @@
 import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, render, nextTick } from "vue";
 
-import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElTag, ElRadioGroup, ElRadio, ElUpload, ElImage, ElImageViewer, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
+import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElTag, ElRadioGroup, ElRadio, ElUpload, ElImageViewer, ElImage, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
 
 import { useFullscreen, useDateFormat, useNow } from "@vueuse/core";
 
@@ -3904,6 +3904,10 @@ var NextDialog$1 = defineComponent({
         modal: {
             type: Boolean,
             default: !0
+        },
+        top: {
+            type: String,
+            default: "15vh"
         }
     },
     emits: [ "close" ],
@@ -3928,6 +3932,7 @@ var NextDialog$1 = defineComponent({
             "show-close": !1,
             closeOnClickModal: props.closeOnClickModal,
             width: props.width,
+            top: props.top,
             draggable: props.draggable,
             destroyOnClose: props.destroyOnClose,
             onClose: onClose
@@ -4126,12 +4131,13 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                     sinleSelection.value = value, multipleSelection.value = [ row ];
                 }
             }, null);
-        }, {value: value, label: label} = _column.tableSelectProps || {}, tags = ref([]), _updateTags = () => {
-            const rows = arrayObjNoRepeat(multipleSelection.value, value);
-            tags.value = rows.map((row => ({
+        }, {value: value, label: label} = _column.tableSelectProps || {}, tags = ref([]), tagsMore = ref([]), _updateTags = () => {
+            const rows = arrayObjNoRepeat(multipleSelection.value, value).map((row => ({
                 value: row[value || "value"],
                 label: row[label || "label"]
             })));
+            rows.length > 1 ? (tags.value = rows.splice(0, 1), tagsMore.value = rows) : (tags.value = rows, 
+            tagsMore.value = []);
         };
         watch((() => _column.tableSelectRows), (() => {
             _updateTags();
@@ -4139,7 +4145,10 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
             deep: !0,
             immediate: !0
         });
-        const renderContent = () => {
+        const _onCloseTag = (tag, i) => {
+            const rows = toRaw(multipleSelection.value);
+            rows.splice(i, 1), multipleSelection.value = rows, _updateTags(), emit("select", rows);
+        }, renderContent = () => {
             let _slot, _slot2;
             return createVNode(Fragment, null, [ createVNode("div", {
                 class: [ "el-input", ns$5.e("input-table"), ns$5.is("disabled", _disabled) ]
@@ -4148,14 +4157,25 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
             }, [ tags?.value.length ? createVNode("span", {
                 class: ns$5.em("input-table", "value")
             }, [ tags.value.map(((tag, index) => createVNode(ElTag, {
-                closable: !0,
-                onClose: () => ((tag, i) => {
-                    const rows = toRaw(multipleSelection.value);
-                    rows.splice(i, 1), multipleSelection.value = rows, _updateTags(), emit("select", rows);
-                })(0, index)
+                closable: !_disabled,
+                onClose: () => _onCloseTag(0, index)
             }, {
                 default: () => [ tag.label ]
-            }))) ]) : createVNode("span", {
+            }))), tagsMore?.value?.length ? createVNode(ElTooltip, {
+                "popper-class": ns$5.e("tooltip-tags"),
+                placement: "bottom",
+                effect: "light"
+            }, {
+                default: () => createVNode(ElTag, null, {
+                    default: () => [ createTextVNode("+ "), tagsMore.value.length ]
+                }),
+                content: () => tagsMore.value.map(((tag, index) => createVNode(ElTag, {
+                    closable: !_disabled,
+                    onClose: () => _onCloseTag(0, index + 1)
+                }, {
+                    default: () => [ tag.label ]
+                })))
+            }) : null ]) : createVNode("span", {
                 class: ns$5.em("input-table", "placeholder")
             }, [ _placeholder ]) ]), createVNode(ElButton, {
                 type: "primary",
@@ -4244,30 +4264,38 @@ var UploadImage = defineComponent({
         }
     },
     emits: [ "change" ],
-    setup() {
+    setup(props) {
         const {appContext: appContext} = getCurrentInstance(), {t: t} = useLocale();
         return {
             t: t,
-            appContext: appContext
+            appContext: appContext,
+            defaultPreviewSrcList: deepClone(props.modelValue),
+            uploadfilesPreview: ref([])
         };
     },
     render() {
-        const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = ref([]);
+        const slots = this.$slots, props = this.$props, emit = this.$emit, _t = this.t, _disabled = props.disabled, uploadfilesPreview = this.uploadfilesPreview;
         let previewImagesContainer = null;
-        return _disabled ? createVNode(ElImage, {
-            src: props.modelValue,
-            previewSrcList: [ props.modelValue ],
-            "preview-teleported": !0,
-            fit: "cover",
-            style: {
-                width: "148px",
-                height: "148px"
-            }
-        }, {
-            default: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(picture_default, null, null) ]
-            })
-        }) : createVNode(ElUpload, {
+        return createVNode(Fragment, null, [ (() => {
+            const value = this.defaultPreviewSrcList;
+            let urls = [];
+            return "string" == typeof value ? urls = [ value ] : "[object Array]" === Object.prototype.toString.call(value) && (urls = value), 
+            urls = urls.filter((url => !!url)), urls.length ? createVNode(ElImage, {
+                class: ns$4.e("preview-image"),
+                src: urls[0],
+                previewSrcList: urls,
+                "preview-teleported": !0,
+                fit: "cover",
+                style: {
+                    width: "146px",
+                    height: "146px"
+                }
+            }, {
+                default: () => createVNode(ElIcon, null, {
+                    default: () => [ createVNode(picture_default, null, null) ]
+                })
+            }) : null;
+        })(), _disabled ? null : createVNode(ElUpload, {
             class: [ ns$4.b("upload-image"), props.className ],
             style: props.style,
             "list-type": props.listType,
@@ -4304,7 +4332,7 @@ var UploadImage = defineComponent({
                     default: () => [ createVNode(plus_default, null, null) ]
                 }), createVNode("em", null, [ _t("next.form.selectFile") ]) ]
             })
-        });
+        }) ]);
     }
 });
 
@@ -4629,7 +4657,7 @@ var Element$3 = defineComponent({
                     const {value: value} = col.tableSelectProps || {};
                     formParams[col.prop] = rows.map((row => row[value || "value"])), col.onTableSelect?.(formParams, rows, col);
                 })(rows, col)
-            }, null) : "upload" === col.type ? createVNode(UploadImage, {
+            }, null) : "uploadImage" === col.type ? createVNode(UploadImage, {
                 modelValue: formParams[col.prop],
                 "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                 disabled: col.disabled,
@@ -5386,7 +5414,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.8", install = function(app) {
+}, version = "0.1.9", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5396,7 +5424,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.8",
+    version: "0.1.9",
     install: install
 };
 

@@ -1,5 +1,5 @@
 import { defineComponent, reactive, ref, toRaw, computed, watch } from 'vue';
-import { ElButton, ElTableColumn, ElCheckbox, ElRadioGroup, ElRadio, ElTag } from 'element-plus';
+import { ElButton, ElTableColumn, ElCheckbox, ElRadioGroup, ElRadio, ElTag, ElTooltip } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
 import { useNamespace, useLocale } from 'packages/hooks';
@@ -128,14 +128,22 @@ const InputTableSelect = defineComponent({
 		};
 		const { value, label } = _column.tableSelectProps || {};
 		const tags = ref<DicData[]>([]);
+		const tagsMore = ref<DicData[]>([]);
 		const _updateTags = () => {
-			const rows = arrayObjNoRepeat(multipleSelection.value, value);
-			tags.value = rows.map(row => {
+			const _rows = arrayObjNoRepeat(multipleSelection.value, value);
+			const rows = _rows.map(row => {
 				return {
 					value: row[value || 'value'],
 					label: row[label || 'label'],
 				};
 			});
+			if (rows.length > 1) {
+				tags.value = rows.splice(0, 1);
+				tagsMore.value = rows;
+			} else {
+				tags.value = rows;
+				tagsMore.value = [];
+			}
 		};
 		watch(
 			() => _column.tableSelectRows,
@@ -163,11 +171,26 @@ const InputTableSelect = defineComponent({
 								<span class={ns.em('input-table', 'value')}>
 									{tags.value.map((tag, index) => {
 										return (
-											<ElTag closable onClose={() => _onCloseTag(tag, index)}>
+											<ElTag closable={!_disabled} onClose={() => _onCloseTag(tag, index)}>
 												{tag.label}
 											</ElTag>
 										);
 									})}
+									{tagsMore?.value?.length ? (
+										<ElTooltip popper-class={ns.e('tooltip-tags')} placement="bottom" effect="light">
+											{{
+												default: () => <ElTag>+ {tagsMore.value.length}</ElTag>,
+												content: () =>
+													tagsMore.value.map((tag, index) => {
+														return (
+															<ElTag closable={!_disabled} onClose={() => _onCloseTag(tag, index + 1)}>
+																{tag.label}
+															</ElTag>
+														);
+													}),
+											}}
+										</ElTooltip>
+									) : null}
 								</span>
 							) : (
 								<span class={ns.em('input-table', 'placeholder')}>{_placeholder}</span>

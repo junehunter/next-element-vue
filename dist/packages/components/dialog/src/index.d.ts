@@ -43,6 +43,10 @@ declare const _default: import("vue").DefineComponent<{
         type: BooleanConstructor;
         default: boolean;
     };
+    top: {
+        type: StringConstructor;
+        default: string;
+    };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "close"[], "close", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: BooleanConstructor;
@@ -88,6 +92,10 @@ declare const _default: import("vue").DefineComponent<{
         type: BooleanConstructor;
         default: boolean;
     };
+    top: {
+        type: StringConstructor;
+        default: string;
+    };
 }>> & {
     onClose?: (...args: any[]) => any;
 }, {
@@ -102,5 +110,6 @@ declare const _default: import("vue").DefineComponent<{
     zoomSize: boolean;
     destroyOnClose: boolean;
     modal: boolean;
+    top: string;
 }, {}>;
 export default _default;

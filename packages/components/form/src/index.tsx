@@ -424,7 +424,7 @@ export default defineComponent({
 				return (
 					<InputTableSelect v-model={formParams[col.prop]} formParams={formParams} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>
 				);
-			} else if (col.type === 'upload') {
+			} else if (col.type === 'uploadImage') {
 				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, formParams, col)}></UploadImage>;
 			}
 		};

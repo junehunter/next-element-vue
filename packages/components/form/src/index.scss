@@ -61,6 +61,7 @@ $block: 'form';
         .#{bem($block, 'input-table', 'value')} {
             color: var(--el-input-text-color, var(--el-text-color-regular));
             @extend .text-ellipsis;
+            width: 100%;
             display: flex;
             align-items: center;
             >.el-tag {
@@ -88,6 +89,12 @@ $block: 'form';
             }
         }
     }
+    .#{bem($block, 'preview-image')} {
+        margin-right: 6px;
+        &:last-child {
+            margin-right: unset;
+        }
+    }
     .#{bem($block, 'footer')} {
         text-align: center;
         padding: 10px 0;
@@ -106,6 +113,12 @@ $table-content: bem($block, 'input-table', 'content');
         }
     }
 } 
+
+.#{bem($block, 'tooltip-tags')} {
+    >.el-tag {
+        margin: 0 3px;
+    }
+}
 .#{bem($block, 'input-table', 'footer')} {
     padding: 0 0 10px;
     text-align: right;

@@ -4,6 +4,7 @@ import { ElButton, ElIcon, ElUpload, ElImageViewer, ElImage } from 'element-plus
 import type { UploadUserFile } from 'element-plus';
 import { Picture, Plus } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
+import { deepClone } from 'packages/hooks/global-hook';
 
 const ns = useNamespace('form');
 export default defineComponent({
@@ -36,10 +37,12 @@ export default defineComponent({
 		},
 	},
 	emits: ['change'],
-	setup() {
+	setup(props) {
 		const { appContext } = getCurrentInstance()! as any;
 		const { t } = useLocale();
-		return { t, appContext };
+		const defaultPreviewSrcList = deepClone(props.modelValue);
+		const uploadfilesPreview = ref<UploadUserFile[]>([]);
+		return { t, appContext, defaultPreviewSrcList, uploadfilesPreview };
 	},
 	render() {
 		const slots = this.$slots;
@@ -47,7 +50,7 @@ export default defineComponent({
 		const emit = this.$emit;
 		const _t = this.t;
 		const _disabled = props.disabled;
-		const uploadfilesPreview = ref<UploadUserFile[]>([]);
+		const uploadfilesPreview = this.uploadfilesPreview;
 		const _onChange = (uploadfile, uploadfiles) => {
 			uploadfilesPreview.value = uploadfiles;
 			emit('change', uploadfile, uploadfiles);
@@ -95,22 +98,39 @@ export default defineComponent({
 				</ElButton>
 			);
 		};
-		return !_disabled ? (
-			<ElUpload class={[ns.b('upload-image'), props.className]} style={props.style} list-type={props.listType} auto-upload={false} on-preview={_onPreview} onChange={_onChange}>
-				{{
-					trigger: () => (slots.default ? slots.default() : renderUploadContent()),
-				}}
-			</ElUpload>
-		) : (
-			<ElImage src={props.modelValue} previewSrcList={[props.modelValue]} preview-teleported fit="cover" style={{ width: '148px', height: '148px' }}>
-				{{
-					default: () => (
-						<ElIcon>
-							<Picture />
-						</ElIcon>
-					),
-				}}
-			</ElImage>
+		const renderPreviewImageContent = () => {
+			const value = this.defaultPreviewSrcList;
+			let urls = [];
+			if (typeof value === 'string') {
+				urls = [value];
+			} else if (Object.prototype.toString.call(value) === '[object Array]') {
+				urls = value;
+			}
+			urls = urls.filter(url => !!url);
+			if (!urls.length) return null;
+			return (
+				<ElImage class={ns.e('preview-image')} src={urls[0]} previewSrcList={urls} preview-teleported fit="cover" style={{ width: '146px', height: '146px' }}>
+					{{
+						default: () => (
+							<ElIcon>
+								<Picture />
+							</ElIcon>
+						),
+					}}
+				</ElImage>
+			);
+		};
+		return (
+			<>
+				{renderPreviewImageContent()}
+				{!_disabled ? (
+					<ElUpload class={[ns.b('upload-image'), props.className]} style={props.style} list-type={props.listType} auto-upload={false} on-preview={_onPreview} onChange={_onChange}>
+						{{
+							trigger: () => (slots.default ? slots.default() : renderUploadContent()),
+						}}
+					</ElUpload>
+				) : null}
+			</>
 		);
 	},
 });

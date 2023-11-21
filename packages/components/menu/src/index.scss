@@ -124,10 +124,6 @@ $popper: bf($block, 'popper');
 .#{bf($block, 'popper')}.el-popper.is-light {
     @extend .#{$popper};
 }
-.el-popper.is-light {
-    @extend .#{$popper};
-   
-}
 .#{bem($block + '-item', 'icon')} {
     font-size: 16px;
     color: $layout-font-color;
