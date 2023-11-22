@@ -1486,7 +1486,7 @@
             });
         }
     });
-    function _isSlot$7(s) {
+    function _isSlot$8(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
     var HeaderTools = vue.defineComponent({
@@ -1540,7 +1540,7 @@
                 }) ]),
                 dropdown: () => {
                     let _slot;
-                    return vue.createVNode(elementPlus.ElDropdownMenu, null, _isSlot$7(_slot = _languageDropdown.map((item => vue.createVNode(elementPlus.ElDropdownItem, {
+                    return vue.createVNode(elementPlus.ElDropdownMenu, null, _isSlot$8(_slot = _languageDropdown.map((item => vue.createVNode(elementPlus.ElDropdownItem, {
                         command: item.value,
                         disabled: this.language === item.value
                     }, {
@@ -1604,7 +1604,7 @@
                         return vue.createVNode(elementPlus.ElDropdownItem, {
                             command: item.value,
                             divided: !!item.divided
-                        }, _isSlot$7(_slot2 = _t(item.label)) ? _slot2 : {
+                        }, _isSlot$8(_slot2 = _t(item.label)) ? _slot2 : {
                             default: () => [ _slot2 ]
                         });
                     })) ]
@@ -1725,6 +1725,14 @@
     const NextMenu = withInstall(vue.defineComponent({
         name: "NextMenu",
         props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
             router: {
                 type: Boolean,
                 default: !0
@@ -1746,7 +1754,8 @@
                 activePath.value = to.fullPath;
             }));
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
-                class: ns$g.b(),
+                class: [ ns$g.b(), props.className ],
+                style: props.style,
                 defaultActive: activePath.value,
                 router: props.router,
                 mode: props.mode,
@@ -3237,7 +3246,7 @@
             }))) ]) ]);
         }
     });
-    function _isSlot$4(s) {
+    function _isSlot$5(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
     var HeaderSearch = vue.defineComponent({
@@ -3301,13 +3310,13 @@
                         searchSpan: searchSpan.value,
                         columns: showColumns.value,
                         formParams: searchParams
-                    }, _isSlot$4(searchFrom_slots) ? searchFrom_slots : {
+                    }, _isSlot$5(searchFrom_slots) ? searchFrom_slots : {
                         default: () => [ searchFrom_slots ]
                     }), isExpand.value ? vue.createVNode(SearchColumn, {
                         searchSpan: searchSpan.value,
                         columns: moreColumns.value,
                         formParams: searchParams
-                    }, _isSlot$4(searchFrom_slots) ? searchFrom_slots : {
+                    }, _isSlot$5(searchFrom_slots) ? searchFrom_slots : {
                         default: () => [ searchFrom_slots ]
                     }) : null, vue.createVNode(elementPlus.ElCol, {
                         span: searchSpan.value,
@@ -3867,7 +3876,7 @@
         }
     });
     const NextDialog = withInstall(NextDialog$1);
-    function _isSlot$2(s) {
+    function _isSlot$3(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
     const ns$5 = useNamespace("form"), InputTableSelect = vue.defineComponent({
@@ -4030,13 +4039,13 @@
                         class: ns$5.em("input-table", "footer")
                     }, [ vue.createVNode(elementPlus.ElButton, {
                         onClick: onResetTableSelect
-                    }, _isSlot$2(_slot = t("next.form.reset")) ? _slot : {
+                    }, _isSlot$3(_slot = t("next.form.reset")) ? _slot : {
                         default: () => [ _slot ]
                     }), vue.createVNode(elementPlus.ElButton, {
                         type: "primary",
                         disabled: _disabledSelect.value,
                         onClick: onConfirmSelect
-                    }, _isSlot$2(_slot2 = t("next.form.confirm")) ? _slot2 : {
+                    }, _isSlot$3(_slot2 = t("next.form.confirm")) ? _slot2 : {
                         default: () => [ _slot2 ]
                     }) ]) ]
                 }) ]);
@@ -4145,7 +4154,7 @@
             }) ]);
         }
     });
-    function _isSlot$1(s) {
+    function _isSlot$2(s) {
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
     const ns$3 = useNamespace("form");
@@ -4486,7 +4495,7 @@
                 }, {
                     default: () => [ vue.createVNode(elementPlus.ElRow, {
                         gutter: 20
-                    }, _isSlot$1(_slot = formColumns.map((column => !column.hide && vue.createVNode(elementPlus.ElCol, {
+                    }, _isSlot$2(_slot = formColumns.map((column => !column.hide && vue.createVNode(elementPlus.ElCol, {
                         span: valueExist(column.span, colSpan.value)
                     }, {
                         default: () => [ vue.createVNode(elementPlus.ElFormItem, {
@@ -4524,11 +4533,11 @@
                         type: "primary",
                         loading: submitLoading.value,
                         onClick: onSubmitAddEdit
-                    }, _isSlot$1(_slot2 = t("next.form.submit")) ? _slot2 : {
+                    }, _isSlot$2(_slot2 = t("next.form.submit")) ? _slot2 : {
                         default: () => [ _slot2 ]
                     }), options.showResetBtn ? vue.createVNode(elementPlus.ElButton, {
                         onClick: onResetForm
-                    }, _isSlot$1(_slot3 = t("next.form.reset")) ? _slot3 : {
+                    }, _isSlot$2(_slot3 = t("next.form.reset")) ? _slot3 : {
                         default: () => [ _slot3 ]
                     }) : null ]) ]
                 });
@@ -4555,20 +4564,28 @@
         },
         emits: [ "close", "submit" ],
         setup(props, {slots: slots, emit: emit}) {
-            vue.inject("addEditFormSlots").value.forEach((slotName => {}));
+            const addEditFormSlots = vue.inject("addEditFormSlots"), form_slots = {};
+            addEditFormSlots.value.forEach((slotName => {
+                form_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
+            }));
             const _options = vue.inject("options", {}), options = deepClone(vue.isRef(_options) ? vue.unref(_options) : _options);
             options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
             const formRef = vue.ref(), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
                 emit("submit", ...arg);
+            }, renderContent = () => {
+                return vue.createVNode(NextForm, {
+                    ref: formRef,
+                    options: options,
+                    columns: _columns,
+                    formDatum: formDatum,
+                    onClose: () => emit("close"),
+                    onSubmit: onSubmit
+                }, "function" == typeof (s = form_slots) || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? form_slots : {
+                    default: () => [ form_slots ]
+                });
+                var s;
             };
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextForm, {
-                ref: formRef,
-                options: options,
-                columns: _columns,
-                formDatum: formDatum,
-                onClose: () => emit("close"),
-                onSubmit: onSubmit
-            }, null) ]);
+            return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
     function _isSlot(s) {
@@ -5219,7 +5236,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.9",
+        version: "0.1.10",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5233,7 +5250,7 @@
     exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.9", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.10", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

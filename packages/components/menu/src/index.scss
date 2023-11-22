@@ -15,6 +15,9 @@ $block: 'menu';
 .#{bem($block)}.el-menu--vertical {
     height: 100%;
 	border: unset;
+	background-color: transparent;
+	border-bottom: none;
+	user-select: none;
 	.el-menu-item,
 	.el-sub-menu,
 	.el-sub-menu__title {
@@ -43,7 +46,12 @@ $block: 'menu';
 			}
 		}
 		>.el-sub-menu__title {
-			@extend .active-menu-item;
+            >.#{bf($block, 'item')} {
+                &__icon,
+                &__title {
+                    @extend .active-menu-item;
+                }
+            }
 		}
 	}
 }
@@ -66,7 +74,12 @@ $block: 'menu';
 		color: $layout-font-color;
 		&:hover {
 			background-color: unset !important;
-			@extend .active-menu-item;
+			>.#{bf($block, 'item')} {
+				&__icon,
+				&__title {
+					@extend .active-menu-item;
+				}
+			}
 		}
 		&:focus {
 			background-color: unset !important;
@@ -84,7 +97,20 @@ $block: 'menu';
 	}
 	.el-menu-item.is-active,
 	.el-sub-menu.is-active {
-        @extend .active-menu-item;
+        >.#{bf($block, 'item')} {
+            &__icon,
+            &__title {
+                @extend .active-menu-item;
+            }
+        }
+		>.el-sub-menu__title {
+            >.#{bf($block, 'item')} {
+                &__icon,
+                &__title {
+                    @extend .active-menu-item;
+                }
+            }
+		}
 		&::after {
 			content: '';
 			position: absolute;
@@ -110,13 +136,23 @@ $popper: bf($block, 'popper');
 			background-color: $layout-bg-color;
 			&:hover {
 				background-color: rgba(#000000, 0.3);
-                @extend .active-menu-item;
+                >.#{bf($block, 'item')} {
+                    &__icon,
+                    &__title {
+                        @extend .active-menu-item;
+                    }
+                }
 			}
 		}
 		.el-menu-item.is-active,
 		.el-sub-menu.is-active,
 		.el-sub-menu__title.is-active {
-			@extend .active-menu-item;
+            >.#{bf($block, 'item')} {
+                &__icon,
+                &__title {
+                    @extend .active-menu-item;
+                }
+            }
 		}
 	}
 }

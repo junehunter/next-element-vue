@@ -1613,7 +1613,7 @@ var view_default = export_helper_default(view_vue_vue_type_script_lang_default, 
     }
 });
 
-function _isSlot$7(s) {
+function _isSlot$8(s) {
     return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s);
 }
 
@@ -1668,7 +1668,7 @@ var HeaderTools = defineComponent({
             }) ]),
             dropdown: () => {
                 let _slot;
-                return createVNode(ElDropdownMenu, null, _isSlot$7(_slot = _languageDropdown.map((item => createVNode(ElDropdownItem, {
+                return createVNode(ElDropdownMenu, null, _isSlot$8(_slot = _languageDropdown.map((item => createVNode(ElDropdownItem, {
                     command: item.value,
                     disabled: this.language === item.value
                 }, {
@@ -1732,7 +1732,7 @@ var HeaderTools = defineComponent({
                     return createVNode(ElDropdownItem, {
                         command: item.value,
                         divided: !!item.divided
-                    }, _isSlot$7(_slot2 = _t(item.label)) ? _slot2 : {
+                    }, _isSlot$8(_slot2 = _t(item.label)) ? _slot2 : {
                         default: () => [ _slot2 ]
                     });
                 })) ]
@@ -1857,6 +1857,14 @@ const NextMenuItem = defineComponent({
 const NextMenu = withInstall(defineComponent({
     name: "NextMenu",
     props: {
+        className: {
+            type: String,
+            default: ""
+        },
+        style: {
+            type: Object,
+            default: () => ({})
+        },
         router: {
             type: Boolean,
             default: !0
@@ -1878,7 +1886,8 @@ const NextMenu = withInstall(defineComponent({
             activePath.value = to.fullPath;
         }));
         return () => createVNode(Fragment, null, [ createVNode(ElMenu, {
-            class: ns$g.b(),
+            class: [ ns$g.b(), props.className ],
+            style: props.style,
             defaultActive: activePath.value,
             router: props.router,
             mode: props.mode,
@@ -3414,7 +3423,7 @@ var SpinLoading = defineComponent({
     }
 });
 
-function _isSlot$4(s) {
+function _isSlot$5(s) {
     return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s);
 }
 
@@ -3479,13 +3488,13 @@ var HeaderSearch = defineComponent({
                     searchSpan: searchSpan.value,
                     columns: showColumns.value,
                     formParams: searchParams
-                }, _isSlot$4(searchFrom_slots) ? searchFrom_slots : {
+                }, _isSlot$5(searchFrom_slots) ? searchFrom_slots : {
                     default: () => [ searchFrom_slots ]
                 }), isExpand.value ? createVNode(SearchColumn, {
                     searchSpan: searchSpan.value,
                     columns: moreColumns.value,
                     formParams: searchParams
-                }, _isSlot$4(searchFrom_slots) ? searchFrom_slots : {
+                }, _isSlot$5(searchFrom_slots) ? searchFrom_slots : {
                     default: () => [ searchFrom_slots ]
                 }) : null, createVNode(ElCol, {
                     span: searchSpan.value,
@@ -4055,7 +4064,7 @@ var NumberRangePicker = defineComponent({
 
 const NextDialog = withInstall(NextDialog$1);
 
-function _isSlot$2(s) {
+function _isSlot$3(s) {
     return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s);
 }
 
@@ -4219,13 +4228,13 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                     class: ns$5.em("input-table", "footer")
                 }, [ createVNode(ElButton, {
                     onClick: onResetTableSelect
-                }, _isSlot$2(_slot = t("next.form.reset")) ? _slot : {
+                }, _isSlot$3(_slot = t("next.form.reset")) ? _slot : {
                     default: () => [ _slot ]
                 }), createVNode(ElButton, {
                     type: "primary",
                     disabled: _disabledSelect.value,
                     onClick: onConfirmSelect
-                }, _isSlot$2(_slot2 = t("next.form.confirm")) ? _slot2 : {
+                }, _isSlot$3(_slot2 = t("next.form.confirm")) ? _slot2 : {
                     default: () => [ _slot2 ]
                 }) ]) ]
             }) ]);
@@ -4336,7 +4345,7 @@ var UploadImage = defineComponent({
     }
 });
 
-function _isSlot$1(s) {
+function _isSlot$2(s) {
     return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s);
 }
 
@@ -4679,7 +4688,7 @@ var Element$3 = defineComponent({
             }, {
                 default: () => [ createVNode(ElRow, {
                     gutter: 20
-                }, _isSlot$1(_slot = formColumns.map((column => !column.hide && createVNode(ElCol, {
+                }, _isSlot$2(_slot = formColumns.map((column => !column.hide && createVNode(ElCol, {
                     span: valueExist(column.span, colSpan.value)
                 }, {
                     default: () => [ createVNode(ElFormItem, {
@@ -4717,11 +4726,11 @@ var Element$3 = defineComponent({
                     type: "primary",
                     loading: submitLoading.value,
                     onClick: onSubmitAddEdit
-                }, _isSlot$1(_slot2 = t("next.form.submit")) ? _slot2 : {
+                }, _isSlot$2(_slot2 = t("next.form.submit")) ? _slot2 : {
                     default: () => [ _slot2 ]
                 }), options.showResetBtn ? createVNode(ElButton, {
                     onClick: onResetForm
-                }, _isSlot$1(_slot3 = t("next.form.reset")) ? _slot3 : {
+                }, _isSlot$2(_slot3 = t("next.form.reset")) ? _slot3 : {
                     default: () => [ _slot3 ]
                 }) : null ]) ]
             });
@@ -4750,20 +4759,28 @@ var AddEditForm = defineComponent({
     },
     emits: [ "close", "submit" ],
     setup(props, {slots: slots, emit: emit}) {
-        inject("addEditFormSlots").value.forEach((slotName => {}));
+        const addEditFormSlots = inject("addEditFormSlots"), form_slots = {};
+        addEditFormSlots.value.forEach((slotName => {
+            form_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
+        }));
         const _options = inject("options", {}), options = deepClone(isRef(_options) ? unref(_options) : _options);
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
         const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
             emit("submit", ...arg);
+        }, renderContent = () => {
+            return createVNode(NextForm, {
+                ref: formRef,
+                options: options,
+                columns: _columns,
+                formDatum: formDatum,
+                onClose: () => emit("close"),
+                onSubmit: onSubmit
+            }, "function" == typeof (s = form_slots) || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s) ? form_slots : {
+                default: () => [ form_slots ]
+            });
+            var s;
         };
-        return () => createVNode(Fragment, null, [ createVNode(NextForm, {
-            ref: formRef,
-            options: options,
-            columns: _columns,
-            formDatum: formDatum,
-            onClose: () => emit("close"),
-            onSubmit: onSubmit
-        }, null) ]);
+        return () => createVNode(Fragment, null, [ renderContent() ]);
     }
 });
 
@@ -5414,7 +5431,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.9", install = function(app) {
+}, version = "0.1.10", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5424,7 +5441,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.9",
+    version: "0.1.10",
     install: install
 };
 

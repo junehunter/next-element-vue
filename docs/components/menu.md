@@ -14,3 +14,10 @@ lang: zh-cn
 menu/basic
 
 :::
+
+## 纵向菜单
+:::demo 
+
+menu/vertical
+
+:::

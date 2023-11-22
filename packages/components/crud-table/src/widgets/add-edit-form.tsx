@@ -37,7 +37,11 @@ export default defineComponent({
 			emit('submit', ...arg);
 		};
 		const renderContent = () => {
-			return <NextForm ref={formRef} options={options} columns={_columns} formDatum={formDatum} onClose={() => emit('close')} onSubmit={onSubmit}></NextForm>;
+			return (
+				<NextForm ref={formRef} options={options} columns={_columns} formDatum={formDatum} onClose={() => emit('close')} onSubmit={onSubmit}>
+					{form_slots}
+				</NextForm>
+			);
 		};
 		return () => <>{renderContent()}</>;
 	},

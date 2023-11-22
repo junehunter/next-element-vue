@@ -1,5 +1,5 @@
 import { defineComponent, provide, ref, watch, getCurrentInstance } from 'vue';
-import type { PropType } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu } from 'element-plus';
 import { useNamespace } from 'packages/hooks';
 import NextMenuItem from './widgets/menu-item';
@@ -11,6 +11,14 @@ const ns = useNamespace('menu');
 export default defineComponent({
 	name: 'NextMenu',
 	props: {
+		className: {
+			type: String,
+			default: '',
+		},
+		style: {
+			type: Object as PropType<CSSProperties>,
+			default: () => ({}),
+		},
 		router: {
 			type: Boolean,
 			default: true,
@@ -42,7 +50,7 @@ export default defineComponent({
 		);
 		const renderContent = () => {
 			return (
-				<ElMenu class={ns.b()} defaultActive={activePath.value} router={props.router} mode={props.mode} ellipsis>
+				<ElMenu class={[ns.b(), props.className]} style={props.style} defaultActive={activePath.value} router={props.router} mode={props.mode} ellipsis>
 					{/* 必须要先循环遍历一遍，直接调用递归组件NextMenuItem时ellipsis有bug */}
 					<>
 						{_menuTree.map(item => {
