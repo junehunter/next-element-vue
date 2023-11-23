@@ -4683,7 +4683,8 @@ var Element$3 = defineComponent({
         };
         expose({
             formParams: toRaw(formParams),
-            ruleFormRef: ruleFormRef
+            ruleFormRef: ruleFormRef,
+            formColumns: formColumns
         });
         const renderContent = () => {
             let _slot, _slot2, _slot3;
@@ -4766,7 +4767,7 @@ var AddEditForm = defineComponent({
         }
     },
     emits: [ "close", "submit" ],
-    setup(props, {slots: slots, emit: emit}) {
+    setup(props, {slots: slots, emit: emit, expose: expose}) {
         const addEditFormSlots = inject("addEditFormSlots"), form_slots = {};
         addEditFormSlots.value.forEach((slotName => {
             form_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
@@ -4775,7 +4776,14 @@ var AddEditForm = defineComponent({
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
         const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
             emit("submit", ...arg);
-        }, renderContent = () => {
+        };
+        expose({
+            getFormExpose: () => ({
+                formParams: formRef.value?.formParams,
+                formColumns: formRef.value?.formColumns
+            })
+        });
+        const renderContent = () => {
             return createVNode(NextForm, {
                 ref: formRef,
                 options: options,
@@ -4989,9 +4997,12 @@ var Element$2 = defineComponent({
         const operation_column_slots = {};
         operation_column_slots_key.forEach((slotName => {
             operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
-        })), expose({
+        }));
+        expose({
             addEditFormRef: addEditFormRef,
-            onClickRowAdd: onClickHeaderAdd
+            onClickRowAdd: onClickHeaderAdd,
+            columns: _columns.value,
+            getFormExpose: () => addEditFormRef.value?.getFormExpose()
         });
         return () => createVNode(Fragment, null, [ createVNode(Fragment, null, [ createVNode("div", {
             ref: crudTableRef,

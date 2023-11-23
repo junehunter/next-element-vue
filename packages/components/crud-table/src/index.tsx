@@ -238,9 +238,14 @@ export default defineComponent({
 		operation_column_slots_key.forEach(slotName => {
 			operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
 		});
+		const _getFormExpose = () => {
+			return addEditFormRef.value?.getFormExpose();
+		};
 		expose({
 			addEditFormRef: addEditFormRef,
 			onClickRowAdd: onClickHeaderAdd, // 点击行的操作新增
+			columns: _columns.value,
+			getFormExpose: _getFormExpose,
 		});
 		const renderContent = () => {
 			return (

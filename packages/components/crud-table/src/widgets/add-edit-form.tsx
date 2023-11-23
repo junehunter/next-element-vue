@@ -19,7 +19,7 @@ export default defineComponent({
 		},
 	},
 	emits: ['close', 'submit'],
-	setup(props, { slots, emit }) {
+	setup(props, { slots, emit, expose }) {
 		const addEditFormSlots = inject('addEditFormSlots') as any;
 		const form_slots = {};
 		addEditFormSlots.value.forEach(slotName => {
@@ -36,6 +36,15 @@ export default defineComponent({
 		const onSubmit = (...arg) => {
 			emit('submit', ...arg);
 		};
+		const _getFormExpose = () => {
+			return {
+				formParams: formRef.value?.formParams,
+				formColumns: formRef.value?.formColumns,
+			};
+		};
+		expose({
+			getFormExpose: _getFormExpose,
+		});
 		const renderContent = () => {
 			return (
 				<NextForm ref={formRef} options={options} columns={_columns} formDatum={formDatum} onClose={() => emit('close')} onSubmit={onSubmit}>

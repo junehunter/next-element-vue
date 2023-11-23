@@ -448,6 +448,7 @@ export default defineComponent({
 		expose({
 			formParams: toRaw(formParams),
 			ruleFormRef,
+			formColumns,
 		});
 		const renderContent = () => {
 			return (

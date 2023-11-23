@@ -4490,7 +4490,8 @@
             };
             expose({
                 formParams: vue.toRaw(formParams),
-                ruleFormRef: ruleFormRef
+                ruleFormRef: ruleFormRef,
+                formColumns: formColumns
             });
             const renderContent = () => {
                 let _slot, _slot2, _slot3;
@@ -4571,7 +4572,7 @@
             }
         },
         emits: [ "close", "submit" ],
-        setup(props, {slots: slots, emit: emit}) {
+        setup(props, {slots: slots, emit: emit, expose: expose}) {
             const addEditFormSlots = vue.inject("addEditFormSlots"), form_slots = {};
             addEditFormSlots.value.forEach((slotName => {
                 form_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
@@ -4580,7 +4581,14 @@
             options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
             const formRef = vue.ref(), formDatum = deepClone(vue.isRef(props.formDatum) ? vue.unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
                 emit("submit", ...arg);
-            }, renderContent = () => {
+            };
+            expose({
+                getFormExpose: () => ({
+                    formParams: formRef.value?.formParams,
+                    formColumns: formRef.value?.formColumns
+                })
+            });
+            const renderContent = () => {
                 return vue.createVNode(NextForm, {
                     ref: formRef,
                     options: options,
@@ -4791,9 +4799,12 @@
             const operation_column_slots = {};
             operation_column_slots_key.forEach((slotName => {
                 operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
-            })), expose({
+            }));
+            expose({
                 addEditFormRef: addEditFormRef,
-                onClickRowAdd: onClickHeaderAdd
+                onClickRowAdd: onClickHeaderAdd,
+                columns: _columns.value,
+                getFormExpose: () => addEditFormRef.value?.getFormExpose()
             });
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: crudTableRef,
