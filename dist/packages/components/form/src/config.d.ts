@@ -1,6 +1,7 @@
 export declare interface DicData {
     readonly value: string | number;
     readonly label: string;
+    disabled?: boolean;
 }
 export interface FormItemProps {
     readonly type?: string;

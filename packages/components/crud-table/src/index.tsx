@@ -138,13 +138,14 @@ export default defineComponent({
 			rowInfo: {} as any,
 			isEditing: true,
 		});
-		const onClickHeaderAdd = () => {
+		const onClickHeaderAdd = (row = {}) => {
 			const { dialogTitle } = options;
 			addEditDialog.visible = true;
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.add');
+			addEditDialog.rowInfo = row;
 			nextTick(() => {
-				emit('click-add-edit', {});
+				emit('click-add-edit', row);
 			});
 		};
 		const onClickDeleteRows = (rows: any) => {
@@ -239,6 +240,7 @@ export default defineComponent({
 		});
 		expose({
 			addEditFormRef: addEditFormRef,
+			onClickRowAdd: onClickHeaderAdd, // 点击行的操作新增
 		});
 		const renderContent = () => {
 			return (

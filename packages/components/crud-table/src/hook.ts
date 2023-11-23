@@ -142,6 +142,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			append: valueExist(col.formAppend, col.append, null),
 			hide: valueExist(col.formHide, false),
 			disabled: valueExist(col.formDisabled, col.disabled, false),
+			readonly: valueExist(col.formReadonly, col.readonly, false),
 			span: valueExist(col.formSpan, col.span, null),
 			dicData: valueExist(col.formDicData, col.dicData, []),
 			loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
@@ -164,10 +165,12 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			dicData: valueExist(col.searchDicData, col.dicData, []),
 			loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
 			disabled: valueExist(col.searchDisabled, col.disabled, false),
+			readonly: valueExist(col.searchReadonly, col.readonly, false),
 			prefix: valueExist(col.searchPrefix, col.prefix, null),
 			suffix: valueExist(col.searchSuffix, col.suffix, null),
 			prepend: valueExist(col.searchPrepend, col.prepend, null),
 			append: valueExist(col.searchAppend, col.append, null),
+			hide: valueExist(col.searchHide, false),
 			sort: valueExist(col.searchSort, col.sort, index),
 		};
 		// 对应属性指向原数据，search和form共享数据和方法

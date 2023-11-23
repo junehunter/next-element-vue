@@ -2974,6 +2974,7 @@
         columns: [],
         showSearchForm: !0,
         showHeaderMenu: !0,
+        showSearchLabel: !0,
         searchSpan: 4,
         searchGutter: 20,
         searchLabelWidth: "5em",
@@ -3231,12 +3232,12 @@
                     }, null) ]);
                 }
             };
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ columns.value.map((col => vue.createVNode(elementPlus.ElCol, {
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ columns.value.map((col => !col.hide && vue.createVNode(elementPlus.ElCol, {
                 span: props.searchSpan,
                 class: ns.b("header-search-item")
             }, {
                 default: () => [ vue.createVNode(elementPlus.ElFormItem, null, {
-                    label: () => col.label ? vue.createVNode(NextTextEllipsis, {
+                    label: () => col.label && valueExist(options.showSearchLabel, !0) ? vue.createVNode(NextTextEllipsis, {
                         width: options.searchLabelWidth,
                         content: col.label,
                         textAlign: "right"
@@ -3531,7 +3532,7 @@
                 row: row,
                 index: $index
             }) : columnOption.dicData?.length > 0 ? vue.createVNode("span", null, [ _formatterColumnValue(row[columnOption.prop], columnOption.dicData) ]) : null;
-            return () => vue.createVNode(vue.Fragment, null, [ !columnOption.hide && vue.createVNode(elementPlus.ElTableColumn, {
+            return () => vue.createVNode(vue.Fragment, null, [ !columnOption.columnHide && vue.createVNode(elementPlus.ElTableColumn, {
                 prop: columnOption.prop,
                 label: columnOption.label,
                 headerAlign: columnOption.headerAlign || options.headerAlign,
@@ -4272,9 +4273,10 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
+                        readonly: valueExist(col.readonly, !1),
                         disabled: col.disabled,
                         placeholder: placeholder,
-                        onChange: event => col.onChange?.(event, col)
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
                         prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                         suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4288,13 +4290,14 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
+                        readonly: valueExist(col.readonly, !1),
                         disabled: col.disabled,
                         placeholder: placeholder,
                         onInput: event => ((event, key) => {
                             const value = event.replace(/\D/g, "");
                             formParams[key] = value;
                         })(event, col.prop),
-                        onChange: event => col.onChange?.(event, col)
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
                         prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                         suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4308,6 +4311,7 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
+                        readonly: valueExist(col.readonly, !1),
                         disabled: col.disabled,
                         placeholder: placeholder,
                         onInput: event => ((val, key) => {
@@ -4316,7 +4320,7 @@
                             value = value.replace(".", "DUMMY"), value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), 
                             formParams[key] = value;
                         })(event, col.prop),
-                        onChange: event => col.onChange?.(event, col)
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
                         prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                         suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4331,9 +4335,10 @@
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         type: "textarea",
                         clearable: !0,
+                        readonly: valueExist(col.readonly, !1),
                         disabled: col.disabled,
                         placeholder: placeholder,
-                        onChange: event => col.onChange?.(event, col)
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
                         prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                         suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4351,12 +4356,13 @@
                         disabled: col.disabled,
                         multiple: valueExist(col.multiple, !1),
                         "collapse-tags-tooltip": !0,
-                        onChange: event => col.onChange?.(event, col)
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
                         default: () => [ col.dicData && col.dicData.map((item => vue.createVNode(elementPlus.ElOption, {
                             key: item.value,
                             value: item.value,
-                            label: item.label
+                            label: item.label,
+                            disabled: valueExist(item.disabled, !1)
                         }, null))) ]
                     });
                 }
@@ -4371,7 +4377,7 @@
                         editable: !1,
                         disabled: col.disabled,
                         placeholder: placeholder,
-                        onChange: event => col.onChange?.(event, col)
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
                         prefix: () => col.prefix ? col.prefix(formParams, col) : null,
                         suffix: () => col.suffix ? col.suffix(formParams, col) : null
@@ -4381,11 +4387,12 @@
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     disabled: col.disabled,
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     default: () => [ col.dicData && col.dicData.map((item => vue.createVNode(elementPlus.ElRadio, {
                         key: item.value,
-                        label: item.value
+                        label: item.value,
+                        disabled: valueExist(item.disabled, !1)
                     }, {
                         default: () => [ item.label ]
                     }))) ]
@@ -4395,11 +4402,12 @@
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     disabled: col.disabled,
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     default: () => [ col.dicData && col.dicData.map((item => vue.createVNode(elementPlus.ElCheckbox, {
                         key: item.value,
-                        label: item.value
+                        label: item.value,
+                        disabled: valueExist(item.disabled, !1)
                     }, {
                         default: () => [ item.label ]
                     }))) ]
@@ -4408,7 +4416,7 @@
                     const placeholder = col.placeholder || t("next.form.select") + col.label;
                     return vue.createVNode(elementPlus.ElDatePicker, {
                         modelValue: formParams[col.prop],
-                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col, formParams, formColumns) ],
                         placeholder: placeholder,
                         type: "date",
                         valueFormat: col.format || "YYYY-MM-DD",
@@ -4423,7 +4431,7 @@
                     const placeholder = col.placeholder || t("next.form.select") + col.label;
                     return vue.createVNode(elementPlus.ElDatePicker, {
                         modelValue: formParams[col.prop],
-                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col, formParams, formColumns) ],
                         placeholder: placeholder,
                         type: "datetime",
                         valueFormat: col.format || "YYYY-MM-DD HH:mm:ss",
@@ -4438,7 +4446,7 @@
                     const placeholder = col.placeholder || t("next.form.select") + col.label;
                     return vue.createVNode(elementPlus.ElDatePicker, {
                         modelValue: formParams[col.prop],
-                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                        "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col, formParams, formColumns) ],
                         placeholder: placeholder,
                         type: "datetimerange",
                         valueFormat: col.format || "YYYY-MM-DD HH:mm:ss",
@@ -4477,7 +4485,7 @@
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     disabled: col.disabled,
-                    onChange: (...arg) => col.onChange?.(...arg, formParams, col)
+                    onChange: (...arg) => col.onChange?.(...arg, col, formParams, formColumns)
                 }, null) : void 0;
             };
             expose({
@@ -4630,6 +4638,7 @@
                         append: valueExist(col.formAppend, col.append, null),
                         hide: valueExist(col.formHide, !1),
                         disabled: valueExist(col.formDisabled, col.disabled, !1),
+                        readonly: valueExist(col.formReadonly, col.readonly, !1),
                         span: valueExist(col.formSpan, col.span, null),
                         dicData: valueExist(col.formDicData, col.dicData, []),
                         loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
@@ -4647,10 +4656,12 @@
                         dicData: valueExist(col.searchDicData, col.dicData, []),
                         loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
                         disabled: valueExist(col.searchDisabled, col.disabled, !1),
+                        readonly: valueExist(col.searchReadonly, col.readonly, !1),
                         prefix: valueExist(col.searchPrefix, col.prefix, null),
                         suffix: valueExist(col.searchSuffix, col.suffix, null),
                         prepend: valueExist(col.searchPrepend, col.prepend, null),
                         append: valueExist(col.searchAppend, col.append, null),
+                        hide: valueExist(col.searchHide, !1),
                         sort: valueExist(col.searchSort, col.sort, index)
                     };
                     return Object.assign(col, item);
@@ -4720,11 +4731,11 @@
                 title: t("next.table.add"),
                 rowInfo: {},
                 isEditing: !0
-            }), onClickHeaderAdd = () => {
+            }), onClickHeaderAdd = (row = {}) => {
                 const {dialogTitle: dialogTitle} = options;
                 addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.add"), 
-                vue.nextTick((() => {
-                    emit("click-add-edit", {});
+                addEditDialog.rowInfo = row, vue.nextTick((() => {
+                    emit("click-add-edit", row);
                 }));
             }, onClickDeleteRows = rows => {
                 emit("delete-rows", rows, (() => {
@@ -4781,7 +4792,8 @@
             operation_column_slots_key.forEach((slotName => {
                 operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
             })), expose({
-                addEditFormRef: addEditFormRef
+                addEditFormRef: addEditFormRef,
+                onClickRowAdd: onClickHeaderAdd
             });
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: crudTableRef,
@@ -5236,7 +5248,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.10",
+        version: "0.1.11",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5250,7 +5262,7 @@
     exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.10", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.11", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

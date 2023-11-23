@@ -11,6 +11,7 @@ export declare interface Column {
 	dicData?: DictData[];
 	loadDicData?: Function;
 	disabled?: boolean;
+	readonly?: boolean;
 	defaultValue?: any;
 	labelWidth?: string | number;
 	multiple?: boolean;
@@ -20,6 +21,7 @@ export declare interface Column {
 	append?: Function;
 	sort?: number;
 	required?: boolean;
+	hide?: boolean;
 	span?: number;
 	tableSelect?: any;
 	onChange?: Function;
@@ -32,6 +34,8 @@ export interface SearchColumnProps extends Column {
 	searchLabelWidth?: string | number;
 	searchDefaultValue?: any;
 	searchDisabled?: boolean;
+	searchReadonly?: boolean;
+	searchHide?: boolean;
 	searchMultiple?: boolean;
 	searchFormat?: string;
 	searchDisabledDate?: string;
@@ -55,6 +59,7 @@ export interface FormColunmProps extends Column {
 	formDefaultValue?: any;
 	formPlaceholder?: string;
 	formDisabled?: string;
+	formReadonly?: boolean;
 	formRequired?: boolean;
 	formHide?: boolean;
 	formPrefix?: Function;
@@ -82,7 +87,7 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
 	showOverflowTooltip?: boolean | object;
 	headerAlign?: string;
 	align?: string;
-	hide?: boolean;
+	columnHide?: boolean;
 	sortable?: boolean;
 	children?: TableColumnProps[];
 }
@@ -108,6 +113,7 @@ export default {
 	// 搜兰模块
 	showSearchForm: true,
 	showHeaderMenu: true,
+	showSearchLabel: true,
 	searchSpan: 4,
 	searchGutter: 20,
 	searchLabelWidth: '5em',

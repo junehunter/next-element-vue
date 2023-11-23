@@ -4,6 +4,7 @@ import type { SearchColumnProps } from '../config';
 import { searchFormSlotName } from '../hook';
 import { useLocale } from 'packages/hooks';
 import { NextTextEllipsis } from 'packages/components/text-ellipsis';
+import { valueExist } from 'packages/hooks/global-hook';
 
 export default defineComponent({
 	name: 'SearchColumn',
@@ -215,14 +216,19 @@ export default defineComponent({
 				<>
 					{columns.value.map(col => {
 						return (
-							<ElCol span={props.searchSpan} class={ns.b('header-search-item')}>
-								<ElFormItem>
-									{{
-										label: () => (col.label ? <NextTextEllipsis width={options.searchLabelWidth} content={col.label} textAlign="right"></NextTextEllipsis> : null),
-										default: () => renderColItemContent(col),
-									}}
-								</ElFormItem>
-							</ElCol>
+							!col.hide && (
+								<ElCol span={props.searchSpan} class={ns.b('header-search-item')}>
+									<ElFormItem>
+										{{
+											label: () =>
+												col.label && valueExist(options.showSearchLabel, true) ? (
+													<NextTextEllipsis width={options.searchLabelWidth} content={col.label} textAlign="right"></NextTextEllipsis>
+												) : null,
+											default: () => renderColItemContent(col),
+										}}
+									</ElFormItem>
+								</ElCol>
+							)
 						);
 					})}
 				</>

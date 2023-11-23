@@ -241,7 +241,14 @@ export default defineComponent({
 			} else if (col.type === 'input' || !col.type) {
 				const placeholder = col.placeholder || t('next.form.input') + col.label;
 				return (
-					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} onChange={event => col.onChange?.(event, col)}>
+					<ElInput
+						v-model={formParams[col.prop]}
+						clearable
+						readonly={valueExist(col.readonly, false)}
+						disabled={col.disabled}
+						placeholder={placeholder}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
+					>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
 							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -256,10 +263,11 @@ export default defineComponent({
 					<ElInput
 						v-model={formParams[col.prop]}
 						clearable
+						readonly={valueExist(col.readonly, false)}
 						disabled={col.disabled}
 						placeholder={placeholder}
 						onInput={event => _onInputInteger(event, col.prop)}
-						onChange={event => col.onChange?.(event, col)}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
 					>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
@@ -275,10 +283,11 @@ export default defineComponent({
 					<ElInput
 						v-model={formParams[col.prop]}
 						clearable
+						readonly={valueExist(col.readonly, false)}
 						disabled={col.disabled}
 						placeholder={placeholder}
 						onInput={event => _onInputNumber(event, col.prop)}
-						onChange={event => col.onChange?.(event, col)}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
 					>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
@@ -291,7 +300,15 @@ export default defineComponent({
 			} else if (col.type === 'textarea') {
 				const placeholder = col.placeholder || t('next.form.input') + col.label;
 				return (
-					<ElInput v-model={formParams[col.prop]} type="textarea" clearable disabled={col.disabled} placeholder={placeholder} onChange={event => col.onChange?.(event, col)}>
+					<ElInput
+						v-model={formParams[col.prop]}
+						type="textarea"
+						clearable
+						readonly={valueExist(col.readonly, false)}
+						disabled={col.disabled}
+						placeholder={placeholder}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
+					>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
 							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -310,11 +327,11 @@ export default defineComponent({
 						disabled={col.disabled}
 						multiple={valueExist(col.multiple, false)}
 						collapse-tags-tooltip
-						onChange={event => col.onChange?.(event, col)}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
 					>
 						{col.dicData &&
 							(col.dicData as DicData[]).map((item: DicData) => {
-								return <ElOption key={item.value} value={item.value} label={item.label}></ElOption>;
+								return <ElOption key={item.value} value={item.value} label={item.label} disabled={valueExist(item.disabled, false)}></ElOption>;
 							})}
 					</ElSelect>
 				);
@@ -329,7 +346,7 @@ export default defineComponent({
 						editable={false}
 						disabled={col.disabled}
 						placeholder={placeholder}
-						onChange={event => col.onChange?.(event, col)}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
 					>
 						{{
 							prefix: () => (col.prefix ? col.prefix(formParams, col) : null),
@@ -339,11 +356,11 @@ export default defineComponent({
 				);
 			} else if (col.type === 'radio') {
 				return (
-					<ElRadioGroup v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => col.onChange?.(event, col)}>
+					<ElRadioGroup v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => col.onChange?.(event, col, formParams, formColumns)}>
 						{col.dicData &&
 							(col.dicData as DicData[]).map((item: DicData) => {
 								return (
-									<ElRadio key={item.value} label={item.value}>
+									<ElRadio key={item.value} label={item.value} disabled={valueExist(item.disabled, false)}>
 										{item.label}
 									</ElRadio>
 								);
@@ -355,11 +372,11 @@ export default defineComponent({
 					formParams[col.prop] = [];
 				}
 				return (
-					<ElCheckboxGroup v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => col.onChange?.(event, col)}>
+					<ElCheckboxGroup v-model={formParams[col.prop]} disabled={col.disabled} onChange={event => col.onChange?.(event, col, formParams, formColumns)}>
 						{col.dicData &&
 							(col.dicData as DicData[]).map((item: DicData) => {
 								return (
-									<ElCheckbox key={item.value} label={item.value}>
+									<ElCheckbox key={item.value} label={item.value} disabled={valueExist(item.disabled, false)}>
 										{item.label}
 									</ElCheckbox>
 								);
@@ -379,7 +396,7 @@ export default defineComponent({
 						disabledDate={col.disabledDate || _defaultDisabledDate}
 						disabled={col.disabled}
 						editable={col.editable}
-						onUpdate:modelValue={event => col.onChange?.(event, col)}
+						onUpdate:modelValue={event => col.onChange?.(event, col, formParams, formColumns)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'datetime') {
@@ -395,7 +412,7 @@ export default defineComponent({
 						disabledDate={col.disabledDate || _defaultDisabledDate}
 						disabled={col.disabled}
 						editable={col.editable}
-						onUpdate:modelValue={event => col.onChange?.(event, col)}
+						onUpdate:modelValue={event => col.onChange?.(event, col, formParams, formColumns)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'datetimerange') {
@@ -415,7 +432,7 @@ export default defineComponent({
 						disabled={col.disabled}
 						editable={col.editable}
 						shortcuts={col.shortcuts || _defaultShortcuts}
-						onUpdate:modelValue={event => col.onChange?.(event, col)}
+						onUpdate:modelValue={event => col.onChange?.(event, col, formParams, formColumns)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'numberRange') {
@@ -425,7 +442,7 @@ export default defineComponent({
 					<InputTableSelect v-model={formParams[col.prop]} formParams={formParams} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>
 				);
 			} else if (col.type === 'uploadImage') {
-				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, formParams, col)}></UploadImage>;
+				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, col, formParams, formColumns)}></UploadImage>;
 			}
 		};
 		expose({

@@ -3148,6 +3148,7 @@ var defaultConfig$1 = {
     columns: [],
     showSearchForm: !0,
     showHeaderMenu: !0,
+    showSearchLabel: !0,
     searchSpan: 4,
     searchGutter: 20,
     searchLabelWidth: "5em",
@@ -3407,12 +3408,12 @@ var SpinLoading = defineComponent({
                 }, null) ]);
             }
         };
-        return () => createVNode(Fragment, null, [ createVNode(Fragment, null, [ columns.value.map((col => createVNode(ElCol, {
+        return () => createVNode(Fragment, null, [ createVNode(Fragment, null, [ columns.value.map((col => !col.hide && createVNode(ElCol, {
             span: props.searchSpan,
             class: ns.b("header-search-item")
         }, {
             default: () => [ createVNode(ElFormItem, null, {
-                label: () => col.label ? createVNode(NextTextEllipsis, {
+                label: () => col.label && valueExist(options.showSearchLabel, !0) ? createVNode(NextTextEllipsis, {
                     width: options.searchLabelWidth,
                     content: col.label,
                     textAlign: "right"
@@ -3710,7 +3711,7 @@ const TableColumnDynamic = defineComponent({
             row: row,
             index: $index
         }) : columnOption.dicData?.length > 0 ? createVNode("span", null, [ _formatterColumnValue(row[columnOption.prop], columnOption.dicData) ]) : null;
-        return () => createVNode(Fragment, null, [ !columnOption.hide && createVNode(ElTableColumn, {
+        return () => createVNode(Fragment, null, [ !columnOption.columnHide && createVNode(ElTableColumn, {
             prop: columnOption.prop,
             label: columnOption.label,
             headerAlign: columnOption.headerAlign || options.headerAlign,
@@ -4465,9 +4466,10 @@ var Element$3 = defineComponent({
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     clearable: !0,
+                    readonly: valueExist(col.readonly, !1),
                     disabled: col.disabled,
                     placeholder: placeholder,
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                     suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4481,13 +4483,14 @@ var Element$3 = defineComponent({
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     clearable: !0,
+                    readonly: valueExist(col.readonly, !1),
                     disabled: col.disabled,
                     placeholder: placeholder,
                     onInput: event => ((event, key) => {
                         const value = event.replace(/\D/g, "");
                         formParams[key] = value;
                     })(event, col.prop),
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                     suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4501,6 +4504,7 @@ var Element$3 = defineComponent({
                     modelValue: formParams[col.prop],
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     clearable: !0,
+                    readonly: valueExist(col.readonly, !1),
                     disabled: col.disabled,
                     placeholder: placeholder,
                     onInput: event => ((val, key) => {
@@ -4509,7 +4513,7 @@ var Element$3 = defineComponent({
                         value = value.replace(".", "DUMMY"), value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), 
                         formParams[key] = value;
                     })(event, col.prop),
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                     suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4524,9 +4528,10 @@ var Element$3 = defineComponent({
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     type: "textarea",
                     clearable: !0,
+                    readonly: valueExist(col.readonly, !1),
                     disabled: col.disabled,
                     placeholder: placeholder,
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     prefix: col.prefix ? () => col.prefix(formParams, col) : null,
                     suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -4544,12 +4549,13 @@ var Element$3 = defineComponent({
                     disabled: col.disabled,
                     multiple: valueExist(col.multiple, !1),
                     "collapse-tags-tooltip": !0,
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     default: () => [ col.dicData && col.dicData.map((item => createVNode(ElOption, {
                         key: item.value,
                         value: item.value,
-                        label: item.label
+                        label: item.label,
+                        disabled: valueExist(item.disabled, !1)
                     }, null))) ]
                 });
             }
@@ -4564,7 +4570,7 @@ var Element$3 = defineComponent({
                     editable: !1,
                     disabled: col.disabled,
                     placeholder: placeholder,
-                    onChange: event => col.onChange?.(event, col)
+                    onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
                     prefix: () => col.prefix ? col.prefix(formParams, col) : null,
                     suffix: () => col.suffix ? col.suffix(formParams, col) : null
@@ -4574,11 +4580,12 @@ var Element$3 = defineComponent({
                 modelValue: formParams[col.prop],
                 "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                 disabled: col.disabled,
-                onChange: event => col.onChange?.(event, col)
+                onChange: event => col.onChange?.(event, col, formParams, formColumns)
             }, {
                 default: () => [ col.dicData && col.dicData.map((item => createVNode(ElRadio, {
                     key: item.value,
-                    label: item.value
+                    label: item.value,
+                    disabled: valueExist(item.disabled, !1)
                 }, {
                     default: () => [ item.label ]
                 }))) ]
@@ -4588,11 +4595,12 @@ var Element$3 = defineComponent({
                 modelValue: formParams[col.prop],
                 "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                 disabled: col.disabled,
-                onChange: event => col.onChange?.(event, col)
+                onChange: event => col.onChange?.(event, col, formParams, formColumns)
             }, {
                 default: () => [ col.dicData && col.dicData.map((item => createVNode(ElCheckbox, {
                     key: item.value,
-                    label: item.value
+                    label: item.value,
+                    disabled: valueExist(item.disabled, !1)
                 }, {
                     default: () => [ item.label ]
                 }))) ]
@@ -4601,7 +4609,7 @@ var Element$3 = defineComponent({
                 const placeholder = col.placeholder || t("next.form.select") + col.label;
                 return createVNode(ElDatePicker, {
                     modelValue: formParams[col.prop],
-                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col, formParams, formColumns) ],
                     placeholder: placeholder,
                     type: "date",
                     valueFormat: col.format || "YYYY-MM-DD",
@@ -4616,7 +4624,7 @@ var Element$3 = defineComponent({
                 const placeholder = col.placeholder || t("next.form.select") + col.label;
                 return createVNode(ElDatePicker, {
                     modelValue: formParams[col.prop],
-                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col, formParams, formColumns) ],
                     placeholder: placeholder,
                     type: "datetime",
                     valueFormat: col.format || "YYYY-MM-DD HH:mm:ss",
@@ -4631,7 +4639,7 @@ var Element$3 = defineComponent({
                 const placeholder = col.placeholder || t("next.form.select") + col.label;
                 return createVNode(ElDatePicker, {
                     modelValue: formParams[col.prop],
-                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col) ],
+                    "onUpdate:modelValue": [ $event => formParams[col.prop] = $event, event => col.onChange?.(event, col, formParams, formColumns) ],
                     placeholder: placeholder,
                     type: "datetimerange",
                     valueFormat: col.format || "YYYY-MM-DD HH:mm:ss",
@@ -4670,7 +4678,7 @@ var Element$3 = defineComponent({
                 modelValue: formParams[col.prop],
                 "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                 disabled: col.disabled,
-                onChange: (...arg) => col.onChange?.(...arg, formParams, col)
+                onChange: (...arg) => col.onChange?.(...arg, col, formParams, formColumns)
             }, null) : void 0;
         };
         expose({
@@ -4828,6 +4836,7 @@ var Element$2 = defineComponent({
                     append: valueExist(col.formAppend, col.append, null),
                     hide: valueExist(col.formHide, !1),
                     disabled: valueExist(col.formDisabled, col.disabled, !1),
+                    readonly: valueExist(col.formReadonly, col.readonly, !1),
                     span: valueExist(col.formSpan, col.span, null),
                     dicData: valueExist(col.formDicData, col.dicData, []),
                     loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
@@ -4845,10 +4854,12 @@ var Element$2 = defineComponent({
                     dicData: valueExist(col.searchDicData, col.dicData, []),
                     loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
                     disabled: valueExist(col.searchDisabled, col.disabled, !1),
+                    readonly: valueExist(col.searchReadonly, col.readonly, !1),
                     prefix: valueExist(col.searchPrefix, col.prefix, null),
                     suffix: valueExist(col.searchSuffix, col.suffix, null),
                     prepend: valueExist(col.searchPrepend, col.prepend, null),
                     append: valueExist(col.searchAppend, col.append, null),
+                    hide: valueExist(col.searchHide, !1),
                     sort: valueExist(col.searchSort, col.sort, index)
                 };
                 return Object.assign(col, item);
@@ -4918,11 +4929,11 @@ var Element$2 = defineComponent({
             title: t("next.table.add"),
             rowInfo: {},
             isEditing: !0
-        }), onClickHeaderAdd = () => {
+        }), onClickHeaderAdd = (row = {}) => {
             const {dialogTitle: dialogTitle} = options;
             addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.add"), 
-            nextTick((() => {
-                emit("click-add-edit", {});
+            addEditDialog.rowInfo = row, nextTick((() => {
+                emit("click-add-edit", row);
             }));
         }, onClickDeleteRows = rows => {
             emit("delete-rows", rows, (() => {
@@ -4979,7 +4990,8 @@ var Element$2 = defineComponent({
         operation_column_slots_key.forEach((slotName => {
             operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
         })), expose({
-            addEditFormRef: addEditFormRef
+            addEditFormRef: addEditFormRef,
+            onClickRowAdd: onClickHeaderAdd
         });
         return () => createVNode(Fragment, null, [ createVNode(Fragment, null, [ createVNode("div", {
             ref: crudTableRef,
@@ -5431,7 +5443,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.10", install = function(app) {
+}, version = "0.1.11", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5441,7 +5453,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.10",
+    version: "0.1.11",
     install: install
 };
 

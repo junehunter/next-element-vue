@@ -52,7 +52,7 @@ const TableColumnDynamic = defineComponent({
 		};
 		const renderContent = () => {
 			return (
-				!columnOption.hide && (
+				!columnOption.columnHide && (
 					<ElTableColumn
 						prop={columnOption.prop}
 						label={columnOption.label}
