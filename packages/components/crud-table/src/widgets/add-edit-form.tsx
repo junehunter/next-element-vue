@@ -1,6 +1,7 @@
 import { defineComponent, isRef, unref, inject, ref } from 'vue';
 import { NextForm } from 'packages/components/form';
-import { deepClone } from 'packages/hooks/global-hook';
+import { deepClone, valueExist } from 'packages/hooks/global-hook';
+import type { FormColunmProps } from '../config';
 
 export default defineComponent({
 	name: 'AddEditForm',
@@ -32,7 +33,11 @@ export default defineComponent({
 		const formRef = ref();
 		const formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum);
 		// 这里columns与search栏的columns共享原始数据，这里单独分开，避免操作相互影响
-		const _columns = deepClone(props.columns);
+		const _columns = deepClone(props.columns).map((col: FormColunmProps) => {
+			// 重新赋值hide，避免被search栏的影响
+			col.hide = valueExist(col.formHide, col.hide, false);
+			return col;
+		});
 		const onSubmit = (...arg) => {
 			emit('submit', ...arg);
 		};

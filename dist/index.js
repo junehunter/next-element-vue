@@ -4774,7 +4774,8 @@ var AddEditForm = defineComponent({
         }));
         const _options = inject("options", {}), options = deepClone(isRef(_options) ? unref(_options) : _options);
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns), onSubmit = (...arg) => {
+        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns).map((col => (col.hide = valueExist(col.formHide, col.hide, !1), 
+        col))), onSubmit = (...arg) => {
             emit("submit", ...arg);
         };
         expose({
@@ -4809,84 +4810,84 @@ const ns$2 = useNamespace("crud-table");
 var Element$2 = defineComponent({
     name: "NextCrudTable",
     props: defaultPropsConfig,
-    emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "click-add-edit", "close-add-edit", "delete-rows", "delete-row", "submit-form" ],
+    emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "click-add-edit", "close-add-edit", "view-add-edit", "delete-rows", "delete-row", "submit-form" ],
     setup(props, {emit: emit, slots: slots, expose: expose}) {
         const _config = deepClone(defaultConfig$1), _options = computed((() => {
             const cfg = unref(props.options);
             return merge$1(_config, cfg);
         })), options = unref(_options);
         provide("options", computed((() => _options.value))), provide("ns", ns$2);
-        const {t: t} = useLocale(), _columns = ref(options.columns), _searchColumns = ref([]), _formColumns = ref([]);
-        ((options, cb) => {
-            const _columns = reactive(options.columns), _loadDicData = col => {
-                !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
-                    data?.length && (col.dicData = data);
-                }));
-            }, loopTableColumns = list => {
-                let cols = [];
-                return list.forEach((col => {
-                    _loadDicData(col), cols.push(col), col.children?.length && (cols.push(...loopTableColumns(col.children)), 
-                    col.children && delete col.children);
-                })), cols;
-            }, evenTableColumns = loopTableColumns(_columns), formColumns = options.formColumns.map((col => (_loadDicData(col), 
-            col))), _formColumns = evenTableColumns.concat(formColumns).map((col => {
-                const item = {
-                    prop: col.prop,
-                    label: valueExist(col.formLabel, col.label, ""),
-                    type: valueExist(col.formType, col.type, ""),
-                    defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
-                    placeholder: valueExist(col.formPlaceholder, ""),
-                    required: valueExist(col.formRequired, col.required, !1),
-                    sort: valueExist(col.formSort, col.sort, null),
-                    prefix: valueExist(col.formPrefix, col.prefix, null),
-                    suffix: valueExist(col.formSuffix, col.suffix, null),
-                    prepend: valueExist(col.formPrepend, col.prepend, null),
-                    append: valueExist(col.formAppend, col.append, null),
-                    hide: valueExist(col.formHide, !1),
-                    disabled: valueExist(col.formDisabled, col.disabled, !1),
-                    readonly: valueExist(col.formReadonly, col.readonly, !1),
-                    span: valueExist(col.formSpan, col.span, null),
-                    dicData: valueExist(col.formDicData, col.dicData, []),
-                    loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
-                    onChange: valueExist(col.onChangeForm, col.onChange, null),
-                    tableSelect: valueExist(col.tableSelect, {})
-                };
-                return Object.assign(col, item);
-            })).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formatSearchColumn = (col, index) => {
-                const item = {
-                    prop: col.prop,
-                    type: valueExist(col.searchType, col.type),
-                    label: valueExist(col.searchLabel, col.label),
-                    defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
-                    placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
-                    dicData: valueExist(col.searchDicData, col.dicData, []),
-                    loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
-                    disabled: valueExist(col.searchDisabled, col.disabled, !1),
-                    readonly: valueExist(col.searchReadonly, col.readonly, !1),
-                    prefix: valueExist(col.searchPrefix, col.prefix, null),
-                    suffix: valueExist(col.searchSuffix, col.suffix, null),
-                    prepend: valueExist(col.searchPrepend, col.prepend, null),
-                    append: valueExist(col.searchAppend, col.append, null),
-                    hide: valueExist(col.searchHide, !1),
-                    sort: valueExist(col.searchSort, col.sort, index)
-                };
-                return Object.assign(col, item);
-            }, initSearchColumns = options.searchColumns.map(((col, index) => (_loadDicData(col), 
-            _formatSearchColumn(col, index)))), initSearchColumnsLength = initSearchColumns.length, mergeSearchColumns = initSearchColumns.concat((list => {
-                let cols = [];
-                return list.forEach(((col, index) => {
-                    col.searchType && cols.push(_formatSearchColumn(col, index + initSearchColumnsLength));
-                })), cols;
-            })(evenTableColumns)), _searchColumns = arrayObjNoRepeat(mergeSearchColumns.sort(((a, b) => a.sort - b.sort)), "prop");
-            cb && cb({
-                formColumns: _formColumns,
-                searchColumns: _searchColumns,
-                columns: _columns
-            });
-        })(options, (({formColumns: formColumns, searchColumns: searchColumns, columns: columns}) => {
-            _searchColumns.value = searchColumns, _formColumns.value = formColumns, _columns.value = columns;
-        }));
-        const tableData = ref(props.data), _searchFormParams = ref((() => {
+        const {t: t} = useLocale(), _columns = ref(options.columns), _searchColumns = ref([]), _formColumns = ref([]), _updateColumnsAll = ops => {
+            ((options, cb) => {
+                const _columns = reactive(options.columns), _loadDicData = col => {
+                    !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
+                        data?.length && (col.dicData = data);
+                    }));
+                }, loopTableColumns = list => {
+                    let cols = [];
+                    return list.forEach((col => {
+                        _loadDicData(col), cols.push(col), col.children?.length && (cols.push(...loopTableColumns(col.children)), 
+                        col.children && delete col.children);
+                    })), cols;
+                }, evenTableColumns = loopTableColumns(_columns), formColumns = options.formColumns.map((col => (_loadDicData(col), 
+                col))), _formColumns = evenTableColumns.concat(formColumns).map((col => {
+                    const item = {
+                        prop: col.prop,
+                        label: valueExist(col.formLabel, col.label, ""),
+                        type: valueExist(col.formType, col.type, ""),
+                        defaultValue: valueExist(col.formDefaultValue, col.defaultValue, ""),
+                        placeholder: valueExist(col.formPlaceholder, ""),
+                        required: valueExist(col.formRequired, col.required, !1),
+                        sort: valueExist(col.formSort, col.sort, null),
+                        prefix: valueExist(col.formPrefix, col.prefix, null),
+                        suffix: valueExist(col.formSuffix, col.suffix, null),
+                        prepend: valueExist(col.formPrepend, col.prepend, null),
+                        append: valueExist(col.formAppend, col.append, null),
+                        hide: valueExist(col.formHide, !1),
+                        disabled: valueExist(col.formDisabled, col.disabled, !1),
+                        readonly: valueExist(col.formReadonly, col.readonly, !1),
+                        span: valueExist(col.formSpan, col.span, null),
+                        dicData: valueExist(col.formDicData, col.dicData, []),
+                        loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
+                        onChange: valueExist(col.onChangeForm, col.onChange, null),
+                        tableSelect: valueExist(col.tableSelect, {})
+                    };
+                    return Object.assign(col, item);
+                })).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formatSearchColumn = (col, index) => {
+                    const item = {
+                        prop: col.prop,
+                        type: valueExist(col.searchType, col.type),
+                        label: valueExist(col.searchLabel, col.label),
+                        defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
+                        placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
+                        dicData: valueExist(col.searchDicData, col.dicData, []),
+                        loadDicData: valueExist(col.searchLoadDicData, col.loadDicData, null),
+                        disabled: valueExist(col.searchDisabled, col.disabled, !1),
+                        readonly: valueExist(col.searchReadonly, col.readonly, !1),
+                        prefix: valueExist(col.searchPrefix, col.prefix, null),
+                        suffix: valueExist(col.searchSuffix, col.suffix, null),
+                        prepend: valueExist(col.searchPrepend, col.prepend, null),
+                        append: valueExist(col.searchAppend, col.append, null),
+                        hide: valueExist(col.searchHide, !1),
+                        sort: valueExist(col.searchSort, col.sort, index)
+                    };
+                    return Object.assign(col, item);
+                }, initSearchColumns = options.searchColumns.map(((col, index) => (_loadDicData(col), 
+                _formatSearchColumn(col, index)))), initSearchColumnsLength = initSearchColumns.length, mergeSearchColumns = initSearchColumns.concat((list => {
+                    let cols = [];
+                    return list.forEach(((col, index) => {
+                        col.searchType && cols.push(_formatSearchColumn(col, index + initSearchColumnsLength));
+                    })), cols;
+                })(evenTableColumns)), _searchColumns = arrayObjNoRepeat(mergeSearchColumns.sort(((a, b) => a.sort - b.sort)), "prop");
+                cb && cb({
+                    formColumns: _formColumns,
+                    searchColumns: _searchColumns,
+                    columns: _columns
+                });
+            })(ops, (({formColumns: formColumns, searchColumns: searchColumns, columns: columns}) => {
+                _searchColumns.value = searchColumns, _formColumns.value = formColumns, _columns.value = columns;
+            }));
+        }, tableData = ref(props.data), _searchFormParams = ref((() => {
             const list = _searchColumns.value;
             let params = {};
             for (let i = 0; i < list.length; i++) {
@@ -4906,6 +4907,11 @@ var Element$2 = defineComponent({
         watch((() => props.data), (list => {
             tableData.value = list;
         }), {
+            immediate: !0
+        }), watch((() => _options), (ops => {
+            _updateColumnsAll(ops.value);
+        }), {
+            deep: !0,
             immediate: !0
         });
         const tableContentHeight = ref(options.defaultContentHeight), crudTableRef = ref(), headerRef = ref(), tableRef = ref(), footerRef = ref(), addEditFormRef = ref(null), updateTableContentHeight = () => {
@@ -4939,9 +4945,9 @@ var Element$2 = defineComponent({
             isEditing: !0
         }), onClickHeaderAdd = (row = {}) => {
             const {dialogTitle: dialogTitle} = options;
-            addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.add"), 
-            addEditDialog.rowInfo = row, nextTick((() => {
-                emit("click-add-edit", row);
+            addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.add"), 
+            addEditDialog.rowInfo = row, emit("click-add-edit", row), nextTick((() => {
+                addEditDialog.visible = !0;
             }));
         }, onClickDeleteRows = rows => {
             emit("delete-rows", rows, (() => {
@@ -4953,14 +4959,16 @@ var Element$2 = defineComponent({
             }));
         }, onClickRowEdit = scoped => {
             const {dialogTitle: dialogTitle} = options;
-            addEditDialog.visible = !0, addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.edit"), 
-            addEditDialog.rowInfo = scoped.row, nextTick((() => {
-                emit("click-add-edit", scoped.row);
+            addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.edit"), 
+            addEditDialog.rowInfo = scoped.row, emit("click-add-edit", scoped.row), nextTick((() => {
+                addEditDialog.visible = !0;
             }));
         }, onClickRowView = scoped => {
             const {dialogTitle: dialogTitle} = options;
-            addEditDialog.visible = !0, addEditDialog.isEditing = !1, addEditDialog.title = dialogTitle + " " + t("next.table.view"), 
-            addEditDialog.rowInfo = scoped.row;
+            addEditDialog.isEditing = !1, addEditDialog.title = dialogTitle + " " + t("next.table.view"), 
+            addEditDialog.rowInfo = scoped.row, emit("view-add-edit", scoped.row), nextTick((() => {
+                addEditDialog.visible = !0;
+            }));
         }, onCloseAddEditDialog = () => {
             addEditDialog.visible = !1, addEditDialog.title = "", addEditDialog.rowInfo = {}, 
             emit("close-add-edit");
@@ -4999,10 +5007,12 @@ var Element$2 = defineComponent({
             operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
         }));
         expose({
-            addEditFormRef: addEditFormRef,
             onClickRowAdd: onClickHeaderAdd,
             columns: _columns.value,
-            getFormExpose: () => addEditFormRef.value?.getFormExpose()
+            getFormExpose: () => addEditFormRef.value?.getFormExpose(),
+            updateColumns: ops => {
+                _updateColumnsAll(ops);
+            }
         });
         return () => createVNode(Fragment, null, [ createVNode(Fragment, null, [ createVNode("div", {
             ref: crudTableRef,
@@ -5454,7 +5464,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.11", install = function(app) {
+}, version = "0.1.12", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5464,7 +5474,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.11",
+    version: "0.1.12",
     install: install
 };
 

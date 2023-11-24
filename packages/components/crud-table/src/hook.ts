@@ -149,7 +149,10 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			onChange: valueExist(col.onChangeForm, col.onChange, null),
 			tableSelect: valueExist(col.tableSelect, {}),
 		};
-		// 对应属性指向原数据，search和form共享数据和方法
+		/**
+		 * 对应属性指向原数据，search和form共享数据和方法
+		 * 好处是数据共享，缺点是共享数据会相互篡改
+		 */
 		return Object.assign(col, item);
 	});
 	const filterFormColumns = mergeFormColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];

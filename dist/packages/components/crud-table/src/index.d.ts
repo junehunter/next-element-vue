@@ -43,7 +43,7 @@ declare const _default: import("vue").DefineComponent<{
         type: FunctionConstructor;
         default: any;
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "click-add-edit" | "close-add-edit" | "delete-rows" | "delete-row" | "submit-form")[], "confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "click-add-edit" | "close-add-edit" | "delete-rows" | "delete-row" | "submit-form", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "click-add-edit" | "close-add-edit" | "view-add-edit" | "delete-rows" | "delete-row" | "submit-form")[], "confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "click-add-edit" | "close-add-edit" | "view-add-edit" | "delete-rows" | "delete-row" | "submit-form", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;
@@ -96,6 +96,7 @@ declare const _default: import("vue").DefineComponent<{
     "onRow-click"?: (...args: any[]) => any;
     "onClick-add-edit"?: (...args: any[]) => any;
     "onClose-add-edit"?: (...args: any[]) => any;
+    "onView-add-edit"?: (...args: any[]) => any;
     "onDelete-rows"?: (...args: any[]) => any;
     "onDelete-row"?: (...args: any[]) => any;
     "onSubmit-form"?: (...args: any[]) => any;

@@ -21,7 +21,7 @@ const ns = useNamespace('crud-table');
 export default defineComponent({
 	name: 'NextCrudTable',
 	props: defaultPropsConfig,
-	emits: ['confirm-search', 'clear-search', 'change-pagination', 'selection-change', 'row-click', 'click-add-edit', 'close-add-edit', 'delete-rows', 'delete-row', 'submit-form'],
+	emits: ['confirm-search', 'clear-search', 'change-pagination', 'selection-change', 'row-click', 'click-add-edit', 'close-add-edit', 'view-add-edit', 'delete-rows', 'delete-row', 'submit-form'],
 	setup(props, { emit, slots, expose }) {
 		const _config = deepClone(defaultConfig);
 		const _options = computed(() => {
@@ -35,14 +35,16 @@ export default defineComponent({
 		const _columns = ref<TableColumnProps[]>(options.columns);
 		const _searchColumns = ref<SearchColumnProps[]>([]);
 		const _formColumns = ref<FormColunmProps[]>([]);
-		updateFormColumns(options, ({ formColumns, searchColumns, columns }) => {
-			// 获取搜索栏数据
-			_searchColumns.value = searchColumns;
-			// 获取新增编辑表单栏数据
-			_formColumns.value = formColumns;
-			// 获取table column数据
-			_columns.value = columns;
-		});
+		const _updateColumnsAll = ops => {
+			updateFormColumns(ops, ({ formColumns, searchColumns, columns }) => {
+				// 获取搜索栏数据
+				_searchColumns.value = searchColumns;
+				// 获取新增编辑表单栏数据
+				_formColumns.value = formColumns;
+				// 获取table column数据
+				_columns.value = columns;
+			});
+		};
 		const tableData = ref(props.data);
 		const _getDefaultSearchFormParams = () => {
 			const list = _searchColumns.value;
@@ -78,6 +80,18 @@ export default defineComponent({
 				tableData.value = list;
 			},
 			{
+				immediate: true,
+			}
+		);
+		// 监听配置项数据
+		watch(
+			() => _options,
+			ops => {
+				// 重新格式化所有模块的columns
+				_updateColumnsAll(ops.value);
+			},
+			{
+				deep: true,
 				immediate: true,
 			}
 		);
@@ -140,12 +154,12 @@ export default defineComponent({
 		});
 		const onClickHeaderAdd = (row = {}) => {
 			const { dialogTitle } = options;
-			addEditDialog.visible = true;
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.add');
 			addEditDialog.rowInfo = row;
+			emit('click-add-edit', row);
 			nextTick(() => {
-				emit('click-add-edit', row);
+				addEditDialog.visible = true;
 			});
 		};
 		const onClickDeleteRows = (rows: any) => {
@@ -160,21 +174,24 @@ export default defineComponent({
 		};
 		const onClickRowEdit = (scoped: any) => {
 			const { dialogTitle } = options;
-			addEditDialog.visible = true;
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.edit');
 			addEditDialog.rowInfo = scoped.row;
+			emit('click-add-edit', scoped.row);
 			// 将编辑弹框中的表单数据传出去
 			nextTick(() => {
-				emit('click-add-edit', scoped.row);
+				addEditDialog.visible = true;
 			});
 		};
 		const onClickRowView = (scoped: any) => {
 			const { dialogTitle } = options;
-			addEditDialog.visible = true;
 			addEditDialog.isEditing = false;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.view');
 			addEditDialog.rowInfo = scoped.row;
+			emit('view-add-edit', scoped.row);
+			nextTick(() => {
+				addEditDialog.visible = true;
+			});
 		};
 		const onCloseAddEditDialog = () => {
 			addEditDialog.visible = false;
@@ -242,10 +259,13 @@ export default defineComponent({
 			return addEditFormRef.value?.getFormExpose();
 		};
 		expose({
-			addEditFormRef: addEditFormRef,
 			onClickRowAdd: onClickHeaderAdd, // 点击行的操作新增
 			columns: _columns.value,
 			getFormExpose: _getFormExpose,
+			// options数据更新异步调用
+			updateColumns: ops => {
+				_updateColumnsAll(ops);
+			},
 		});
 		const renderContent = () => {
 			return (

@@ -31,6 +31,7 @@ const options = reactive({
 			searchType: 'input',
 			align: 'left',
 			sort: 2,
+			formHide: false,
 			onChangeForm: e => {
 				console.log(e);
 			},
@@ -192,6 +193,10 @@ const tableReactive = reactive({
 		},
 	],
 });
+setTimeout(() => {
+	options.columns[0].formHide = true;
+	options.columns[0].label = '哈哈哈';
+}, 5000);
 const onConfirmSearch = searchParams => {
 	tableReactive.loading = true;
 	setTimeout(() => {
@@ -236,8 +241,8 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 			@delete-rows="onDeleteRows"
 			@submit-form="onsubmitForm"
 		>
-			<template #form-name="{ row }">
-				<div>自定义表单{{ row.name }}列</div>
+			<template #form-name="{ formParams }">
+				<div>自定义表单{{ formParams.name }}列</div>
 			</template>
 			<template #column-name="{ row }">
 				<span>{{ row.name }}</span>
