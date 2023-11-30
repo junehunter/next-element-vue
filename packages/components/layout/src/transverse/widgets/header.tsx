@@ -25,7 +25,9 @@ export default defineComponent({
 			return (
 				<header class={_ns.b('header')} style={headerStyle.value}>
 					<LogoView></LogoView>
-					<div class={_ns.bf('header', 'menu')}>{slots[slots_config.headerMenu] ? slots[slots_config.headerMenu]() : <NextMenu menuTree={_config.menuTree}></NextMenu>}</div>
+					<div class={_ns.bf('header', 'menu')}>
+						{slots[slots_config.headerMenu] ? slots[slots_config.headerMenu]() : <NextMenu menuTree={_config.menuTree} router={_config.menuRouter} mode={_config.menuMode}></NextMenu>}
+					</div>
 					<div class={_ns.bf('header', 'right')}>
 						<HeaderTools>
 							{slots[slots_config.headerToolsPrefix]?.()}

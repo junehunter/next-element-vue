@@ -5,12 +5,71 @@ import { useLanguage, localeContextKey } from '../../../../dist/index.js';
 const locale = inject(localeContextKey, ref())!;
 const layout = ref<string>('transverse');
 const isTabs = ref<boolean>(true);
-const menuTree = [];
+const menuTree = [
+	{
+		id: '18',
+		path: '/home',
+		name: 'Home',
+		meta: {
+			title: '首页',
+			isLink: '',
+			isHide: false,
+			isKeepAlive: false,
+			isAffix: false,
+			icon: 'iconfont monitor-shouye-shouye',
+		},
+		children: [],
+	},
+	{
+		id: '25',
+		path: '',
+		name: '',
+		meta: {
+			title: '系统管理',
+			isLink: '',
+			isHide: false,
+			isKeepAlive: false,
+			isAffix: false,
+			icon: 'iconfont monitor-data-Inquire',
+		},
+		children: [
+			{
+				id: '26',
+				path: '/aibox/box-info',
+				name: 'AiboxBoxInfo',
+				meta: {
+					title: '用户管理',
+					isLink: '',
+					isHide: false,
+					isKeepAlive: false,
+					isAffix: false,
+					icon: 'iconfont monitor-shujuchaxun',
+				},
+				children: [],
+			},
+			{
+				id: '29',
+				path: '/aibox/event',
+				name: 'AiboxEvent',
+				meta: {
+					title: '角色管理',
+					isLink: '',
+					isHide: false,
+					isKeepAlive: false,
+					isAffix: false,
+					icon: 'iconfont monitor-jiankongzhongxin',
+				},
+				children: [],
+			},
+		],
+	},
+];
 const logo = new URL('/logo.svg', import.meta.url).href;
 const layoutOptions = ref<any>({
 	logo: logo,
 	profile: logo,
 	menuTree: menuTree,
+	menuRouter: false,
 	showTabs: isTabs.value,
 	tabs: [],
 	setting: {
@@ -28,7 +87,9 @@ const onChangeTab = val => {
 };
 const onChangeLanguage = (langue: string) => {
 	useLanguage(locale, langue);
+	layoutOptions.value.menuTree = menuTree.slice(0, 1);
 };
+const changeOptions = opt => {};
 </script>
 
 <template>
@@ -45,7 +106,7 @@ const onChangeLanguage = (langue: string) => {
 				<el-switch v-model="isTabs" @change="onChangeTab" />
 			</div>
 		</div>
-		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions" @changeLanguage="onChangeLanguage">
+		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions" @changeLanguage="onChangeLanguage" @changeOptions="changeOptions">
 			<template v-if="isTabs" #tabs>
 				<NextTabs :tabs="layoutOptions.tabs"></NextTabs>
 			</template>

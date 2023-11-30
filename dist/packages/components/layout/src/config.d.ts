@@ -26,6 +26,8 @@ declare const _default: {
     activeTab: string;
     tabs: any[];
     menuTree: any[];
+    menuRouter: boolean;
+    menuMode: string;
     setting: {
         layout: string;
         themeColor: string;

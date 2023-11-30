@@ -43,6 +43,8 @@ export default {
 	activeTab: '/',
 	tabs: [],
 	menuTree: [],
+	menuRouter: true,
+	menuMode: 'horizontal', // 'horizontal', 'vertical'
 	setting: {
 		// 布局方式
 		layout: 'transverse', // 'defaults', 'transverse', 'columns', 'classic'

@@ -252,6 +252,23 @@ function isArrayLike(value) {
     return null != value && isLength(value.length) && !isFunction(value);
 }
 
+function createAssigner(assigner) {
+    return baseRest((function(object, sources) {
+        var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+        for (customizer = assigner.length > 3 && "function" == typeof customizer ? (length--, 
+        customizer) : void 0, guard && function(value, index, object) {
+            if (!isObject(object)) return !1;
+            var type = typeof index;
+            return !!("number" == type ? isArrayLike(object) && isIndex(index, object.length) : "string" == type && index in object) && eq(object[index], value);
+        }(sources[0], sources[1], guard) && (customizer = length < 3 ? void 0 : customizer, 
+        length = 1), object = Object(object); ++index < length; ) {
+            var source = sources[index];
+            source && assigner(object, source, index, customizer);
+        }
+        return object;
+    }));
+}
+
 var objectProto$a = Object.prototype;
 
 function isPrototype(value) {
@@ -788,22 +805,13 @@ function baseMerge(object, source, srcIndex, customizer, stack) {
     }), keysIn);
 }
 
-var assigner, merge = (assigner = function(object, source, srcIndex) {
+var mergeWith = createAssigner((function(object, source, srcIndex, customizer) {
+    baseMerge(object, source, srcIndex, customizer);
+})), mergeWith$1 = mergeWith;
+
+var merge = createAssigner((function(object, source, srcIndex) {
     baseMerge(object, source, srcIndex);
-}, baseRest((function(object, sources) {
-    var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
-    for (customizer = assigner.length > 3 && "function" == typeof customizer ? (length--, 
-    customizer) : void 0, guard && function(value, index, object) {
-        if (!isObject(object)) return !1;
-        var type = typeof index;
-        return !!("number" == type ? isArrayLike(object) && isIndex(index, object.length) : "string" == type && index in object) && eq(object[index], value);
-    }(sources[0], sources[1], guard) && (customizer = length < 3 ? void 0 : customizer, 
-    length = 1), object = Object(object); ++index < length; ) {
-        var source = sources[index];
-        source && assigner(object, source, index, customizer);
-    }
-    return object;
-}))), merge$1 = merge, zhcnLocale = {
+})), merge$1 = merge, zhcnLocale = {
     name: "zh-cn",
     next: {
         loading: "加载中...",
@@ -1116,6 +1124,8 @@ var defaultConfig$2 = {
     activeTab: "/",
     tabs: [],
     menuTree: [],
+    menuRouter: !0,
+    menuMode: "horizontal",
     setting: {
         layout: "transverse",
         themeColor: "#c71585",
@@ -1881,7 +1891,7 @@ const NextMenu = withInstall(defineComponent({
     },
     setup(props) {
         provide("ns", ns$g);
-        const router = getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = ref(currentPath);
+        const router = getCurrentInstance().appContext.config.globalProperties.$router, currentPath = router.currentRoute?.value.fullPath, activePath = ref(currentPath);
         watch((() => router.currentRoute?.value), (to => {
             activePath.value = to.fullPath;
         }));
@@ -1893,7 +1903,7 @@ const NextMenu = withInstall(defineComponent({
             mode: props.mode,
             ellipsis: !0
         }, {
-            default: () => [ createVNode(Fragment, null, [ _menuTree.map((item => item.children?.length ? createVNode(ElSubMenu, {
+            default: () => [ createVNode(Fragment, null, [ props.menuTree.map((item => item.children?.length ? createVNode(ElSubMenu, {
                 "popper-class": ns$g.b("popper"),
                 index: item.path || item.id,
                 teleported: !0
@@ -1976,7 +1986,9 @@ var Header$2 = defineComponent({
         }, [ createVNode(LogoView, null, null), createVNode("div", {
             class: _ns.bf("header", "menu")
         }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : createVNode(NextMenu, {
-            menuTree: _config.menuTree
+            menuTree: _config.menuTree,
+            router: _config.menuRouter,
+            mode: _config.menuMode
         }, null) ]), createVNode("div", {
             class: _ns.bf("header", "right")
         }, [ createVNode(HeaderTools, null, {
@@ -2152,6 +2164,8 @@ const ns$b = useNamespace("layout"), layouts = {
     transverse: markRaw(transverse),
     columns: markRaw(columns),
     classic: markRaw(classic)
+}, customizerCoverArray = (objValue, srcValue) => {
+    if (Array.isArray(objValue)) return srcValue;
 };
 
 const NextLayout = withInstall(defineComponent({
@@ -2172,11 +2186,11 @@ const NextLayout = withInstall(defineComponent({
     },
     emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
     setup(props, {slots: slots, emit: emit}) {
-        const _config = ref(merge$1(defaultConfig$2, props.options)), options = computed((() => _config.value)).value;
-        provide("options", options), provide("__ns__", ns$b), provide("__emit__", emit), 
+        const _config = ref(mergeWith$1(defaultConfig$2, props.options, customizerCoverArray));
+        provide("options", _config.value), provide("__ns__", ns$b), provide("__emit__", emit), 
         provide("__slots__", slots);
         const updateOptions = cfg => {
-            _config.value = merge$1(options, cfg), updateThemeColor(_config.value.setting?.themeColor), 
+            _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColor(_config.value.setting?.themeColor), 
             emit("changeOptions", _config.value);
         };
         return provide("updateOptions", updateOptions), watch((() => props.options), (cfg => {
@@ -2185,7 +2199,7 @@ const NextLayout = withInstall(defineComponent({
             deep: !0,
             immediate: !0
         }), {
-            options: options,
+            options: _config.value,
             updateOptions: updateOptions
         };
     },
@@ -5464,7 +5478,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.12", install = function(app) {
+}, version = "0.1.13", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5474,7 +5488,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.12",
+    version: "0.1.13",
     install: install
 };
 

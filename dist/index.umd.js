@@ -220,6 +220,22 @@
     function isArrayLike(value) {
         return null != value && isLength(value.length) && !isFunction(value);
     }
+    function createAssigner(assigner) {
+        return baseRest((function(object, sources) {
+            var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+            for (customizer = assigner.length > 3 && "function" == typeof customizer ? (length--, 
+            customizer) : void 0, guard && function(value, index, object) {
+                if (!isObject(object)) return !1;
+                var type = typeof index;
+                return !!("number" == type ? isArrayLike(object) && isIndex(index, object.length) : "string" == type && index in object) && eq(object[index], value);
+            }(sources[0], sources[1], guard) && (customizer = length < 3 ? void 0 : customizer, 
+            length = 1), object = Object(object); ++index < length; ) {
+                var source = sources[index];
+                source && assigner(object, source, index, customizer);
+            }
+            return object;
+        }));
+    }
     var objectProto$a = Object.prototype;
     function isPrototype(value) {
         var Ctor = value && value.constructor;
@@ -692,22 +708,12 @@
             }
         }), keysIn);
     }
-    var assigner, merge = (assigner = function(object, source, srcIndex) {
+    var mergeWith = createAssigner((function(object, source, srcIndex, customizer) {
+        baseMerge(object, source, srcIndex, customizer);
+    })), mergeWith$1 = mergeWith;
+    var merge = createAssigner((function(object, source, srcIndex) {
         baseMerge(object, source, srcIndex);
-    }, baseRest((function(object, sources) {
-        var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
-        for (customizer = assigner.length > 3 && "function" == typeof customizer ? (length--, 
-        customizer) : void 0, guard && function(value, index, object) {
-            if (!isObject(object)) return !1;
-            var type = typeof index;
-            return !!("number" == type ? isArrayLike(object) && isIndex(index, object.length) : "string" == type && index in object) && eq(object[index], value);
-        }(sources[0], sources[1], guard) && (customizer = length < 3 ? void 0 : customizer, 
-        length = 1), object = Object(object); ++index < length; ) {
-            var source = sources[index];
-            source && assigner(object, source, index, customizer);
-        }
-        return object;
-    }))), merge$1 = merge, zhcnLocale = {
+    })), merge$1 = merge, zhcnLocale = {
         name: "zh-cn",
         next: {
             loading: "加载中...",
@@ -1014,6 +1020,8 @@
         activeTab: "/",
         tabs: [],
         menuTree: [],
+        menuRouter: !0,
+        menuMode: "horizontal",
         setting: {
             layout: "transverse",
             themeColor: "#c71585",
@@ -1749,7 +1757,7 @@
         },
         setup(props) {
             vue.provide("ns", ns$g);
-            const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _menuTree = props.menuTree, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
+            const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
             vue.watch((() => router.currentRoute?.value), (to => {
                 activePath.value = to.fullPath;
             }));
@@ -1761,7 +1769,7 @@
                 mode: props.mode,
                 ellipsis: !0
             }, {
-                default: () => [ vue.createVNode(vue.Fragment, null, [ _menuTree.map((item => item.children?.length ? vue.createVNode(elementPlus.ElSubMenu, {
+                default: () => [ vue.createVNode(vue.Fragment, null, [ props.menuTree.map((item => item.children?.length ? vue.createVNode(elementPlus.ElSubMenu, {
                     "popper-class": ns$g.b("popper"),
                     index: item.path || item.id,
                     teleported: !0
@@ -1839,7 +1847,9 @@
             }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
                 class: _ns.bf("header", "menu")
             }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                menuTree: _config.menuTree
+                menuTree: _config.menuTree,
+                router: _config.menuRouter,
+                mode: _config.menuMode
             }, null) ]), vue.createVNode("div", {
                 class: _ns.bf("header", "right")
             }, [ vue.createVNode(HeaderTools, null, {
@@ -2004,6 +2014,8 @@
         transverse: vue.markRaw(transverse),
         columns: vue.markRaw(columns),
         classic: vue.markRaw(classic)
+    }, customizerCoverArray = (objValue, srcValue) => {
+        if (Array.isArray(objValue)) return srcValue;
     };
     const NextLayout = withInstall(vue.defineComponent({
         name: "NextLayout",
@@ -2023,11 +2035,11 @@
         },
         emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
         setup(props, {slots: slots, emit: emit}) {
-            const _config = vue.ref(merge$1(defaultConfig$2, props.options)), options = vue.computed((() => _config.value)).value;
-            vue.provide("options", options), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
+            const _config = vue.ref(mergeWith$1(defaultConfig$2, props.options, customizerCoverArray));
+            vue.provide("options", _config.value), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
             vue.provide("__slots__", slots);
             const updateOptions = cfg => {
-                _config.value = merge$1(options, cfg), updateThemeColor(_config.value.setting?.themeColor), 
+                _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColor(_config.value.setting?.themeColor), 
                 emit("changeOptions", _config.value);
             };
             return vue.provide("updateOptions", updateOptions), vue.watch((() => props.options), (cfg => {
@@ -2036,7 +2048,7 @@
                 deep: !0,
                 immediate: !0
             }), {
-                options: options,
+                options: _config.value,
                 updateOptions: updateOptions
             };
         },
@@ -5269,7 +5281,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.12",
+        version: "0.1.13",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5283,7 +5295,7 @@
     exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.12", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.13", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

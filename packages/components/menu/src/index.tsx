@@ -29,7 +29,7 @@ export default defineComponent({
 			default: 'horizontal',
 		},
 		menuTree: {
-			type: Array,
+			type: Array as PropType<MenuItemInterface[]>,
 			default: () => {
 				return [];
 			},
@@ -39,7 +39,6 @@ export default defineComponent({
 		provide('ns', ns);
 		const instance = getCurrentInstance()!;
 		const router = instance.appContext.config.globalProperties.$router as Router;
-		const _menuTree = props.menuTree as MenuItemInterface[];
 		const currentPath = router.currentRoute?.value.fullPath;
 		const activePath = ref(currentPath);
 		watch(
@@ -53,7 +52,7 @@ export default defineComponent({
 				<ElMenu class={[ns.b(), props.className]} style={props.style} defaultActive={activePath.value} router={props.router} mode={props.mode} ellipsis>
 					{/* 必须要先循环遍历一遍，直接调用递归组件NextMenuItem时ellipsis有bug */}
 					<>
-						{_menuTree.map(item => {
+						{props.menuTree.map(item => {
 							if (!item.children?.length) {
 								return (
 									<ElMenuItem popper-class={ns.b('popper')} index={item.path}>

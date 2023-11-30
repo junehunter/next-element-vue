@@ -1,7 +1,7 @@
-import { defineComponent, markRaw, ref, watchEffect, h, provide, computed, watch } from 'vue';
+import { defineComponent, markRaw, ref, watchEffect, h, provide, watch } from 'vue';
 import type { PropType, CSSProperties, Component } from 'vue';
 import { useNamespace, updateThemeColor } from 'packages/hooks';
-import { merge } from 'lodash-unified';
+import { mergeWith } from 'lodash-unified';
 import defaultConfig from './config';
 import defaults from './defaults/index';
 import transverse from './transverse/index';
@@ -16,6 +16,12 @@ const layouts: any = {
 	transverse: markRaw(transverse), // 横向布局
 	columns: markRaw(columns), // 分栏布局
 	classic: markRaw(classic), // 经典布局
+};
+// 如果是数组对象，则直接返回 srcValue，进行覆盖
+const customizerCoverArray = (objValue, srcValue) => {
+	if (Array.isArray(objValue)) {
+		return srcValue;
+	}
 };
 export default defineComponent({
 	name: 'NextLayout',
@@ -37,14 +43,13 @@ export default defineComponent({
 	},
 	emits: ['changeLanguage', 'changeUserDropdown', 'changeOptions', 'tabsChange', 'tabsSelect', 'tabsClose'],
 	setup(props, { slots, emit }) {
-		const _config = ref<any>(merge(defaultConfig, props.options));
-		const options = computed(() => _config.value).value;
-		provide('options', options);
+		const _config = ref<any>(mergeWith(defaultConfig, props.options, customizerCoverArray));
+		provide('options', _config.value);
 		provide('__ns__', ns);
 		provide('__emit__', emit);
 		provide('__slots__', slots);
 		const updateOptions = (cfg: any) => {
-			_config.value = merge(options, cfg);
+			_config.value = mergeWith(_config.value, cfg, customizerCoverArray);
 			updateThemeColor(_config.value.setting?.themeColor);
 			emit('changeOptions', _config.value);
 		};
@@ -60,7 +65,7 @@ export default defineComponent({
 				immediate: true,
 			}
 		);
-		return { options, updateOptions };
+		return { options: _config.value, updateOptions };
 	},
 	render() {
 		const props = this.$props;

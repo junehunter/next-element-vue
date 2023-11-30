@@ -1,4 +1,5 @@
 import type { PropType, CSSProperties } from 'vue';
+import type { MenuItemInterface } from './interface';
 declare const _default: import("vue").DefineComponent<{
     className: {
         type: StringConstructor;
@@ -18,7 +19,7 @@ declare const _default: import("vue").DefineComponent<{
         default: string;
     };
     menuTree: {
-        type: ArrayConstructor;
+        type: PropType<MenuItemInterface[]>;
         default: () => any[];
     };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
@@ -40,7 +41,7 @@ declare const _default: import("vue").DefineComponent<{
         default: string;
     };
     menuTree: {
-        type: ArrayConstructor;
+        type: PropType<MenuItemInterface[]>;
         default: () => any[];
     };
 }>>, {
@@ -48,6 +49,6 @@ declare const _default: import("vue").DefineComponent<{
     style: CSSProperties;
     router: boolean;
     mode: "horizontal" | "vertical";
-    menuTree: unknown[];
+    menuTree: MenuItemInterface[];
 }, {}>;
 export default _default;
