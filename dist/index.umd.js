@@ -982,8 +982,17 @@
         nextUseCssVar(cssvar, value);
         for (let i = 1; i < 10; i++) nextUseCssVar(cssvar + "-light-" + i, getLightColor$4(value, i / 10));
         nextUseCssVar(`${cssvar}-dark-2`, value);
-    }, updateThemeColor = color => {
-        color && nextUseCssTheme("--el-color-primary", color);
+    }, themeColorCssEnum = {
+        themeColor: "--el-color-primary",
+        headerBarColor: "--next-layout-bg-color",
+        headerBarFontColor: "--next-layout-font-color"
+    }, updateThemeColorCssVar = conf => {
+        for (const key in themeColorCssEnum) {
+            const cssVar = themeColorCssEnum[key];
+            conf[key] && nextUseCssTheme(cssVar, conf[key]);
+        }
+        const body = document.documentElement;
+        conf.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", "");
     }, withInstall = (main, extra) => {
         if (main.install = app => {
             for (const comp of [ main, ...Object.values(extra ?? {}) ]) app.component(comp.name, comp);
@@ -2039,7 +2048,7 @@
             vue.provide("options", _config.value), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
             vue.provide("__slots__", slots);
             const updateOptions = cfg => {
-                _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColor(_config.value.setting?.themeColor), 
+                _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColorCssVar(_config.value?.setting), 
                 emit("changeOptions", _config.value);
             };
             return vue.provide("updateOptions", updateOptions), vue.watch((() => props.options), (cfg => {
@@ -5291,8 +5300,10 @@
     exports.buildTranslator = buildTranslator, exports.default = index, exports.defaultNamespace = "next", 
     exports.install = install, exports.localeContextKey = localeContextKey, exports.localeLang = localeLang, 
     exports.namespaceContextKey = namespaceContextKey, exports.nextUseCssTheme = nextUseCssTheme, 
-    exports.nextUseCssVar = nextUseCssVar, exports.translate = translate, exports.updateThemeColor = updateThemeColor, 
-    exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
+    exports.nextUseCssVar = nextUseCssVar, exports.translate = translate, exports.updateThemeColor = color => {
+        color && nextUseCssTheme("--el-color-primary", color);
+    }, exports.updateThemeColorCssVar = updateThemeColorCssVar, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
+    exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
     }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.13", 

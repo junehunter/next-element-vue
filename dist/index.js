@@ -1087,6 +1087,17 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
     nextUseCssVar(`${cssvar}-dark-2`, value);
 }, updateThemeColor = color => {
     color && nextUseCssTheme("--el-color-primary", color);
+}, themeColorCssEnum = {
+    themeColor: "--el-color-primary",
+    headerBarColor: "--next-layout-bg-color",
+    headerBarFontColor: "--next-layout-font-color"
+}, updateThemeColorCssVar = conf => {
+    for (const key in themeColorCssEnum) {
+        const cssVar = themeColorCssEnum[key];
+        conf[key] && nextUseCssTheme(cssVar, conf[key]);
+    }
+    const body = document.documentElement;
+    conf.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", "");
 }, withInstall = (main, extra) => {
     if (main.install = app => {
         for (const comp of [ main, ...Object.values(extra ?? {}) ]) app.component(comp.name, comp);
@@ -2190,7 +2201,7 @@ const NextLayout = withInstall(defineComponent({
         provide("options", _config.value), provide("__ns__", ns$b), provide("__emit__", emit), 
         provide("__slots__", slots);
         const updateOptions = cfg => {
-            _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColor(_config.value.setting?.themeColor), 
+            _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColorCssVar(_config.value?.setting), 
             emit("changeOptions", _config.value);
         };
         return provide("updateOptions", updateOptions), watch((() => props.options), (cfg => {
@@ -5492,4 +5503,4 @@ var index = {
     install: install
 };
 
-export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, updateThemeColor, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };
+export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, updateThemeColor, updateThemeColorCssVar, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };

@@ -18,3 +18,26 @@ export const updateThemeColor = (color: string) => {
 	if (!color) return;
 	nextUseCssTheme('--el-color-primary', color);
 };
+
+const themeColorCssEnum = {
+	themeColor: '--el-color-primary',
+	headerBarColor: '--next-layout-bg-color',
+	headerBarFontColor: '--next-layout-font-color',
+};
+/**
+ * 更新所有cssvar变量
+ */
+export const updateThemeColorCssVar = (conf: any) => {
+	for (const key in themeColorCssEnum) {
+		const cssVar = themeColorCssEnum[key];
+		if (conf[key]) {
+			nextUseCssTheme(cssVar, conf[key]);
+		}
+	}
+	const body = document.documentElement as HTMLElement;
+	if (conf.isDark) {
+		body.setAttribute('data-theme', 'dark');
+	} else {
+		body.setAttribute('data-theme', '');
+	}
+};
