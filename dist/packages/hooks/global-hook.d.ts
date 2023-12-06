@@ -60,8 +60,18 @@ export declare const formatArg: (obj: any) => string;
  */
 export declare const isValueExist: (value: any) => boolean;
 /**
- * 取真实存在打值
+ * 取真实存在的值
  * @param arg
  * @returns
  */
 export declare const valueExist: (...arg: any[]) => any;
+/**
+ * 目标对象数据属性指向资源对象属性，属性共享
+ * @param target
+ * @param source
+ * @param key
+ */
+export declare const shareObjectProperty: (target: any, source: any, key: string) => {
+    target: any;
+    source: any;
+};

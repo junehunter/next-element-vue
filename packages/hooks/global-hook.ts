@@ -176,7 +176,7 @@ export const isValueExist = (value: any): boolean => {
 };
 
 /**
- * 取真实存在打值
+ * 取真实存在的值
  * @param arg
  * @returns
  */
@@ -190,4 +190,22 @@ export const valueExist = (...arg) => {
 		}
 	}
 	return exist;
+};
+
+/**
+ * 目标对象数据属性指向资源对象属性，属性共享
+ * @param target
+ * @param source
+ * @param key
+ */
+export const shareObjectProperty = (target: any, source: any, key: string) => {
+	Object.defineProperty(target, key, {
+		get: () => {
+			return source[key];
+		},
+	});
+	return {
+		target,
+		source,
+	};
 };

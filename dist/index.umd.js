@@ -2930,7 +2930,12 @@
             }
         }
         return exist;
-    };
+    }, shareObjectProperty = (target, source, key) => (Object.defineProperty(target, key, {
+        get: () => source[key]
+    }), {
+        target: target,
+        source: source
+    });
     var defaultPropsConfig = {
         className: {
             type: String,
@@ -3120,6 +3125,7 @@
             } ], _onChangeNumberRange = (value, key) => {
                 formParams.value[key] = value;
             }, renderColItemContent = col => {
+                const _disabled = valueExist(col.searchDisabled, col.disabled, !1);
                 if (slots[searchFormSlotName(col.prop)]) return slots[searchFormSlotName(col.prop)]({
                     column: col
                 });
@@ -3129,7 +3135,7 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
-                        disabled: col.disabled,
+                        disabled: _disabled,
                         placeholder: placeholder
                     }, {
                         prefix: col.prefix ? () => col.prefix(formParams, col) : null,
@@ -3144,7 +3150,7 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
-                        disabled: col.disabled,
+                        disabled: _disabled,
                         placeholder: placeholder,
                         onInput: e => ((val, key) => {
                             const value = val.replace(/\D/g, "");
@@ -3163,7 +3169,7 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
-                        disabled: col.disabled,
+                        disabled: _disabled,
                         placeholder: placeholder,
                         onInput: e => ((val, key) => {
                             let value = val;
@@ -3184,7 +3190,7 @@
                         modelValue: formParams[col.prop],
                         "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                         clearable: !0,
-                        disabled: col.disabled,
+                        disabled: _disabled,
                         placeholder: placeholder,
                         multiple: col.searchMultiple || !1,
                         "collapse-tags": !0,
@@ -3206,7 +3212,7 @@
                         format: col.searchFormat || "YYYY-MM-DD",
                         clearable: !0,
                         "disabled-date": col.searchDisabledDate || _defaultDisabledDate,
-                        disabled: col.disabled,
+                        disabled: _disabled,
                         placeholder: placeholder,
                         editable: col.searchEditable || !1
                     }, null);
@@ -3222,7 +3228,7 @@
                     "start-placeholder": t("next.date.startPlaceholder"),
                     "end-placeholder": t("next.date.endPlaceholder"),
                     "disabled-date": col.searchDisabledDate || _defaultDisabledDate,
-                    disabled: col.disabled,
+                    disabled: _disabled,
                     editable: col.searchEditable || !1,
                     shortcuts: col.searchShortcuts || _defaultShortcuts
                 }, null);
@@ -4675,7 +4681,8 @@
                             onChange: valueExist(col.onChangeForm, col.onChange, null),
                             tableSelect: valueExist(col.tableSelect, {})
                         };
-                        return Object.assign(col, item);
+                        return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
+                        item;
                     })).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formatSearchColumn = (col, index) => {
                         const item = {
                             prop: col.prop,
@@ -4694,7 +4701,8 @@
                             hide: valueExist(col.searchHide, !1),
                             sort: valueExist(col.searchSort, col.sort, index)
                         };
-                        return Object.assign(col, item);
+                        return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
+                        item;
                     }, initSearchColumns = options.searchColumns.map(((col, index) => (_loadDicData(col), 
                     _formatSearchColumn(col, index)))), initSearchColumnsLength = initSearchColumns.length, mergeSearchColumns = initSearchColumns.concat((list => {
                         let cols = [];
@@ -5290,7 +5298,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.13",
+        version: "0.1.15",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5306,7 +5314,7 @@
     exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.13", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.15", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

@@ -107,12 +107,13 @@ export default defineComponent({
 			formParams.value[key] = value;
 		};
 		const renderColItemContent = (col: SearchColumnProps) => {
+			const _disabled = valueExist(col.searchDisabled, col.disabled, false);
 			if (slots[searchFormSlotName(col.prop)]) {
 				return slots[searchFormSlotName(col.prop)]({ column: col });
 			} else if (col.type === 'input' || !col.type) {
 				const placeholder = t('next.form.input') + (col.searchPlaceholder || col.searchLabel || col.label);
 				return (
-					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder}>
+					<ElInput v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder}>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
 							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -124,7 +125,7 @@ export default defineComponent({
 			} else if (col.type === 'inputInteger') {
 				const placeholder = t('next.form.input') + (col.searchPlaceholder || col.searchLabel || col.label);
 				return (
-					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} onInput={e => _onInputInteger(e, col.prop)}>
+					<ElInput v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} onInput={e => _onInputInteger(e, col.prop)}>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
 							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -136,7 +137,7 @@ export default defineComponent({
 			} else if (col.type === 'inputNumber') {
 				const placeholder = t('next.form.input') + (col.searchPlaceholder || col.searchLabel || col.label);
 				return (
-					<ElInput v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} onInput={e => _onInputNumber(e, col.prop)}>
+					<ElInput v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} onInput={e => _onInputNumber(e, col.prop)}>
 						{{
 							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
 							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
@@ -148,7 +149,7 @@ export default defineComponent({
 			} else if (col.type === 'select') {
 				const placeholder = t('next.form.select') + (col.searchPlaceholder || col.searchLabel || col.label);
 				return (
-					<ElSelect v-model={formParams[col.prop]} clearable disabled={col.disabled} placeholder={placeholder} multiple={col.searchMultiple || false} collapse-tags collapse-tags-tooltip>
+					<ElSelect v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} multiple={col.searchMultiple || false} collapse-tags collapse-tags-tooltip>
 						{col.dicData &&
 							(col.dicData as any[]).map(item => {
 								return <ElOption value={item.value} label={item.label}></ElOption>;
@@ -165,7 +166,7 @@ export default defineComponent({
 						format={col.searchFormat || 'YYYY-MM-DD'}
 						clearable
 						disabled-date={col.searchDisabledDate || _defaultDisabledDate}
-						disabled={col.disabled}
+						disabled={_disabled}
 						placeholder={placeholder}
 						editable={col.searchEditable || false}
 					></ElDatePicker>
@@ -182,7 +183,7 @@ export default defineComponent({
 						start-placeholder={t('next.date.startPlaceholder')}
 						end-placeholder={t('next.date.endPlaceholder')}
 						disabled-date={col.searchDisabledDate || _defaultDisabledDate}
-						disabled={col.disabled}
+						disabled={_disabled}
 						editable={col.searchEditable || false}
 						shortcuts={col.searchShortcuts || _defaultShortcuts}
 					></ElDatePicker>

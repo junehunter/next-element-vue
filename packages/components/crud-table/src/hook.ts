@@ -1,6 +1,6 @@
 import type { FormItemProps } from 'packages/components/form/src/config';
 import type { FormColunmProps, TableColumnProps, SearchColumnProps } from './config';
-import { valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
+import { valueExist, arrayObjNoRepeat, shareObjectProperty } from 'packages/hooks/global-hook';
 import { reactive } from 'vue';
 /**
  * 自定义table中column的slot name
@@ -153,7 +153,12 @@ export const updateFormColumns = (options: any, cb: Function) => {
 		 * 对应属性指向原数据，search和form共享数据和方法
 		 * 好处是数据共享，缺点是共享数据会相互篡改
 		 */
-		return Object.assign(col, item);
+		// return Object.assign(col, item);
+		if (!col.dicData?.length && col.loadDicData) {
+			// 只共享dicData属性，替换 Object.assign
+			shareObjectProperty(item, col, 'dicData');
+		}
+		return item;
 	});
 	const filterFormColumns = mergeFormColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];
 	const _formColumns = filterFormColumns.sort((a: FormItemProps, b: FormItemProps) => a.sort - b.sort);
@@ -177,7 +182,12 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			sort: valueExist(col.searchSort, col.sort, index),
 		};
 		// 对应属性指向原数据，search和form共享数据和方法
-		return Object.assign(col, item);
+		// return Object.assign(col, item);
+		if (!col.dicData?.length && col.loadDicData) {
+			// 只共享dicData属性，替换 Object.assign
+			shareObjectProperty(item, col, 'dicData');
+		}
+		return item;
 	};
 	const initSearchColumns = options.searchColumns.map((col: SearchColumnProps, index: number) => {
 		_loadDicData(col);
