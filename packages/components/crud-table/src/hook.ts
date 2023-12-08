@@ -127,7 +127,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 		_loadDicData(col);
 		return col;
 	});
-	const mergeFormColumns = evenTableColumns.concat(formColumns).map((col: FormColunmProps) => {
+	const mergeFormColumns = evenTableColumns.concat(formColumns).map((col: FormColunmProps & FormItemProps) => {
 		const item: FormItemProps = {
 			prop: col.prop,
 			label: valueExist(col.formLabel, col.label, ''),
@@ -148,6 +148,10 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
 			onChange: valueExist(col.onChangeForm, col.onChange, null),
 			tableSelect: valueExist(col.tableSelect, {}),
+			tableSelectRows: valueExist(col.tableSelectRows, []),
+			tableSelectProps: valueExist(col.tableSelectProps, null),
+			tableSelectDefaultValue: valueExist(col.tableSelectDefaultValue, null),
+			onTableSelect: valueExist(col.onTableSelect, null),
 		};
 		/**
 		 * 对应属性指向原数据，search和form共享数据和方法

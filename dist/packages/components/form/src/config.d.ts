@@ -34,13 +34,13 @@ export interface FormItemProps {
     remark?: string;
     onChange?: Function;
     tableSelect?: any;
-    onTableSelect?: Function;
     tableSelectRows?: any[];
     tableSelectProps?: {
         label: string;
         value: string | number;
     };
     tableSelectDefaultValue?: Function;
+    onTableSelect?: Function;
 }
 export declare const tableSelectConfig: {
     selection: boolean;

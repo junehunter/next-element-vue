@@ -4881,7 +4881,11 @@ var Element$2 = defineComponent({
                         dicData: valueExist(col.formDicData, col.dicData, []),
                         loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
                         onChange: valueExist(col.onChangeForm, col.onChange, null),
-                        tableSelect: valueExist(col.tableSelect, {})
+                        tableSelect: valueExist(col.tableSelect, {}),
+                        tableSelectRows: valueExist(col.tableSelectRows, []),
+                        tableSelectProps: valueExist(col.tableSelectProps, null),
+                        tableSelectDefaultValue: valueExist(col.tableSelectDefaultValue, null),
+                        onTableSelect: valueExist(col.onTableSelect, null)
                     };
                     return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
                     item;
@@ -5497,7 +5501,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.15", install = function(app) {
+}, version = "0.1.16", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5507,7 +5511,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.15",
+    version: "0.1.16",
     install: install
 };
 

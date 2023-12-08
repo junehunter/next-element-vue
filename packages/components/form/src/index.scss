@@ -111,6 +111,12 @@ $table-content: bem($block, 'input-table', 'content');
                 display: none;
             }
         }
+        // 处理弹框中table的所有input显示表单错误时的样式
+        .#{bem('crud-table')}{
+            .el-input__wrapper {
+                box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
+            }
+        }
     }
 } 
 

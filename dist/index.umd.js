@@ -4679,7 +4679,11 @@
                             dicData: valueExist(col.formDicData, col.dicData, []),
                             loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
                             onChange: valueExist(col.onChangeForm, col.onChange, null),
-                            tableSelect: valueExist(col.tableSelect, {})
+                            tableSelect: valueExist(col.tableSelect, {}),
+                            tableSelectRows: valueExist(col.tableSelectRows, []),
+                            tableSelectProps: valueExist(col.tableSelectProps, null),
+                            tableSelectDefaultValue: valueExist(col.tableSelectDefaultValue, null),
+                            onTableSelect: valueExist(col.onTableSelect, null)
                         };
                         return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
                         item;
@@ -5298,7 +5302,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.15",
+        version: "0.1.16",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5314,7 +5318,7 @@
     exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.15", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.16", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });
