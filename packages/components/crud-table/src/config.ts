@@ -79,7 +79,6 @@ export interface FormColunmProps extends Column {
 }
 
 export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
-	expand?: string;
 	width?: string | number;
 	minWidth?: string | number;
 	fixed?: string | boolean;
@@ -87,7 +86,6 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
 	showOverflowTooltip?: boolean | object;
 	headerAlign?: string;
 	align?: string;
-	columnHide?: boolean;
 	sortable?: boolean;
 	children?: TableColumnProps[];
 }
@@ -119,7 +117,6 @@ export default {
 	searchLabelWidth: '5em',
 	searchColumnMinWidth: 300, // 搜索栏最小宽度
 	searchColumns: <SearchColumnProps | unknown>[],
-	searchMore: true, // 更多查询按钮显示
 	// 操作栏显示按钮
 	addBtn: true,
 	viewBtn: true,

@@ -2,6 +2,7 @@ import { defineComponent, inject, isRef, unref } from 'vue';
 import { ElTableColumn } from 'element-plus';
 // import { NextTextEllipsis } from 'packages/components';
 // import { useLocale } from 'packages/hooks';
+import { valueExist } from 'packages/hooks/global-hook';
 import type { DictData } from '../config';
 import { columnSlotName } from '../hook';
 
@@ -52,7 +53,7 @@ const TableColumnDynamic = defineComponent({
 		};
 		const renderContent = () => {
 			return (
-				!columnOption.columnHide && (
+				!columnOption.hide && (
 					<ElTableColumn
 						prop={columnOption.prop}
 						label={columnOption.label}
@@ -63,7 +64,7 @@ const TableColumnDynamic = defineComponent({
 						fixed={columnOption.fixed}
 						sortable={columnOption.sortable || false}
 						formatter={columnOption.formatter || null}
-						showOverflowTooltip
+						showOverflowTooltip={valueExist(columnOption.showOverflowTooltip, true)}
 					>
 						{{
 							// header: () => <NextTextEllipsis content={t(columnOption.label)}></NextTextEllipsis>,

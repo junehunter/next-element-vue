@@ -36,7 +36,27 @@ declare const _default: {
         type: FunctionConstructor;
         default: any;
     };
+    cellStyle: {
+        type: FunctionConstructor;
+        default: any;
+    };
+    cellClassName: {
+        type: FunctionConstructor;
+        default: any;
+    };
     headerRowStyle: {
+        type: FunctionConstructor;
+        default: any;
+    };
+    headerRowClassName: {
+        type: FunctionConstructor;
+        default: any;
+    };
+    headerCellStyle: {
+        type: FunctionConstructor;
+        default: any;
+    };
+    headerCellClassName: {
         type: FunctionConstructor;
         default: any;
     };

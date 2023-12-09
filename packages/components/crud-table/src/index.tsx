@@ -21,7 +21,27 @@ const ns = useNamespace('crud-table');
 export default defineComponent({
 	name: 'NextCrudTable',
 	props: defaultPropsConfig,
-	emits: ['confirm-search', 'clear-search', 'change-pagination', 'selection-change', 'row-click', 'click-add-edit', 'close-add-edit', 'view-add-edit', 'delete-rows', 'delete-row', 'submit-form'],
+	emits: [
+		'confirm-search',
+		'clear-search',
+		'change-pagination',
+		'selection-change',
+		'row-click',
+		'row-contextmenu',
+		'row-dblclick',
+		'cell-click',
+		'cell-dblclick',
+		'cell-contextmenu',
+		'cell-mouse-enter',
+		'cell-mouse-leave',
+		'expand-change',
+		'click-add-edit',
+		'close-add-edit',
+		'view-add-edit',
+		'delete-rows',
+		'delete-row',
+		'submit-form',
+	],
 	setup(props, { emit, slots, expose }) {
 		const _config = deepClone(defaultConfig);
 		const _options = computed(() => {
@@ -296,9 +316,25 @@ export default defineComponent({
 									stripe={options.stripe}
 									fit={options.fit}
 									size={options.size}
+									row-style={options.rowStyle}
+									row-class-name={options.rowClassName}
+									cell-style={options.cellStyle}
+									cell-class-name={options.cellClassName}
+									header-row-style={options.headerRowStyle}
+									header-row-class-name={options.headerRowClassName}
+									header-cell-style={options.headerCellStyle}
+									header-cell-class-name={options.headerCellClassName}
 									span-method={props.spanMethod}
 									onSelection-change={onSelectionChange}
 									onRow-click={(...arg) => emit('row-click', ...arg)}
+									onRow-contextmenu={(...arg) => emit('row-contextmenu', ...arg)}
+									onRow-dblclick={(...arg) => emit('row-dblclick', ...arg)}
+									onCell-click={(...arg) => emit('cell-click', ...arg)}
+									onCell-dblclick={(...arg) => emit('cell-dblclick', ...arg)}
+									onCell-contextmenu={(...arg) => emit('cell-contextmenu', ...arg)}
+									onCell-mouse-enter={(...arg) => emit('cell-mouse-enter', ...arg)}
+									onCell-mouse-leave={(...arg) => emit('cell-mouse-leave', ...arg)}
+									onExpand-change={(...arg) => emit('expand-change', ...arg)}
 									v-slots={{
 										empty: () => <ElEmpty imageSize={tableContentHeight.value > 220 ? 100 : 50} description={t('next.table.notData')}></ElEmpty>,
 									}}

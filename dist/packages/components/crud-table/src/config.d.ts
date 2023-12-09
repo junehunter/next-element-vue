@@ -75,7 +75,6 @@ export interface FormColunmProps extends Column {
     onChangeForm?: Function;
 }
 export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
-    expand?: string;
     width?: string | number;
     minWidth?: string | number;
     fixed?: string | boolean;
@@ -83,7 +82,6 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
     showOverflowTooltip?: boolean | object;
     headerAlign?: string;
     align?: string;
-    columnHide?: boolean;
     sortable?: boolean;
     children?: TableColumnProps[];
 }
@@ -112,7 +110,6 @@ declare const _default: {
     searchLabelWidth: string;
     searchColumnMinWidth: number;
     searchColumns: unknown;
-    searchMore: boolean;
     addBtn: boolean;
     viewBtn: boolean;
     delBtn: boolean;

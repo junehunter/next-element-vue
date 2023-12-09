@@ -140,7 +140,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			suffix: valueExist(col.formSuffix, col.suffix, null),
 			prepend: valueExist(col.formPrepend, col.prepend, null),
 			append: valueExist(col.formAppend, col.append, null),
-			hide: valueExist(col.formHide, false),
+			hide: valueExist(col.formHide, col.hide, false),
 			disabled: valueExist(col.formDisabled, col.disabled, false),
 			readonly: valueExist(col.formReadonly, col.readonly, false),
 			span: valueExist(col.formSpan, col.span, null),

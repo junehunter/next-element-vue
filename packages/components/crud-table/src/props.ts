@@ -42,7 +42,27 @@ export default {
 		type: Function,
 		default: undefined,
 	},
+	cellStyle: {
+		type: Function,
+		default: undefined,
+	},
+	cellClassName: {
+		type: Function,
+		default: undefined,
+	},
 	headerRowStyle: {
+		type: Function,
+		default: undefined,
+	},
+	headerRowClassName: {
+		type: Function,
+		default: undefined,
+	},
+	headerCellStyle: {
+		type: Function,
+		default: undefined,
+	},
+	headerCellClassName: {
 		type: Function,
 		default: undefined,
 	},

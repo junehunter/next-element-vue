@@ -2973,7 +2973,27 @@
             type: Function,
             default: void 0
         },
+        cellStyle: {
+            type: Function,
+            default: void 0
+        },
+        cellClassName: {
+            type: Function,
+            default: void 0
+        },
         headerRowStyle: {
+            type: Function,
+            default: void 0
+        },
+        headerRowClassName: {
+            type: Function,
+            default: void 0
+        },
+        headerCellStyle: {
+            type: Function,
+            default: void 0
+        },
+        headerCellClassName: {
             type: Function,
             default: void 0
         },
@@ -3006,7 +3026,6 @@
         searchLabelWidth: "5em",
         searchColumnMinWidth: 300,
         searchColumns: [],
-        searchMore: !0,
         addBtn: !0,
         viewBtn: !0,
         delBtn: !0,
@@ -3559,7 +3578,7 @@
                 row: row,
                 index: $index
             }) : columnOption.dicData?.length > 0 ? vue.createVNode("span", null, [ _formatterColumnValue(row[columnOption.prop], columnOption.dicData) ]) : null;
-            return () => vue.createVNode(vue.Fragment, null, [ !columnOption.columnHide && vue.createVNode(elementPlus.ElTableColumn, {
+            return () => vue.createVNode(vue.Fragment, null, [ !columnOption.hide && vue.createVNode(elementPlus.ElTableColumn, {
                 prop: columnOption.prop,
                 label: columnOption.label,
                 headerAlign: columnOption.headerAlign || options.headerAlign,
@@ -3569,7 +3588,7 @@
                 fixed: columnOption.fixed,
                 sortable: columnOption.sortable || !1,
                 formatter: columnOption.formatter || null,
-                showOverflowTooltip: !0
+                showOverflowTooltip: valueExist(columnOption.showOverflowTooltip, !0)
             }, {
                 default: ({row: row, $index: $index}) => renderCustomItem(row, $index)
             }) ]);
@@ -4639,7 +4658,7 @@
     var Element$2 = vue.defineComponent({
         name: "NextCrudTable",
         props: defaultPropsConfig,
-        emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "click-add-edit", "close-add-edit", "view-add-edit", "delete-rows", "delete-row", "submit-form" ],
+        emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "row-contextmenu", "row-dblclick", "cell-click", "cell-dblclick", "cell-contextmenu", "cell-mouse-enter", "cell-mouse-leave", "expand-change", "click-add-edit", "close-add-edit", "view-add-edit", "delete-rows", "delete-row", "submit-form" ],
         setup(props, {emit: emit, slots: slots, expose: expose}) {
             const _config = deepClone(defaultConfig$1), _options = vue.computed((() => {
                 const cfg = vue.unref(props.options);
@@ -4672,7 +4691,7 @@
                             suffix: valueExist(col.formSuffix, col.suffix, null),
                             prepend: valueExist(col.formPrepend, col.prepend, null),
                             append: valueExist(col.formAppend, col.append, null),
-                            hide: valueExist(col.formHide, !1),
+                            hide: valueExist(col.formHide, col.hide, !1),
                             disabled: valueExist(col.formDisabled, col.disabled, !1),
                             readonly: valueExist(col.formReadonly, col.readonly, !1),
                             span: valueExist(col.formSpan, col.span, null),
@@ -4883,9 +4902,25 @@
                     stripe: options.stripe,
                     fit: options.fit,
                     size: options.size,
+                    "row-style": options.rowStyle,
+                    "row-class-name": options.rowClassName,
+                    "cell-style": options.cellStyle,
+                    "cell-class-name": options.cellClassName,
+                    "header-row-style": options.headerRowStyle,
+                    "header-row-class-name": options.headerRowClassName,
+                    "header-cell-style": options.headerCellStyle,
+                    "header-cell-class-name": options.headerCellClassName,
                     "span-method": props.spanMethod,
                     "onSelection-change": onSelectionChange,
-                    "onRow-click": (...arg) => emit("row-click", ...arg)
+                    "onRow-click": (...arg) => emit("row-click", ...arg),
+                    "onRow-contextmenu": (...arg) => emit("row-contextmenu", ...arg),
+                    "onRow-dblclick": (...arg) => emit("row-dblclick", ...arg),
+                    "onCell-click": (...arg) => emit("cell-click", ...arg),
+                    "onCell-dblclick": (...arg) => emit("cell-dblclick", ...arg),
+                    "onCell-contextmenu": (...arg) => emit("cell-contextmenu", ...arg),
+                    "onCell-mouse-enter": (...arg) => emit("cell-mouse-enter", ...arg),
+                    "onCell-mouse-leave": (...arg) => emit("cell-mouse-leave", ...arg),
+                    "onExpand-change": (...arg) => emit("expand-change", ...arg)
                 }, {
                     default: () => [ options.index ? vue.createVNode(elementPlus.ElTableColumn, {
                         type: "index",
