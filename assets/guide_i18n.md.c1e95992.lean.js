@@ -1,0 +1,1 @@
+import{o as s,c as n,Q as a}from"./chunks/framework.a74e407e.js";const l=a("",6),p=[l],E=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"guide/i18n.md","filePath":"guide/i18n.md","lastUpdated":1695631512000}'),o={name:"guide/i18n.md"},y=Object.assign(o,{setup(e){return(t,c)=>(s(),n("div",null,p))}});export{E as __pageData,y as default};
