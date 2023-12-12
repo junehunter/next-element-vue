@@ -40,6 +40,14 @@ export declare const NextDialog: import("../../utils/install").SFCWithInstall<im
         type: BooleanConstructor;
         default: boolean;
     };
+    modal: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    top: {
+        type: StringConstructor;
+        default: string;
+    };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "close"[], "close", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: BooleanConstructor;
@@ -81,6 +89,14 @@ export declare const NextDialog: import("../../utils/install").SFCWithInstall<im
         type: BooleanConstructor;
         default: boolean;
     };
+    modal: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    top: {
+        type: StringConstructor;
+        default: string;
+    };
 }>> & {
     onClose?: (...args: any[]) => any;
 }, {
@@ -94,5 +110,7 @@ export declare const NextDialog: import("../../utils/install").SFCWithInstall<im
     draggable: boolean;
     zoomSize: boolean;
     destroyOnClose: boolean;
+    modal: boolean;
+    top: string;
 }, {}>> & Record<string, any>;
 export default NextDialog;

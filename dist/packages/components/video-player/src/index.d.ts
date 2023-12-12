@@ -21,10 +21,6 @@ declare const _default: import("vue").DefineComponent<{
     };
     tensorflow: {
         type: ObjectConstructor;
-        default: () => {
-            modelUrl: string;
-            classNames: any[];
-        };
     };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("play" | "error" | "detector")[], "play" | "error" | "detector", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
@@ -47,10 +43,6 @@ declare const _default: import("vue").DefineComponent<{
     };
     tensorflow: {
         type: ObjectConstructor;
-        default: () => {
-            modelUrl: string;
-            classNames: any[];
-        };
     };
 }>> & {
     onPlay?: (...args: any[]) => any;
@@ -61,6 +53,5 @@ declare const _default: import("vue").DefineComponent<{
     style: CSSProperties;
     type: string;
     src: string;
-    tensorflow: Record<string, any>;
 }, {}>;
 export default _default;

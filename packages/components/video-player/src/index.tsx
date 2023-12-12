@@ -9,6 +9,7 @@ import 'video.js/dist/video-js.css';
 import zhCN from 'video.js/dist/lang/zh-CN.json';
 import En from 'video.js/dist/lang/en.json';
 import zhTW from 'video.js/dist/lang/zh-TW.json';
+import Mpegts from 'packages/assets/plugins/mpegts/mpegts.js';
 import { useNamespace, useLocale } from 'packages/hooks';
 import * as tf from '@tensorflow/tfjs';
 import { screenshotVideoDetectFrame, detectVideoFrame } from './hook';
@@ -44,12 +45,12 @@ export default defineComponent({
 		},
 		tensorflow: {
 			type: Object,
-			default: () => {
-				return {
-					modelUrl: '',
-					classNames: [],
-				};
-			},
+			// default: () => {
+			// 	return {
+			// 		modelUrl: '',
+			// 		classNames: [],
+			// 	};
+			// },
 		},
 	},
 	emits: ['play', 'error', 'detector'],
@@ -188,7 +189,7 @@ export default defineComponent({
 			_createScreenshotBtn(container);
 		};
 		const loadVideo_mpegts = (url: string) => {
-			const mpegts = (window as any).mpegts;
+			const mpegts = (window as any).mpegts || Mpegts;
 			if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
 				const container = videoBoxRef.value as HTMLElement;
 				const video = document.createElement('video');
@@ -207,6 +208,7 @@ export default defineComponent({
 				};
 				player.value = videojs(video, defaultOptions);
 				playerMpgets.value = mpegts.createPlayer({
+					enableWorker: true,
 					type: 'flv', // could also be mpegts, m2ts, flv
 					isLive: true,
 					url: url,
@@ -218,6 +220,14 @@ export default defineComponent({
 					emit('error', video);
 				});
 				_createScreenshotBtn(container);
+				// 创建一个canvas画布，并将画布放置播放器前面，放置遮挡播放器上面其他功能按钮
+				const canvasContainer = document.createElement('div');
+				const palyerContainer = container.children[0];
+				palyerContainer.appendChild(canvasContainer);
+				playerMpgets.value.on('metadata_arrived', () => {
+					emit('play', video, container);
+					_loadModelDetectFrame(canvasContainer, video);
+				});
 			}
 		};
 		const _loadModelDetectFrame = (container: HTMLElement, video: HTMLVideoElement) => {
@@ -269,6 +279,13 @@ export default defineComponent({
 				playerFlv.value.detachMediaElement();
 				playerFlv.value.destroy();
 				playerFlv.value = null;
+			}
+			if (playerMpgets.value) {
+				playerMpgets.value.pause();
+				playerMpgets.value.unload();
+				playerMpgets.value.detachMediaElement();
+				playerMpgets.value.destroy();
+				playerMpgets.value = null;
 			}
 		};
 		onUnmounted(() => {

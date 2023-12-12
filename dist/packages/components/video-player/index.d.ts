@@ -20,10 +20,6 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     };
     tensorflow: {
         type: ObjectConstructor;
-        default: () => {
-            modelUrl: string;
-            classNames: any[];
-        };
     };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("play" | "error" | "detector")[], "play" | "error" | "detector", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
@@ -46,10 +42,6 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     };
     tensorflow: {
         type: ObjectConstructor;
-        default: () => {
-            modelUrl: string;
-            classNames: any[];
-        };
     };
 }>> & {
     onPlay?: (...args: any[]) => any;
@@ -60,6 +52,5 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     style: import("vue").CSSProperties;
     type: string;
     src: string;
-    tensorflow: Record<string, any>;
 }, {}>> & Record<string, any>;
 export default NextVideoPlayer;
