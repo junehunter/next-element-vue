@@ -16,7 +16,6 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     src: {
         type: StringConstructor;
         default: string;
-        required: true;
     };
     tensorflow: {
         type: ObjectConstructor;
@@ -38,7 +37,6 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     src: {
         type: StringConstructor;
         default: string;
-        required: true;
     };
     tensorflow: {
         type: ObjectConstructor;

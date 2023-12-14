@@ -161,6 +161,7 @@ export default {
 		'video.js/dist/lang/en.json',
 		'video.js/dist/lang/zh-TW.json',
 		'@tensorflow/tfjs',
+		// '@assets/plugins/mpegts/mpegts.js',
 	],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {

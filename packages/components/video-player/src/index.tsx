@@ -9,7 +9,7 @@ import 'video.js/dist/video-js.css';
 import zhCN from 'video.js/dist/lang/zh-CN.json';
 import En from 'video.js/dist/lang/en.json';
 import zhTW from 'video.js/dist/lang/zh-TW.json';
-import Mpegts from 'packages/assets/plugins/mpegts/mpegts.js';
+import Mpegts from 'mpegts.js';
 import { useNamespace, useLocale } from 'packages/hooks';
 import * as tf from '@tensorflow/tfjs';
 import { screenshotVideoDetectFrame, detectVideoFrame } from './hook';

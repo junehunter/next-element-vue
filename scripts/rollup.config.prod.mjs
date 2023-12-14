@@ -30,6 +30,7 @@ const globals_cfg = {
 	'video.js/dist/lang/en.json': 'En',
 	'video.js/dist/lang/zh-TW.json': 'zhTW',
 	'@tensorflow/tfjs': 'tf',
+	'mpegts.js': 'mpegts',
 };
 const terserPlugin = terser({
 	output: {
@@ -45,6 +46,21 @@ const terserPlugin = terser({
 const outDir = './dist';
 // const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
 const outputDir = path.resolve(outDir);
+const getDate = () => {
+	const date = new Date();
+	const year = date.getFullYear();
+	const month = date.getMonth() + 1;
+	const day = date.getDate();
+	return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+};
+const banner = `
+/**
+ * 作者：huangteng
+ * 邮箱：htengweb@163.com
+ * 版本：${version}
+ * 日期：${getDate()}
+ */
+`;
 const output = [
 	{
 		format: 'esm', // esm格式
@@ -57,9 +73,10 @@ const output = [
 					comments: false, // 去除注释
 					beautify: true, // 保存代码整洁
 				},
-				mangle: false, // 不混淆变量名
+				mangle: false, // 不混淆变量名c
 			}),
 		],
+		banner, // 因为使用了terser，所有这里banner无效
 	},
 	{
 		format: 'esm', // esm格式
@@ -67,6 +84,7 @@ const output = [
 		entryFileNames: '[name].min.js',
 		assetFileNames: 'assets/[name].[hash][extname]',
 		plugins: [terserPlugin],
+		banner,
 	},
 	{
 		format: 'umd', // umd格式
@@ -85,6 +103,7 @@ const output = [
 				mangle: false,
 			}),
 		],
+		banner,
 	},
 	{
 		format: 'umd', // umd格式
@@ -95,6 +114,7 @@ const output = [
 		globals: globals_cfg,
 		assetFileNames: 'assets/[name].[hash][extname]',
 		plugins: [terserPlugin],
+		banner,
 	},
 ];
 export default {
@@ -138,10 +158,7 @@ export default {
 			plugins: ['@vue/babel-plugin-jsx'],
 		}),
 		alias({
-			entries: {
-				'@': './src',
-				packages: path.resolve('packages'),
-			},
+			entries: [{ find: 'packages', replacement: './packages' }],
 		}),
 		replace({
 			values: {
@@ -157,7 +174,7 @@ export default {
 				},
 				{
 					src: 'packages/index.d.ts',
-					dest: 'dist',
+					dest: path.resolve(outDir),
 				},
 			],
 		}),
@@ -215,6 +232,7 @@ export default {
 		'video.js/dist/lang/en.json',
 		'video.js/dist/lang/zh-TW.json',
 		'@tensorflow/tfjs',
+		'mpegts.js',
 	],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {

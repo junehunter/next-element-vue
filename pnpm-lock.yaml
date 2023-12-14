@@ -108,6 +108,9 @@ importers:
       mockjs:
         specifier: ^1.1.0
         version: 1.1.0
+      mpegts.js:
+        specifier: ^1.7.3
+        version: 1.7.3
       postcss-import:
         specifier: ^15.1.0
         version: 15.1.0(postcss@8.4.30)
@@ -4058,6 +4061,10 @@ packages:
       is-arrayish: 0.2.1
     dev: true
 
+  /es6-promise@4.2.8:
+    resolution: {integrity: sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==}
+    dev: true
+
   /esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
     engines: {node: '>=12'}
@@ -5194,6 +5201,13 @@ packages:
       '@videojs/vhs-utils': 3.0.5
       '@xmldom/xmldom': 0.8.10
       global: 4.4.0
+    dev: true
+
+  /mpegts.js@1.7.3:
+    resolution: {integrity: sha512-kqZ1C1IsbAQN72cK8vMrzKeM7hwrwSBbFAwVAc7PPweOeoZxCANrc7fAVDKMfYUzxdNkMTnec9tVmlxmKZB0TQ==}
+    dependencies:
+      es6-promise: 4.2.8
+      webworkify-webpack: 2.1.5
     dev: true
 
   /mrmime@1.0.1:
@@ -7462,6 +7476,10 @@ packages:
 
   /webpack-virtual-modules@0.5.0:
     resolution: {integrity: sha512-kyDivFZ7ZM0BVOUteVbDFhlRt7Ah/CSPwJdi8hBpkK7QLumUqdLtVfm/PX/hkcnrvr0i77fO5+TjZ94Pe+C9iw==}
+    dev: true
+
+  /webworkify-webpack@2.1.5:
+    resolution: {integrity: sha512-2akF8FIyUvbiBBdD+RoHpoTbHMQF2HwjcxfDvgztAX5YwbZNyrtfUMgvfgFVsgDhDPVTlkbb5vyasqDHfIDPQw==}
     dev: true
 
   /whatwg-url@5.0.0:
