@@ -1,10 +1,10 @@
-import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, render, nextTick } from "vue";
+import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, provide, watch, markRaw, watchEffect, h, onUnmounted, onMounted, toRaw, render, nextTick } from "vue";
 
 import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElTag, ElRadioGroup, ElRadio, ElUpload, ElImageViewer, ElImage, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
 
-import { MoonNight, Sunny, ArrowDown, Setting, Close, Back, Right, Search, Delete, DArrowLeft, DArrowRight, ArrowUp, Plus, Refresh, Tools, EditPen, View, FullScreen, Picture, InfoFilled, Camera } from "@element-plus/icons-vue";
+import { useDateFormat, useNow, useFullscreen } from "@vueuse/core";
 
-import { useFullscreen, useDateFormat, useNow } from "@vueuse/core";
+import * as tf from "@tensorflow/tfjs";
 
 import videojs from "video.js";
 
@@ -15,8 +15,6 @@ import zhCN from "video.js/dist/lang/zh-CN.json";
 import En from "video.js/dist/lang/en.json";
 
 import zhTW from "video.js/dist/lang/zh-TW.json";
-
-import * as tf from "@tensorflow/tfjs";
 
 const defaultNamespace = "next", _bem = (namespace, block, blockSuffix, element, modifier) => {
     let cls = `${namespace}-${block}`;
@@ -1100,7 +1098,83 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
     }
     const body = document.documentElement;
     conf.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", "");
-}, withInstall = (main, extra) => {
+}, detectVideoFrame = async (video, model, ctx, tf, classNames, classInput = [], detect_ctx, success) => {
+    const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
+    if (!videoWidth || !videoHeight) return;
+    let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
+    ctx.clearRect(0, 0, videoWidth, videoHeight), detect_ctx.clearRect(0, 0, videoWidth, videoHeight), 
+    await model.executeAsync(input).then((async res => {
+        let [boxes, scores, classes, valid_detections] = res;
+        for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
+            let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
+            x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
+            y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
+            x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
+            y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
+            const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
+            let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
+            const drawOutcome = (name, score, ctx) => {
+                const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
+                ctx.strokeStyle = color, ctx.lineWidth = 2, ctx.beginPath(), ctx.rect(left, top, width, height), 
+                ctx.stroke(), ctx.font = "bold 16px Arial", ctx.fillStyle = color, ctx.fillText(`${name} ${score}`, left + 10, top < 20 ? 20 : top - 10);
+            };
+            if (classInput?.length) for (let k = 0; k < classInput.length; k++) {
+                const item = classInput[k];
+                if (item.cls == cls && Number(score) > item.score) {
+                    const target = classNames.find((o => o.value == cls));
+                    if (target) {
+                        const name = target.label;
+                        drawOutcome(name, score, await drawVideoFrame(video, detect_ctx)), drawOutcome(name, score, ctx), 
+                        success && success(name, score);
+                    }
+                }
+            } else if (score > .5) {
+                const target = classNames.find((o => o.value == cls));
+                if (target) {
+                    drawOutcome(target.label || "", score, ctx);
+                }
+            }
+        }
+        input.dispose(), tf.dispose(res);
+    }));
+}, drawVideoFrame = (videoElement, ctx) => {
+    const width = videoElement.videoWidth, height = videoElement.videoHeight, mediaRatio = width / height, canvasRatio = width / height, sw = width, sh = height;
+    let dx, dy, dw, dh;
+    return mediaRatio > canvasRatio ? (dw = width, dh = width / mediaRatio, dx = 0, 
+    dy = Math.round((height - dh) / 2)) : mediaRatio === canvasRatio ? (dw = width, 
+    dh = height, dx = 0, dy = 0) : mediaRatio < canvasRatio && (dw = height * mediaRatio, 
+    dh = height, dx = Math.round((width - dw) / 2), dy = 0), ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), 
+    ctx;
+}, useDetectVideo = () => ({
+    detectVideoFrameImage: ({container: container, video: video, modelUrl: modelUrl, classNames: classNames, classInput: classInput = []}, success, error) => modelUrl ? classNames ? void tf.loadGraphModel(modelUrl).then((model => {
+        const canvas = document.createElement("canvas"), ctx = canvas.getContext("2d");
+        canvas.style.position = "absolute", canvas.style.zIndex = "99", canvas.style.pointerEvents = "none", 
+        container && container.appendChild(canvas);
+        const detectCanvas = document.createElement("canvas"), detect_ctx = detectCanvas.getContext("2d");
+        video.ontimeupdate = e => {
+            const {clientWidth: clientWidth, clientHeight: clientHeight} = e.target, {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
+            canvas.width = videoWidth, canvas.height = videoHeight, canvas.style.top = offsetTop + "px", 
+            canvas.style.left = offsetLeft + "px", canvas.style.width = clientWidth + "px", 
+            canvas.style.height = clientHeight + "px", detectCanvas.width = videoWidth, detectCanvas.height = videoHeight, 
+            detectCanvas.style.width = clientWidth + "px", detectCanvas.style.height = clientHeight + "px", 
+            detectVideoFrame(video, model, ctx, tf, classNames, classInput, detect_ctx, ((name, score) => {
+                const type = "image/png";
+                let imageDataURL = canvas.toDataURL(type, .92).replace(type, "image/octet-stream");
+                imageDataURL = imageDataURL.replace(/^data:image\/[^;]+/, "data:application/octet-stream");
+                const detectImage = detectCanvas.toDataURL(type, .92);
+                success && success({
+                    name: name,
+                    score: score,
+                    detectImage: detectImage,
+                    detectCanvas: detectCanvas
+                }, {
+                    canvas: canvas,
+                    imageDataURL: imageDataURL
+                });
+            }));
+        };
+    })) : (error && error("模型类别不能未空"), !1) : (error && error("模型文件地址不能为空"), !1)
+}), withInstall = (main, extra) => {
     if (main.install = app => {
         for (const comp of [ main, ...Object.values(extra ?? {}) ]) app.component(comp.name, comp);
     }, extra) for (const [key, comp] of Object.entries(extra)) main[key] = comp;
@@ -1234,7 +1308,272 @@ var LogoView = defineComponent({
             content: t(_options.title)
         }, null) ]) ]) ]);
     }
-}), LayoutSetting = defineComponent({
+}), export_helper_default = (sfc, props) => {
+    let target = sfc.__vccOpts || sfc;
+    for (let [key, val] of props) target[key] = val;
+    return target;
+}, arrow_down_vue_vue_type_script_lang_default = {
+    name: "ArrowDown"
+}, _hoisted_16 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_36 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"
+}, null, -1) ];
+
+var arrow_down_default = export_helper_default(arrow_down_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_16, _hoisted_36);
+} ], [ "__file", "arrow-down.vue" ] ]), arrow_up_vue_vue_type_script_lang_default = {
+    name: "ArrowUp"
+}, _hoisted_112 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_312 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m488.832 344.32-339.84 356.672a32 32 0 0 0 0 44.16l.384.384a29.44 29.44 0 0 0 42.688 0l320-335.872 319.872 335.872a29.44 29.44 0 0 0 42.688 0l.384-.384a32 32 0 0 0 0-44.16L535.168 344.32a32 32 0 0 0-46.336 0z"
+}, null, -1) ];
+
+var arrow_up_default = export_helper_default(arrow_up_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_112, _hoisted_312);
+} ], [ "__file", "arrow-up.vue" ] ]), back_vue_vue_type_script_lang_default = {
+    name: "Back"
+}, _hoisted_114 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_44 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
+}, null, -1), createElementVNode("path", {
+    fill: "currentColor",
+    d: "m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
+}, null, -1) ];
+
+var back_default = export_helper_default(back_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_114, _hoisted_44);
+} ], [ "__file", "back.vue" ] ]), camera_vue_vue_type_script_lang_default = {
+    name: "Camera"
+}, _hoisted_131 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_330 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M896 256H128v576h768V256zm-199.424-64-32.064-64h-304.96l-32 64h369.024zM96 192h160l46.336-92.608A64 64 0 0 1 359.552 64h304.96a64 64 0 0 1 57.216 35.328L768.192 192H928a32 32 0 0 1 32 32v640a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V224a32 32 0 0 1 32-32zm416 512a160 160 0 1 0 0-320 160 160 0 0 0 0 320zm0 64a224 224 0 1 1 0-448 224 224 0 0 1 0 448z"
+}, null, -1) ];
+
+var camera_default = export_helper_default(camera_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_131, _hoisted_330);
+} ], [ "__file", "camera.vue" ] ]), close_vue_vue_type_script_lang_default = {
+    name: "Close"
+}, _hoisted_156 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_355 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z"
+}, null, -1) ];
+
+var close_default = export_helper_default(close_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_156, _hoisted_355);
+} ], [ "__file", "close.vue" ] ]), d_arrow_left_vue_vue_type_script_lang_default = {
+    name: "DArrowLeft"
+}, _hoisted_172 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_371 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M529.408 149.376a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L259.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L197.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224zm256 0a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L515.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L453.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224z"
+}, null, -1) ];
+
+var d_arrow_left_default = export_helper_default(d_arrow_left_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_172, _hoisted_371);
+} ], [ "__file", "d-arrow-left.vue" ] ]), d_arrow_right_vue_vue_type_script_lang_default = {
+    name: "DArrowRight"
+}, _hoisted_173 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_372 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M452.864 149.312a29.12 29.12 0 0 1 41.728.064L826.24 489.664a32 32 0 0 1 0 44.672L494.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L764.736 512 452.864 192a30.592 30.592 0 0 1 0-42.688zm-256 0a29.12 29.12 0 0 1 41.728.064L570.24 489.664a32 32 0 0 1 0 44.672L238.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L508.736 512 196.864 192a30.592 30.592 0 0 1 0-42.688z"
+}, null, -1) ];
+
+var d_arrow_right_default = export_helper_default(d_arrow_right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_173, _hoisted_372);
+} ], [ "__file", "d-arrow-right.vue" ] ]), delete_vue_vue_type_script_lang_default = {
+    name: "Delete"
+}, _hoisted_180 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_379 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
+}, null, -1) ];
+
+var delete_default = export_helper_default(delete_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_180, _hoisted_379);
+} ], [ "__file", "delete.vue" ] ]), edit_pen_vue_vue_type_script_lang_default = {
+    name: "EditPen"
+}, _hoisted_193 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_392 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m199.04 672.64 193.984 112 224-387.968-193.92-112-224 388.032zm-23.872 60.16 32.896 148.288 144.896-45.696L175.168 732.8zM455.04 229.248l193.92 112 56.704-98.112-193.984-112-56.64 98.112zM104.32 708.8l384-665.024 304.768 175.936L409.152 884.8h.064l-248.448 78.336L104.32 708.8zm384 254.272v-64h448v64h-448z"
+}, null, -1) ];
+
+var edit_pen_default = export_helper_default(edit_pen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_193, _hoisted_392);
+} ], [ "__file", "edit-pen.vue" ] ]), full_screen_vue_vue_type_script_lang_default = {
+    name: "FullScreen"
+}, _hoisted_1118 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3117 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m160 96.064 192 .192a32 32 0 0 1 0 64l-192-.192V352a32 32 0 0 1-64 0V96h64v.064zm0 831.872V928H96V672a32 32 0 1 1 64 0v191.936l192-.192a32 32 0 1 1 0 64l-192 .192zM864 96.064V96h64v256a32 32 0 1 1-64 0V160.064l-192 .192a32 32 0 1 1 0-64l192-.192zm0 831.872-192-.192a32 32 0 0 1 0-64l192 .192V672a32 32 0 1 1 64 0v256h-64v-.064z"
+}, null, -1) ];
+
+var full_screen_default = export_helper_default(full_screen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1118, _hoisted_3117);
+} ], [ "__file", "full-screen.vue" ] ]), info_filled_vue_vue_type_script_lang_default = {
+    name: "InfoFilled"
+}, _hoisted_1143 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3142 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344zM590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"
+}, null, -1) ];
+
+var info_filled_default = export_helper_default(info_filled_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1143, _hoisted_3142);
+} ], [ "__file", "info-filled.vue" ] ]), moon_night_vue_vue_type_script_lang_default = {
+    name: "MoonNight"
+}, _hoisted_1172 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_449 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M384 512a448 448 0 0 1 215.872-383.296A384 384 0 0 0 213.76 640h188.8A448.256 448.256 0 0 1 384 512zM171.136 704a448 448 0 0 1 636.992-575.296A384 384 0 0 0 499.328 704h-328.32z"
+}, null, -1), createElementVNode("path", {
+    fill: "currentColor",
+    d: "M32 640h960q32 0 32 32t-32 32H32q-32 0-32-32t32-32zm128 128h384a32 32 0 1 1 0 64H160a32 32 0 1 1 0-64zm160 127.68 224 .256a32 32 0 0 1 32 32V928a32 32 0 0 1-32 32l-224-.384a32 32 0 0 1-32-32v-.064a32 32 0 0 1 32-32z"
+}, null, -1) ];
+
+var moon_night_default = export_helper_default(moon_night_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1172, _hoisted_449);
+} ], [ "__file", "moon-night.vue" ] ]), picture_vue_vue_type_script_lang_default = {
+    name: "Picture"
+}, _hoisted_1197 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_460 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M160 160v704h704V160H160zm-32-64h768a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H128a32 32 0 0 1-32-32V128a32 32 0 0 1 32-32z"
+}, null, -1), createElementVNode("path", {
+    fill: "currentColor",
+    d: "M384 288q64 0 64 64t-64 64q-64 0-64-64t64-64zM185.408 876.992l-50.816-38.912L350.72 556.032a96 96 0 0 1 134.592-17.856l1.856 1.472 122.88 99.136a32 32 0 0 0 44.992-4.864l216-269.888 49.92 39.936-215.808 269.824-.256.32a96 96 0 0 1-135.04 14.464l-122.88-99.072-.64-.512a32 32 0 0 0-44.8 5.952L185.408 876.992z"
+}, null, -1) ];
+
+var picture_default = export_helper_default(picture_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1197, _hoisted_460);
+} ], [ "__file", "picture.vue" ] ]), plus_vue_vue_type_script_lang_default = {
+    name: "Plus"
+}, _hoisted_1201 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3200 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"
+}, null, -1) ];
+
+var plus_default = export_helper_default(plus_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1201, _hoisted_3200);
+} ], [ "__file", "plus.vue" ] ]), refresh_vue_vue_type_script_lang_default = {
+    name: "Refresh"
+}, _hoisted_1217 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3216 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M771.776 794.88A384 384 0 0 1 128 512h64a320 320 0 0 0 555.712 216.448H654.72a32 32 0 1 1 0-64h149.056a32 32 0 0 1 32 32v148.928a32 32 0 1 1-64 0v-50.56zM276.288 295.616h92.992a32 32 0 0 1 0 64H220.16a32 32 0 0 1-32-32V178.56a32 32 0 0 1 64 0v50.56A384 384 0 0 1 896.128 512h-64a320 320 0 0 0-555.776-216.384z"
+}, null, -1) ];
+
+var refresh_default = export_helper_default(refresh_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1217, _hoisted_3216);
+} ], [ "__file", "refresh.vue" ] ]), right_vue_vue_type_script_lang_default = {
+    name: "Right"
+}, _hoisted_1221 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3220 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M754.752 480H160a32 32 0 1 0 0 64h594.752L521.344 777.344a32 32 0 0 0 45.312 45.312l288-288a32 32 0 0 0 0-45.312l-288-288a32 32 0 1 0-45.312 45.312L754.752 480z"
+}, null, -1) ];
+
+var right_default = export_helper_default(right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1221, _hoisted_3220);
+} ], [ "__file", "right.vue" ] ]), search_vue_vue_type_script_lang_default = {
+    name: "Search"
+}, _hoisted_1225 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3224 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "m795.904 750.72 124.992 124.928a32 32 0 0 1-45.248 45.248L750.656 795.904a416 416 0 1 1 45.248-45.248zM480 832a352 352 0 1 0 0-704 352 352 0 0 0 0 704z"
+}, null, -1) ];
+
+var search_default = export_helper_default(search_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1225, _hoisted_3224);
+} ], [ "__file", "search.vue" ] ]), setting_vue_vue_type_script_lang_default = {
+    name: "Setting"
+}, _hoisted_1231 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3230 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384zm0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256z"
+}, null, -1) ];
+
+var setting_default = export_helper_default(setting_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1231, _hoisted_3230);
+} ], [ "__file", "setting.vue" ] ]), sunny_vue_vue_type_script_lang_default = {
+    name: "Sunny"
+}, _hoisted_1253 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3252 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M512 704a192 192 0 1 0 0-384 192 192 0 0 0 0 384zm0 64a256 256 0 1 1 0-512 256 256 0 0 1 0 512zm0-704a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32zm0 768a32 32 0 0 1 32 32v64a32 32 0 1 1-64 0v-64a32 32 0 0 1 32-32zM195.2 195.2a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 1 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248zm543.104 543.104a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 0 1-45.248 45.248l-45.248-45.248a32 32 0 0 1 0-45.248zM64 512a32 32 0 0 1 32-32h64a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32zm768 0a32 32 0 0 1 32-32h64a32 32 0 1 1 0 64h-64a32 32 0 0 1-32-32zM195.2 828.8a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248L240.448 828.8a32 32 0 0 1-45.248 0zm543.104-543.104a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248l-45.248 45.248a32 32 0 0 1-45.248 0z"
+}, null, -1) ];
+
+var sunny_default = export_helper_default(sunny_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1253, _hoisted_3252);
+} ], [ "__file", "sunny.vue" ] ]), tools_vue_vue_type_script_lang_default = {
+    name: "Tools"
+}, _hoisted_1264 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3263 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M764.416 254.72a351.68 351.68 0 0 1 86.336 149.184H960v192.064H850.752a351.68 351.68 0 0 1-86.336 149.312l54.72 94.72-166.272 96-54.592-94.72a352.64 352.64 0 0 1-172.48 0L371.136 936l-166.272-96 54.72-94.72a351.68 351.68 0 0 1-86.336-149.312H64v-192h109.248a351.68 351.68 0 0 1 86.336-149.312L204.8 160l166.208-96h.192l54.656 94.592a352.64 352.64 0 0 1 172.48 0L652.8 64h.128L819.2 160l-54.72 94.72zM704 499.968a192 192 0 1 0-384 0 192 192 0 0 0 384 0z"
+}, null, -1) ];
+
+var tools_default = export_helper_default(tools_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1264, _hoisted_3263);
+} ], [ "__file", "tools.vue" ] ]), view_vue_vue_type_script_lang_default = {
+    name: "View"
+}, _hoisted_1283 = {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 1024 1024"
+}, _hoisted_3282 = [ createElementVNode("path", {
+    fill: "currentColor",
+    d: "M512 160c320 0 512 352 512 352S832 864 512 864 0 512 0 512s192-352 512-352zm0 64c-225.28 0-384.128 208.064-436.8 288 52.608 79.872 211.456 288 436.8 288 225.28 0 384.128-208.064 436.8-288-52.608-79.872-211.456-288-436.8-288zm0 64a224 224 0 1 1 0 448 224 224 0 0 1 0-448zm0 64a160.192 160.192 0 0 0-160 160c0 88.192 71.744 160 160 160s160-71.808 160-160-71.744-160-160-160z"
+}, null, -1) ];
+
+var view_default = export_helper_default(view_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+    return openBlock(), createElementBlock("svg", _hoisted_1283, _hoisted_3282);
+} ], [ "__file", "view.vue" ] ]), LayoutSetting = defineComponent({
     setup() {},
     render() {
         const _slots = inject("__slots__", {}), _ns = inject("__ns__", {}), _config = inject("options", {}), _updateOptions = inject("updateOptions", null), settingConfig = reactive({
@@ -1300,8 +1639,8 @@ var LogoView = defineComponent({
                 "onUpdate:modelValue": $event => settingConfig.isDark = $event,
                 "inline-prompt": !0,
                 size: "large",
-                "active-icon": MoonNight,
-                "inactive-icon": Sunny,
+                "active-icon": moon_night_default,
+                "inactive-icon": sunny_default,
                 "active-color": "#1f1f1f",
                 "inactive-color": "#dcdfe6",
                 onChange: _onChangeSwitchDark
@@ -1482,7 +1821,7 @@ var HeaderTools = defineComponent({
             }, null) : null, createVNode("span", null, [ _config.userName ]), createVNode(ElIcon, {
                 class: "el-icon--right"
             }, {
-                default: () => [ createVNode(ArrowDown, null, null) ]
+                default: () => [ createVNode(arrow_down_default, null, null) ]
             }) ]),
             dropdown: () => createVNode(ElDropdownMenu, null, {
                 default: () => [ _userDropdown?.map((item => {
@@ -1506,7 +1845,7 @@ var HeaderTools = defineComponent({
         }, [ createVNode(ElIcon, {
             size: 16
         }, {
-            default: () => [ createVNode(Setting, null, null) ]
+            default: () => [ createVNode(setting_default, null, null) ]
         }) ]) ]) ]), createVNode(Teleport, {
             to: "body"
         }, {
@@ -1967,7 +2306,7 @@ const NextLayout = withInstall(defineComponent({
     }
 })), ns$a = useNamespace("tabs");
 
-var Element$5 = defineComponent({
+var Element$6 = defineComponent({
     name: "NextTabs",
     props: {
         activeTab: {
@@ -2064,7 +2403,7 @@ var Element$5 = defineComponent({
             }, [ createVNode(ElIcon, {
                 class: "tab-close"
             }, {
-                default: () => [ createVNode(Close, null, null) ]
+                default: () => [ createVNode(close_default, null, null) ]
             }) ]) ]) : null)) ]) ]
         }), createVNode(ElDropdown, {
             "show-timeout": 80,
@@ -2083,25 +2422,25 @@ var Element$5 = defineComponent({
                     command: "other"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Close, null, null) ]
+                        default: () => [ createVNode(close_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsOther") ]) ]
                 }), createVNode(ElDropdownItem, {
                     command: "left"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Back, null, null) ]
+                        default: () => [ createVNode(back_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsLeft") ]) ]
                 }), createVNode(ElDropdownItem, {
                     command: "right"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Right, null, null) ]
+                        default: () => [ createVNode(right_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsRight") ]) ]
                 }), createVNode(ElDropdownItem, {
                     command: "all"
                 }, {
                     default: () => [ createVNode(ElIcon, null, {
-                        default: () => [ createVNode(Close, null, null) ]
+                        default: () => [ createVNode(close_default, null, null) ]
                     }), createVNode("span", null, [ t("next.layout.tabsAll") ]) ]
                 }) ]
             })
@@ -2110,7 +2449,7 @@ var Element$5 = defineComponent({
     }
 });
 
-const NextTabs = withInstall(Element$5), ns$9 = useNamespace("container");
+const NextTabs = withInstall(Element$6), ns$9 = useNamespace("container");
 
 const NextContainer = withInstall(defineComponent({
     name: "NextContainer",
@@ -3294,14 +3633,14 @@ var HeaderSearch = defineComponent({
                             onClick: onConfirmSearch
                         }, {
                             icon: () => createVNode(ElIcon, null, {
-                                default: () => [ createVNode(Search, null, null) ]
+                                default: () => [ createVNode(search_default, null, null) ]
                             }),
                             default: () => t("next.table.search")
                         }), createVNode(ElButton, {
                             onClick: onClearSearch
                         }, {
                             icon: () => createVNode(ElIcon, null, {
-                                default: () => [ createVNode(Delete, null, null) ]
+                                default: () => [ createVNode(delete_default, null, null) ]
                             }),
                             default: () => t("next.table.clear")
                         }), moreColumns.value.length ? isColumnMinWidth.value ? createVNode(ElButton, {
@@ -3312,7 +3651,7 @@ var HeaderSearch = defineComponent({
                             class: ns.b("header-search-expandBtn"),
                             onClick: onSwitchExpand
                         }, {
-                            icon: () => isExpand.value ? createVNode(DArrowLeft, null, null) : createVNode(DArrowRight, null, null)
+                            icon: () => isExpand.value ? createVNode(d_arrow_left_default, null, null) : createVNode(d_arrow_right_default, null, null)
                         }) : createVNode(ElButton, {
                             type: "primary",
                             text: !0,
@@ -3321,9 +3660,9 @@ var HeaderSearch = defineComponent({
                             onClick: onSwitchExpand
                         }, {
                             icon: () => isExpand.value ? createVNode(ElIcon, null, {
-                                default: () => [ createVNode(ArrowUp, null, null) ]
+                                default: () => [ createVNode(arrow_up_default, null, null) ]
                             }) : createVNode(ElIcon, null, {
-                                default: () => [ createVNode(ArrowDown, null, null) ]
+                                default: () => [ createVNode(arrow_down_default, null, null) ]
                             }),
                             default: () => isExpand.value ? t("next.table.foldSearch") : t("next.table.unfoldSearch")
                         }) : null ]
@@ -3417,7 +3756,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Plus, null, null) ]
+                default: () => [ createVNode(plus_default, null, null) ]
             }),
             default: () => t("next.table.add")
         }), options.batchDelBtn && createVNode(ElButton, {
@@ -3442,7 +3781,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Delete, null, null) ]
+                default: () => [ createVNode(delete_default, null, null) ]
             }),
             default: () => t("next.table.batchDelete")
         }), this.$slots["menu-left-suffix"]?.() ]), createVNode("div", {
@@ -3454,7 +3793,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Refresh, null, null) ]
+                default: () => [ createVNode(refresh_default, null, null) ]
             })
         }), options.settingBtn && createVNode(ElButton, {
             circle: !0,
@@ -3463,7 +3802,7 @@ var HeaderSearch = defineComponent({
             }
         }, {
             icon: () => createVNode(ElIcon, null, {
-                default: () => [ createVNode(Tools, null, null) ]
+                default: () => [ createVNode(tools_default, null, null) ]
             })
         }), this.$slots["menu-right-suffix"]?.() ]), createVNode(DrawerSetting, {
             ref: drawerSettingRef
@@ -3553,7 +3892,7 @@ var TableColumnOperations = defineComponent({
                         })(scoped)
                     }, {
                         icon: () => createVNode(ElIcon, null, {
-                            default: () => [ createVNode(EditPen, null, null) ]
+                            default: () => [ createVNode(edit_pen_default, null, null) ]
                         }),
                         default: () => t("next.table.edit")
                     }) ]
@@ -3575,7 +3914,7 @@ var TableColumnOperations = defineComponent({
                         })(scoped)
                     }, {
                         icon: () => createVNode(ElIcon, null, {
-                            default: () => [ createVNode(View, null, null) ]
+                            default: () => [ createVNode(view_default, null, null) ]
                         }),
                         default: () => t("next.table.view")
                     }) ]
@@ -3610,7 +3949,7 @@ var TableColumnOperations = defineComponent({
                         })(scoped)
                     }, {
                         icon: () => createVNode(ElIcon, null, {
-                            default: () => [ createVNode(Delete, null, null) ]
+                            default: () => [ createVNode(delete_default, null, null) ]
                         }),
                         default: () => t("next.table.delete")
                     }) ]
@@ -3746,14 +4085,14 @@ var NextDialog$1 = defineComponent({
                 class: "icon-fullscreen",
                 onClick: () => isFullscreen.value = !isFullscreen.value
             }, [ createVNode(ElIcon, null, {
-                default: () => [ createVNode(FullScreen, null, null) ]
+                default: () => [ createVNode(full_screen_default, null, null) ]
             }) ]), createVNode("span", {
                 class: "icon-close",
                 onClick: close
             }, [ createVNode(ElIcon, {
                 size: "18"
             }, {
-                default: () => [ createVNode(Close, null, null) ]
+                default: () => [ createVNode(close_default, null, null) ]
             }) ]) ]) ])
         }) ]);
     }
@@ -3978,7 +4317,7 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                 type: "primary",
                 class: ns$5.em("input-table", "append"),
                 disabled: _disabled,
-                icon: Search,
+                icon: search_default,
                 onClick: onClickTableDialog
             }, null) ]), createVNode(NextDialog, {
                 modelValue: tableSelectDialog.visible,
@@ -4089,7 +4428,7 @@ var UploadImage = defineComponent({
                 }
             }, {
                 default: () => createVNode(ElIcon, null, {
-                    default: () => [ createVNode(Picture, null, null) ]
+                    default: () => [ createVNode(picture_default, null, null) ]
                 })
             }) : null;
         })(), _disabled ? null : createVNode(ElUpload, {
@@ -4119,14 +4458,14 @@ var UploadImage = defineComponent({
             }
         }, {
             trigger: () => slots.default ? slots.default() : "picture-card" === props.listType ? createVNode(ElIcon, null, {
-                default: () => [ createVNode(Plus, null, null) ]
+                default: () => [ createVNode(plus_default, null, null) ]
             }) : createVNode(ElButton, {
                 link: !0,
                 text: !0,
                 type: "primary"
             }, {
                 default: () => [ createVNode(ElIcon, null, {
-                    default: () => [ createVNode(Plus, null, null) ]
+                    default: () => [ createVNode(plus_default, null, null) ]
                 }), createVNode("em", null, [ _t("next.form.selectFile") ]) ]
             })
         }) ]);
@@ -4139,7 +4478,7 @@ function _isSlot$2(s) {
 
 const ns$3 = useNamespace("form");
 
-var Element$3 = defineComponent({
+var Element$4 = defineComponent({
     name: "NextForm",
     props: {
         options: {
@@ -4275,7 +4614,7 @@ var Element$3 = defineComponent({
                     placeholder: placeholder,
                     onInput: event => ((event, key) => {
                         const value = event.replace(/\D/g, "");
-                        formParams[key] = value;
+                        formParams[key] = Number(value);
                     })(event, col.prop),
                     onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
@@ -4298,7 +4637,7 @@ var Element$3 = defineComponent({
                         let value = val;
                         value = value.replace(/[^0-9\.]/g, ""), value = value.replace(/^\./, "0."), value = value.replace(/\.{2,}/g, "."), 
                         value = value.replace(".", "DUMMY"), value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), 
-                        formParams[key] = value;
+                        formParams[key] = Number(value);
                     })(event, col.prop),
                     onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
@@ -4447,7 +4786,7 @@ var Element$3 = defineComponent({
                 disabled: col.disabled,
                 onChange: event => {
                     return value = event, key = col.prop, Array.isArray(formParams[key]) || (formParams[key] = []), 
-                    void (formParams[key] = value);
+                    void (formParams[key] = Number(value));
                     var value, key;
                 }
             }, null) : "inputTableSelect" === col.type ? createVNode(InputTableSelect, {
@@ -4509,7 +4848,7 @@ var Element$3 = defineComponent({
                                 },
                                 color: "#f3d19e"
                             }, {
-                                default: () => [ createVNode(InfoFilled, null, null) ]
+                                default: () => [ createVNode(info_filled_default, null, null) ]
                             }) ]
                         }) : null ]) : null,
                         default: () => renderFormItem(column)
@@ -4535,7 +4874,7 @@ var Element$3 = defineComponent({
     }
 });
 
-const NextForm = withInstall(Element$3);
+const NextForm = withInstall(Element$4);
 
 var AddEditForm = defineComponent({
     name: "AddEditForm",
@@ -4594,7 +4933,7 @@ function _isSlot(s) {
 
 const ns$2 = useNamespace("crud-table");
 
-var Element$2 = defineComponent({
+var Element$3 = defineComponent({
     name: "NextCrudTable",
     props: defaultPropsConfig,
     emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "row-contextmenu", "row-dblclick", "cell-click", "cell-dblclick", "cell-contextmenu", "cell-mouse-enter", "cell-mouse-leave", "expand-change", "click-add-edit", "close-add-edit", "view-add-edit", "delete-rows", "delete-row", "submit-form" ],
@@ -4922,7 +5261,7 @@ var Element$2 = defineComponent({
     }
 });
 
-const NextCrudTable = withInstall(Element$2), NextSpinLoading = withInstall(SpinLoading), ns$1 = useNamespace("upload");
+const NextCrudTable = withInstall(Element$3), NextSpinLoading = withInstall(SpinLoading), ns$1 = useNamespace("upload");
 
 const NextUpload = withInstall(defineComponent({
     name: "NextUpload",
@@ -4983,14 +5322,14 @@ const NextUpload = withInstall(defineComponent({
             }
         }, {
             trigger: () => slots.default ? slots.default() : "picture-card" === props.listType ? createVNode(ElIcon, null, {
-                default: () => [ createVNode(Plus, null, null) ]
+                default: () => [ createVNode(plus_default, null, null) ]
             }) : createVNode(ElButton, {
                 link: !0,
                 text: !0,
                 type: "primary"
             }, {
                 default: () => [ createVNode(ElIcon, null, {
-                    default: () => [ createVNode(Plus, null, null) ]
+                    default: () => [ createVNode(plus_default, null, null) ]
                 }), createVNode("em", null, [ _t("next.form.selectFile") ]) ]
             })
         });
@@ -11509,7 +11848,7 @@ var Mpegts = getDefaultExportFromCjs(mpegts.exports);
 
 const ns = useNamespace("video-player");
 
-var Element = defineComponent({
+var Element$1 = defineComponent({
     name: "NextVideoPlayer",
     props: {
         className: {
@@ -11527,22 +11866,21 @@ var Element = defineComponent({
         },
         src: {
             type: String,
-            default: "",
-            required: !0
+            default: ""
         },
         tensorflow: {
             type: Object
         }
     },
     emits: [ "play", "error", "detector" ],
-    setup(props, {emit: emit}) {
+    setup(props, {emit: emit, expose: expose}) {
         const {lang: lang} = useLocale(), localeLang = {
             "zh-cn": zhCN,
             en: En,
             "zh-tw": zhTW
         };
         localeLang[lang.value] ? videojs.addLanguage("zh-CN", localeLang[lang.value]) : videojs.addLanguage("zh-CN", zhCN);
-        const videoSrc = toRaw(props.src), videoBoxRef = ref(), player = ref(), playerFlv = ref(), playerMpgets = ref(), modelRef = ref(null), detectFrameCanvas = ref(null), _createScreenshotBtn = container => {
+        const videoSrc = toRaw(props.src), videoBoxRef = ref(), videoElement = ref(), player = ref(), playerFlv = ref(), playerMpgets = ref(), modelRef = ref(null), detectFrameCanvas = ref(null), _createScreenshotBtn = container => {
             const screenshotBtn = createVNode({
                 render: () => h("span", {
                     class: "screemshot-btn",
@@ -11566,7 +11904,7 @@ var Element = defineComponent({
                     color: "#FFFFFF",
                     size: "22px"
                 }, {
-                    default: () => h(Camera)
+                    default: () => h(camera_default)
                 }) ])
             });
             player.value.on("loadedmetadata", (() => {
@@ -11580,35 +11918,11 @@ var Element = defineComponent({
             container.innerHTML = "", tf.loadGraphModel(modelUrl).then((model => {
                 const canvas = document.createElement("canvas");
                 canvas.className = ns.b("recongition"), container.appendChild(canvas);
-                const ctx = canvas.getContext("2d");
+                const ctx = canvas.getContext("2d"), detect_ctx = document.createElement("canvas").getContext("2d");
                 video.ontimeupdate = () => {
                     const {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
                     canvas.width = videoWidth, canvas.height = videoHeight, canvas.style.top = offsetTop + "px", 
-                    canvas.style.left = offsetLeft + "px", (async (video, model, ctx, tf, classNames) => {
-                        const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
-                        if (!videoWidth || !videoHeight) return;
-                        let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
-                        ctx.clearRect(0, 0, videoWidth, videoHeight), await model.executeAsync(input).then((res => {
-                            let [boxes, scores, classes, valid_detections] = res;
-                            for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
-                                let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
-                                x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
-                                y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
-                                x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
-                                y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
-                                const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
-                                let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
-                                if (score > .5) {
-                                    const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
-                                    ctx.strokeStyle = color, ctx.lineWidth = 3, ctx.beginPath(), ctx.rect(left, top, width, height), 
-                                    ctx.stroke();
-                                    const name = classNames[cls];
-                                    ctx.font = "bold 20px Arial", ctx.fillStyle = color, ctx.fillText(`${name} 相似度：${(100 * score).toFixed(2)}%`, left + 10, top < 20 ? 20 : top - 10);
-                                }
-                            }
-                            input.dispose(), tf.dispose(res);
-                        }));
-                    })(video, model, ctx, tf, classNames);
+                    canvas.style.left = offsetLeft + "px", detectVideoFrame(video, model, ctx, tf, classNames, [], detect_ctx);
                 }, modelRef.value = model, detectFrameCanvas.value = canvas;
             }));
         };
@@ -11622,11 +11936,28 @@ var Element = defineComponent({
             playerMpgets.value = null), videoBoxRef.value && render(null, videoBoxRef.value);
         }));
         const switchVideo = url => {
+            if (!url) return (() => {
+                const container = videoBoxRef.value, video = document.createElement("video");
+                video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video), 
+                player.value = videojs(video, {
+                    techOrder: [ "html5" ],
+                    controls: !0,
+                    fluid: !0,
+                    preload: "auto",
+                    language: "zh-CN",
+                    sources: []
+                });
+                const canvasContainer = document.createElement("div");
+                container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
+                    emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
+                })), _createScreenshotBtn(container);
+            })(), !1;
             const type = props.type;
             "m3u8" === type ? (url => {
                 const container = videoBoxRef.value, video = document.createElement("video");
                 video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                video.setAttribute("muted", "true"), container.appendChild(video);
+                video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                 const options = {
                     techOrder: [ "html5" ],
                     flvjs: {
@@ -11652,7 +11983,7 @@ var Element = defineComponent({
             })(url) : "mp4" === type ? (url => {
                 const container = videoBoxRef.value, video = document.createElement("video");
                 video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                video.setAttribute("muted", "true"), container.appendChild(video);
+                video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                 const options = {
                     techOrder: [ "html5" ],
                     controls: !0,
@@ -11674,7 +12005,7 @@ var Element = defineComponent({
                 if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
                     const container = videoBoxRef.value, video = document.createElement("video");
                     video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                     const defaultOptions = {
                         controls: !0,
                         autoplay: !0,
@@ -11701,7 +12032,7 @@ var Element = defineComponent({
             })(url) : "flv" === type && (url => {
                 const container = videoBoxRef.value, video = document.createElement("video");
                 video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                video.setAttribute("muted", "true"), container.appendChild(video);
+                video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                 const options = {
                     techOrder: [ "html5" ],
                     flvjs: {
@@ -11731,6 +12062,16 @@ var Element = defineComponent({
                 switchVideo(videoSrc);
             }));
         }));
+        expose({
+            getElement: () => {
+                const container = videoBoxRef.value, palyerContainer = container.children[0];
+                return {
+                    videoElement: videoElement.value,
+                    container: container,
+                    palyerContainer: palyerContainer
+                };
+            }
+        });
         return () => createVNode(Fragment, null, [ createVNode("div", {
             ref: videoBoxRef,
             class: [ ns.b(), props.className ],
@@ -11739,13 +12080,20 @@ var Element = defineComponent({
     }
 });
 
-const NextVideoPlayer = withInstall(Element);
+const NextVideoPlayer = withInstall(Element$1);
+
+const NextDragResize = withInstall(defineComponent({
+    name: "NextDragResize",
+    props: {},
+    setup: () => () => createVNode(Fragment, null, [ createVNode(Fragment, null, null) ])
+}));
 
 var components = Object.freeze({
     __proto__: null,
     NextContainer: NextContainer,
     NextCrudTable: NextCrudTable,
     NextDialog: NextDialog,
+    NextDragResize: NextDragResize,
     NextForm: NextForm,
     NextLayout: NextLayout,
     NextMenu: NextMenu,
@@ -11788,7 +12136,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.16", install = function(app) {
+}, version = "0.1.17", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -11798,8 +12146,8 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.16",
+    version: "0.1.17",
     install: install
 };
 
-export { NextContainer, NextCrudTable, NextDialog, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, updateThemeColor, updateThemeColorCssVar, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };
+export { NextContainer, NextCrudTable, NextDialog, NextDragResize, NextForm, NextLayout, NextMenu, NextSpinLoading, NextTabs, NextTextEllipsis, NextUpload, NextVideoPlayer, buildLocaleContext, buildTranslator, index as default, defaultNamespace, install, localeContextKey, localeLang, namespaceContextKey, nextUseCssTheme, nextUseCssVar, translate, updateThemeColor, updateThemeColorCssVar, useDetectVideo, useGetDerivedNamespace, useLanguage, useLocale, useNamespace, version };

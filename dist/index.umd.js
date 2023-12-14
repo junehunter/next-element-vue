@@ -1,6 +1,6 @@
 !function(global, factory) {
-    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("video.js"), require("video.js/dist/video-js.css"), require("video.js/dist/lang/zh-CN.json"), require("video.js/dist/lang/en.json"), require("video.js/dist/lang/zh-TW.json"), require("@tensorflow/tfjs")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "video.js", "video.js/dist/video-js.css", "video.js/dist/lang/zh-CN.json", "video.js/dist/lang/en.json", "video.js/dist/lang/zh-TW.json", "@tensorflow/tfjs" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore, global.videojs, null, global.zhCN, global.En, global.zhTW, global.tf);
-}(this, (function(exports, vue, elementPlus, core, videojs, videoJs_css, zhCN, En, zhTW, tf) {
+    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("@tensorflow/tfjs"), require("video.js"), require("video.js/dist/video-js.css"), require("video.js/dist/lang/zh-CN.json"), require("video.js/dist/lang/en.json"), require("video.js/dist/lang/zh-TW.json")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "@tensorflow/tfjs", "video.js", "video.js/dist/video-js.css", "video.js/dist/lang/zh-CN.json", "video.js/dist/lang/en.json", "video.js/dist/lang/zh-TW.json" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore, global.tf, global.videojs, null, global.zhCN, global.En, global.zhTW);
+}(this, (function(exports, vue, elementPlus, core, tf, videojs, videoJs_css, zhCN, En, zhTW) {
     "use strict";
     function _interopNamespaceDefault(e) {
         var n = Object.create(null);
@@ -993,6 +993,53 @@
         }
         const body = document.documentElement;
         conf.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", "");
+    }, detectVideoFrame = async (video, model, ctx, tf, classNames, classInput = [], detect_ctx, success) => {
+        const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
+        if (!videoWidth || !videoHeight) return;
+        let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
+        ctx.clearRect(0, 0, videoWidth, videoHeight), detect_ctx.clearRect(0, 0, videoWidth, videoHeight), 
+        await model.executeAsync(input).then((async res => {
+            let [boxes, scores, classes, valid_detections] = res;
+            for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
+                let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
+                x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
+                y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
+                x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
+                y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
+                const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
+                let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
+                const drawOutcome = (name, score, ctx) => {
+                    const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
+                    ctx.strokeStyle = color, ctx.lineWidth = 2, ctx.beginPath(), ctx.rect(left, top, width, height), 
+                    ctx.stroke(), ctx.font = "bold 16px Arial", ctx.fillStyle = color, ctx.fillText(`${name} ${score}`, left + 10, top < 20 ? 20 : top - 10);
+                };
+                if (classInput?.length) for (let k = 0; k < classInput.length; k++) {
+                    const item = classInput[k];
+                    if (item.cls == cls && Number(score) > item.score) {
+                        const target = classNames.find((o => o.value == cls));
+                        if (target) {
+                            const name = target.label;
+                            drawOutcome(name, score, await drawVideoFrame(video, detect_ctx)), drawOutcome(name, score, ctx), 
+                            success && success(name, score);
+                        }
+                    }
+                } else if (score > .5) {
+                    const target = classNames.find((o => o.value == cls));
+                    if (target) {
+                        drawOutcome(target.label || "", score, ctx);
+                    }
+                }
+            }
+            input.dispose(), tf.dispose(res);
+        }));
+    }, drawVideoFrame = (videoElement, ctx) => {
+        const width = videoElement.videoWidth, height = videoElement.videoHeight, mediaRatio = width / height, canvasRatio = width / height, sw = width, sh = height;
+        let dx, dy, dw, dh;
+        return mediaRatio > canvasRatio ? (dw = width, dh = width / mediaRatio, dx = 0, 
+        dy = Math.round((height - dh) / 2)) : mediaRatio === canvasRatio ? (dw = width, 
+        dh = height, dx = 0, dy = 0) : mediaRatio < canvasRatio && (dw = height * mediaRatio, 
+        dh = height, dx = Math.round((width - dw) / 2), dy = 0), ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), 
+        ctx;
     }, withInstall = (main, extra) => {
         if (main.install = app => {
             for (const comp of [ main, ...Object.values(extra ?? {}) ]) app.component(comp.name, comp);
@@ -2076,7 +2123,7 @@
             }) ]);
         }
     })), ns$a = useNamespace("tabs");
-    var Element$5 = vue.defineComponent({
+    var Element$6 = vue.defineComponent({
         name: "NextTabs",
         props: {
             activeTab: {
@@ -2218,7 +2265,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
-    const NextTabs = withInstall(Element$5), ns$9 = useNamespace("container");
+    const NextTabs = withInstall(Element$6), ns$9 = useNamespace("container");
     const NextContainer = withInstall(vue.defineComponent({
         name: "NextContainer",
         props: {
@@ -4205,7 +4252,7 @@
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
     const ns$3 = useNamespace("form");
-    var Element$3 = vue.defineComponent({
+    var Element$4 = vue.defineComponent({
         name: "NextForm",
         props: {
             options: {
@@ -4341,7 +4388,7 @@
                         placeholder: placeholder,
                         onInput: event => ((event, key) => {
                             const value = event.replace(/\D/g, "");
-                            formParams[key] = value;
+                            formParams[key] = Number(value);
                         })(event, col.prop),
                         onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
@@ -4364,7 +4411,7 @@
                             let value = val;
                             value = value.replace(/[^0-9\.]/g, ""), value = value.replace(/^\./, "0."), value = value.replace(/\.{2,}/g, "."), 
                             value = value.replace(".", "DUMMY"), value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), 
-                            formParams[key] = value;
+                            formParams[key] = Number(value);
                         })(event, col.prop),
                         onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
@@ -4513,7 +4560,7 @@
                     disabled: col.disabled,
                     onChange: event => {
                         return value = event, key = col.prop, Array.isArray(formParams[key]) || (formParams[key] = []), 
-                        void (formParams[key] = value);
+                        void (formParams[key] = Number(value));
                         var value, key;
                     }
                 }, null) : "inputTableSelect" === col.type ? vue.createVNode(InputTableSelect, {
@@ -4600,7 +4647,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
-    const NextForm = withInstall(Element$3);
+    const NextForm = withInstall(Element$4);
     var AddEditForm = vue.defineComponent({
         name: "AddEditForm",
         props: {
@@ -4655,7 +4702,7 @@
         return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
     }
     const ns$2 = useNamespace("crud-table");
-    var Element$2 = vue.defineComponent({
+    var Element$3 = vue.defineComponent({
         name: "NextCrudTable",
         props: defaultPropsConfig,
         emits: [ "confirm-search", "clear-search", "change-pagination", "selection-change", "row-click", "row-contextmenu", "row-dblclick", "cell-click", "cell-dblclick", "cell-contextmenu", "cell-mouse-enter", "cell-mouse-leave", "expand-change", "click-add-edit", "close-add-edit", "view-add-edit", "delete-rows", "delete-row", "submit-form" ],
@@ -4982,7 +5029,7 @@
             }) ]) ]) ]);
         }
     });
-    const NextCrudTable = withInstall(Element$2), NextSpinLoading = withInstall(SpinLoading), ns$1 = useNamespace("upload");
+    const NextCrudTable = withInstall(Element$3), NextSpinLoading = withInstall(SpinLoading), ns$1 = useNamespace("upload");
     const NextUpload = withInstall(vue.defineComponent({
         name: "NextUpload",
         props: {
@@ -11565,7 +11612,7 @@
     }(mpegts);
     var Mpegts = getDefaultExportFromCjs(mpegts.exports);
     const ns = useNamespace("video-player");
-    var Element = vue.defineComponent({
+    var Element$1 = vue.defineComponent({
         name: "NextVideoPlayer",
         props: {
             className: {
@@ -11583,26 +11630,21 @@
             },
             src: {
                 type: String,
-                default: "",
-                required: !0
+                default: ""
             },
             tensorflow: {
-                type: Object,
-                default: () => ({
-                    modelUrl: "",
-                    classNames: []
-                })
+                type: Object
             }
         },
         emits: [ "play", "error", "detector" ],
-        setup(props, {emit: emit}) {
+        setup(props, {emit: emit, expose: expose}) {
             const {lang: lang} = useLocale(), localeLang = {
                 "zh-cn": zhCN,
                 en: En,
                 "zh-tw": zhTW
             };
             localeLang[lang.value] ? videojs.addLanguage("zh-CN", localeLang[lang.value]) : videojs.addLanguage("zh-CN", zhCN);
-            const videoSrc = vue.toRaw(props.src), videoBoxRef = vue.ref(), player = vue.ref(), playerFlv = vue.ref(), playerMpgets = vue.ref(), modelRef = vue.ref(null), detectFrameCanvas = vue.ref(null), _createScreenshotBtn = container => {
+            const videoSrc = vue.toRaw(props.src), videoBoxRef = vue.ref(), videoElement = vue.ref(), player = vue.ref(), playerFlv = vue.ref(), playerMpgets = vue.ref(), modelRef = vue.ref(null), detectFrameCanvas = vue.ref(null), _createScreenshotBtn = container => {
                 const screenshotBtn = vue.createVNode({
                     render: () => vue.h("span", {
                         class: "screemshot-btn",
@@ -11640,35 +11682,11 @@
                 container.innerHTML = "", tf__namespace.loadGraphModel(modelUrl).then((model => {
                     const canvas = document.createElement("canvas");
                     canvas.className = ns.b("recongition"), container.appendChild(canvas);
-                    const ctx = canvas.getContext("2d");
+                    const ctx = canvas.getContext("2d"), detect_ctx = document.createElement("canvas").getContext("2d");
                     video.ontimeupdate = () => {
                         const {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
                         canvas.width = videoWidth, canvas.height = videoHeight, canvas.style.top = offsetTop + "px", 
-                        canvas.style.left = offsetLeft + "px", (async (video, model, ctx, tf, classNames) => {
-                            const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
-                            if (!videoWidth || !videoHeight) return;
-                            let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
-                            ctx.clearRect(0, 0, videoWidth, videoHeight), await model.executeAsync(input).then((res => {
-                                let [boxes, scores, classes, valid_detections] = res;
-                                for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
-                                    let [x0, y0, x1, y1] = boxes.dataSync().slice(4 * i, 4 * (i + 1));
-                                    x0 = x0 < 0 || x0 > 1 ? parseInt(x0) : x0, x1 = x1 < 0 || x1 > 1 ? parseInt(x1) : x1, 
-                                    y0 = y0 < 0 || y0 > 1 ? parseInt(y0) : y0, y1 = y1 < 0 || y1 > 1 ? parseInt(y1) : y1, 
-                                    x0 = Math.round(Math.abs(x0) * videoWidth), x1 = Math.round(Math.abs(x1) * videoWidth), 
-                                    y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
-                                    const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
-                                    let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
-                                    if (score > .5) {
-                                        const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
-                                        ctx.strokeStyle = color, ctx.lineWidth = 3, ctx.beginPath(), ctx.rect(left, top, width, height), 
-                                        ctx.stroke();
-                                        const name = classNames[cls];
-                                        ctx.font = "bold 20px Arial", ctx.fillStyle = color, ctx.fillText(`${name} 相似度：${(100 * score).toFixed(2)}%`, left + 10, top < 20 ? 20 : top - 10);
-                                    }
-                                }
-                                input.dispose(), tf.dispose(res);
-                            }));
-                        })(video, model, ctx, tf__namespace, classNames);
+                        canvas.style.left = offsetLeft + "px", detectVideoFrame(video, model, ctx, tf__namespace, classNames, [], detect_ctx);
                     }, modelRef.value = model, detectFrameCanvas.value = canvas;
                 }));
             };
@@ -11677,14 +11695,33 @@
                 player.value && (player.value.mse && (player.value.mse.endOfStream(), player.value.mse.unload(), 
                 player.value.mse = null), player.value.pause(), player.value.dispose(), player.value = null), 
                 playerFlv.value && (playerFlv.value.pause(), playerFlv.value.unload(), playerFlv.value.detachMediaElement(), 
-                playerFlv.value.destroy(), playerFlv.value = null), videoBoxRef.value && vue.render(null, videoBoxRef.value);
+                playerFlv.value.destroy(), playerFlv.value = null), playerMpgets.value && (playerMpgets.value.pause(), 
+                playerMpgets.value.unload(), playerMpgets.value.detachMediaElement(), playerMpgets.value.destroy(), 
+                playerMpgets.value = null), videoBoxRef.value && vue.render(null, videoBoxRef.value);
             }));
             const switchVideo = url => {
+                if (!url) return (() => {
+                    const container = videoBoxRef.value, video = document.createElement("video");
+                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video), 
+                    player.value = videojs(video, {
+                        techOrder: [ "html5" ],
+                        controls: !0,
+                        fluid: !0,
+                        preload: "auto",
+                        language: "zh-CN",
+                        sources: []
+                    });
+                    const canvasContainer = document.createElement("div");
+                    container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
+                        emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
+                    })), _createScreenshotBtn(container);
+                })(), !1;
                 const type = props.type;
                 "m3u8" === type ? (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
                     video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                     const options = {
                         techOrder: [ "html5" ],
                         flvjs: {
@@ -11710,7 +11747,7 @@
                 })(url) : "mp4" === type ? (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
                     video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                     const options = {
                         techOrder: [ "html5" ],
                         controls: !0,
@@ -11732,7 +11769,7 @@
                     if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
                         const container = videoBoxRef.value, video = document.createElement("video");
                         video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                        video.setAttribute("muted", "true"), container.appendChild(video);
+                        video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                         const defaultOptions = {
                             controls: !0,
                             autoplay: !0,
@@ -11743,22 +11780,23 @@
                             language: "zh-CN"
                         };
                         player.value = videojs(video, defaultOptions), playerMpgets.value = mpegts.createPlayer({
+                            enableWorker: !0,
                             type: "flv",
                             isLive: !0,
                             url: url
                         }), playerMpgets.value.attachMediaElement(video), playerMpgets.value.load(), playerMpgets.value.play(), 
                         playerMpgets.value.on("error", (() => {
                             emit("error", video);
-                        }));
-                        const canvasContainer = document.createElement("div");
-                        container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
-                            emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
                         })), _createScreenshotBtn(container);
+                        const canvasContainer = document.createElement("div");
+                        container.children[0].appendChild(canvasContainer), playerMpgets.value.on("metadata_arrived", (() => {
+                            emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
+                        }));
                     }
                 })(url) : "flv" === type && (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
                     video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                    video.setAttribute("muted", "true"), container.appendChild(video);
+                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                     const options = {
                         techOrder: [ "html5" ],
                         flvjs: {
@@ -11788,6 +11826,16 @@
                     switchVideo(videoSrc);
                 }));
             }));
+            expose({
+                getElement: () => {
+                    const container = videoBoxRef.value, palyerContainer = container.children[0];
+                    return {
+                        videoElement: videoElement.value,
+                        container: container,
+                        palyerContainer: palyerContainer
+                    };
+                }
+            });
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("div", {
                 ref: videoBoxRef,
                 class: [ ns.b(), props.className ],
@@ -11795,12 +11843,18 @@
             }, null) ]);
         }
     });
-    const NextVideoPlayer = withInstall(Element);
+    const NextVideoPlayer = withInstall(Element$1);
+    const NextDragResize = withInstall(vue.defineComponent({
+        name: "NextDragResize",
+        props: {},
+        setup: () => () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, null) ])
+    }));
     var components = Object.freeze({
         __proto__: null,
         NextContainer: NextContainer,
         NextCrudTable: NextCrudTable,
         NextDialog: NextDialog,
+        NextDragResize: NextDragResize,
         NextForm: NextForm,
         NextLayout: NextLayout,
         NextMenu: NextMenu,
@@ -11851,23 +11905,52 @@
         })(app);
     };
     var index = {
-        version: "0.1.16",
+        version: "0.1.17",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
-    exports.NextForm = NextForm, exports.NextLayout = NextLayout, exports.NextMenu = NextMenu, 
-    exports.NextSpinLoading = NextSpinLoading, exports.NextTabs = NextTabs, exports.NextTextEllipsis = NextTextEllipsis, 
-    exports.NextUpload = NextUpload, exports.NextVideoPlayer = NextVideoPlayer, exports.buildLocaleContext = buildLocaleContext, 
-    exports.buildTranslator = buildTranslator, exports.default = index, exports.defaultNamespace = "next", 
-    exports.install = install, exports.localeContextKey = localeContextKey, exports.localeLang = localeLang, 
-    exports.namespaceContextKey = namespaceContextKey, exports.nextUseCssTheme = nextUseCssTheme, 
-    exports.nextUseCssVar = nextUseCssVar, exports.translate = translate, exports.updateThemeColor = color => {
+    exports.NextDragResize = NextDragResize, exports.NextForm = NextForm, exports.NextLayout = NextLayout, 
+    exports.NextMenu = NextMenu, exports.NextSpinLoading = NextSpinLoading, exports.NextTabs = NextTabs, 
+    exports.NextTextEllipsis = NextTextEllipsis, exports.NextUpload = NextUpload, exports.NextVideoPlayer = NextVideoPlayer, 
+    exports.buildLocaleContext = buildLocaleContext, exports.buildTranslator = buildTranslator, 
+    exports.default = index, exports.defaultNamespace = "next", exports.install = install, 
+    exports.localeContextKey = localeContextKey, exports.localeLang = localeLang, exports.namespaceContextKey = namespaceContextKey, 
+    exports.nextUseCssTheme = nextUseCssTheme, exports.nextUseCssVar = nextUseCssVar, 
+    exports.translate = translate, exports.updateThemeColor = color => {
         color && nextUseCssTheme("--el-color-primary", color);
-    }, exports.updateThemeColorCssVar = updateThemeColorCssVar, exports.useGetDerivedNamespace = useGetDerivedNamespace, 
-    exports.useLanguage = (locale, lang) => {
+    }, exports.updateThemeColorCssVar = updateThemeColorCssVar, exports.useDetectVideo = () => ({
+        detectVideoFrameImage: ({container: container, video: video, modelUrl: modelUrl, classNames: classNames, classInput: classInput = []}, success, error) => modelUrl ? classNames ? void tf__namespace.loadGraphModel(modelUrl).then((model => {
+            const canvas = document.createElement("canvas"), ctx = canvas.getContext("2d");
+            canvas.style.position = "absolute", canvas.style.zIndex = "99", canvas.style.pointerEvents = "none", 
+            container && container.appendChild(canvas);
+            const detectCanvas = document.createElement("canvas"), detect_ctx = detectCanvas.getContext("2d");
+            video.ontimeupdate = e => {
+                const {clientWidth: clientWidth, clientHeight: clientHeight} = e.target, {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
+                canvas.width = videoWidth, canvas.height = videoHeight, canvas.style.top = offsetTop + "px", 
+                canvas.style.left = offsetLeft + "px", canvas.style.width = clientWidth + "px", 
+                canvas.style.height = clientHeight + "px", detectCanvas.width = videoWidth, detectCanvas.height = videoHeight, 
+                detectCanvas.style.width = clientWidth + "px", detectCanvas.style.height = clientHeight + "px", 
+                detectVideoFrame(video, model, ctx, tf__namespace, classNames, classInput, detect_ctx, ((name, score) => {
+                    const type = "image/png";
+                    let imageDataURL = canvas.toDataURL(type, .92).replace(type, "image/octet-stream");
+                    imageDataURL = imageDataURL.replace(/^data:image\/[^;]+/, "data:application/octet-stream");
+                    const detectImage = detectCanvas.toDataURL(type, .92);
+                    success && success({
+                        name: name,
+                        score: score,
+                        detectImage: detectImage,
+                        detectCanvas: detectCanvas
+                    }, {
+                        canvas: canvas,
+                        imageDataURL: imageDataURL
+                    });
+                }));
+            };
+        })) : (error && error("模型类别不能未空"), !1) : (error && error("模型文件地址不能为空"), !1)
+    }), exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.16", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.17", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

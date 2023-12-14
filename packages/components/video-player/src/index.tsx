@@ -41,7 +41,6 @@ export default defineComponent({
 		src: {
 			type: String,
 			default: '',
-			required: true,
 		},
 		tensorflow: {
 			type: Object,
@@ -54,7 +53,7 @@ export default defineComponent({
 		},
 	},
 	emits: ['play', 'error', 'detector'],
-	setup(props, { emit }) {
+	setup(props, { emit, expose }) {
 		const { lang } = useLocale();
 		const localeLang = {
 			'zh-cn': zhCN,
@@ -68,6 +67,7 @@ export default defineComponent({
 		}
 		const videoSrc = toRaw(props.src);
 		const videoBoxRef = ref<HTMLElement>();
+		const videoElement = ref<HTMLVideoElement>();
 		const player = ref<any>();
 		const playerFlv = ref<any>();
 		const playerMpgets = ref<any>();
@@ -92,6 +92,7 @@ export default defineComponent({
 			video.className = 'video-js vjs-default-skin';
 			video.setAttribute('autoplay', 'true');
 			video.setAttribute('muted', 'true');
+			videoElement.value = video;
 			container.appendChild(video);
 			const options = {
 				techOrder: ['html5'],
@@ -122,6 +123,7 @@ export default defineComponent({
 			video.className = 'video-js vjs-default-skin';
 			video.setAttribute('autoplay', 'true');
 			video.setAttribute('muted', 'true');
+			videoElement.value = video;
 			container.appendChild(video);
 			const options = {
 				techOrder: ['html5'],
@@ -158,6 +160,7 @@ export default defineComponent({
 			video.className = 'video-js vjs-default-skin';
 			video.setAttribute('autoplay', 'true');
 			video.setAttribute('muted', 'true');
+			videoElement.value = video;
 			container.appendChild(video);
 			const options = {
 				techOrder: ['html5'],
@@ -196,6 +199,7 @@ export default defineComponent({
 				video.className = 'video-js vjs-default-skin';
 				video.setAttribute('autoplay', 'true');
 				video.setAttribute('muted', 'true');
+				videoElement.value = video;
 				container.appendChild(video);
 				const defaultOptions = {
 					controls: true, // 显示控制栏
@@ -220,7 +224,7 @@ export default defineComponent({
 					emit('error', video);
 				});
 				_createScreenshotBtn(container);
-				// 创建一个canvas画布，并将画布放置播放器前面，放置遮挡播放器上面其他功能按钮
+				// 创建一个canvas画布，并将画布放置播放器前面，防止遮挡播放器上面其他功能按钮
 				const canvasContainer = document.createElement('div');
 				const palyerContainer = container.children[0];
 				palyerContainer.appendChild(canvasContainer);
@@ -229,6 +233,32 @@ export default defineComponent({
 					_loadModelDetectFrame(canvasContainer, video);
 				});
 			}
+		};
+		const loadVideo_empty = () => {
+			const container = videoBoxRef.value as HTMLElement;
+			const video = document.createElement('video');
+			video.className = 'video-js vjs-default-skin';
+			video.setAttribute('autoplay', 'true');
+			video.setAttribute('muted', 'true');
+			videoElement.value = video;
+			container.appendChild(video);
+			const options = {
+				techOrder: ['html5'],
+				controls: true,
+				fluid: true, // 自适应宽高
+				preload: 'auto',
+				language: 'zh-CN',
+				sources: [],
+			};
+			player.value = videojs(video, options);
+			const canvasContainer = document.createElement('div');
+			const palyerContainer = container.children[0];
+			palyerContainer.appendChild(canvasContainer);
+			player.value.on('play', () => {
+				emit('play', video, container);
+				_loadModelDetectFrame(canvasContainer, video);
+			});
+			_createScreenshotBtn(container);
 		};
 		const _loadModelDetectFrame = (container: HTMLElement, video: HTMLVideoElement) => {
 			if (!props.tensorflow) return;
@@ -245,13 +275,15 @@ export default defineComponent({
 				canvas.className = ns.b('recongition');
 				container.appendChild(canvas);
 				const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+				const detectCanvas = document.createElement('canvas') as HTMLCanvasElement;
+				const detect_ctx = detectCanvas.getContext('2d') as CanvasRenderingContext2D;
 				video.ontimeupdate = () => {
 					const { videoWidth, videoHeight, offsetTop, offsetLeft } = video;
 					canvas.width = videoWidth;
 					canvas.height = videoHeight;
 					canvas.style.top = offsetTop + 'px';
 					canvas.style.left = offsetLeft + 'px';
-					detectVideoFrame(video, model, ctx, tf, classNames);
+					detectVideoFrame(video, model, ctx, tf, classNames, [], detect_ctx);
 				};
 				modelRef.value = model;
 				detectFrameCanvas.value = canvas;
@@ -295,6 +327,10 @@ export default defineComponent({
 			}
 		});
 		const switchVideo = (url: string) => {
+			if (!url) {
+				loadVideo_empty();
+				return false;
+			}
 			const type = props.type;
 			if (type === 'm3u8') {
 				loadVideo_m3u8(url);
@@ -310,6 +346,19 @@ export default defineComponent({
 			nextTick(() => {
 				switchVideo(videoSrc);
 			});
+		});
+		const getElement = () => {
+			const container = videoBoxRef.value;
+			const palyerContainer = container.children[0];
+			return {
+				videoElement: videoElement.value,
+				container,
+				palyerContainer,
+			};
+		};
+
+		expose({
+			getElement,
 		});
 		const renderContent = () => {
 			return <div ref={videoBoxRef} class={[ns.b(), props.className]} style={props.style}></div>;

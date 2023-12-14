@@ -1,0 +1,7 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+@import 'packages/theme-chalk/varilable.scss';
+
+$block: 'drag-resize';
+.#{bem($block)}{
+    position: relative;
+}

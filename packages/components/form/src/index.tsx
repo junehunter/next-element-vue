@@ -162,7 +162,7 @@ export default defineComponent({
 		};
 		const _onInputInteger = (event: any, key: string) => {
 			const value = event.replace(/\D/g, '');
-			formParams[key] = value;
+			formParams[key] = Number(value);
 		};
 		const _onInputNumber = (val: any, key: string) => {
 			let value = val;
@@ -173,11 +173,11 @@ export default defineComponent({
 			value = value.replace('.', 'DUMMY');
 			value = value.replace(/\./g, '');
 			value = value.replace('DUMMY', '.');
-			formParams[key] = value;
+			formParams[key] = Number(value);
 		};
 		const _onChangeNumberRange = (value: any, key: string) => {
 			if (!Array.isArray(formParams[key])) formParams[key] = [];
-			formParams[key] = value;
+			formParams[key] = Number(value);
 		};
 		const _onInputTableSelect = (rows, col) => {
 			if (rows) col.tableSelectRows = rows;

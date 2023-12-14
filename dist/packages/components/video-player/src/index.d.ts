@@ -17,7 +17,6 @@ declare const _default: import("vue").DefineComponent<{
     src: {
         type: StringConstructor;
         default: string;
-        required: true;
     };
     tensorflow: {
         type: ObjectConstructor;
@@ -39,7 +38,6 @@ declare const _default: import("vue").DefineComponent<{
     src: {
         type: StringConstructor;
         default: string;
-        required: true;
     };
     tensorflow: {
         type: ObjectConstructor;
