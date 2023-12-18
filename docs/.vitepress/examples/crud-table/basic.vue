@@ -114,9 +114,35 @@ const options = reactive({
 			minWidth: '120px',
 		},
 		{
-			prop: '创建用户',
-			label: '创建用户',
+			prop: 'deptId',
+			label: '所属部门',
 			minWidth: '120px',
+			type: 'treeSelect',
+			sort: 6,
+			dicKey: 'id',
+			// showCheckbox: true,
+			// multiple: true,
+			dicData: [
+				{
+					id: 1,
+					parentId: 0,
+					label: '某某科技有限公司',
+					children: [
+						{
+							id: 2,
+							parentId: 1,
+							label: '研发部',
+							children: [],
+						},
+						{
+							id: 3,
+							parentId: 1,
+							label: '财务部',
+							children: [],
+						},
+					],
+				},
+			],
 		},
 		{
 			prop: 'slelectUser',
@@ -155,6 +181,7 @@ const tableReactive = reactive({
 			job: '1',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
+			deptId: 2,
 			children: [
 				{
 					id: 2,

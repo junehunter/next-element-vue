@@ -29,6 +29,7 @@ import { formSlotName } from 'packages/components/crud-table/src/hook';
 import NumberRangePicker from './widgets/number-range-picker';
 import InputTableSelect from './widgets/input-table-select';
 import UploadImage from './widgets/upload-image';
+import NextTreeSelect from './widgets/tree-select';
 
 const ns = useNamespace('form');
 export default defineComponent({
@@ -443,6 +444,8 @@ export default defineComponent({
 				);
 			} else if (col.type === 'uploadImage') {
 				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, col, formParams, formColumns)}></UploadImage>;
+			} else if (col.type === 'treeSelect') {
+				return <NextTreeSelect v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeSelect>;
 			}
 		};
 		expose({

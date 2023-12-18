@@ -1,24 +1,17 @@
 {
 	"name": "next-element-vue",
-	"version": "0.1.17",
+	"version": "0.1.18",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
 	},
 	"description": "Component library based on element-plus secondary encapsulation",
-	"keywords": [
-		"next",
-		"element",
-		"vue3",
-		"next-element-vue"
-	],
+	"keywords": ["next", "element", "vue3", "next-element-vue"],
 	"main": "dist/index.min.js",
 	"module": "dist/index.js",
 	"unpkg": "dist/index.umd.min.js",
 	"jsdelivr": "dist/index.umd.min.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
 	"repository": {
 		"type": "git",
@@ -114,15 +107,12 @@
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*.{vue,js,jsx,json}": [
-			"eslint --fix"
-		],
-		"*.ts?(x)": [
-			"eslint --fix"
-		]
+		"*.{vue,js,jsx,json}": ["eslint --fix"],
+		"*.ts?(x)": ["eslint --fix"]
 	},
 	"engines": {
 		"node": ">=16"
 	},
 	"license": "MIT"
 }
+

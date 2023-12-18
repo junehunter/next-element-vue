@@ -3324,6 +3324,13 @@
                         onChange: onChangeEnd
                     }, null) ]);
                 }
+                return "treeSelect" === col.type ? vue.createVNode(NextTreeSelect, {
+                    modelValue: formParams[col.prop],
+                    "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                    disabled: col.disabled,
+                    column: col,
+                    formParams: formParams
+                }, null) : void 0;
             };
             return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ columns.value.map((col => !col.hide && vue.createVNode(elementPlus.ElCol, {
                 span: props.searchSpan,
@@ -3611,20 +3618,40 @@
             columnSlots.value.forEach((slotName => {
                 column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
             }));
-            const _options = vue.inject("options", {}), options = vue.isRef(_options) ? vue.unref(_options) : _options, columnOption = props.columnOption, _formatterColumnValue = (value, dicData) => {
-                const item = dicData.find((o => o.value == value));
+            const _options = vue.inject("options", {}), options = vue.isRef(_options) ? vue.unref(_options) : _options, columnOption = props.columnOption, _dicKey = valueExist(columnOption.dicKey, "value"), _formatterColumnValue = (value, dicData) => {
+                const item = dicData.find((o => o[_dicKey] == value));
                 return item ? item.label : value;
-            }, renderCustomItem = (row, $index) => columnOption.children?.length > 0 ? vue.createVNode(vue.Fragment, null, [ columnOption.children.map((column => {
-                return vue.createVNode(TableColumnDynamic, {
-                    columnOption: column
-                }, "function" == typeof (s = column_slots) || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? column_slots : {
-                    default: () => [ column_slots ]
+            }, renderCustomItem = (row, $index) => {
+                if (columnOption.children?.length > 0) return vue.createVNode(vue.Fragment, null, [ columnOption.children.map((column => {
+                    return vue.createVNode(TableColumnDynamic, {
+                        columnOption: column
+                    }, "function" == typeof (s = column_slots) || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? column_slots : {
+                        default: () => [ column_slots ]
+                    });
+                    var s;
+                })) ]);
+                if (slots[columnSlotName(columnOption.prop)]) return slots[columnSlotName(columnOption.prop)]({
+                    row: row,
+                    index: $index
                 });
-                var s;
-            })) ]) : slots[columnSlotName(columnOption.prop)] ? slots[columnSlotName(columnOption.prop)]({
-                row: row,
-                index: $index
-            }) : columnOption.dicData?.length > 0 ? vue.createVNode("span", null, [ _formatterColumnValue(row[columnOption.prop], columnOption.dicData) ]) : null;
+                if (columnOption.dicData?.length > 0) {
+                    const loopDicData = list => {
+                        const temp = [];
+                        return list.forEach((node => {
+                            const item = {
+                                ...node
+                            };
+                            if (item.children) {
+                                const child = loopDicData(item.children);
+                                temp.push(...child), delete item.children;
+                            }
+                            temp.push(item);
+                        })), temp;
+                    }, mergeDicData = loopDicData(columnOption.dicData);
+                    return vue.createVNode("span", null, [ _formatterColumnValue(row[columnOption.prop], mergeDicData) ]);
+                }
+                return null;
+            };
             return () => vue.createVNode(vue.Fragment, null, [ !columnOption.hide && vue.createVNode(elementPlus.ElTableColumn, {
                 prop: columnOption.prop,
                 label: columnOption.label,
@@ -3993,6 +4020,10 @@
             formParams: {
                 type: Object,
                 default: () => ({})
+            },
+            placeholder: {
+                type: String,
+                default: ""
             }
         },
         emits: [ "select" ],
@@ -4246,6 +4277,88 @@
                     }), vue.createVNode("em", null, [ _t("next.form.selectFile") ]) ]
                 })
             }) ]);
+        }
+    }), treeSelect = vue.defineComponent({
+        name: "NextTreeSelect",
+        props: {
+            modelValue: {
+                type: [ Number, String, Boolean, Object, Array ],
+                default: ""
+            },
+            column: {
+                type: Object,
+                default: () => ({})
+            },
+            disabled: {
+                type: Boolean,
+                default: !1
+            },
+            formParams: {
+                type: Object,
+                default: () => ({})
+            }
+        },
+        emits: [ "change", "node-click", "node-contextmenu", "check", "check-change", "node-expand", "node-collapse", "current-change" ],
+        setup(props, {emit: emit, expose: expose}) {
+            const {t: t} = useLocale(), _modelValue = vue.ref(props.modelValue), _column = props.column;
+            !_column.dicData?.length && _column.loadDicData && _column.loadDicData(_column, (data => {
+                data?.length && (_column.dicData = data);
+            }));
+            const valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, "id"), _formParams = props.formParams, _defaultProps = {
+                label: "label",
+                children: "children"
+            }, placeholder = _column.placeholder || t("next.form.select") + _column.label, onChange = val => {
+                props.formParams[_column.prop] = val, _modelValue.value = val, emit("change", val);
+            }, onNodeClick = (item, node) => {
+                emit("node-click", item, node, _formParams);
+                const val = item[valueKey];
+                _column.treeSelectNodeClick?.(item, node, _formParams), onChange(val);
+            }, onNodeContextmenu = (...arg) => {
+                emit("node-contextmenu", ...arg), _column.treeSelectNodeContextmenu?.(...arg);
+            }, onCheck = (item, checkedNode) => {
+                emit("check", item, checkedNode, _formParams), _column.treeSelectCheck?.(item, checkedNode, _formParams);
+                const {checkedKeys: checkedKeys} = checkedNode;
+                onChange(checkedKeys);
+            }, onCheckChange = (...arg) => {
+                emit("check-change", ...arg), _column.treeSelecCheckChange?.(...arg, _formParams);
+            }, onNodeExpand = (...arg) => {
+                emit("node-expand", ...arg), _column.treeSelecNodeExpand?.(...arg);
+            }, onNodeCollapse = (...arg) => {
+                emit("node-collapse", ...arg), _column.treeSelecNodeCollapse?.(...arg);
+            }, onCurrentChange = (...arg) => {
+                emit("current-change", ...arg), _column.treeSelecCurrentChange?.(...arg);
+            }, treeSelectRef = vue.ref(), getInstance = () => treeSelectRef.value;
+            _column.loadInstance && _column.loadInstance(getInstance()), expose({
+                getInstance: getInstance
+            });
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElTreeSelect, {
+                ref: treeSelectRef,
+                modelValue: _modelValue.value,
+                "onUpdate:modelValue": $event => _modelValue.value = $event,
+                placeholder: placeholder,
+                data: valueExist(_column.dicData, []),
+                "node-key": valueExist(_column.nodeKey, "id"),
+                filterable: valueExist(_column.filterable, !0),
+                "show-checkbox": valueExist(_column.showCheckbox, !1),
+                "leaf-only": valueExist(_column.leafOnly, !1),
+                "render-after-expand": valueExist(_column.renderAfterExpand, !0),
+                "check-strictly": valueExist(_column.checkStrictly, !1),
+                disabled: valueExist(props.disabled, !1),
+                clearable: valueExist(_column.clearable, !0),
+                accordion: valueExist(_column.accordion, !1),
+                multiple: valueExist(_column.multiple, !1),
+                "collapse-tags": !0,
+                "collapse-tags-tooltip": !0,
+                props: valueExist(_column.treeSelectProps, _defaultProps),
+                "value-key": valueKey,
+                "onNode-click": onNodeClick,
+                "onNode-contextmenu": onNodeContextmenu,
+                onCheck: onCheck,
+                "onCheck-change": onCheckChange,
+                "onNode-expand": onNodeExpand,
+                "onNode-collapse": onNodeCollapse,
+                "onCurrent-change": onCurrentChange
+            }, null) ]);
         }
     });
     function _isSlot$2(s) {
@@ -4579,6 +4692,12 @@
                     "onUpdate:modelValue": $event => formParams[col.prop] = $event,
                     disabled: col.disabled,
                     onChange: (...arg) => col.onChange?.(...arg, col, formParams, formColumns)
+                }, null) : "treeSelect" === col.type ? vue.createVNode(treeSelect, {
+                    modelValue: formParams[col.prop],
+                    "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                    disabled: col.disabled,
+                    column: col,
+                    formParams: formParams
                 }, null) : void 0;
             };
             expose({
@@ -4647,7 +4766,7 @@
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
         }
     });
-    const NextForm = withInstall(Element$4);
+    const NextTreeSelect = withInstall(treeSelect), NextForm = withInstall(Element$4);
     var AddEditForm = vue.defineComponent({
         name: "AddEditForm",
         props: {
@@ -4740,8 +4859,10 @@
                             append: valueExist(col.formAppend, col.append, null),
                             hide: valueExist(col.formHide, col.hide, !1),
                             disabled: valueExist(col.formDisabled, col.disabled, !1),
+                            clearable: valueExist(col.formClearable, col.clearable, !1),
                             readonly: valueExist(col.formReadonly, col.readonly, !1),
                             span: valueExist(col.formSpan, col.span, null),
+                            multiple: valueExist(col.formMultiple, col.multiple, !1),
                             dicData: valueExist(col.formDicData, col.dicData, []),
                             loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
                             onChange: valueExist(col.onChangeForm, col.onChange, null),
@@ -4749,7 +4870,22 @@
                             tableSelectRows: valueExist(col.tableSelectRows, []),
                             tableSelectProps: valueExist(col.tableSelectProps, null),
                             tableSelectDefaultValue: valueExist(col.tableSelectDefaultValue, null),
-                            onTableSelect: valueExist(col.onTableSelect, null)
+                            onTableSelect: valueExist(col.onTableSelect, null),
+                            filterable: valueExist(col.filterable, !1),
+                            nodeKey: valueExist(col.formNodeKey, col.nodeKey),
+                            accordion: valueExist(col.formAccordion, col.accordion, !1),
+                            leafOnly: valueExist(col.formLeafOnly, col.leafOnly, !1),
+                            showCheckbox: valueExist(col.formShowCheckboxn, col.showCheckbox, !1),
+                            checkStrictly: valueExist(col.formCheckStrictly, col.checkStrictly, !1),
+                            renderAfterExpand: valueExist(col.formRenderAfterExpand, col.renderAfterExpand, !1),
+                            treeSelectProps: valueExist(col.formTreeSelectProps, col.treeSelectProps, null),
+                            treeSelectNodeClick: valueExist(col.treeSelectNodeClickForm, col.treeSelectNodeClick, null),
+                            treeSelectNodeContextmenu: valueExist(col.treeSelectNodeContextmenuForm, col.treeSelectNodeContextmenu, null),
+                            treeSelectCheck: valueExist(col.treeSelectCheckForm, col.treeSelectCheck, null),
+                            treeSelecCheckChange: valueExist(col.treeSelecCheckChangeForm, col.treeSelecCheckChange, null),
+                            treeSelecNodeExpand: valueExist(col.treeSelecNodeExpandForm, col.treeSelecNodeExpand, null),
+                            treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseForm, col.treeSelecNodeCollapse, null),
+                            treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeForm, col.treeSelecCurrentChange, null)
                         };
                         return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
                         item;
@@ -4769,7 +4905,21 @@
                             prepend: valueExist(col.searchPrepend, col.prepend, null),
                             append: valueExist(col.searchAppend, col.append, null),
                             hide: valueExist(col.searchHide, !1),
-                            sort: valueExist(col.searchSort, col.sort, index)
+                            sort: valueExist(col.searchSort, col.sort, index),
+                            nodeKey: valueExist(col.searchNodeKey, col.nodeKey),
+                            accordion: valueExist(col.searchAccordion, col.accordion, !1),
+                            leafOnly: valueExist(col.searchLeafOnly, col.leafOnly, !1),
+                            showCheckbox: valueExist(col.searchShowCheckboxn, col.showCheckbox, !1),
+                            checkStrictly: valueExist(col.searchCheckStrictly, col.checkStrictly, !1),
+                            renderAfterExpand: valueExist(col.searchRenderAfterExpand, col.renderAfterExpand, !1),
+                            treeSelectProps: valueExist(col.searchTreeSelectProps, col.treeSelectProps, null),
+                            treeSelectNodeClick: valueExist(col.treeSelectNodeClickSearch, col.treeSelectNodeClick, null),
+                            treeSelectNodeContextmenu: valueExist(col.treeSelectNodeContextmenuSearch, col.treeSelectNodeContextmenu, null),
+                            treeSelectCheck: valueExist(col.treeSelectCheckSearch, col.treeSelectCheck, null),
+                            treeSelecCheckChange: valueExist(col.treeSelecCheckChangeSearch, col.treeSelecCheckChange, null),
+                            treeSelecNodeExpand: valueExist(col.treeSelecNodeExpandSearch, col.treeSelecNodeExpand, null),
+                            treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseSearch, col.treeSelecNodeCollapse, null),
+                            treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeSearch, col.treeSelecCurrentChange, null)
                         };
                         return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
                         item;
@@ -5126,7 +5276,7 @@
                 type: Object
             }
         },
-        emits: [ "play", "error", "detector" ],
+        emits: [ "loaded", "play", "error", "detector" ],
         setup(props, {emit: emit, expose: expose}) {
             const {lang: lang} = useLocale(), localeLang = {
                 "zh-cn": zhCN,
@@ -5205,7 +5355,10 @@
                     const canvasContainer = document.createElement("div");
                     container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
                         emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
-                    })), _createScreenshotBtn(container);
+                    })), _createScreenshotBtn(container), emit("loaded", {
+                        player: player.value,
+                        video: video
+                    });
                 })(), !1;
                 const type = props.type;
                 "m3u8" === type ? (url => {
@@ -5233,7 +5386,10 @@
                     const canvasContainer = document.createElement("div");
                     container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
                         emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
-                    })), _createScreenshotBtn(container);
+                    })), _createScreenshotBtn(container), emit("loaded", {
+                        player: player.value,
+                        video: video
+                    });
                 })(url) : "mp4" === type ? (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
                     video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
@@ -5253,7 +5409,10 @@
                     const canvasContainer = document.createElement("div");
                     container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
                         emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
-                    })), _createScreenshotBtn(container);
+                    })), _createScreenshotBtn(container), emit("loaded", {
+                        player: player.value,
+                        video: video
+                    });
                 })(url) : "mpegts" === type ? (url => {
                     const mpegts = window.mpegts || Mpegts;
                     if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
@@ -5281,7 +5440,10 @@
                         const canvasContainer = document.createElement("div");
                         container.children[0].appendChild(canvasContainer), playerMpgets.value.on("metadata_arrived", (() => {
                             emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
-                        }));
+                        })), emit("loaded", {
+                            player: player.value,
+                            video: video
+                        });
                     }
                 })(url) : "flv" === type && (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
@@ -5308,7 +5470,10 @@
                     const canvasContainer = document.createElement("div");
                     container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
                         emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
-                    })), _createScreenshotBtn(container);
+                    })), _createScreenshotBtn(container), emit("loaded", {
+                        player: player.value,
+                        video: video
+                    });
                 })(url);
             };
             vue.onMounted((() => {
@@ -5351,6 +5516,7 @@
         NextSpinLoading: NextSpinLoading,
         NextTabs: NextTabs,
         NextTextEllipsis: NextTextEllipsis,
+        NextTreeSelect: NextTreeSelect,
         NextUpload: NextUpload,
         NextVideoPlayer: NextVideoPlayer
     });
@@ -5395,18 +5561,18 @@
         })(app);
     };
     var index = {
-        version: "0.1.17",
+        version: "0.1.18",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
     exports.NextDragResize = NextDragResize, exports.NextForm = NextForm, exports.NextLayout = NextLayout, 
     exports.NextMenu = NextMenu, exports.NextSpinLoading = NextSpinLoading, exports.NextTabs = NextTabs, 
-    exports.NextTextEllipsis = NextTextEllipsis, exports.NextUpload = NextUpload, exports.NextVideoPlayer = NextVideoPlayer, 
-    exports.buildLocaleContext = buildLocaleContext, exports.buildTranslator = buildTranslator, 
-    exports.default = index, exports.defaultNamespace = "next", exports.install = install, 
-    exports.localeContextKey = localeContextKey, exports.localeLang = localeLang, exports.namespaceContextKey = namespaceContextKey, 
-    exports.nextUseCssTheme = nextUseCssTheme, exports.nextUseCssVar = nextUseCssVar, 
-    exports.translate = translate, exports.updateThemeColor = color => {
+    exports.NextTextEllipsis = NextTextEllipsis, exports.NextTreeSelect = NextTreeSelect, 
+    exports.NextUpload = NextUpload, exports.NextVideoPlayer = NextVideoPlayer, exports.buildLocaleContext = buildLocaleContext, 
+    exports.buildTranslator = buildTranslator, exports.default = index, exports.defaultNamespace = "next", 
+    exports.install = install, exports.localeContextKey = localeContextKey, exports.localeLang = localeLang, 
+    exports.namespaceContextKey = namespaceContextKey, exports.nextUseCssTheme = nextUseCssTheme, 
+    exports.nextUseCssVar = nextUseCssVar, exports.translate = translate, exports.updateThemeColor = color => {
         color && nextUseCssTheme("--el-color-primary", color);
     }, exports.updateThemeColorCssVar = updateThemeColorCssVar, exports.useDetectVideo = () => ({
         detectVideoFrameImage: ({container: container, video: video, modelUrl: modelUrl, classNames: classNames, classInput: classInput = []}, success, error) => modelUrl ? classNames ? void tf__namespace.loadGraphModel(modelUrl).then((model => {
@@ -5440,7 +5606,7 @@
     }), exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.17", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.18", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

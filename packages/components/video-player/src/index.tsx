@@ -52,7 +52,7 @@ export default defineComponent({
 			// },
 		},
 	},
-	emits: ['play', 'error', 'detector'],
+	emits: ['loaded', 'play', 'error', 'detector'],
 	setup(props, { emit, expose }) {
 		const { lang } = useLocale();
 		const localeLang = {
@@ -116,6 +116,7 @@ export default defineComponent({
 				_loadModelDetectFrame(canvasContainer, video);
 			});
 			_createScreenshotBtn(container);
+			emit('loaded', { player: player.value, video });
 		};
 		const loadVideo_m3u8 = (url: string) => {
 			const container = videoBoxRef.value as HTMLElement;
@@ -153,6 +154,7 @@ export default defineComponent({
 				_loadModelDetectFrame(canvasContainer, video);
 			});
 			_createScreenshotBtn(container);
+			emit('loaded', { player: player.value, video });
 		};
 		const loadVideo_flv = (url: string) => {
 			const container = videoBoxRef.value as HTMLElement;
@@ -190,6 +192,7 @@ export default defineComponent({
 				_loadModelDetectFrame(canvasContainer, video);
 			});
 			_createScreenshotBtn(container);
+			emit('loaded', { player: player.value, video });
 		};
 		const loadVideo_mpegts = (url: string) => {
 			const mpegts = (window as any).mpegts || Mpegts;
@@ -232,6 +235,7 @@ export default defineComponent({
 					emit('play', video, container);
 					_loadModelDetectFrame(canvasContainer, video);
 				});
+				emit('loaded', { player: player.value, video });
 			}
 		};
 		const loadVideo_empty = () => {
@@ -259,6 +263,7 @@ export default defineComponent({
 				_loadModelDetectFrame(canvasContainer, video);
 			});
 			_createScreenshotBtn(container);
+			emit('loaded', { player: player.value, video });
 		};
 		const _loadModelDetectFrame = (container: HTMLElement, video: HTMLVideoElement) => {
 			if (!props.tensorflow) return;

@@ -26,8 +26,9 @@ const TableColumnDynamic = defineComponent({
 		const _options = inject('options', {} as any);
 		const options = isRef(_options) ? unref(_options) : _options;
 		const columnOption = props.columnOption;
+		const _dicKey = valueExist(columnOption.dicKey, 'value');
 		const _formatterColumnValue = (value: any, dicData: DictData[]) => {
-			const item = dicData.find(o => o.value == value);
+			const item = dicData.find(o => o[_dicKey] == value);
 			if (item) {
 				return item.label;
 			} else {
@@ -47,7 +48,21 @@ const TableColumnDynamic = defineComponent({
 				// 如果有传入slot，根据 #column-XXX 自定义显示内容
 				return slots[columnSlotName(columnOption.prop)]({ row: row, index: $index });
 			} else if (columnOption.dicData?.length > 0) {
-				return <span>{_formatterColumnValue(row[columnOption.prop], columnOption.dicData)}</span>;
+				const loopDicData = (list: any[]) => {
+					const temp = [];
+					list.forEach((node: any) => {
+						const item = { ...node };
+						if (item.children) {
+							const child = loopDicData(item.children);
+							temp.push(...child);
+							delete item.children;
+						}
+						temp.push(item);
+					});
+					return temp;
+				};
+				const mergeDicData = loopDicData(columnOption.dicData);
+				return <span>{_formatterColumnValue(row[columnOption.prop], mergeDicData)}</span>;
 			}
 			return null;
 		};

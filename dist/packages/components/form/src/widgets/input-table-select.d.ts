@@ -15,6 +15,10 @@ declare const InputTableSelect: import("vue").DefineComponent<{
         type: ObjectConstructor;
         default: () => {};
     };
+    placeholder: {
+        type: StringConstructor;
+        default: string;
+    };
 }, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "select"[], "select", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: (ArrayConstructor | StringConstructor | NumberConstructor | BooleanConstructor | ObjectConstructor)[];
@@ -32,6 +36,10 @@ declare const InputTableSelect: import("vue").DefineComponent<{
         type: ObjectConstructor;
         default: () => {};
     };
+    placeholder: {
+        type: StringConstructor;
+        default: string;
+    };
 }>> & {
     onSelect?: (...args: any[]) => any;
 }, {
@@ -39,5 +47,6 @@ declare const InputTableSelect: import("vue").DefineComponent<{
     column: Record<string, any>;
     disabled: boolean;
     formParams: Record<string, any>;
+    placeholder: string;
 }, {}>;
 export default InputTableSelect;

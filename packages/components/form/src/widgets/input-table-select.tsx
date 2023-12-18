@@ -32,6 +32,10 @@ const InputTableSelect = defineComponent({
 			type: Object,
 			default: () => ({}),
 		},
+		placeholder: {
+			type: String,
+			default: '',
+		},
 	},
 	emits: ['select'],
 	setup(props, { emit }) {

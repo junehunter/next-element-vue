@@ -15,6 +15,13 @@ video-player/basic
 
 :::
 
+## 读取识别帧
+
+:::demo
+
+video-player/detectFrame
+
+:::
 
 ## VideoPlayer 属性
 

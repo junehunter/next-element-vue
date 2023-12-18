@@ -41,6 +41,21 @@ export interface FormItemProps {
 	};
 	tableSelectDefaultValue?: Function;
 	onTableSelect?: Function;
+	// tree select
+	nodeKey?: string;
+	accordion?: boolean;
+	checkStrictly?: boolean;
+	showCheckbox?: boolean;
+	leafOnly?: boolean;
+	renderAfterExpand?: boolean;
+	treeSelectProps?: Object;
+	treeSelectNodeClick?: Function;
+	treeSelectNodeContextmenu?: Function;
+	treeSelectCheck?: Function;
+	treeSelecCheckChange?: Function;
+	treeSelecNodeExpand?: Function;
+	treeSelecNodeCollapse?: Function;
+	treeSelecCurrentChange?: Function;
 }
 export const tableSelectConfig = {
 	selection: false, // 是否显示选项框

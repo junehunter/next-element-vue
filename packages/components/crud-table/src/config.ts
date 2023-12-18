@@ -8,6 +8,7 @@ export declare interface Column {
 	label: string;
 	type?: string;
 	placeholder?: string;
+	dicKey?: string;
 	dicData?: DictData[];
 	loadDicData?: Function;
 	disabled?: boolean;
@@ -48,9 +49,25 @@ export interface SearchColumnProps extends Column {
 	searchSuffix?: Function;
 	searchPrepend?: Function;
 	searchAppend?: Function;
+	searchDicKey?: string;
 	searchDicData?: DictData[];
 	searchLoadDicData?: Function;
 	onChangeSearch?: Function;
+	// tree select
+	searchNodeKey?: string;
+	searchAccordion?: boolean;
+	searchLeafOnly?: boolean;
+	searchShowCheckboxn?: boolean;
+	searchCheckStrictly?: boolean;
+	searchRenderAfterExpand?: boolean;
+	searchTreeSelectProps?: string;
+	treeSelectNodeClickSearch?: Function;
+	treeSelectNodeContextmenuSearch?: Function;
+	treeSelectCheckSearch?: Function;
+	treeSelecCheckChangeSearch?: Function;
+	treeSelecNodeExpandSearch?: Function;
+	treeSelecNodeCollapseSearch?: Function;
+	treeSelecCurrentChangeSearch?: Function;
 }
 
 export interface FormColunmProps extends Column {
@@ -59,6 +76,7 @@ export interface FormColunmProps extends Column {
 	formDefaultValue?: any;
 	formPlaceholder?: string;
 	formDisabled?: string;
+	formClearable?: boolean;
 	formReadonly?: boolean;
 	formRequired?: boolean;
 	formHide?: boolean;
@@ -73,9 +91,26 @@ export interface FormColunmProps extends Column {
 	formDivider?: any;
 	formRemark?: string;
 	formRules?: any[];
+	formDicKey?: string;
+	formMultiple?: boolean;
 	formDicData?: DictData[];
 	formLoadDicData?: Function;
+	formAccordion?: boolean;
 	onChangeForm?: Function;
+	// tree select
+	formNodeKey?: string;
+	formCheckStrictly?: boolean;
+	formLeafOnly?: boolean;
+	formShowCheckboxn?: boolean;
+	formRenderAfterExpand?: boolean;
+	formTreeSelectProps?: string;
+	treeSelectNodeClickForm?: Function;
+	treeSelectNodeContextmenuForm?: Function;
+	treeSelectCheckForm?: Function;
+	treeSelecCheckChangeForm?: Function;
+	treeSelecNodeExpandForm?: Function;
+	treeSelecNodeCollapseForm?: Function;
+	treeSelecCurrentChangeForm?: Function;
 }
 
 export interface TableColumnProps extends SearchColumnProps, FormColunmProps {

@@ -142,8 +142,10 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			append: valueExist(col.formAppend, col.append, null),
 			hide: valueExist(col.formHide, col.hide, false),
 			disabled: valueExist(col.formDisabled, col.disabled, false),
+			clearable: valueExist(col.formClearable, col.clearable, false),
 			readonly: valueExist(col.formReadonly, col.readonly, false),
 			span: valueExist(col.formSpan, col.span, null),
+			multiple: valueExist(col.formMultiple, col.multiple, false),
 			dicData: valueExist(col.formDicData, col.dicData, []),
 			loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
 			onChange: valueExist(col.onChangeForm, col.onChange, null),
@@ -152,6 +154,21 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			tableSelectProps: valueExist(col.tableSelectProps, null),
 			tableSelectDefaultValue: valueExist(col.tableSelectDefaultValue, null),
 			onTableSelect: valueExist(col.onTableSelect, null),
+			filterable: valueExist(col.filterable, false),
+			nodeKey: valueExist(col.formNodeKey, col.nodeKey),
+			accordion: valueExist(col.formAccordion, col.accordion, false),
+			leafOnly: valueExist(col.formLeafOnly, col.leafOnly, false),
+			showCheckbox: valueExist(col.formShowCheckboxn, col.showCheckbox, false),
+			checkStrictly: valueExist(col.formCheckStrictly, col.checkStrictly, false),
+			renderAfterExpand: valueExist(col.formRenderAfterExpand, col.renderAfterExpand, false),
+			treeSelectProps: valueExist(col.formTreeSelectProps, col.treeSelectProps, null),
+			treeSelectNodeClick: valueExist(col.treeSelectNodeClickForm, col.treeSelectNodeClick, null),
+			treeSelectNodeContextmenu: valueExist(col.treeSelectNodeContextmenuForm, col.treeSelectNodeContextmenu, null),
+			treeSelectCheck: valueExist(col.treeSelectCheckForm, col.treeSelectCheck, null),
+			treeSelecCheckChange: valueExist(col.treeSelecCheckChangeForm, col.treeSelecCheckChange, null),
+			treeSelecNodeExpand: valueExist(col.treeSelecNodeExpandForm, col.treeSelecNodeExpand, null),
+			treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseForm, col.treeSelecNodeCollapse, null),
+			treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeForm, col.treeSelecCurrentChange, null),
 		};
 		/**
 		 * 对应属性指向原数据，search和form共享数据和方法
@@ -167,8 +184,8 @@ export const updateFormColumns = (options: any, cb: Function) => {
 	const filterFormColumns = mergeFormColumns.filter((o: FormItemProps) => o.sort && o.prop) as any[];
 	const _formColumns = filterFormColumns.sort((a: FormItemProps, b: FormItemProps) => a.sort - b.sort);
 	// 处理查询表单column
-	const _formatSearchColumn = (col: SearchColumnProps, index: number) => {
-		const item: SearchColumnProps = {
+	const _formatSearchColumn = (col: SearchColumnProps & FormItemProps, index: number) => {
+		const item: SearchColumnProps & FormItemProps = {
 			prop: col.prop,
 			type: valueExist(col.searchType, col.type),
 			label: valueExist(col.searchLabel, col.label),
@@ -184,6 +201,21 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			append: valueExist(col.searchAppend, col.append, null),
 			hide: valueExist(col.searchHide, false),
 			sort: valueExist(col.searchSort, col.sort, index),
+			// tree select
+			nodeKey: valueExist(col.searchNodeKey, col.nodeKey),
+			accordion: valueExist(col.searchAccordion, col.accordion, false),
+			leafOnly: valueExist(col.searchLeafOnly, col.leafOnly, false),
+			showCheckbox: valueExist(col.searchShowCheckboxn, col.showCheckbox, false),
+			checkStrictly: valueExist(col.searchCheckStrictly, col.checkStrictly, false),
+			renderAfterExpand: valueExist(col.searchRenderAfterExpand, col.renderAfterExpand, false),
+			treeSelectProps: valueExist(col.searchTreeSelectProps, col.treeSelectProps, null),
+			treeSelectNodeClick: valueExist(col.treeSelectNodeClickSearch, col.treeSelectNodeClick, null),
+			treeSelectNodeContextmenu: valueExist(col.treeSelectNodeContextmenuSearch, col.treeSelectNodeContextmenu, null),
+			treeSelectCheck: valueExist(col.treeSelectCheckSearch, col.treeSelectCheck, null),
+			treeSelecCheckChange: valueExist(col.treeSelecCheckChangeSearch, col.treeSelecCheckChange, null),
+			treeSelecNodeExpand: valueExist(col.treeSelecNodeExpandSearch, col.treeSelecNodeExpand, null),
+			treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseSearch, col.treeSelecNodeCollapse, null),
+			treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeSearch, col.treeSelecCurrentChange, null),
 		};
 		// 对应属性指向原数据，search和form共享数据和方法
 		// return Object.assign(col, item);
