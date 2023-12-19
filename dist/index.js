@@ -4269,7 +4269,7 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
             },
             data: []
         }), onConfirmSearch = searchParams => {
-            tableReactive.loading = !0, _options.loadData?.(searchParams, (res => {
+            tableReactive.loading = !0, _options.loadData?.(searchParams, tableReactive.page, (res => {
                 tableReactive.data = res.data || [], tableReactive.page.total = res.total || 0, 
                 tableReactive.loading = !1;
             }));
@@ -4525,11 +4525,7 @@ var UploadImage = defineComponent({
     },
     emits: [ "change", "node-click", "node-contextmenu", "check", "check-change", "node-expand", "node-collapse", "current-change" ],
     setup(props, {emit: emit, expose: expose}) {
-        const {t: t} = useLocale(), _modelValue = ref(props.modelValue), _column = props.column;
-        !_column.dicData?.length && _column.loadDicData && _column.loadDicData(_column, (data => {
-            data?.length && (_column.dicData = data);
-        }));
-        const valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, "id"), _formParams = props.formParams, _defaultProps = {
+        const {t: t} = useLocale(), _modelValue = ref(props.modelValue), _column = props.column, valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, "id"), _formParams = props.formParams, _defaultProps = {
             label: "label",
             children: "children"
         }, placeholder = _column.placeholder || t("next.form.select") + _column.label, onChange = val => {

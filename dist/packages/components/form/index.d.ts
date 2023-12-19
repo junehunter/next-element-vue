@@ -1,7 +1,7 @@
 import './src/index.scss';
 export declare const NextTreeSelect: import("../../utils/install").SFCWithInstall<import("vue").DefineComponent<{
     modelValue: {
-        type: (NumberConstructor | StringConstructor)[];
+        type: (NumberConstructor | StringConstructor | BooleanConstructor | ObjectConstructor | ArrayConstructor)[];
         default: string;
     };
     column: {
@@ -16,9 +16,9 @@ export declare const NextTreeSelect: import("../../utils/install").SFCWithInstal
         type: ObjectConstructor;
         default: () => {};
     };
-}, () => void, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change")[], "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change")[], "change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
-        type: (NumberConstructor | StringConstructor)[];
+        type: (NumberConstructor | StringConstructor | BooleanConstructor | ObjectConstructor | ArrayConstructor)[];
         default: string;
     };
     column: {
@@ -34,6 +34,7 @@ export declare const NextTreeSelect: import("../../utils/install").SFCWithInstal
         default: () => {};
     };
 }>> & {
+    onChange?: (...args: any[]) => any;
     "onNode-click"?: (...args: any[]) => any;
     "onNode-contextmenu"?: (...args: any[]) => any;
     onCheck?: (...args: any[]) => any;
@@ -42,7 +43,7 @@ export declare const NextTreeSelect: import("../../utils/install").SFCWithInstal
     "onNode-collapse"?: (...args: any[]) => any;
     "onCurrent-change"?: (...args: any[]) => any;
 }, {
-    modelValue: string | number;
+    modelValue: string | number | boolean | Record<string, any> | unknown[];
     column: Record<string, any>;
     disabled: boolean;
     formParams: Record<string, any>;

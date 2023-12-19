@@ -28,11 +28,6 @@ export default defineComponent({
 		const { t } = useLocale();
 		const _modelValue = ref(props.modelValue);
 		const _column = props.column;
-		if (!_column.dicData?.length && _column.loadDicData) {
-			_column.loadDicData(_column, data => {
-				if (data?.length) _column.dicData = data;
-			});
-		}
 		const valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, 'id');
 		const _formParams = props.formParams;
 		const _defaultProps = {

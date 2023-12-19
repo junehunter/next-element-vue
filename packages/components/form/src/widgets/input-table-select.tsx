@@ -68,7 +68,7 @@ const InputTableSelect = defineComponent({
 		});
 		const onConfirmSearch = (searchParams: any) => {
 			tableReactive.loading = true;
-			_options.loadData?.(searchParams, res => {
+			_options.loadData?.(searchParams, tableReactive.page, res => {
 				tableReactive.data = res.data || [];
 				tableReactive.page.total = res.total || 0;
 				tableReactive.loading = false;
