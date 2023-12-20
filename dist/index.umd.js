@@ -4433,7 +4433,7 @@
                 }));
             }, onResetForm = () => {
                 const formInstance = ruleFormRef.value;
-                formInstance && formInstance.resetFields();
+                formInstance && (formInstance.resetFields(), submitLoading.value = !1);
             }, _defaultDisabledDate = time => time.getTime() > Date.now(), _defaultShortcuts = [ {
                 text: t("next.date.oneWeekAge"),
                 value: () => {

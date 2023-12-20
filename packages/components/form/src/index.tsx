@@ -160,6 +160,7 @@ export default defineComponent({
 			const formInstance = ruleFormRef.value;
 			if (!formInstance) return;
 			formInstance.resetFields();
+			submitLoading.value = false;
 		};
 		const _onInputInteger = (event: any, key: string) => {
 			const value = event.replace(/\D/g, '');
