@@ -1,4 +1,4 @@
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { ElTreeSelect } from 'element-plus';
 import { valueExist } from 'packages/hooks/global-hook';
 import { useLocale } from 'packages/hooks';
@@ -27,6 +27,12 @@ export default defineComponent({
 	setup(props, { emit, expose }) {
 		const { t } = useLocale();
 		const _modelValue = ref(props.modelValue);
+		watch(
+			() => props.modelValue,
+			(val: any) => {
+				_modelValue.value = val;
+			}
+		);
 		const _column = props.column;
 		const valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, 'id');
 		const _formParams = props.formParams;
@@ -39,6 +45,10 @@ export default defineComponent({
 			props.formParams[_column.prop] = val;
 			_modelValue.value = val;
 			emit('change', val);
+		};
+		const onClearValue = () => {
+			props.formParams[_column.prop] = '';
+			_modelValue.value = '';
 		};
 		const onNodeClick = (item: any, node: any) => {
 			emit('node-click', item, node, _formParams);
@@ -81,6 +91,7 @@ export default defineComponent({
 		}
 		expose({
 			getInstance,
+			onClearValue,
 		});
 		const renderContent = () => {
 			return (
@@ -110,6 +121,7 @@ export default defineComponent({
 					onNode-expand={onNodeExpand}
 					onNode-collapse={onNodeCollapse}
 					onCurrent-change={onCurrentChange}
+					onClear={onClearValue}
 				></ElTreeSelect>
 			);
 		};

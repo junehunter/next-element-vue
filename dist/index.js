@@ -4525,11 +4525,17 @@ var UploadImage = defineComponent({
     },
     emits: [ "change", "node-click", "node-contextmenu", "check", "check-change", "node-expand", "node-collapse", "current-change" ],
     setup(props, {emit: emit, expose: expose}) {
-        const {t: t} = useLocale(), _modelValue = ref(props.modelValue), _column = props.column, valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, "id"), _formParams = props.formParams, _defaultProps = {
+        const {t: t} = useLocale(), _modelValue = ref(props.modelValue);
+        watch((() => props.modelValue), (val => {
+            _modelValue.value = val;
+        }));
+        const _column = props.column, valueKey = valueExist(_column.treeSelectProps?.value, _column.nodeKey, "id"), _formParams = props.formParams, _defaultProps = {
             label: "label",
             children: "children"
         }, placeholder = _column.placeholder || t("next.form.select") + _column.label, onChange = val => {
             props.formParams[_column.prop] = val, _modelValue.value = val, emit("change", val);
+        }, onClearValue = () => {
+            props.formParams[_column.prop] = "", _modelValue.value = "";
         }, onNodeClick = (item, node) => {
             emit("node-click", item, node, _formParams);
             const val = item[valueKey];
@@ -4550,7 +4556,8 @@ var UploadImage = defineComponent({
             emit("current-change", ...arg), _column.treeSelecCurrentChange?.(...arg);
         }, treeSelectRef = ref(), getInstance = () => treeSelectRef.value;
         _column.loadInstance && _column.loadInstance(getInstance()), expose({
-            getInstance: getInstance
+            getInstance: getInstance,
+            onClearValue: onClearValue
         });
         return () => createVNode(Fragment, null, [ createVNode(ElTreeSelect, {
             ref: treeSelectRef,
@@ -4578,7 +4585,8 @@ var UploadImage = defineComponent({
             "onCheck-change": onCheckChange,
             "onNode-expand": onNodeExpand,
             "onNode-collapse": onNodeCollapse,
-            "onCurrent-change": onCurrentChange
+            "onCurrent-change": onCurrentChange,
+            onClear: onClearValue
         }, null) ]);
     }
 });
