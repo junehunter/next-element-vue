@@ -22,6 +22,7 @@ $block: 'layout-defaults';
         box-sizing: border-box;
         >.el-scrollbar {
             border-radius: 6px;
+            background-color: var(--el-bg-color);
             .el-scrollbar__view {
                 height: 100%;
                 box-shadow: var(--el-box-shadow-light);
