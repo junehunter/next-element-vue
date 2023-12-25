@@ -1724,600 +1724,7 @@
                 default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
             }) ]) ]);
         }
-    }), MenuItemTitle = vue.defineComponent({
-        props: {
-            meta: {
-                type: Object,
-                default: () => ({})
-            }
-        },
-        setup(props) {
-            const _ns = vue.inject("ns", {}), {t: t} = useLocale(), meta = props.meta;
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("span", {
-                class: _ns.be("item", "icon")
-            }, [ meta.icon ? vue.createVNode("i", {
-                class: meta.icon
-            }, null) : vue.createVNode("svg", {
-                class: "icon",
-                viewBox: "0 0 1024 1024",
-                version: "1.1",
-                xmlns: "http://www.w3.org/2000/svg",
-                "p-id": "19771",
-                width: "32",
-                height: "32"
-            }, [ vue.createVNode("path", {
-                d: "M512 958.8C265.6 958.8 65.2 758.4 65.2 512S265.6 65.2 512 65.2 958.8 265.6 958.8 512 758.4 958.8 512 958.8z m0-832c-212.4 0-385.2 172.8-385.2 385.2S299.6 897.2 512 897.2 897.2 724.4 897.2 512 724.4 126.8 512 126.8z",
-                "p-id": "19772"
-            }, null), vue.createVNode("path", {
-                d: "M512 512m-169.5 0a169.5 169.5 0 1 0 339 0 169.5 169.5 0 1 0-339 0Z",
-                "p-id": "19773"
-            }, null) ]) ]), vue.createVNode("span", {
-                class: _ns.be("item", "title")
-            }, [ t(meta.title) ]) ]);
-        }
     });
-    const NextMenuItem = vue.defineComponent({
-        name: "NextMenuItem",
-        props: {
-            menuData: {
-                type: Array,
-                required: !0
-            }
-        },
-        setup(props) {
-            const _ns = vue.inject("ns", {}), menuTree = vue.computed((() => props.menuData)).value;
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ menuTree.map((item => item.children?.length ? vue.createVNode(elementPlus.ElSubMenu, {
-                "popper-class": _ns.b("popper"),
-                index: item.path || item.id,
-                teleported: !0
-            }, {
-                title: () => vue.createVNode(MenuItemTitle, {
-                    meta: item.meta
-                }, null),
-                default: () => vue.createVNode(NextMenuItem, {
-                    menuData: item.children
-                }, null)
-            }) : vue.createVNode(elementPlus.ElMenuItem, {
-                index: item.path
-            }, {
-                default: () => [ vue.createVNode(MenuItemTitle, {
-                    meta: item.meta
-                }, null) ]
-            }))) ]) ]);
-        }
-    }), ns$g = useNamespace("menu");
-    const NextMenu = withInstall(vue.defineComponent({
-        name: "NextMenu",
-        props: {
-            className: {
-                type: String,
-                default: ""
-            },
-            style: {
-                type: Object,
-                default: () => ({})
-            },
-            router: {
-                type: Boolean,
-                default: !0
-            },
-            mode: {
-                type: String,
-                values: [ "horizontal", "vertical" ],
-                default: "horizontal"
-            },
-            menuTree: {
-                type: Array,
-                default: () => []
-            }
-        },
-        setup(props) {
-            vue.provide("ns", ns$g);
-            const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
-            vue.watch((() => router.currentRoute?.value), (to => {
-                activePath.value = to.fullPath;
-            }));
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
-                class: [ ns$g.b(), props.className ],
-                style: props.style,
-                defaultActive: activePath.value,
-                router: props.router,
-                mode: props.mode,
-                ellipsis: !0
-            }, {
-                default: () => [ vue.createVNode(vue.Fragment, null, [ props.menuTree.map((item => item.children?.length ? vue.createVNode(elementPlus.ElSubMenu, {
-                    "popper-class": ns$g.b("popper"),
-                    index: item.path || item.id,
-                    teleported: !0
-                }, {
-                    title: () => vue.createVNode(MenuItemTitle, {
-                        meta: item.meta
-                    }, null),
-                    default: () => vue.createVNode(NextMenuItem, {
-                        menuData: item.children
-                    }, null)
-                }) : vue.createVNode(elementPlus.ElMenuItem, {
-                    "popper-class": ns$g.b("popper"),
-                    index: item.path
-                }, {
-                    default: () => [ vue.createVNode(MenuItemTitle, {
-                        meta: item.meta
-                    }, null) ]
-                }))) ]) ]
-            }) ]);
-        }
-    }));
-    var Sidebar$2 = vue.defineComponent({
-        setup: () => ({
-            ns: vue.inject("ns", {})
-        }),
-        render() {
-            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
-            return vue.createVNode("aside", {
-                class: _ns.b("sidebar")
-            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
-                default: () => [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                    mode: "vertical",
-                    menuTree: _config.menuTree
-                }, null) ]
-            }) ]);
-        }
-    });
-    const ns$f = useNamespace("layout-defaults");
-    var defaults = vue.defineComponent({
-        props: {},
-        setup: () => (vue.provide("ns", ns$f), {}),
-        render() {
-            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
-            slots.menu;
-            const isTabs = vue.ref(!!slots.tabs);
-            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
-                class: ns$f.b()
-            }, {
-                default: () => [ vue.createVNode(Sidebar$2, null, null), vue.createVNode("div", {
-                    class: [ ns$f.b("content") ]
-                }, [ vue.createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
-                    tabs: _config.tabs,
-                    activeTab: _config.activeTab,
-                    onChange: (...arg) => _emit("tabsChange", ...arg),
-                    onSelect: (...arg) => _emit("tabsSelect", ...arg),
-                    onClose: (...arg) => _emit("tabsClose", ...arg)
-                }, null) : null, vue.createVNode("main", {
-                    class: [ ns$f.bf("main"), ns$f.is("layout-tabs", isTabs.value) ]
-                }, [ slots.default?.() ]) ]) ]
-            });
-        }
-    });
-    const {getLightColor: getLightColor$2} = useChangeColor();
-    var Header$2 = vue.defineComponent({
-        setup(props, {slots: slots}) {
-            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
-                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
-                return isHeaderBarColorGradual ? {
-                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$2(color, .5)})`
-                } : "";
-            }));
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
-                class: _ns.b("header"),
-                style: headerStyle.value
-            }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
-                class: _ns.bf("header", "menu")
-            }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                menuTree: _config.menuTree,
-                router: _config.menuRouter,
-                mode: _config.menuMode
-            }, null) ]), vue.createVNode("div", {
-                class: _ns.bf("header", "right")
-            }, [ vue.createVNode(HeaderTools, null, {
-                default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
-            }) ]) ]) ]);
-        }
-    });
-    const ns$e = useNamespace("layout-transverse");
-    var transverse = vue.defineComponent({
-        props: {},
-        setup: () => (vue.provide("ns", ns$e), {}),
-        render() {
-            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
-            slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
-            slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
-            slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
-            const isTabs = vue.ref(!!slots.tabs);
-            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header$2, null, (s = __slots_header, 
-            "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? __slots_header : {
-                default: () => [ __slots_header ]
-            })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
-                tabs: _config.tabs,
-                activeTab: _config.activeTab,
-                onChange: (...arg) => _emit("tabsChange", ...arg),
-                onSelect: (...arg) => _emit("tabsSelect", ...arg),
-                onClose: (...arg) => _emit("tabsClose", ...arg)
-            }, null) : null, vue.createVNode("main", {
-                class: [ ns$e.b("main"), ns$e.is("layout-tabs", isTabs.value) ]
-            }, [ slots.default?.() ]) ]);
-            var s;
-        }
-    });
-    const {getLightColor: getLightColor$1} = useChangeColor();
-    var Header$1 = vue.defineComponent({
-        setup(props, {slots: slots}) {
-            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
-                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
-                return isHeaderBarColorGradual ? {
-                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$1(color, .5)})`
-                } : "";
-            }));
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
-                class: _ns.b("header"),
-                style: headerStyle.value
-            }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
-                class: _ns.bf("header", "menu")
-            }, null), vue.createVNode("div", {
-                class: _ns.bf("header", "right")
-            }, [ vue.createVNode(HeaderTools, null, {
-                default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
-            }) ]) ]) ]);
-        }
-    }), Sidebar$1 = vue.defineComponent({
-        setup: () => ({
-            ns: vue.inject("ns", {})
-        }),
-        render() {
-            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
-            return vue.createVNode("aside", {
-                class: _ns.b("sidebar")
-            }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                mode: "vertical",
-                menuTree: _config.menuTree
-            }, null) ]);
-        }
-    });
-    const ns$d = useNamespace("layout-columns");
-    var columns = vue.defineComponent({
-        props: {},
-        setup: () => (vue.provide("ns", ns$d), {}),
-        render() {
-            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
-            slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
-            slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
-            slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
-            const isTabs = vue.ref(!!slots.tabs);
-            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
-                class: ns$d.b()
-            }, {
-                default: () => {
-                    return [ vue.createVNode(Sidebar$1, null, null), vue.createVNode("div", {
-                        class: [ ns$d.b("content") ]
-                    }, [ vue.createVNode(Header$1, null, (s = __slots_header, "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? __slots_header : {
-                        default: () => [ __slots_header ]
-                    })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
-                        tabs: _config.tabs,
-                        activeTab: _config.activeTab,
-                        onChange: (...arg) => _emit("tabsChange", ...arg),
-                        onSelect: (...arg) => _emit("tabsSelect", ...arg),
-                        onClose: (...arg) => _emit("tabsClose", ...arg)
-                    }, null) : null, vue.createVNode("main", {
-                        class: [ ns$d.bf("main"), ns$d.is("layout-tabs", isTabs.value) ]
-                    }, [ slots.default?.() ]) ]) ];
-                    var s;
-                }
-            });
-        }
-    });
-    const {getLightColor: getLightColor} = useChangeColor();
-    var Header = vue.defineComponent({
-        setup(props, {slots: slots}) {
-            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
-                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
-                return isHeaderBarColorGradual ? {
-                    background: `linear-gradient(to bottom , ${color}, ${getLightColor(color, .5)})`
-                } : "";
-            }));
-            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
-                class: _ns.b("header"),
-                style: headerStyle.value
-            }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
-                class: _ns.bf("header", "menu")
-            }, [ slots[slots_config_headerMenu]?.() ]), vue.createVNode("div", {
-                class: _ns.bf("header", "right")
-            }, [ vue.createVNode(HeaderTools, null, {
-                default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
-            }) ]) ]) ]);
-        }
-    }), Sidebar = vue.defineComponent({
-        setup: () => ({
-            ns: vue.inject("ns", {})
-        }),
-        render() {
-            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
-            return vue.createVNode("aside", {
-                class: _ns.b("sidebar")
-            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
-                default: () => [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
-                    mode: "vertical",
-                    menuTree: _config.menuTree
-                }, null) ]
-            }) ]);
-        }
-    });
-    const ns$c = useNamespace("layout-classic");
-    var classic = vue.defineComponent({
-        props: {},
-        setup: () => (vue.provide("ns", ns$c), {
-            ns: ns$c
-        }),
-        render() {
-            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
-            slots.menu;
-            const isTabs = vue.ref(!!slots.tabs);
-            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header, null, null), vue.createVNode("div", {
-                class: [ ns$c.b("content"), ns$c.is("layout-tabs", isTabs.value) ]
-            }, [ vue.createVNode(Sidebar, null, null), vue.createVNode("div", {
-                class: ns$c.b("container")
-            }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
-                tabs: _config.tabs,
-                activeTab: _config.activeTab,
-                onChange: (...arg) => _emit("tabsChange", ...arg),
-                onSelect: (...arg) => _emit("tabsSelect", ...arg),
-                onClose: (...arg) => _emit("tabsClose", ...arg)
-            }, null) : null, vue.createVNode("main", {
-                class: [ ns$c.b("main") ]
-            }, [ slots.default?.() ]) ]) ]) ]);
-        }
-    });
-    const ns$b = useNamespace("layout"), layouts = {
-        defaults: vue.markRaw(defaults),
-        transverse: vue.markRaw(transverse),
-        columns: vue.markRaw(columns),
-        classic: vue.markRaw(classic)
-    }, customizerCoverArray = (objValue, srcValue) => {
-        if (Array.isArray(objValue)) return srcValue;
-    };
-    const NextLayout = withInstall(vue.defineComponent({
-        name: "NextLayout",
-        props: {
-            className: {
-                type: String,
-                default: ""
-            },
-            style: {
-                type: Object,
-                default: () => ({})
-            },
-            options: {
-                type: Object,
-                default: () => ({})
-            }
-        },
-        emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
-        setup(props, {slots: slots, emit: emit}) {
-            const _config = vue.ref(mergeWith$1(defaultConfig$2, props.options, customizerCoverArray));
-            vue.provide("options", _config.value), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
-            vue.provide("__slots__", slots);
-            const updateOptions = cfg => {
-                _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColorCssVar(_config.value?.setting), 
-                emit("changeOptions", _config.value);
-            };
-            return vue.provide("updateOptions", updateOptions), vue.watch((() => props.options), (cfg => {
-                updateOptions(cfg);
-            }), {
-                deep: !0,
-                immediate: !0
-            }), {
-                options: _config.value,
-                updateOptions: updateOptions
-            };
-        },
-        render() {
-            const props = this.$props, slots = this.$slots, layout = this.options.setting?.layout || "transverse", activeLayout = vue.ref(layouts[layout]);
-            vue.watchEffect((() => {
-                activeLayout.value = layouts[layout], activeLayout.value || (activeLayout.value = layouts.transverse);
-            }));
-            const _activeSlots = {};
-            for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
-            return vue.createVNode("div", {
-                class: [ ns$b.b(), props.className ],
-                style: props.style
-            }, [ vue.h(activeLayout.value, {}, {
-                ..._activeSlots
-            }) ]);
-        }
-    })), ns$a = useNamespace("tabs");
-    var Element$6 = vue.defineComponent({
-        name: "NextTabs",
-        props: {
-            activeTab: {
-                type: [ String, Number ],
-                default: "/"
-            },
-            tabs: {
-                type: Array,
-                default: () => []
-            }
-        },
-        emits: [ "change", "select", "close" ],
-        setup(props, {emit: emit}) {
-            const {t: t} = useLocale(), router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _activeTab = vue.computed((() => router.currentRoute.value.fullPath)), _tabs = vue.computed((() => props.tabs)), defaultIndex = _tabs.value?.findIndex((v => v.path === _activeTab.value));
-            if (defaultIndex < 0) {
-                const tab = _tabs.value[0];
-                tab && tab.path && router.replace({
-                    path: tab.path
-                });
-            }
-            const activeIndex = vue.ref(defaultIndex), tabsView = vue.ref(_tabs.value), onChange = command => {
-                const active = _activeTab.value, len = tabsView.value.length, i = tabsView.value.findIndex((v => v.path === active));
-                switch (command) {
-                  case "other":
-                    i > -1 && (activeIndex.value = 1, tabsView.value = [ tabsView.value[0], tabsView.value[i] ]);
-                    break;
-
-                  case "left":
-                    if (i > -1) {
-                        const rightTags = tabsView.value.slice(i);
-                        rightTags.unshift(tabsView.value[0]), tabsView.value = rightTags, activeIndex.value = 1;
-                    }
-                    break;
-
-                  case "right":
-                    if (i > -1 && i < len - 1) {
-                        const leftTags = tabsView.value.slice(0, i + 1);
-                        tabsView.value = leftTags;
-                    }
-                    break;
-
-                  case "all":
-                    const homeTag = tabsView.value[0];
-                    activeIndex.value = 0, tabsView.value = [ homeTag ], onClickTabItem(null, homeTag, activeIndex.value);
-                }
-                emit("change", activeIndex.value, tabsView.value, command);
-            }, onClickTabItem = (event, tab, index) => {
-                event?.stopPropagation(), activeIndex.value = index;
-                let to = {
-                    path: tab.path,
-                    query: tab.query,
-                    params: tab.params
-                };
-                router.push(to), emit("select", tab, index);
-            };
-            vue.watch((() => router.currentRoute?.value), (to => {
-                const {tagTitle: tagTitle} = to.query, activeRoute = {
-                    name: to.name,
-                    title: tagTitle || to.meta?.title,
-                    path: to.path,
-                    meta: to.meta,
-                    params: to.params,
-                    query: to.query
-                }, i = tabsView.value.findIndex((v => v.path === to.path));
-                i > -1 ? (activeIndex.value = i, tabsView.value[i] = activeRoute) : (activeIndex.value = tabsView.value.length, 
-                tabsView.value.push(activeRoute)), emit("change", activeIndex.value, tabsView.value, "add");
-            }));
-            const renderContent = () => vue.createVNode("nav", {
-                class: ns$a.b()
-            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
-                default: () => [ vue.createVNode("ul", {
-                    class: ns$a.b("list")
-                }, [ tabsView.value.map(((tab, index) => tab ? vue.createVNode("li", {
-                    class: [ "tab-item", ns$a.is("active", activeIndex.value === index) ],
-                    onClick: event => onClickTabItem(event, tab, index)
-                }, [ vue.createVNode("i", {
-                    class: [ "tab-icon", tab.meta?.icon ]
-                }, null), vue.createVNode("span", null, [ t(tab.title) ]), tab.meta?.isAffix || "/" === tab.path ? null : vue.createVNode("span", {
-                    onClick: event => ((event, tab, index) => {
-                        event.stopPropagation();
-                        const active = _activeTab.value;
-                        if (active === tab.path) {
-                            const prevTag = tabsView.value[index - 1];
-                            router.push({
-                                path: prevTag.path,
-                                query: prevTag.query || {},
-                                params: prevTag.params || {}
-                            }), emit("close", prevTag, tabsView.value);
-                        }
-                        tabsView.value.splice(index, 1);
-                        const i = tabsView.value.findIndex((v => v.path === active)) || 0;
-                        activeIndex.value = i > -1 ? i : 0, emit("change", activeIndex.value, tabsView.value, "close");
-                    })(event, tab, index)
-                }, [ vue.createVNode(elementPlus.ElIcon, {
-                    class: "tab-close"
-                }, {
-                    default: () => [ vue.createVNode(close_default, null, null) ]
-                }) ]) ]) : null)) ]) ]
-            }), vue.createVNode(elementPlus.ElDropdown, {
-                "show-timeout": 80,
-                "hide-timeout": 80,
-                onCommand: onChange
-            }, {
-                default: () => vue.createVNode("span", {
-                    class: ns$a.b("tab-more")
-                }, [ vue.createVNode("i", {
-                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "top") ]
-                }, null), vue.createVNode("i", {
-                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "bottom") ]
-                }, null) ]),
-                dropdown: () => vue.createVNode(elementPlus.ElDropdownMenu, null, {
-                    default: () => [ vue.createVNode(elementPlus.ElDropdownItem, {
-                        command: "other"
-                    }, {
-                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
-                            default: () => [ vue.createVNode(close_default, null, null) ]
-                        }), vue.createVNode("span", null, [ t("next.layout.tabsOther") ]) ]
-                    }), vue.createVNode(elementPlus.ElDropdownItem, {
-                        command: "left"
-                    }, {
-                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
-                            default: () => [ vue.createVNode(back_default, null, null) ]
-                        }), vue.createVNode("span", null, [ t("next.layout.tabsLeft") ]) ]
-                    }), vue.createVNode(elementPlus.ElDropdownItem, {
-                        command: "right"
-                    }, {
-                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
-                            default: () => [ vue.createVNode(right_default, null, null) ]
-                        }), vue.createVNode("span", null, [ t("next.layout.tabsRight") ]) ]
-                    }), vue.createVNode(elementPlus.ElDropdownItem, {
-                        command: "all"
-                    }, {
-                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
-                            default: () => [ vue.createVNode(close_default, null, null) ]
-                        }), vue.createVNode("span", null, [ t("next.layout.tabsAll") ]) ]
-                    }) ]
-                })
-            }) ]);
-            return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
-        }
-    });
-    const NextTabs = withInstall(Element$6), ns$9 = useNamespace("container");
-    const NextContainer = withInstall(vue.defineComponent({
-        name: "NextContainer",
-        props: {
-            className: {
-                type: String,
-                default: ""
-            },
-            style: {
-                type: Object,
-                default: () => ({})
-            },
-            scrollbar: {
-                type: Boolean,
-                default: !1
-            },
-            padding: {
-                type: [ Boolean, String, Number ],
-                default: !0
-            },
-            card: {
-                type: Boolean,
-                default: !1
-            }
-        },
-        setup(props, {slots: slots}) {
-            const styles = vue.computed((() => {
-                let style = {};
-                const padding = props.padding;
-                return "boolean" == typeof padding ? style = padding ? {
-                    padding: "15px"
-                } : {} : "string" == typeof padding ? style = {
-                    padding: padding
-                } : "number" == typeof padding && (style = {
-                    padding: padding + "px"
-                }), style;
-            }));
-            return () => props.scrollbar ? vue.createVNode(elementPlus.ElScrollbar, {
-                class: [ ns$9.b(), props.className ],
-                style: props.style
-            }, {
-                default: () => [ slots.default?.() ]
-            }) : vue.createVNode("div", {
-                class: [ ns$9.b(), props.className ],
-                style: {
-                    ...styles.value,
-                    ...props.style
-                }
-            }, [ props.card ? vue.createVNode("div", {
-                class: ns$9.b("card")
-            }, [ slots.default?.() ]) : slots.default?.() ]);
-        }
-    }));
     function getDefaultExportFromCjs(x) {
         return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x.default : x;
     }
@@ -2983,6 +2390,600 @@
         target: target,
         source: source
     });
+    var MenuItemTitle = vue.defineComponent({
+        props: {
+            meta: {
+                type: Object,
+                default: () => ({})
+            }
+        },
+        setup(props) {
+            const _ns = vue.inject("ns", {}), {t: t} = useLocale(), meta = props.meta;
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("span", {
+                class: _ns.be("item", "icon")
+            }, [ meta.icon ? vue.createVNode("i", {
+                class: meta.icon
+            }, null) : vue.createVNode("svg", {
+                class: "icon",
+                viewBox: "0 0 1024 1024",
+                version: "1.1",
+                xmlns: "http://www.w3.org/2000/svg",
+                "p-id": "19771",
+                width: "32",
+                height: "32"
+            }, [ vue.createVNode("path", {
+                d: "M512 958.8C265.6 958.8 65.2 758.4 65.2 512S265.6 65.2 512 65.2 958.8 265.6 958.8 512 758.4 958.8 512 958.8z m0-832c-212.4 0-385.2 172.8-385.2 385.2S299.6 897.2 512 897.2 897.2 724.4 897.2 512 724.4 126.8 512 126.8z",
+                "p-id": "19772"
+            }, null), vue.createVNode("path", {
+                d: "M512 512m-169.5 0a169.5 169.5 0 1 0 339 0 169.5 169.5 0 1 0-339 0Z",
+                "p-id": "19773"
+            }, null) ]) ]), vue.createVNode("span", {
+                class: _ns.be("item", "title")
+            }, [ t(meta.title) ]) ]);
+        }
+    });
+    const NextMenuItem = vue.defineComponent({
+        name: "NextMenuItem",
+        props: {
+            menuData: {
+                type: Array,
+                required: !0
+            }
+        },
+        setup(props) {
+            const _ns = vue.inject("ns", {}), menuTree = vue.computed((() => props.menuData)).value;
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(vue.Fragment, null, [ menuTree.map((item => item.children?.length ? valueExist(item.meta?.isHide, !1) ? null : vue.createVNode(elementPlus.ElSubMenu, {
+                "popper-class": _ns.b("popper"),
+                index: item.path || item.id,
+                teleported: !0
+            }, {
+                title: () => vue.createVNode(MenuItemTitle, {
+                    meta: item.meta
+                }, null),
+                default: () => vue.createVNode(NextMenuItem, {
+                    menuData: item.children
+                }, null)
+            }) : valueExist(item.meta?.isHide, !1) ? null : vue.createVNode(elementPlus.ElMenuItem, {
+                index: item.path
+            }, {
+                default: () => [ vue.createVNode(MenuItemTitle, {
+                    meta: item.meta
+                }, null) ]
+            }))) ]) ]);
+        }
+    }), ns$g = useNamespace("menu");
+    const NextMenu = withInstall(vue.defineComponent({
+        name: "NextMenu",
+        props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
+            router: {
+                type: Boolean,
+                default: !0
+            },
+            mode: {
+                type: String,
+                values: [ "horizontal", "vertical" ],
+                default: "horizontal"
+            },
+            menuTree: {
+                type: Array,
+                default: () => []
+            }
+        },
+        setup(props) {
+            vue.provide("ns", ns$g);
+            const router = vue.getCurrentInstance().appContext.config.globalProperties.$router, currentPath = router.currentRoute?.value.fullPath, activePath = vue.ref(currentPath);
+            vue.watch((() => router.currentRoute?.value), (to => {
+                activePath.value = to.fullPath;
+            }));
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode(elementPlus.ElMenu, {
+                class: [ ns$g.b(), props.className ],
+                style: props.style,
+                defaultActive: activePath.value,
+                router: props.router,
+                mode: props.mode,
+                ellipsis: !0
+            }, {
+                default: () => [ vue.createVNode(vue.Fragment, null, [ props.menuTree.map((item => item.children?.length ? valueExist(item.meta?.isHide, !1) ? null : vue.createVNode(elementPlus.ElSubMenu, {
+                    "popper-class": ns$g.b("popper"),
+                    index: item.path || item.id,
+                    teleported: !0
+                }, {
+                    title: () => vue.createVNode(MenuItemTitle, {
+                        meta: item.meta
+                    }, null),
+                    default: () => vue.createVNode(NextMenuItem, {
+                        menuData: item.children
+                    }, null)
+                }) : valueExist(item.meta?.isHide, !1) ? null : vue.createVNode(elementPlus.ElMenuItem, {
+                    "popper-class": ns$g.b("popper"),
+                    index: item.path
+                }, {
+                    default: () => [ vue.createVNode(MenuItemTitle, {
+                        meta: item.meta
+                    }, null) ]
+                }))) ]) ]
+            }) ]);
+        }
+    }));
+    var Sidebar$2 = vue.defineComponent({
+        setup: () => ({
+            ns: vue.inject("ns", {})
+        }),
+        render() {
+            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
+            return vue.createVNode("aside", {
+                class: _ns.b("sidebar")
+            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
+                default: () => [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
+                    mode: "vertical",
+                    menuTree: _config.menuTree
+                }, null) ]
+            }) ]);
+        }
+    });
+    const ns$f = useNamespace("layout-defaults");
+    var defaults = vue.defineComponent({
+        props: {},
+        setup: () => (vue.provide("ns", ns$f), {}),
+        render() {
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
+            slots.menu;
+            const isTabs = vue.ref(!!slots.tabs);
+            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
+                class: ns$f.b()
+            }, {
+                default: () => [ vue.createVNode(Sidebar$2, null, null), vue.createVNode("div", {
+                    class: [ ns$f.b("content") ]
+                }, [ vue.createVNode(Header$3, null, null), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
+                    tabs: _config.tabs,
+                    activeTab: _config.activeTab,
+                    onChange: (...arg) => _emit("tabsChange", ...arg),
+                    onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                    onClose: (...arg) => _emit("tabsClose", ...arg)
+                }, null) : null, vue.createVNode("main", {
+                    class: [ ns$f.bf("main"), ns$f.is("layout-tabs", isTabs.value) ]
+                }, [ slots.default?.() ]) ]) ]
+            });
+        }
+    });
+    const {getLightColor: getLightColor$2} = useChangeColor();
+    var Header$2 = vue.defineComponent({
+        setup(props, {slots: slots}) {
+            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$2(color, .5)})`
+                } : "";
+            }));
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
+                class: _ns.b("header"),
+                style: headerStyle.value
+            }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
+                class: _ns.bf("header", "menu")
+            }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
+                menuTree: _config.menuTree,
+                router: _config.menuRouter,
+                mode: _config.menuMode
+            }, null) ]), vue.createVNode("div", {
+                class: _ns.bf("header", "right")
+            }, [ vue.createVNode(HeaderTools, null, {
+                default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
+            }) ]) ]) ]);
+        }
+    });
+    const ns$e = useNamespace("layout-transverse");
+    var transverse = vue.defineComponent({
+        props: {},
+        setup: () => (vue.provide("ns", ns$e), {}),
+        render() {
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
+            slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
+            slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
+            slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
+            const isTabs = vue.ref(!!slots.tabs);
+            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header$2, null, (s = __slots_header, 
+            "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? __slots_header : {
+                default: () => [ __slots_header ]
+            })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
+                tabs: _config.tabs,
+                activeTab: _config.activeTab,
+                onChange: (...arg) => _emit("tabsChange", ...arg),
+                onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                onClose: (...arg) => _emit("tabsClose", ...arg)
+            }, null) : null, vue.createVNode("main", {
+                class: [ ns$e.b("main"), ns$e.is("layout-tabs", isTabs.value) ]
+            }, [ slots.default?.() ]) ]);
+            var s;
+        }
+    });
+    const {getLightColor: getLightColor$1} = useChangeColor();
+    var Header$1 = vue.defineComponent({
+        setup(props, {slots: slots}) {
+            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor$1(color, .5)})`
+                } : "";
+            }));
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
+                class: _ns.b("header"),
+                style: headerStyle.value
+            }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
+                class: _ns.bf("header", "menu")
+            }, null), vue.createVNode("div", {
+                class: _ns.bf("header", "right")
+            }, [ vue.createVNode(HeaderTools, null, {
+                default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
+            }) ]) ]) ]);
+        }
+    }), Sidebar$1 = vue.defineComponent({
+        setup: () => ({
+            ns: vue.inject("ns", {})
+        }),
+        render() {
+            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
+            return vue.createVNode("aside", {
+                class: _ns.b("sidebar")
+            }, [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
+                mode: "vertical",
+                menuTree: _config.menuTree
+            }, null) ]);
+        }
+    });
+    const ns$d = useNamespace("layout-columns");
+    var columns = vue.defineComponent({
+        props: {},
+        setup: () => (vue.provide("ns", ns$d), {}),
+        render() {
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {}), __slots_header = {};
+            slots[slots_config_headerMenu] && (__slots_header[slots_config_headerMenu] = () => slots[slots_config_headerMenu]()), 
+            slots[slots_config_headerToolsPrefix] && (__slots_header[slots_config_headerToolsPrefix] = () => slots[slots_config_headerToolsPrefix]()), 
+            slots[slots_config_headerToolsSuffix] && (__slots_header[slots_config_headerToolsSuffix] = () => slots[slots_config_headerToolsSuffix]());
+            const isTabs = vue.ref(!!slots.tabs);
+            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(elementPlus.ElContainer, {
+                class: ns$d.b()
+            }, {
+                default: () => {
+                    return [ vue.createVNode(Sidebar$1, null, null), vue.createVNode("div", {
+                        class: [ ns$d.b("content") ]
+                    }, [ vue.createVNode(Header$1, null, (s = __slots_header, "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? __slots_header : {
+                        default: () => [ __slots_header ]
+                    })), _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
+                        tabs: _config.tabs,
+                        activeTab: _config.activeTab,
+                        onChange: (...arg) => _emit("tabsChange", ...arg),
+                        onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                        onClose: (...arg) => _emit("tabsClose", ...arg)
+                    }, null) : null, vue.createVNode("main", {
+                        class: [ ns$d.bf("main"), ns$d.is("layout-tabs", isTabs.value) ]
+                    }, [ slots.default?.() ]) ]) ];
+                    var s;
+                }
+            });
+        }
+    });
+    const {getLightColor: getLightColor} = useChangeColor();
+    var Header = vue.defineComponent({
+        setup(props, {slots: slots}) {
+            const _ns = vue.inject("ns", {}), _config = vue.inject("options", {}), headerStyle = vue.computed((() => {
+                const {isHeaderBarColorGradual: isHeaderBarColorGradual, headerBarColor: color} = _config.setting;
+                return isHeaderBarColorGradual ? {
+                    background: `linear-gradient(to bottom , ${color}, ${getLightColor(color, .5)})`
+                } : "";
+            }));
+            return () => vue.createVNode(vue.Fragment, null, [ vue.createVNode("header", {
+                class: _ns.b("header"),
+                style: headerStyle.value
+            }, [ vue.createVNode(LogoView, null, null), vue.createVNode("div", {
+                class: _ns.bf("header", "menu")
+            }, [ slots[slots_config_headerMenu]?.() ]), vue.createVNode("div", {
+                class: _ns.bf("header", "right")
+            }, [ vue.createVNode(HeaderTools, null, {
+                default: () => [ slots[slots_config_headerToolsPrefix]?.(), slots[slots_config_headerToolsSuffix]?.() ]
+            }) ]) ]) ]);
+        }
+    }), Sidebar = vue.defineComponent({
+        setup: () => ({
+            ns: vue.inject("ns", {})
+        }),
+        render() {
+            const slots = this.$slots, _ns = this.ns, _config = vue.inject("options", {});
+            return vue.createVNode("aside", {
+                class: _ns.b("sidebar")
+            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
+                default: () => [ slots[slots_config_headerMenu] ? slots[slots_config_headerMenu]() : vue.createVNode(NextMenu, {
+                    mode: "vertical",
+                    menuTree: _config.menuTree
+                }, null) ]
+            }) ]);
+        }
+    });
+    const ns$c = useNamespace("layout-classic");
+    var classic = vue.defineComponent({
+        props: {},
+        setup: () => (vue.provide("ns", ns$c), {
+            ns: ns$c
+        }),
+        render() {
+            const slots = this.$slots, _config = vue.inject("options", {}), _emit = vue.inject("__emit__", {});
+            slots.menu;
+            const isTabs = vue.ref(!!slots.tabs);
+            return void 0 === slots.tabs && _config.showTabs && (isTabs.value = !0), vue.createVNode(vue.Fragment, null, [ vue.createVNode(Header, null, null), vue.createVNode("div", {
+                class: [ ns$c.b("content"), ns$c.is("layout-tabs", isTabs.value) ]
+            }, [ vue.createVNode(Sidebar, null, null), vue.createVNode("div", {
+                class: ns$c.b("container")
+            }, [ _config.showTabs ? slots.tabs ? slots.tabs?.() : vue.createVNode(NextTabs, {
+                tabs: _config.tabs,
+                activeTab: _config.activeTab,
+                onChange: (...arg) => _emit("tabsChange", ...arg),
+                onSelect: (...arg) => _emit("tabsSelect", ...arg),
+                onClose: (...arg) => _emit("tabsClose", ...arg)
+            }, null) : null, vue.createVNode("main", {
+                class: [ ns$c.b("main") ]
+            }, [ slots.default?.() ]) ]) ]) ]);
+        }
+    });
+    const ns$b = useNamespace("layout"), layouts = {
+        defaults: vue.markRaw(defaults),
+        transverse: vue.markRaw(transverse),
+        columns: vue.markRaw(columns),
+        classic: vue.markRaw(classic)
+    }, customizerCoverArray = (objValue, srcValue) => {
+        if (Array.isArray(objValue)) return srcValue;
+    };
+    const NextLayout = withInstall(vue.defineComponent({
+        name: "NextLayout",
+        props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
+            options: {
+                type: Object,
+                default: () => ({})
+            }
+        },
+        emits: [ "changeLanguage", "changeUserDropdown", "changeOptions", "tabsChange", "tabsSelect", "tabsClose" ],
+        setup(props, {slots: slots, emit: emit}) {
+            const _config = vue.ref(mergeWith$1(defaultConfig$2, props.options, customizerCoverArray));
+            vue.provide("options", _config.value), vue.provide("__ns__", ns$b), vue.provide("__emit__", emit), 
+            vue.provide("__slots__", slots);
+            const updateOptions = cfg => {
+                _config.value = mergeWith$1(_config.value, cfg, customizerCoverArray), updateThemeColorCssVar(_config.value?.setting), 
+                emit("changeOptions", _config.value);
+            };
+            return vue.provide("updateOptions", updateOptions), vue.watch((() => props.options), (cfg => {
+                updateOptions(cfg);
+            }), {
+                deep: !0,
+                immediate: !0
+            }), {
+                options: _config.value,
+                updateOptions: updateOptions
+            };
+        },
+        render() {
+            const props = this.$props, slots = this.$slots, layout = this.options.setting?.layout || "transverse", activeLayout = vue.ref(layouts[layout]);
+            vue.watchEffect((() => {
+                activeLayout.value = layouts[layout], activeLayout.value || (activeLayout.value = layouts.transverse);
+            }));
+            const _activeSlots = {};
+            for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
+            return vue.createVNode("div", {
+                class: [ ns$b.b(), props.className ],
+                style: props.style
+            }, [ vue.h(activeLayout.value, {}, {
+                ..._activeSlots
+            }) ]);
+        }
+    })), ns$a = useNamespace("tabs");
+    var Element$6 = vue.defineComponent({
+        name: "NextTabs",
+        props: {
+            activeTab: {
+                type: [ String, Number ],
+                default: "/"
+            },
+            tabs: {
+                type: Array,
+                default: () => []
+            }
+        },
+        emits: [ "change", "select", "close" ],
+        setup(props, {emit: emit}) {
+            const {t: t} = useLocale(), router = vue.getCurrentInstance().appContext.config.globalProperties.$router, _activeTab = vue.computed((() => router.currentRoute.value.fullPath)), _tabs = vue.computed((() => props.tabs)), defaultIndex = _tabs.value?.findIndex((v => v.path === _activeTab.value));
+            if (defaultIndex < 0) {
+                const tab = _tabs.value[0];
+                tab && tab.path && router.replace({
+                    path: tab.path
+                });
+            }
+            const activeIndex = vue.ref(defaultIndex), tabsView = vue.ref(_tabs.value), onChange = command => {
+                const active = _activeTab.value, len = tabsView.value.length, i = tabsView.value.findIndex((v => v.path === active));
+                switch (command) {
+                  case "other":
+                    i > -1 && (activeIndex.value = 1, tabsView.value = [ tabsView.value[0], tabsView.value[i] ]);
+                    break;
+
+                  case "left":
+                    if (i > -1) {
+                        const rightTags = tabsView.value.slice(i);
+                        rightTags.unshift(tabsView.value[0]), tabsView.value = rightTags, activeIndex.value = 1;
+                    }
+                    break;
+
+                  case "right":
+                    if (i > -1 && i < len - 1) {
+                        const leftTags = tabsView.value.slice(0, i + 1);
+                        tabsView.value = leftTags;
+                    }
+                    break;
+
+                  case "all":
+                    const homeTag = tabsView.value[0];
+                    activeIndex.value = 0, tabsView.value = [ homeTag ], onClickTabItem(null, homeTag, activeIndex.value);
+                }
+                emit("change", activeIndex.value, tabsView.value, command);
+            }, onClickTabItem = (event, tab, index) => {
+                event?.stopPropagation(), activeIndex.value = index;
+                let to = {
+                    path: tab.path,
+                    query: tab.query,
+                    params: tab.params
+                };
+                router.push(to), emit("select", tab, index);
+            };
+            vue.watch((() => router.currentRoute?.value), (to => {
+                const {tagTitle: tagTitle} = to.query, activeRoute = {
+                    name: to.name,
+                    title: tagTitle || to.meta?.title,
+                    path: to.path,
+                    meta: to.meta,
+                    params: to.params,
+                    query: to.query
+                }, i = tabsView.value.findIndex((v => v.path === to.path));
+                i > -1 ? (activeIndex.value = i, tabsView.value[i] = activeRoute) : (activeIndex.value = tabsView.value.length, 
+                tabsView.value.push(activeRoute)), emit("change", activeIndex.value, tabsView.value, "add");
+            }));
+            const renderContent = () => vue.createVNode("nav", {
+                class: ns$a.b()
+            }, [ vue.createVNode(elementPlus.ElScrollbar, null, {
+                default: () => [ vue.createVNode("ul", {
+                    class: ns$a.b("list")
+                }, [ tabsView.value.map(((tab, index) => tab ? vue.createVNode("li", {
+                    class: [ "tab-item", ns$a.is("active", activeIndex.value === index) ],
+                    onClick: event => onClickTabItem(event, tab, index)
+                }, [ vue.createVNode("i", {
+                    class: [ "tab-icon", tab.meta?.icon ]
+                }, null), vue.createVNode("span", null, [ t(tab.title) ]), tab.meta?.isAffix || "/" === tab.path ? null : vue.createVNode("span", {
+                    onClick: event => ((event, tab, index) => {
+                        event.stopPropagation();
+                        const active = _activeTab.value;
+                        if (active === tab.path) {
+                            const prevTag = tabsView.value[index - 1];
+                            router.push({
+                                path: prevTag.path,
+                                query: prevTag.query || {},
+                                params: prevTag.params || {}
+                            }), emit("close", prevTag, tabsView.value);
+                        }
+                        tabsView.value.splice(index, 1);
+                        const i = tabsView.value.findIndex((v => v.path === active)) || 0;
+                        activeIndex.value = i > -1 ? i : 0, emit("change", activeIndex.value, tabsView.value, "close");
+                    })(event, tab, index)
+                }, [ vue.createVNode(elementPlus.ElIcon, {
+                    class: "tab-close"
+                }, {
+                    default: () => [ vue.createVNode(close_default, null, null) ]
+                }) ]) ]) : null)) ]) ]
+            }), vue.createVNode(elementPlus.ElDropdown, {
+                "show-timeout": 80,
+                "hide-timeout": 80,
+                onCommand: onChange
+            }, {
+                default: () => vue.createVNode("span", {
+                    class: ns$a.b("tab-more")
+                }, [ vue.createVNode("i", {
+                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "top") ]
+                }, null), vue.createVNode("i", {
+                    class: [ ns$a.be("tab-more", "box"), ns$a.be("tab-more", "bottom") ]
+                }, null) ]),
+                dropdown: () => vue.createVNode(elementPlus.ElDropdownMenu, null, {
+                    default: () => [ vue.createVNode(elementPlus.ElDropdownItem, {
+                        command: "other"
+                    }, {
+                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
+                            default: () => [ vue.createVNode(close_default, null, null) ]
+                        }), vue.createVNode("span", null, [ t("next.layout.tabsOther") ]) ]
+                    }), vue.createVNode(elementPlus.ElDropdownItem, {
+                        command: "left"
+                    }, {
+                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
+                            default: () => [ vue.createVNode(back_default, null, null) ]
+                        }), vue.createVNode("span", null, [ t("next.layout.tabsLeft") ]) ]
+                    }), vue.createVNode(elementPlus.ElDropdownItem, {
+                        command: "right"
+                    }, {
+                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
+                            default: () => [ vue.createVNode(right_default, null, null) ]
+                        }), vue.createVNode("span", null, [ t("next.layout.tabsRight") ]) ]
+                    }), vue.createVNode(elementPlus.ElDropdownItem, {
+                        command: "all"
+                    }, {
+                        default: () => [ vue.createVNode(elementPlus.ElIcon, null, {
+                            default: () => [ vue.createVNode(close_default, null, null) ]
+                        }), vue.createVNode("span", null, [ t("next.layout.tabsAll") ]) ]
+                    }) ]
+                })
+            }) ]);
+            return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
+        }
+    });
+    const NextTabs = withInstall(Element$6), ns$9 = useNamespace("container");
+    const NextContainer = withInstall(vue.defineComponent({
+        name: "NextContainer",
+        props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
+            scrollbar: {
+                type: Boolean,
+                default: !1
+            },
+            padding: {
+                type: [ Boolean, String, Number ],
+                default: !0
+            },
+            card: {
+                type: Boolean,
+                default: !1
+            }
+        },
+        setup(props, {slots: slots}) {
+            const styles = vue.computed((() => {
+                let style = {};
+                const padding = props.padding;
+                return "boolean" == typeof padding ? style = padding ? {
+                    padding: "15px"
+                } : {} : "string" == typeof padding ? style = {
+                    padding: padding
+                } : "number" == typeof padding && (style = {
+                    padding: padding + "px"
+                }), style;
+            }));
+            return () => props.scrollbar ? vue.createVNode(elementPlus.ElScrollbar, {
+                class: [ ns$9.b(), props.className ],
+                style: props.style
+            }, {
+                default: () => [ slots.default?.() ]
+            }) : vue.createVNode("div", {
+                class: [ ns$9.b(), props.className ],
+                style: {
+                    ...styles.value,
+                    ...props.style
+                }
+            }, [ props.card ? vue.createVNode("div", {
+                class: ns$9.b("card")
+            }, [ slots.default?.() ]) : slots.default?.() ]);
+        }
+    }));
     var defaultPropsConfig = {
         className: {
             type: String,

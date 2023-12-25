@@ -6,6 +6,7 @@ import NextMenuItem from './widgets/menu-item';
 import MenuItemTitle from './widgets/menu-item-title';
 import type { MenuItemInterface } from './interface';
 import type { Router } from 'vue-router';
+import { valueExist } from 'packages/hooks/global-hook';
 
 const ns = useNamespace('menu');
 export default defineComponent({
@@ -54,20 +55,20 @@ export default defineComponent({
 					<>
 						{props.menuTree.map(item => {
 							if (!item.children?.length) {
-								return (
+								return !valueExist(item.meta?.isHide, false) ? (
 									<ElMenuItem popper-class={ns.b('popper')} index={item.path}>
 										<MenuItemTitle meta={item.meta}></MenuItemTitle>
 									</ElMenuItem>
-								);
+								) : null;
 							} else {
-								return (
+								return !valueExist(item.meta?.isHide, false) ? (
 									<ElSubMenu popper-class={ns.b('popper')} index={item.path || item.id} teleported>
 										{{
 											title: () => <MenuItemTitle meta={item.meta}></MenuItemTitle>,
 											default: () => <NextMenuItem menuData={item.children}></NextMenuItem>,
 										}}
 									</ElSubMenu>
-								);
+								) : null;
 							}
 						})}
 					</>
