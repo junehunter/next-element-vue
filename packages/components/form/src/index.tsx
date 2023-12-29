@@ -449,10 +449,15 @@ export default defineComponent({
 				return <NextTreeSelect v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeSelect>;
 			}
 		};
+		const getFormInstance = () => {
+			const formInstance = ruleFormRef.value;
+			return formInstance;
+		};
 		expose({
 			formParams: toRaw(formParams),
 			ruleFormRef,
 			formColumns,
+			getFormInstance,
 		});
 		const renderContent = () => {
 			return (
@@ -490,14 +495,14 @@ export default defineComponent({
 							);
 						})}
 					</ElRow>
-					{_isEditing.value && (
+					{_isEditing.value && options.showFooter ? (
 						<div class={ns.e('footer')}>
 							<ElButton type="primary" loading={submitLoading.value} onClick={onSubmitAddEdit}>
 								{t('next.form.submit')}
 							</ElButton>
 							{options.showResetBtn ? <ElButton onClick={onResetForm}>{t('next.form.reset')}</ElButton> : null}
 						</div>
-					)}
+					) : null}
 				</ElForm>
 			);
 		};

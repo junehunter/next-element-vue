@@ -4154,7 +4154,8 @@ var defaultConfig = {
     formDatum: {},
     tableSelectConfig: tableSelectConfig,
     isEditing: !0,
-    showResetBtn: !0
+    showResetBtn: !0,
+    showFooter: !0
 };
 
 const ns$6 = useNamespace("form");
@@ -4281,9 +4282,12 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
         }));
         const sinleSelection = ref(""), _disabledSelect = computed((() => "radio" === _options.selectType ? !sinleSelection.value : 0 === multipleSelection.value.length)), isSelected = row => multipleSelection.value.includes(row), onResetTableSelect = () => {
             multipleSelection.value = [], sinleSelection.value = "";
+        }, {value: propsValue, label: propsLabel} = _column.tableSelectProps || {
+            value: "id",
+            label: "name"
         }, onConfirmSelect = () => {
-            const rows = toRaw(multipleSelection.value);
-            onCloseTableDialog(), emit("select", rows);
+            const rows = toRaw(multipleSelection.value), _rows = arrayObjNoRepeat(rows, propsValue);
+            onCloseTableDialog(), emit("select", _rows);
         }, onClickAddEdit = (row, tableFormParams) => {
             _column.addEditData?.(row, tableFormParams);
         }, renderSelectTypeContent = (row, index) => {
@@ -4302,10 +4306,10 @@ const ns$5 = useNamespace("form"), InputTableSelect = defineComponent({
                     sinleSelection.value = value, multipleSelection.value = [ row ];
                 }
             }, null);
-        }, {value: value, label: label} = _column.tableSelectProps || {}, tags = ref([]), tagsMore = ref([]), _updateTags = () => {
-            const rows = arrayObjNoRepeat(multipleSelection.value, value).map((row => ({
-                value: row[value || "value"],
-                label: row[label || "label"]
+        }, tags = ref([]), tagsMore = ref([]), _updateTags = () => {
+            const rows = arrayObjNoRepeat(multipleSelection.value, propsValue).map((row => ({
+                value: row[propsValue || "value"],
+                label: row[propsLabel || "label"]
             })));
             rows.length > 1 ? (tags.value = rows.splice(0, 1), tagsMore.value = rows) : (tags.value = rows, 
             tagsMore.value = []);
@@ -4937,7 +4941,8 @@ var Element$4 = defineComponent({
         expose({
             formParams: toRaw(formParams),
             ruleFormRef: ruleFormRef,
-            formColumns: formColumns
+            formColumns: formColumns,
+            getFormInstance: () => ruleFormRef.value
         });
         const renderContent = () => {
             let _slot, _slot2, _slot3;
@@ -4982,7 +4987,7 @@ var Element$4 = defineComponent({
                     }) ]
                 })))) ? _slot : {
                     default: () => [ _slot ]
-                }), _isEditing.value && createVNode("div", {
+                }), _isEditing.value && options.showFooter ? createVNode("div", {
                     class: ns$3.e("footer")
                 }, [ createVNode(ElButton, {
                     type: "primary",
@@ -4994,7 +4999,7 @@ var Element$4 = defineComponent({
                     onClick: onResetForm
                 }, _isSlot$2(_slot3 = t("next.form.reset")) ? _slot3 : {
                     default: () => [ _slot3 ]
-                }) : null ]) ]
+                }) : null ]) : null ]
             });
         };
         return () => createVNode(Fragment, null, [ renderContent() ]);
@@ -5798,7 +5803,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.1.18", install = function(app) {
+}, version = "0.1.19", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5808,7 +5813,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.1.18",
+    version: "0.1.19",
     install: install
 };
 

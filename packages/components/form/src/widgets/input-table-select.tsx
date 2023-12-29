@@ -106,10 +106,12 @@ const InputTableSelect = defineComponent({
 			multipleSelection.value = [];
 			sinleSelection.value = '';
 		};
+		const { value: propsValue, label: propsLabel } = _column.tableSelectProps || { value: 'id', label: 'name' };
 		const onConfirmSelect = () => {
 			const rows = toRaw(multipleSelection.value);
+			const _rows = arrayObjNoRepeat(rows, propsValue);
 			onCloseTableDialog();
-			emit('select', rows);
+			emit('select', _rows);
 		};
 		const onClickAddEdit = (row, tableFormParams) => {
 			_column.addEditData?.(row, tableFormParams);
@@ -130,15 +132,14 @@ const InputTableSelect = defineComponent({
 				></ElRadio>
 			);
 		};
-		const { value, label } = _column.tableSelectProps || {};
 		const tags = ref<DicData[]>([]);
 		const tagsMore = ref<DicData[]>([]);
 		const _updateTags = () => {
-			const _rows = arrayObjNoRepeat(multipleSelection.value, value);
+			const _rows = arrayObjNoRepeat(multipleSelection.value, propsValue);
 			const rows = _rows.map(row => {
 				return {
-					value: row[value || 'value'],
-					label: row[label || 'label'],
+					value: row[propsValue || 'value'],
+					label: row[propsLabel || 'label'],
 				};
 			});
 			if (rows.length > 1) {

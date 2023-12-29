@@ -3934,7 +3934,8 @@
         formDatum: {},
         tableSelectConfig: tableSelectConfig,
         isEditing: !0,
-        showResetBtn: !0
+        showResetBtn: !0,
+        showFooter: !0
     };
     const ns$6 = useNamespace("form");
     var NumberRangePicker = vue.defineComponent({
@@ -4056,9 +4057,12 @@
             }));
             const sinleSelection = vue.ref(""), _disabledSelect = vue.computed((() => "radio" === _options.selectType ? !sinleSelection.value : 0 === multipleSelection.value.length)), isSelected = row => multipleSelection.value.includes(row), onResetTableSelect = () => {
                 multipleSelection.value = [], sinleSelection.value = "";
+            }, {value: propsValue, label: propsLabel} = _column.tableSelectProps || {
+                value: "id",
+                label: "name"
             }, onConfirmSelect = () => {
-                const rows = vue.toRaw(multipleSelection.value);
-                onCloseTableDialog(), emit("select", rows);
+                const rows = vue.toRaw(multipleSelection.value), _rows = arrayObjNoRepeat(rows, propsValue);
+                onCloseTableDialog(), emit("select", _rows);
             }, onClickAddEdit = (row, tableFormParams) => {
                 _column.addEditData?.(row, tableFormParams);
             }, renderSelectTypeContent = (row, index) => {
@@ -4077,10 +4081,10 @@
                         sinleSelection.value = value, multipleSelection.value = [ row ];
                     }
                 }, null);
-            }, {value: value, label: label} = _column.tableSelectProps || {}, tags = vue.ref([]), tagsMore = vue.ref([]), _updateTags = () => {
-                const rows = arrayObjNoRepeat(multipleSelection.value, value).map((row => ({
-                    value: row[value || "value"],
-                    label: row[label || "label"]
+            }, tags = vue.ref([]), tagsMore = vue.ref([]), _updateTags = () => {
+                const rows = arrayObjNoRepeat(multipleSelection.value, propsValue).map((row => ({
+                    value: row[propsValue || "value"],
+                    label: row[propsLabel || "label"]
                 })));
                 rows.length > 1 ? (tags.value = rows.splice(0, 1), tagsMore.value = rows) : (tags.value = rows, 
                 tagsMore.value = []);
@@ -4708,7 +4712,8 @@
             expose({
                 formParams: vue.toRaw(formParams),
                 ruleFormRef: ruleFormRef,
-                formColumns: formColumns
+                formColumns: formColumns,
+                getFormInstance: () => ruleFormRef.value
             });
             const renderContent = () => {
                 let _slot, _slot2, _slot3;
@@ -4753,7 +4758,7 @@
                         }) ]
                     })))) ? _slot : {
                         default: () => [ _slot ]
-                    }), _isEditing.value && vue.createVNode("div", {
+                    }), _isEditing.value && options.showFooter ? vue.createVNode("div", {
                         class: ns$3.e("footer")
                     }, [ vue.createVNode(elementPlus.ElButton, {
                         type: "primary",
@@ -4765,7 +4770,7 @@
                         onClick: onResetForm
                     }, _isSlot$2(_slot3 = t("next.form.reset")) ? _slot3 : {
                         default: () => [ _slot3 ]
-                    }) : null ]) ]
+                    }) : null ]) : null ]
                 });
             };
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
@@ -5566,7 +5571,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.18",
+        version: "0.1.19",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5611,7 +5616,7 @@
     }), exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.18", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.19", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });
