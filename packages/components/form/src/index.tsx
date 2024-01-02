@@ -82,18 +82,19 @@ export default defineComponent({
 					formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : '';
 				}
 				// 设置表单验证rules
+				const rules = [];
 				const { label } = col;
-				if (col.rules) {
-					formRules[col.prop] = col.rules;
-				} else if (col.required) {
-					const rule = [];
-					rule.push({
+				if (col.required) {
+					rules.push({
 						required: true,
 						message: label + t('next.form.requiredInput'),
 						trigger: ['blur', 'change'],
 					});
-					formRules[col.prop] = rule;
 				}
+				if (col.rules?.length) {
+					rules.push(...col.rules);
+				}
+				formRules[col.prop] = rules;
 				if (!col.dicData?.length && col.loadDicData) {
 					col.loadDicData(col, data => {
 						if (data?.length) col.dicData = data;
@@ -164,7 +165,7 @@ export default defineComponent({
 		};
 		const _onInputInteger = (event: any, key: string) => {
 			const value = event.replace(/\D/g, '');
-			formParams[key] = Number(value);
+			formParams[key] = value ? Number(value) : '';
 		};
 		const _onInputNumber = (val: any, key: string) => {
 			let value = val;

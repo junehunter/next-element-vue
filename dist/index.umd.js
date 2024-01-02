@@ -4400,15 +4400,12 @@
                     for (let i = 0; i < columns.length; i++) {
                         const col = columns[i], value = formDatum[col.prop];
                         isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
-                        const {label: label} = col;
-                        if (col.rules) formRules[col.prop] = col.rules; else if (col.required) {
-                            const rule = [];
-                            rule.push({
-                                required: !0,
-                                message: label + t("next.form.requiredInput"),
-                                trigger: [ "blur", "change" ]
-                            }), formRules[col.prop] = rule;
-                        }
+                        const rules = [], {label: label} = col;
+                        col.required && rules.push({
+                            required: !0,
+                            message: label + t("next.form.requiredInput"),
+                            trigger: [ "blur", "change" ]
+                        }), col.rules?.length && rules.push(...col.rules), formRules[col.prop] = rules, 
                         !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
                             data?.length && (col.dicData = data);
                         })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
@@ -4510,7 +4507,7 @@
                         placeholder: placeholder,
                         onInput: event => ((event, key) => {
                             const value = event.replace(/\D/g, "");
-                            formParams[key] = Number(value);
+                            formParams[key] = value ? Number(value) : "";
                         })(event, col.prop),
                         onChange: event => col.onChange?.(event, col, formParams, formColumns)
                     }, {
@@ -4871,6 +4868,8 @@
                             disabled: valueExist(col.formDisabled, col.disabled, !1),
                             clearable: valueExist(col.formClearable, col.clearable, !1),
                             readonly: valueExist(col.formReadonly, col.readonly, !1),
+                            tip: valueExist(col.formTip, col.tip, null),
+                            rules: valueExist(col.formRules, col.rules, null),
                             span: valueExist(col.formSpan, col.span, null),
                             multiple: valueExist(col.formMultiple, col.multiple, !1),
                             dicData: valueExist(col.formDicData, col.dicData, []),
