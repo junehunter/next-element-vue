@@ -4710,7 +4710,8 @@
                 formParams: vue.toRaw(formParams),
                 ruleFormRef: ruleFormRef,
                 formColumns: formColumns,
-                getFormInstance: () => ruleFormRef.value
+                getFormInstance: () => ruleFormRef.value,
+                getFormParams: () => vue.toRaw(formParams)
             });
             const renderContent = () => {
                 let _slot, _slot2, _slot3;

@@ -4939,7 +4939,8 @@ var Element$4 = defineComponent({
             formParams: toRaw(formParams),
             ruleFormRef: ruleFormRef,
             formColumns: formColumns,
-            getFormInstance: () => ruleFormRef.value
+            getFormInstance: () => ruleFormRef.value,
+            getFormParams: () => toRaw(formParams)
         });
         const renderContent = () => {
             let _slot, _slot2, _slot3;

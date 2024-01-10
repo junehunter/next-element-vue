@@ -459,6 +459,9 @@ export default defineComponent({
 			ruleFormRef,
 			formColumns,
 			getFormInstance,
+			getFormParams: () => {
+				return toRaw(formParams);
+			},
 		});
 		const renderContent = () => {
 			return (
