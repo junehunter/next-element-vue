@@ -1,5 +1,13 @@
 import './src/index.scss';
 export declare const NextSpinLoading: import("../../utils/install").SFCWithInstall<import("vue").DefineComponent<{
+    className: {
+        type: StringConstructor;
+        default: string;
+    };
+    style: {
+        type: import("vue").PropType<import("vue").CSSProperties>;
+        default: () => {};
+    };
     loading: {
         type: BooleanConstructor;
         default: boolean;
@@ -11,6 +19,14 @@ export declare const NextSpinLoading: import("../../utils/install").SFCWithInsta
 }, {
     t: import("../..").Translator;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+    className: {
+        type: StringConstructor;
+        default: string;
+    };
+    style: {
+        type: import("vue").PropType<import("vue").CSSProperties>;
+        default: () => {};
+    };
     loading: {
         type: BooleanConstructor;
         default: boolean;
@@ -20,6 +36,8 @@ export declare const NextSpinLoading: import("../../utils/install").SFCWithInsta
         default: string;
     };
 }>>, {
+    className: string;
+    style: import("vue").CSSProperties;
     loading: boolean;
     tip: string;
 }, {}>> & Record<string, any>;

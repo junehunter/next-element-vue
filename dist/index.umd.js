@@ -3101,6 +3101,14 @@
     var SpinLoading = vue.defineComponent({
         name: "NextSpinLoading",
         props: {
+            className: {
+                type: String,
+                default: ""
+            },
+            style: {
+                type: Object,
+                default: () => ({})
+            },
             loading: {
                 type: Boolean,
                 default: !1
@@ -3119,7 +3127,8 @@
         render() {
             const _t = this.t, slots = this.$slots, props = this.$props, loadingText = props.tip || _t("next.loading");
             return vue.createVNode("div", {
-                class: ns$8.b()
+                class: [ ns$8.b(), props.className ],
+                style: props.style
             }, [ props.loading ? vue.createVNode("div", {
                 class: ns$8.b("mask")
             }, [ vue.createVNode("span", {

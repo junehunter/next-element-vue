@@ -3313,6 +3313,14 @@ const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "s
 var SpinLoading = defineComponent({
     name: "NextSpinLoading",
     props: {
+        className: {
+            type: String,
+            default: ""
+        },
+        style: {
+            type: Object,
+            default: () => ({})
+        },
         loading: {
             type: Boolean,
             default: !1
@@ -3331,7 +3339,8 @@ var SpinLoading = defineComponent({
     render() {
         const _t = this.t, slots = this.$slots, props = this.$props, loadingText = props.tip || _t("next.loading");
         return createVNode("div", {
-            class: ns$8.b()
+            class: [ ns$8.b(), props.className ],
+            style: props.style
         }, [ props.loading ? createVNode("div", {
             class: ns$8.b("mask")
         }, [ createVNode("span", {

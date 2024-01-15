@@ -1,10 +1,19 @@
 import { defineComponent } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 import { useLocale, useNamespace } from 'packages/hooks';
 
 const ns = useNamespace('spin-loading');
 export default defineComponent({
 	name: 'NextSpinLoading',
 	props: {
+		className: {
+			type: String,
+			default: '',
+		},
+		style: {
+			type: Object as PropType<CSSProperties>,
+			default: () => ({}),
+		},
 		loading: {
 			type: Boolean,
 			default: false,
@@ -24,7 +33,7 @@ export default defineComponent({
 		const props = this.$props;
 		const loadingText = props.tip || _t('next.loading');
 		return (
-			<div class={ns.b()}>
+			<div class={[ns.b(), props.className]} style={props.style}>
 				{props.loading ? (
 					<div class={ns.b('mask')}>
 						<span class={ns.b('mask-dot')}>
