@@ -1,5 +1,6 @@
 import { defineComponent, isRef, unref, inject } from 'vue';
 import { ElPagination } from 'element-plus';
+import { valueExist } from 'packages/hooks/global-hook';
 export default defineComponent({
 	name: 'FooterPagination',
 	props: {
@@ -29,7 +30,7 @@ export default defineComponent({
 					total={page.total}
 					small={options.size === 'small'}
 					layout="total, sizes, prev, pager, next, jumper"
-					page-sizes={[10, 20, 30, 40, 50, 100]}
+					page-sizes={valueExist(page.pageSizes, [10, 20, 30, 40, 50, 100])}
 					onCurrent-change={handleCurrentChange}
 					onSize-change={handleSizeChange}
 				></ElPagination>

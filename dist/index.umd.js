@@ -3800,7 +3800,7 @@
                 total: page.total,
                 small: "small" === options.size,
                 layout: "total, sizes, prev, pager, next, jumper",
-                "page-sizes": [ 10, 20, 30, 40, 50, 100 ],
+                "page-sizes": valueExist(page.pageSizes, [ 10, 20, 30, 40, 50, 100 ]),
                 "onCurrent-change": handleCurrentChange,
                 "onSize-change": handleSizeChange
             }, null) ]);
