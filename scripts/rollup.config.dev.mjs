@@ -147,6 +147,11 @@ export default {
 		// 	},
 		// }),
 	],
+	watch: {
+		buildDelay: 1000,
+		include: ['packages/**'],
+		skipWrite: false,
+	},
 	cache: true,
 	// 声明外部依赖，不会被打包进组件库
 	external: [

@@ -18,7 +18,10 @@
         "paths": {
             "~/*": [
                 "./.vitepress/vitepress/*"
-            ]
+            ],
+            "packages/*": [
+                "../packages/*"
+            ],
         },
         "types": [
             "vite/client",

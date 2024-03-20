@@ -62,9 +62,9 @@ export declare const NextCrudTableVirtualized: import("../../utils/install").SFC
 }, {
     data: unknown[];
     style: import("vue").CSSProperties;
+    loading: boolean;
     className: string;
     options: Record<string, any>;
-    loading: boolean;
     page: Record<string, any>;
 }, {}>> & Record<string, any>;
 export default NextCrudTableVirtualized;

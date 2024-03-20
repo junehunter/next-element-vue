@@ -70,7 +70,7 @@ const output = [
 		plugins: [
 			terser({
 				format: {
-					comments: false, // 去除注释
+					comments: true, // true 保留注释 false 去掉注释
 					beautify: true, // 保存代码整洁
 				},
 				mangle: false, // 不混淆变量名c

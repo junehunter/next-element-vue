@@ -5,6 +5,11 @@ lang: zh-cn
 
 # Form
 
+:::demo
+
+form/basic
+
+:::
 
 ## options 配置
 | 属性名    | 说明     | 类型     | 可选值      | 默认值    |
