@@ -85,4 +85,6 @@ export default {
 	showResetBtn: true, // 是否显示重置按钮
 
 	showFooter: true,
+	submitText: null,
+	resetText: null,
 };

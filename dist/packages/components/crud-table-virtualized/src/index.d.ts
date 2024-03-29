@@ -61,9 +61,9 @@ declare const _default: import("vue").DefineComponent<{
 }, {
     data: unknown[];
     style: import("vue").CSSProperties;
-    loading: boolean;
     className: string;
     options: Record<string, any>;
+    loading: boolean;
     page: Record<string, any>;
 }, {}>;
 export default _default;

@@ -260,6 +260,27 @@ export default defineComponent({
 						}}
 					</ElInput>
 				);
+			} else if (col.type === 'password') {
+				const placeholder = col.placeholder || t('next.form.input') + col.label;
+				return (
+					<ElInput
+						v-model={formParams[col.prop]}
+						type="password"
+						clearable
+						show-password
+						readonly={valueExist(col.readonly, false)}
+						disabled={col.disabled}
+						placeholder={placeholder}
+						onChange={event => col.onChange?.(event, col, formParams, formColumns)}
+					>
+						{{
+							prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+							suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+							prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+							append: col.append ? () => col.append(formParams, col) : null,
+						}}
+					</ElInput>
+				);
 			} else if (col.type === 'inputInteger') {
 				const placeholder = col.placeholder || t('next.form.input') + col.label;
 				return (
@@ -502,9 +523,9 @@ export default defineComponent({
 					{_isEditing.value && options.showFooter ? (
 						<div class={ns.e('footer')}>
 							<ElButton type="primary" loading={submitLoading.value} onClick={onSubmitAddEdit}>
-								{t('next.form.submit')}
+								{t(options.submitText) || t('next.form.submit')}
 							</ElButton>
-							{options.showResetBtn ? <ElButton onClick={onResetForm}>{t('next.form.reset')}</ElButton> : null}
+							{options.showResetBtn ? <ElButton onClick={onResetForm}>{t(options.resetText) || t('next.form.reset')}</ElButton> : null}
 						</div>
 					) : null}
 				</ElForm>

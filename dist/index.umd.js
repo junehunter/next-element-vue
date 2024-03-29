@@ -4505,6 +4505,25 @@
                         append: col.append ? () => col.append(formParams, col) : null
                     });
                 }
+                if ("password" === col.type) {
+                    const placeholder = col.placeholder || t("next.form.input") + col.label;
+                    return vue.createVNode(elementPlus.ElInput, {
+                        modelValue: formParams[col.prop],
+                        "onUpdate:modelValue": $event => formParams[col.prop] = $event,
+                        type: "password",
+                        clearable: !0,
+                        "show-password": !0,
+                        readonly: valueExist(col.readonly, !1),
+                        disabled: col.disabled,
+                        placeholder: placeholder,
+                        onChange: event => col.onChange?.(event, col, formParams, formColumns)
+                    }, {
+                        prefix: col.prefix ? () => col.prefix(formParams, col) : null,
+                        suffix: col.suffix ? () => col.suffix(formParams, col) : null,
+                        prepend: col.prepend ? () => col.prepend(formParams, col) : null,
+                        append: col.append ? () => col.append(formParams, col) : null
+                    });
+                }
                 if ("inputInteger" === col.type) {
                     const placeholder = col.placeholder || t("next.form.input") + col.label;
                     return vue.createVNode(elementPlus.ElInput, {
@@ -5580,7 +5599,7 @@
         })(app);
     };
     var index = {
-        version: "0.1.19",
+        version: "0.1.20",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextDialog = NextDialog, 
@@ -5625,7 +5644,7 @@
     }), exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.19", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.1.20", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });
