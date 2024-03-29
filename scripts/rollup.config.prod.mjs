@@ -32,19 +32,8 @@ const globals_cfg = {
 	'@tensorflow/tfjs': 'tf',
 	'mpegts.js': 'mpegts',
 };
-const terserPlugin = terser({
-	output: {
-		comments: false, // 移除注释
-	},
-	compress: {
-		warnings: false,
-		drop_console: true,
-		drop_debugger: true,
-		pure_funcs: ['console.log'], //移除console
-	},
-});
+
 const outDir = './dist';
-// const outDir = '../next-element-admin/node_modules/next-element-vue/dist';
 const outputDir = path.resolve(outDir);
 const getDate = () => {
 	const date = new Date();
@@ -53,14 +42,28 @@ const getDate = () => {
 	const day = date.getDate();
 	return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
 };
+/* eslint-disable no-irregular-whitespace */
 const banner = `
 /**
- * 作者：huangteng
- * 邮箱：htengweb@163.com
- * 版本：${version}
- * 日期：${getDate()}
+ * 作　　者：huangteng
+ * 邮　　箱：htengweb@163.com
+ * 当前版本：${version} v
+ * 发布日期：${getDate()}
+ * 地　　址：https://www.npmjs.com/package/next-element-vue
  */
 `;
+const terserCompress = terser({
+	compress: {
+		warnings: false,
+		drop_console: true,
+		drop_debugger: true,
+		pure_funcs: ['console.log'], //移除console
+	},
+	format: {
+		comments: false, // 移除注释
+		preamble: banner,
+	},
+});
 const output = [
 	{
 		format: 'esm', // esm格式
@@ -70,10 +73,11 @@ const output = [
 		plugins: [
 			terser({
 				format: {
-					comments: true, // true 保留注释 false 去掉注释
+					comments: false, // true 保留注释 false 去掉注释
 					beautify: true, // 保存代码整洁
+					preamble: banner, // 序言配置，可用于配置banner
 				},
-				mangle: false, // 不混淆变量名c
+				mangle: false, // 不混淆变量名称
 			}),
 		],
 		banner, // 因为使用了terser，所有这里banner无效
@@ -83,8 +87,7 @@ const output = [
 		dir: outputDir,
 		entryFileNames: '[name].min.js',
 		assetFileNames: 'assets/[name].[hash][extname]',
-		plugins: [terserPlugin],
-		banner,
+		plugins: [terserCompress],
 	},
 	{
 		format: 'umd', // umd格式
@@ -99,11 +102,11 @@ const output = [
 				format: {
 					comments: false,
 					beautify: true,
+					preamble: banner,
 				},
 				mangle: false,
 			}),
 		],
-		banner,
 	},
 	{
 		format: 'umd', // umd格式
@@ -113,8 +116,7 @@ const output = [
 		exports: 'named',
 		globals: globals_cfg,
 		assetFileNames: 'assets/[name].[hash][extname]',
-		plugins: [terserPlugin],
-		banner,
+		plugins: [terserCompress],
 	},
 ];
 export default {

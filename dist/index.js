@@ -1,9 +1,12 @@
+
 /**
- * 作者：huangteng
- * 邮箱：htengweb@163.com
- * 版本：0.1.20
- * 日期：2024-03-27
+ * 作　　者：huangteng
+ * 邮　　箱：htengweb@163.com
+ * 当前版本：0.1.20 v
+ * 发布日期：2024-03-29
+ * 地　　址：https://www.npmjs.com/package/next-element-vue
  */
+
 import { getCurrentInstance, inject, ref, computed, unref, isRef, defineComponent, createVNode, Fragment, openBlock, createElementBlock, createElementVNode, reactive, createTextVNode, resolveComponent, Teleport, isVNode, onUnmounted, provide, watch, markRaw, watchEffect, h, onMounted, toRaw, render, nextTick } from "vue";
 
 import { localeContextKey as localeContextKey$1, ElMessage, ElTooltip, ElScrollbar, ElDivider, ElColorPicker, ElSwitch, ElDropdown, ElIcon, ElDropdownMenu, ElDropdownItem, ElDrawer, ElMenuItem, ElSubMenu, ElMenu, ElContainer, ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElForm, ElRow, ElButton, ElTable, ElTableColumn, ElCheckbox, ElMessageBox, ElPagination, ElDialog, ElTag, ElRadioGroup, ElRadio, ElUpload, ElImageViewer, ElImage, ElTreeSelect, ElTimeSelect, ElCheckboxGroup, ElEmpty } from "element-plus";
@@ -54,7 +57,6 @@ const defaultNamespace = "next", _bem = (namespace, block, blockSuffix, element,
             const state = !(args.length >= 1) || args[0];
             return name && state ? `is-${name}` : "";
         },
-        // css
         cssVar: object => {
             const styles = {};
             for (const key in object) object[key] && (styles[`--${namespace.value}-${key}`] = object[key]);
@@ -70,39 +72,14 @@ const defaultNamespace = "next", _bem = (namespace, block, blockSuffix, element,
     };
 };
 
-/** Detect free variable `global` from Node.js. */
 var freeGlobal = "object" == typeof global && global && global.Object === Object && global, freeSelf = "object" == typeof self && self && self.Object === Object && self, root = freeGlobal || freeSelf || Function("return this")(), Symbol$1 = root.Symbol, objectProto$e = Object.prototype, hasOwnProperty$b = objectProto$e.hasOwnProperty, nativeObjectToString$1 = objectProto$e.toString, symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : void 0;
 
-/** Detect free variable `self`. */
-/** Used for built-in method references. */
 var nativeObjectToString = Object.prototype.toString;
 
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-/** `Object#toString` result references. */
 var nullTag = "[object Null]", undefinedTag = "[object Undefined]", symToStringTag = Symbol$1 ? Symbol$1.toStringTag : void 0;
 
-/** Built-in value references. */
-/**
- * The base implementation of `getTag` without fallbacks for buggy environments.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the `toStringTag`.
- */
 function baseGetTag(value) {
-    return null == value ? void 0 === value ? undefinedTag : nullTag : symToStringTag && symToStringTag in Object(value) ? 
-    /**
- * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the raw `toStringTag`.
- */
-    function(value) {
+    return null == value ? void 0 === value ? undefinedTag : nullTag : symToStringTag && symToStringTag in Object(value) ? function(value) {
         var isOwn = hasOwnProperty$b.call(value, symToStringTag$1), tag = value[symToStringTag$1];
         try {
             value[symToStringTag$1] = void 0;
@@ -111,117 +88,26 @@ function baseGetTag(value) {
         var result = nativeObjectToString$1.call(value);
         return unmasked && (isOwn ? value[symToStringTag$1] = tag : delete value[symToStringTag$1]), 
         result;
-    }(value) : 
-    /**
- * Converts `value` to a string using `Object.prototype.toString`.
- *
- * @private
- * @param {*} value The value to convert.
- * @returns {string} Returns the converted string.
- */
-    function(value) {
+    }(value) : function(value) {
         return nativeObjectToString.call(value);
     }(value);
 }
 
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */ function isObjectLike(value) {
+function isObjectLike(value) {
     return null != value && "object" == typeof value;
 }
 
-/** `Object#toString` result references. */ var symbolTag$1 = "[object Symbol]";
+var symbolTag$1 = "[object Symbol]";
 
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */ function isSymbol(value) {
+function isSymbol(value) {
     return "symbol" == typeof value || isObjectLike(value) && baseGetTag(value) == symbolTag$1;
 }
 
-/**
- * A specialized version of `_.map` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- */
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
 var isArray = Array.isArray, INFINITY$1 = 1 / 0, symbolProto$1 = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto$1 ? symbolProto$1.toString : void 0;
 
-/** Used as references for various `Number` constants. */
-/**
- * The base implementation of `_.toString` which doesn't convert nullish
- * values to empty strings.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {string} Returns the string.
- */
 function baseToString(value) {
-    // Exit early for strings to avoid a performance hit in some environments.
     if ("string" == typeof value) return value;
-    if (isArray(value)) 
-    // Recursively convert values (susceptible to call stack limits).
-    return function(array, iteratee) {
+    if (isArray(value)) return function(array, iteratee) {
         for (var index = -1, length = null == array ? 0 : array.length, result = Array(length); ++index < length; ) result[index] = iteratee(array[index], index, array);
         return result;
     }(value, baseToString) + "";
@@ -230,94 +116,27 @@ function baseToString(value) {
     return "0" == result && 1 / value == -INFINITY$1 ? "-0" : result;
 }
 
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */ function isObject(value) {
+function isObject(value) {
     var type = typeof value;
     return null != value && ("object" == type || "function" == type);
 }
 
-/**
- * This method returns the first argument it receives.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Util
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'a': 1 };
- *
- * console.log(_.identity(object) === object);
- * // => true
- */ function identity(value) {
+function identity(value) {
     return value;
 }
 
-/** `Object#toString` result references. */ var asyncTag = "[object AsyncFunction]", funcTag$1 = "[object Function]", genTag = "[object GeneratorFunction]", proxyTag = "[object Proxy]";
+var asyncTag = "[object AsyncFunction]", funcTag$1 = "[object Function]", genTag = "[object GeneratorFunction]", proxyTag = "[object Proxy]";
 
-/**
- * Checks if `value` is classified as a `Function` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a function, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- *
- * _.isFunction(/abc/);
- * // => false
- */ function isFunction(value) {
+function isFunction(value) {
     if (!isObject(value)) return !1;
-    // The use of `Object#toString` avoids issues with the `typeof` operator
-    // in Safari 9 which returns 'object' for typed arrays and other constructors.
-        var tag = baseGetTag(value);
+    var tag = baseGetTag(value);
     return tag == funcTag$1 || tag == genTag || tag == asyncTag || tag == proxyTag;
 }
 
-/** Used to detect overreaching core-js shims. */ var uid, coreJsData = root["__core-js_shared__"], maskSrcKey = (uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "")) ? "Symbol(src)_1." + uid : "";
+var uid, coreJsData = root["__core-js_shared__"], maskSrcKey = (uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "")) ? "Symbol(src)_1." + uid : "";
 
-/** Used to detect methods masquerading as native. */
-/** Used for built-in method references. */
 var funcToString$2 = Function.prototype.toString;
 
-/** Used to resolve the decompiled source of functions. */
-/**
- * Converts `func` to its source code.
- *
- * @private
- * @param {Function} func The function to convert.
- * @returns {string} Returns the source code.
- */
 function toSource(func) {
     if (null != func) {
         try {
@@ -330,48 +149,13 @@ function toSource(func) {
     return "";
 }
 
-/**
- * Used to match `RegExp`
- * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
- */ var reIsHostCtor = /^\[object .+?Constructor\]$/, funcProto$1 = Function.prototype, objectProto$c = Object.prototype, funcToString$1 = funcProto$1.toString, hasOwnProperty$a = objectProto$c.hasOwnProperty, reIsNative = RegExp("^" + funcToString$1.call(hasOwnProperty$a).replace(/[\\^$.*+?()[\]{}|]/g, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$");
+var reIsHostCtor = /^\[object .+?Constructor\]$/, funcProto$1 = Function.prototype, objectProto$c = Object.prototype, funcToString$1 = funcProto$1.toString, hasOwnProperty$a = objectProto$c.hasOwnProperty, reIsNative = RegExp("^" + funcToString$1.call(hasOwnProperty$a).replace(/[\\^$.*+?()[\]{}|]/g, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$");
 
-/** Used to detect host constructors (Safari). */
-/**
- * The base implementation of `_.isNative` without bad shim checks.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a native function,
- *  else `false`.
- */
 function baseIsNative(value) {
     return !(!isObject(value) || (func = value, maskSrcKey && maskSrcKey in func)) && (isFunction(value) ? reIsNative : reIsHostCtor).test(toSource(value));
-    /**
- * Checks if `func` has its source masked.
- *
- * @private
- * @param {Function} func The function to check.
- * @returns {boolean} Returns `true` if `func` is masked, else `false`.
- */
     var func;
 }
 
-/**
- * Gets the value at `key` of `object`.
- *
- * @private
- * @param {Object} [object] The object to query.
- * @param {string} key The key of the property to get.
- * @returns {*} Returns the property value.
- */
-/**
- * Gets the native function at `key` of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {string} key The key of the method to get.
- * @returns {*} Returns the function if it's native, else `undefined`.
- */
 function getNative(object, key) {
     var value = function(object, key) {
         return null == object ? void 0 : object[key];
@@ -379,7 +163,7 @@ function getNative(object, key) {
     return baseIsNative(value) ? value : void 0;
 }
 
-/* Built-in method references that are verified to be native. */ var WeakMap = getNative(root, "WeakMap"), objectCreate = Object.create, baseCreate = function() {
+var WeakMap = getNative(root, "WeakMap"), objectCreate = Object.create, baseCreate = function() {
     function object() {}
     return function(proto) {
         if (!isObject(proto)) return {};
@@ -390,11 +174,9 @@ function getNative(object, key) {
     };
 }();
 
-/** Built-in value references. */
-/** Used to detect hot functions by number of calls within a span of milliseconds. */
 var nativeNow = Date.now;
 
-/* Built-in method references for those with the same name as other `lodash` methods. */ var func, count, lastCalled, defineProperty = function() {
+var func, count, lastCalled, defineProperty = function() {
     try {
         var func = getNative(Object, "defineProperty");
         return func({}, "", {}), func;
@@ -408,25 +190,6 @@ var nativeNow = Date.now;
         }),
         writable: !0
     });
-    /**
- * Creates a function that returns `value`.
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Util
- * @param {*} value The value to return from the new function.
- * @returns {Function} Returns the new constant function.
- * @example
- *
- * var objects = _.times(2, _.constant({ 'a': 1 }));
- *
- * console.log(objects);
- * // => [{ 'a': 1 }, { 'a': 1 }]
- *
- * console.log(objects[0] === objects[1]);
- * // => true
- */
     var value;
 } : identity, setToString = (func = baseSetToString, count = 0, lastCalled = 0, 
 function() {
@@ -437,36 +200,12 @@ function() {
     return func.apply(void 0, arguments);
 }), MAX_SAFE_INTEGER$1 = 9007199254740991, reIsUint = /^(?:0|[1-9]\d*)$/;
 
-/**
- * The base implementation of `setToString` without support for hot loop shorting.
- *
- * @private
- * @param {Function} func The function to modify.
- * @param {Function} string The `toString` result.
- * @returns {Function} Returns `func`.
- */
-/**
- * Checks if `value` is a valid array-like index.
- *
- * @private
- * @param {*} value The value to check.
- * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
- * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
- */
 function isIndex(value, length) {
     var type = typeof value;
     return !!(length = null == length ? MAX_SAFE_INTEGER$1 : length) && ("number" == type || "symbol" != type && reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
 }
 
-/**
- * The base implementation of `assignValue` and `assignMergeValue` without
- * value checks.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */ function baseAssignValue(object, key, value) {
+function baseAssignValue(object, key, value) {
     "__proto__" == key && defineProperty ? defineProperty(object, key, {
         configurable: !0,
         enumerable: !0,
@@ -475,107 +214,26 @@ function isIndex(value, length) {
     }) : object[key] = value;
 }
 
-/**
- * Performs a
- * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * comparison between two values to determine if they are equivalent.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- * @example
- *
- * var object = { 'a': 1 };
- * var other = { 'a': 1 };
- *
- * _.eq(object, object);
- * // => true
- *
- * _.eq(object, other);
- * // => false
- *
- * _.eq('a', 'a');
- * // => true
- *
- * _.eq('a', Object('a'));
- * // => false
- *
- * _.eq(NaN, NaN);
- * // => true
- */ function eq(value, other) {
+function eq(value, other) {
     return value === other || value != value && other != other;
 }
 
-/** Used for built-in method references. */ var hasOwnProperty$9 = Object.prototype.hasOwnProperty;
+var hasOwnProperty$9 = Object.prototype.hasOwnProperty;
 
-/** Used to check objects for own properties. */
-/**
- * Assigns `value` to `key` of `object` if the existing value is not equivalent
- * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * for equality comparisons.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */
 function assignValue(object, key, value) {
     var objValue = object[key];
     hasOwnProperty$9.call(object, key) && eq(objValue, value) && (void 0 !== value || key in object) || baseAssignValue(object, key, value);
 }
 
-/**
- * Copies properties of `source` to `object`.
- *
- * @private
- * @param {Object} source The object to copy properties from.
- * @param {Array} props The property identifiers to copy.
- * @param {Object} [object={}] The object to copy properties to.
- * @param {Function} [customizer] The function to customize copied values.
- * @returns {Object} Returns `object`.
- */
-/* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
-/**
- * A specialized version of `baseRest` which transforms the rest array.
- *
- * @private
- * @param {Function} func The function to apply a rest parameter to.
- * @param {number} [start=func.length-1] The start position of the rest parameter.
- * @param {Function} transform The rest array transform.
- * @returns {Function} Returns the new function.
- */
-/**
- * The base implementation of `_.rest` which doesn't validate or coerce arguments.
- *
- * @private
- * @param {Function} func The function to apply a rest parameter to.
- * @param {number} [start=func.length-1] The start position of the rest parameter.
- * @returns {Function} Returns the new function.
- */
 function baseRest(func, start) {
     return setToString(function(func, start, transform) {
         return start = nativeMax(void 0 === start ? func.length - 1 : start, 0), function() {
             for (var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length); ++index < length; ) array[index] = args[start + index];
             index = -1;
             for (var otherArgs = Array(start + 1); ++index < start; ) otherArgs[index] = args[index];
-            return otherArgs[start] = transform(array), 
-            /**
- * A faster alternative to `Function#apply`, this function invokes `func`
- * with the `this` binding of `thisArg` and the arguments of `args`.
- *
- * @private
- * @param {Function} func The function to invoke.
- * @param {*} thisArg The `this` binding of `func`.
- * @param {Array} args The arguments to invoke `func` with.
- * @returns {*} Returns the result of `func`.
- */
-            function(func, thisArg, args) {
+            return otherArgs[start] = transform(array), function(func, thisArg, args) {
                 switch (args.length) {
                   case 0:
                     return func.call(thisArg);
@@ -590,95 +248,21 @@ function baseRest(func, start) {
                     return func.call(thisArg, args[0], args[1], args[2]);
                 }
                 return func.apply(thisArg, args);
-            }
-            /**
- * Copies the values of `source` to `array`.
- *
- * @private
- * @param {Array} source The array to copy values from.
- * @param {Array} [array=[]] The array to copy values to.
- * @returns {Array} Returns `array`.
- */ (func, this, otherArgs);
+            }(func, this, otherArgs);
         };
     }(func, start, identity), func + "");
 }
 
-/** Used as references for various `Number` constants. */ var MAX_SAFE_INTEGER = 9007199254740991;
+var MAX_SAFE_INTEGER = 9007199254740991;
 
-/**
- * Checks if `value` is a valid array-like length.
- *
- * **Note:** This method is loosely based on
- * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- * @example
- *
- * _.isLength(3);
- * // => true
- *
- * _.isLength(Number.MIN_VALUE);
- * // => false
- *
- * _.isLength(Infinity);
- * // => false
- *
- * _.isLength('3');
- * // => false
- */ function isLength(value) {
+function isLength(value) {
     return "number" == typeof value && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
 }
 
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */ function isArrayLike(value) {
+function isArrayLike(value) {
     return null != value && isLength(value.length) && !isFunction(value);
 }
 
-/**
- * Checks if the given arguments are from an iteratee call.
- *
- * @private
- * @param {*} value The potential iteratee value argument.
- * @param {*} index The potential iteratee index or key argument.
- * @param {*} object The potential iteratee object argument.
- * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
- *  else `false`.
- */
-/**
- * Creates a function like `_.assign`.
- *
- * @private
- * @param {Function} assigner The function to assign values.
- * @returns {Function} Returns the new assigner function.
- */
 function createAssigner(assigner) {
     return baseRest((function(object, sources) {
         var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
@@ -696,181 +280,62 @@ function createAssigner(assigner) {
     }));
 }
 
-/** Used for built-in method references. */ var objectProto$a = Object.prototype;
+var objectProto$a = Object.prototype;
 
-/**
- * Checks if `value` is likely a prototype object.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
- */ function isPrototype(value) {
+function isPrototype(value) {
     var Ctor = value && value.constructor;
     return value === ("function" == typeof Ctor && Ctor.prototype || objectProto$a);
 }
 
-/**
- * The base implementation of `_.times` without support for iteratee shorthands
- * or max array length checks.
- *
- * @private
- * @param {number} n The number of times to invoke `iteratee`.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the array of results.
- */
-/**
- * The base implementation of `_.isArguments`.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- */
 function baseIsArguments(value) {
     return isObjectLike(value) && "[object Arguments]" == baseGetTag(value);
 }
 
-/** Used for built-in method references. */ var objectProto$9 = Object.prototype, hasOwnProperty$8 = objectProto$9.hasOwnProperty, propertyIsEnumerable$1 = objectProto$9.propertyIsEnumerable, isArguments$1 = baseIsArguments(function() {
+var objectProto$9 = Object.prototype, hasOwnProperty$8 = objectProto$9.hasOwnProperty, propertyIsEnumerable$1 = objectProto$9.propertyIsEnumerable, isArguments$1 = baseIsArguments(function() {
     return arguments;
 }()) ? baseIsArguments : function(value) {
     return isObjectLike(value) && hasOwnProperty$8.call(value, "callee") && !propertyIsEnumerable$1.call(value, "callee");
 };
 
-/** Used to check objects for own properties. */
-/** Detect free variable `exports`. */
-var freeExports$2 = "object" == typeof exports && exports && !exports.nodeType && exports, freeModule$2 = freeExports$2 && "object" == typeof module && module && !module.nodeType && module, Buffer$1 = freeModule$2 && freeModule$2.exports === freeExports$2 ? root.Buffer : void 0, isBuffer = (Buffer$1 ? Buffer$1.isBuffer : void 0) || 
-/**
- * This method returns `false`.
- *
- * @static
- * @memberOf _
- * @since 4.13.0
- * @category Util
- * @returns {boolean} Returns `false`.
- * @example
- *
- * _.times(2, _.stubFalse);
- * // => [false, false]
- */
-function() {
+var freeExports$2 = "object" == typeof exports && exports && !exports.nodeType && exports, freeModule$2 = freeExports$2 && "object" == typeof module && module && !module.nodeType && module, Buffer$1 = freeModule$2 && freeModule$2.exports === freeExports$2 ? root.Buffer : void 0, isBuffer = (Buffer$1 ? Buffer$1.isBuffer : void 0) || function() {
     return !1;
 }, typedArrayTags = {};
 
-/** Detect free variable `module`. */ typedArrayTags["[object Float32Array]"] = typedArrayTags["[object Float64Array]"] = typedArrayTags["[object Int8Array]"] = typedArrayTags["[object Int16Array]"] = typedArrayTags["[object Int32Array]"] = typedArrayTags["[object Uint8Array]"] = typedArrayTags["[object Uint8ClampedArray]"] = typedArrayTags["[object Uint16Array]"] = typedArrayTags["[object Uint32Array]"] = !0, 
+typedArrayTags["[object Float32Array]"] = typedArrayTags["[object Float64Array]"] = typedArrayTags["[object Int8Array]"] = typedArrayTags["[object Int16Array]"] = typedArrayTags["[object Int32Array]"] = typedArrayTags["[object Uint8Array]"] = typedArrayTags["[object Uint8ClampedArray]"] = typedArrayTags["[object Uint16Array]"] = typedArrayTags["[object Uint32Array]"] = !0, 
 typedArrayTags["[object Arguments]"] = typedArrayTags["[object Array]"] = typedArrayTags["[object ArrayBuffer]"] = typedArrayTags["[object Boolean]"] = typedArrayTags["[object DataView]"] = typedArrayTags["[object Date]"] = typedArrayTags["[object Error]"] = typedArrayTags["[object Function]"] = typedArrayTags["[object Map]"] = typedArrayTags["[object Number]"] = typedArrayTags["[object Object]"] = typedArrayTags["[object RegExp]"] = typedArrayTags["[object Set]"] = typedArrayTags["[object String]"] = typedArrayTags["[object WeakMap]"] = !1;
 
-/** Detect free variable `exports`. */
 var freeExports$1 = "object" == typeof exports && exports && !exports.nodeType && exports, freeModule$1 = freeExports$1 && "object" == typeof module && module && !module.nodeType && module, freeProcess = freeModule$1 && freeModule$1.exports === freeExports$1 && freeGlobal.process, nodeUtil = function() {
     try {
-        // Use `util.types` for Node.js 10+.
         var types = freeModule$1 && freeModule$1.require && freeModule$1.require("util").types;
         return types || freeProcess && freeProcess.binding && freeProcess.binding("util");
-        // Legacy `process.binding('util')` for Node.js < 10.
-        } catch (e) {}
-}(), nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray, isTypedArray = nodeIsTypedArray ? 
-/**
- * The base implementation of `_.unary` without support for storing metadata.
- *
- * @private
- * @param {Function} func The function to cap arguments for.
- * @returns {Function} Returns the new capped function.
- */
-function(func) {
+    } catch (e) {}
+}(), nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray, isTypedArray = nodeIsTypedArray ? function(func) {
     return function(value) {
         return func(value);
     };
-}(nodeIsTypedArray) : 
-/**
- * The base implementation of `_.isTypedArray` without Node.js optimizations.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
- */
-function(value) {
+}(nodeIsTypedArray) : function(value) {
     return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
 }, hasOwnProperty$7 = Object.prototype.hasOwnProperty;
 
-/** Detect free variable `module`. */
-/**
- * Creates an array of the enumerable property names of the array-like `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @param {boolean} inherited Specify returning inherited property names.
- * @returns {Array} Returns the array of property names.
- */
 function arrayLikeKeys(value, inherited) {
     var isArr = isArray(value), isArg = !isArr && isArguments$1(value), isBuff = !isArr && !isArg && isBuffer(value), isType = !isArr && !isArg && !isBuff && isTypedArray(value), skipIndexes = isArr || isArg || isBuff || isType, result = skipIndexes ? function(n, iteratee) {
         for (var index = -1, result = Array(n); ++index < n; ) result[index] = iteratee(index);
         return result;
-    }
-    /** `Object#toString` result references. */ (value.length, String) : [], length = result.length;
-    for (var key in value) !inherited && !hasOwnProperty$7.call(value, key) || skipIndexes && (
-    // Safari 9 has enumerable `arguments.length` in strict mode.
-    "length" == key || 
-    // Node.js 0.10 has enumerable non-index properties on buffers.
-    isBuff && ("offset" == key || "parent" == key) || 
-    // PhantomJS 2 has enumerable non-index properties on typed arrays.
-    isType && ("buffer" == key || "byteLength" == key || "byteOffset" == key) || 
-    // Skip index properties.
-    isIndex(key, length)) || result.push(key);
+    }(value.length, String) : [], length = result.length;
+    for (var key in value) !inherited && !hasOwnProperty$7.call(value, key) || skipIndexes && ("length" == key || isBuff && ("offset" == key || "parent" == key) || isType && ("buffer" == key || "byteLength" == key || "byteOffset" == key) || isIndex(key, length)) || result.push(key);
     return result;
 }
 
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */ function overArg(func, transform) {
+function overArg(func, transform) {
     return function(arg) {
         return func(transform(arg));
     };
 }
 
-/* Built-in method references for those with the same name as other `lodash` methods. */ var nativeKeys = overArg(Object.keys, Object), hasOwnProperty$6 = Object.prototype.hasOwnProperty;
+var nativeKeys = overArg(Object.keys, Object), hasOwnProperty$6 = Object.prototype.hasOwnProperty;
 
-/** Used for built-in method references. */
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * for more details.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
 function keys(object) {
-    return isArrayLike(object) ? arrayLikeKeys(object) : 
-    /**
- * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-    function(object) {
+    return isArrayLike(object) ? arrayLikeKeys(object) : function(object) {
         if (!isPrototype(object)) return nativeKeys(object);
         var result = [];
         for (var key in Object(object)) hasOwnProperty$6.call(object, key) && "constructor" != key && result.push(key);
@@ -878,26 +343,8 @@ function keys(object) {
     }(object);
 }
 
-/**
- * This function is like
- * [`Object.keys`](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * except that it includes inherited enumerable properties.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-/** Used for built-in method references. */
 var hasOwnProperty$5 = Object.prototype.hasOwnProperty;
 
-/** Used to check objects for own properties. */
-/**
- * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
 function baseKeysIn(object) {
     if (!isObject(object)) return function(object) {
         var result = [];
@@ -909,67 +356,18 @@ function baseKeysIn(object) {
     return result;
 }
 
-/**
- * Creates an array of the own and inherited enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keysIn(new Foo);
- * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
- */ function keysIn(object) {
+function keysIn(object) {
     return isArrayLike(object) ? arrayLikeKeys(object, !0) : baseKeysIn(object);
 }
 
-/** Used to match property names within property paths. */ var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/;
+var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/;
 
-/**
- * Checks if `value` is a property name and not a property path.
- *
- * @private
- * @param {*} value The value to check.
- * @param {Object} [object] The object to query keys on.
- * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
- */
-/* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, "create");
 
-/**
- * Removes all key-value entries from the hash.
- *
- * @private
- * @name clear
- * @memberOf Hash
- */
-/** Used to stand-in for `undefined` hash values. */
 var hasOwnProperty$4 = Object.prototype.hasOwnProperty;
 
-/** Used for built-in method references. */
-/** Used for built-in method references. */
 var hasOwnProperty$3 = Object.prototype.hasOwnProperty;
 
-/** Used to check objects for own properties. */
-/**
- * Creates a hash object.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
 function Hash(entries) {
     var index = -1, length = null == entries ? 0 : entries.length;
     for (this.clear(); ++index < length; ) {
@@ -978,78 +376,27 @@ function Hash(entries) {
     }
 }
 
-// Add methods to `Hash`.
-/**
- * Gets the index at which the `key` is found in `array` of key-value pairs.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} key The key to search for.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
 function assocIndexOf(array, key) {
     for (var length = array.length; length--; ) if (eq(array[length][0], key)) return length;
     return -1;
 }
 
-/** Used for built-in method references. */ Hash.prototype.clear = function() {
+Hash.prototype.clear = function() {
     this.__data__ = nativeCreate ? nativeCreate(null) : {}, this.size = 0;
-}
-/**
- * Removes `key` and its value from the hash.
- *
- * @private
- * @name delete
- * @memberOf Hash
- * @param {Object} hash The hash to modify.
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */ , Hash.prototype.delete = function(key) {
+}, Hash.prototype.delete = function(key) {
     var result = this.has(key) && delete this.__data__[key];
     return this.size -= result ? 1 : 0, result;
-}, Hash.prototype.get = 
-/**
- * Gets the hash value for `key`.
- *
- * @private
- * @name get
- * @memberOf Hash
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */
-function(key) {
+}, Hash.prototype.get = function(key) {
     var data = this.__data__;
     if (nativeCreate) {
         var result = data[key];
         return "__lodash_hash_undefined__" === result ? void 0 : result;
     }
     return hasOwnProperty$4.call(data, key) ? data[key] : void 0;
-}, Hash.prototype.has = 
-/**
- * Checks if a hash value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf Hash
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */
-function(key) {
+}, Hash.prototype.has = function(key) {
     var data = this.__data__;
     return nativeCreate ? void 0 !== data[key] : hasOwnProperty$3.call(data, key);
-}
-/** Used to stand-in for `undefined` hash values. */ , Hash.prototype.set = 
-/**
- * Sets the hash `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf Hash
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the hash instance.
- */
-function(key, value) {
+}, Hash.prototype.set = function(key, value) {
     var data = this.__data__;
     return this.size += this.has(key) ? 0 : 1, data[key] = nativeCreate && void 0 === value ? "__lodash_hash_undefined__" : value, 
     this;
@@ -1057,14 +404,6 @@ function(key, value) {
 
 var splice = Array.prototype.splice;
 
-/** Built-in value references. */
-/**
- * Creates an list cache object.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
 function ListCache(entries) {
     var index = -1, length = null == entries ? 0 : entries.length;
     for (this.clear(); ++index < length; ) {
@@ -1073,109 +412,30 @@ function ListCache(entries) {
     }
 }
 
-// Add methods to `ListCache`.
-ListCache.prototype.clear = 
-/**
- * Removes all key-value entries from the list cache.
- *
- * @private
- * @name clear
- * @memberOf ListCache
- */
-function() {
+ListCache.prototype.clear = function() {
     this.__data__ = [], this.size = 0;
-}, ListCache.prototype.delete = 
-/**
- * Removes `key` and its value from the list cache.
- *
- * @private
- * @name delete
- * @memberOf ListCache
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */
-function(key) {
+}, ListCache.prototype.delete = function(key) {
     var data = this.__data__, index = assocIndexOf(data, key);
     return !(index < 0) && (index == data.length - 1 ? data.pop() : splice.call(data, index, 1), 
     --this.size, !0);
-}
-/**
- * Gets the list cache value for `key`.
- *
- * @private
- * @name get
- * @memberOf ListCache
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */ , ListCache.prototype.get = function(key) {
+}, ListCache.prototype.get = function(key) {
     var data = this.__data__, index = assocIndexOf(data, key);
     return index < 0 ? void 0 : data[index][1];
-}
-/**
- * Checks if a list cache value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf ListCache
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */ , ListCache.prototype.has = function(key) {
+}, ListCache.prototype.has = function(key) {
     return assocIndexOf(this.__data__, key) > -1;
-}
-/**
- * Sets the list cache `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf ListCache
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the list cache instance.
- */ , ListCache.prototype.set = function(key, value) {
+}, ListCache.prototype.set = function(key, value) {
     var data = this.__data__, index = assocIndexOf(data, key);
     return index < 0 ? (++this.size, data.push([ key, value ])) : data[index][1] = value, 
     this;
 };
 
-/* Built-in method references that are verified to be native. */
 var Map$1 = getNative(root, "Map");
 
-/**
- * Removes all key-value entries from the map.
- *
- * @private
- * @name clear
- * @memberOf MapCache
- */
-/**
- * Gets the data for `map`.
- *
- * @private
- * @param {Object} map The map to query.
- * @param {string} key The reference key.
- * @returns {*} Returns the map data.
- */
 function getMapData(map, key) {
     var value, type, data = map.__data__;
     return ("string" == (type = typeof (value = key)) || "number" == type || "symbol" == type || "boolean" == type ? "__proto__" !== value : null === value) ? data["string" == typeof key ? "string" : "hash"] : data.map;
 }
 
-/**
- * Removes `key` and its value from the map.
- *
- * @private
- * @name delete
- * @memberOf MapCache
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */
-/**
- * Creates a map cache object to store key-value pairs.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
 function MapCache(entries) {
     var index = -1, length = null == entries ? 0 : entries.length;
     for (this.clear(); ++index < length; ) {
@@ -1184,107 +444,27 @@ function MapCache(entries) {
     }
 }
 
-// Add methods to `MapCache`.
 MapCache.prototype.clear = function() {
     this.size = 0, this.__data__ = {
         hash: new Hash,
         map: new (Map$1 || ListCache),
         string: new Hash
     };
-}
-/**
- * Checks if `value` is suitable for use as unique object key.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is suitable, else `false`.
- */ , MapCache.prototype.delete = function(key) {
+}, MapCache.prototype.delete = function(key) {
     var result = getMapData(this, key).delete(key);
     return this.size -= result ? 1 : 0, result;
-}
-/**
- * Gets the map value for `key`.
- *
- * @private
- * @name get
- * @memberOf MapCache
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */ , MapCache.prototype.get = function(key) {
+}, MapCache.prototype.get = function(key) {
     return getMapData(this, key).get(key);
-}
-/**
- * Checks if a map value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf MapCache
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */ , MapCache.prototype.has = function(key) {
+}, MapCache.prototype.has = function(key) {
     return getMapData(this, key).has(key);
-}
-/**
- * Sets the map `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf MapCache
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the map cache instance.
- */ , MapCache.prototype.set = function(key, value) {
+}, MapCache.prototype.set = function(key, value) {
     var data = getMapData(this, key), size = data.size;
     return data.set(key, value), this.size += data.size == size ? 0 : 1, this;
 };
 
-/** Error message constants. */
 var FUNC_ERROR_TEXT = "Expected a function";
 
-/**
- * Creates a function that memoizes the result of `func`. If `resolver` is
- * provided, it determines the cache key for storing the result based on the
- * arguments provided to the memoized function. By default, the first argument
- * provided to the memoized function is used as the map cache key. The `func`
- * is invoked with the `this` binding of the memoized function.
- *
- * **Note:** The cache is exposed as the `cache` property on the memoized
- * function. Its creation may be customized by replacing the `_.memoize.Cache`
- * constructor with one whose instances implement the
- * [`Map`](http://ecma-international.org/ecma-262/7.0/#sec-properties-of-the-map-prototype-object)
- * method interface of `clear`, `delete`, `get`, `has`, and `set`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Function
- * @param {Function} func The function to have its output memoized.
- * @param {Function} [resolver] The function to resolve the cache key.
- * @returns {Function} Returns the new memoized function.
- * @example
- *
- * var object = { 'a': 1, 'b': 2 };
- * var other = { 'c': 3, 'd': 4 };
- *
- * var values = _.memoize(_.values);
- * values(object);
- * // => [1, 2]
- *
- * values(other);
- * // => [3, 4]
- *
- * object.a = 2;
- * values(object);
- * // => [1, 2]
- *
- * // Modify the result cache.
- * values.cache.set(object, ['a', 'b']);
- * values(object);
- * // => ['a', 'b']
- *
- * // Replace `_.memoize.Cache`.
- * _.memoize.Cache = WeakMap;
- */ function memoize(func, resolver) {
+function memoize(func, resolver) {
     if ("function" != typeof func || null != resolver && "function" != typeof resolver) throw new TypeError(FUNC_ERROR_TEXT);
     var memoized = function() {
         var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache = memoized.cache;
@@ -1295,119 +475,38 @@ var FUNC_ERROR_TEXT = "Expected a function";
     return memoized.cache = new (memoize.Cache || MapCache), memoized;
 }
 
-// Expose `MapCache`.
 memoize.Cache = MapCache;
 
-/** Used to match property names within property paths. */
-var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, reEscapeChar = /\\(\\)?/g, stringToPath = 
-/**
- * A specialized version of `_.memoize` which clears the memoized function's
- * cache when it exceeds `MAX_MEMOIZE_SIZE`.
- *
- * @private
- * @param {Function} func The function to have its output memoized.
- * @returns {Function} Returns the new memoized function.
- */
-function(func) {
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, reEscapeChar = /\\(\\)?/g, stringToPath = function(func) {
     var result = memoize(func, (function(key) {
         return 500 === cache.size && cache.clear(), key;
     })), cache = result.cache;
     return result;
 }((function(string) {
     var result = [];
-    return 46 /* . */ === string.charCodeAt(0) && result.push(""), string.replace(rePropName, (function(match, number, quote, subString) {
+    return 46 === string.charCodeAt(0) && result.push(""), string.replace(rePropName, (function(match, number, quote, subString) {
         result.push(quote ? subString.replace(reEscapeChar, "$1") : number || match);
     })), result;
 }));
 
-/** Used to match backslashes in property paths. */
-/**
- * Casts `value` to a path array if it's not one.
- *
- * @private
- * @param {*} value The value to inspect.
- * @param {Object} [object] The object to query keys on.
- * @returns {Array} Returns the cast property path array.
- */
 function castPath(value, object) {
     return isArray(value) ? value : function(value, object) {
         if (isArray(value)) return !1;
         var type = typeof value;
         return !("number" != type && "symbol" != type && "boolean" != type && null != value && !isSymbol(value)) || reIsPlainProp.test(value) || !reIsDeepProp.test(value) || null != object && value in Object(object);
-    }(value, object) ? [ value ] : stringToPath(
-    /**
- * Converts `value` to a string. An empty string is returned for `null`
- * and `undefined` values. The sign of `-0` is preserved.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {string} Returns the converted string.
- * @example
- *
- * _.toString(null);
- * // => ''
- *
- * _.toString(-0);
- * // => '-0'
- *
- * _.toString([1, 2, 3]);
- * // => '1,2,3'
- */
-    function(value) {
+    }(value, object) ? [ value ] : stringToPath(function(value) {
         return null == value ? "" : baseToString(value);
     }(value));
 }
 
-/** Used as references for various `Number` constants. */ var INFINITY = 1 / 0;
+var INFINITY = 1 / 0;
 
-/**
- * Converts `value` to a string key if it's not a string or symbol.
- *
- * @private
- * @param {*} value The value to inspect.
- * @returns {string|symbol} Returns the key.
- */ function toKey(value) {
+function toKey(value) {
     if ("string" == typeof value || isSymbol(value)) return value;
     var result = value + "";
     return "0" == result && 1 / value == -INFINITY ? "-0" : result;
 }
 
-/**
- * The base implementation of `_.get` without support for default values.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {Array|string} path The path of the property to get.
- * @returns {*} Returns the resolved value.
- */
-/**
- * Gets the value at `path` of `object`. If the resolved value is
- * `undefined`, the `defaultValue` is returned in its place.
- *
- * @static
- * @memberOf _
- * @since 3.7.0
- * @category Object
- * @param {Object} object The object to query.
- * @param {Array|string} path The path of the property to get.
- * @param {*} [defaultValue] The value returned for `undefined` resolved values.
- * @returns {*} Returns the resolved value.
- * @example
- *
- * var object = { 'a': [{ 'b': { 'c': 3 } }] };
- *
- * _.get(object, 'a[0].b.c');
- * // => 3
- *
- * _.get(object, ['a', '0', 'b', 'c']);
- * // => 3
- *
- * _.get(object, 'a.b.c', 'default');
- * // => 'default'
- */
 function get(object, path, defaultValue) {
     var result = null == object ? void 0 : function(object, path) {
         for (var index = 0, length = (path = castPath(path, object)).length; null != object && index < length; ) object = object[toKey(path[index++])];
@@ -1416,88 +515,23 @@ function get(object, path, defaultValue) {
     return void 0 === result ? defaultValue : result;
 }
 
-/**
- * Appends the elements of `values` to `array`.
- *
- * @private
- * @param {Array} array The array to modify.
- * @param {Array} values The values to append.
- * @returns {Array} Returns `array`.
- */
-/** Built-in value references. */
 var getPrototype = overArg(Object.getPrototypeOf, Object), objectTag$2 = "[object Object]", funcProto = Function.prototype, objectProto$3 = Object.prototype, funcToString = funcProto.toString, hasOwnProperty$2 = objectProto$3.hasOwnProperty, objectCtorString = funcToString.call(Object);
 
-/** `Object#toString` result references. */
-/**
- * Creates a stack cache object to store key-value pairs.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
 function Stack(entries) {
     var data = this.__data__ = new ListCache(entries);
     this.size = data.size;
 }
 
-// Add methods to `Stack`.
-Stack.prototype.clear = 
-/**
- * Removes all key-value entries from the stack.
- *
- * @private
- * @name clear
- * @memberOf Stack
- */
-function() {
+Stack.prototype.clear = function() {
     this.__data__ = new ListCache, this.size = 0;
-}
-/**
- * Removes `key` and its value from the stack.
- *
- * @private
- * @name delete
- * @memberOf Stack
- * @param {string} key The key of the value to remove.
- * @returns {boolean} Returns `true` if the entry was removed, else `false`.
- */ , Stack.prototype.delete = function(key) {
+}, Stack.prototype.delete = function(key) {
     var data = this.__data__, result = data.delete(key);
     return this.size = data.size, result;
-}
-/**
- * Gets the stack value for `key`.
- *
- * @private
- * @name get
- * @memberOf Stack
- * @param {string} key The key of the value to get.
- * @returns {*} Returns the entry value.
- */ , Stack.prototype.get = function(key) {
+}, Stack.prototype.get = function(key) {
     return this.__data__.get(key);
-}
-/**
- * Checks if a stack value for `key` exists.
- *
- * @private
- * @name has
- * @memberOf Stack
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */ , Stack.prototype.has = function(key) {
+}, Stack.prototype.has = function(key) {
     return this.__data__.has(key);
-}
-/** Used as the size to enable large array optimizations. */ , Stack.prototype.set = 
-/**
- * Sets the stack `key` to `value`.
- *
- * @private
- * @name set
- * @memberOf Stack
- * @param {string} key The key of the value to set.
- * @param {*} value The value to set.
- * @returns {Object} Returns the stack cache instance.
- */
-function(key, value) {
+}, Stack.prototype.set = function(key, value) {
     var data = this.__data__;
     if (data instanceof ListCache) {
         var pairs = data.__data__;
@@ -1508,73 +542,23 @@ function(key, value) {
     return data.set(key, value), this.size = data.size, this;
 };
 
-/** Detect free variable `exports`. */
 var freeExports = "object" == typeof exports && exports && !exports.nodeType && exports, freeModule = freeExports && "object" == typeof module && module && !module.nodeType && module, Buffer = freeModule && freeModule.exports === freeExports ? root.Buffer : void 0, allocUnsafe = Buffer ? Buffer.allocUnsafe : void 0;
 
-/** Detect free variable `module`. */
-/** Used for built-in method references. */
 var propertyIsEnumerable = Object.prototype.propertyIsEnumerable, nativeGetSymbols = Object.getOwnPropertySymbols, getSymbols = nativeGetSymbols ? function(object) {
-    return null == object ? [] : (object = Object(object), 
-    /**
- * A specialized version of `_.filter` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {Array} Returns the new filtered array.
- */
-    function(array, predicate) {
+    return null == object ? [] : (object = Object(object), function(array, predicate) {
         for (var index = -1, length = null == array ? 0 : array.length, resIndex = 0, result = []; ++index < length; ) {
             var value = array[index];
             predicate(value, index, array) && (result[resIndex++] = value);
         }
         return result;
-    }
-    /**
- * This method returns a new empty array.
- *
- * @static
- * @memberOf _
- * @since 4.13.0
- * @category Util
- * @returns {Array} Returns the new empty array.
- * @example
- *
- * var arrays = _.times(2, _.stubArray);
- *
- * console.log(arrays);
- * // => [[], []]
- *
- * console.log(arrays[0] === arrays[1]);
- * // => false
- */ (nativeGetSymbols(object), (function(symbol) {
+    }(nativeGetSymbols(object), (function(symbol) {
         return propertyIsEnumerable.call(object, symbol);
     })));
 } : function() {
     return [];
 }, getSymbols$1 = getSymbols;
 
-/** Built-in value references. */
-/**
- * Creates an array of own enumerable property names and symbols of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names and symbols.
- */
 function getAllKeys(object) {
-    /**
- * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
- * `keysFunc` and `symbolsFunc` to get the enumerable property names and
- * symbols of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {Function} keysFunc The function to get the keys of `object`.
- * @param {Function} symbolsFunc The function to get the symbols of `object`.
- * @returns {Array} Returns the array of property names and symbols.
- */
     return function(object, keysFunc, symbolsFunc) {
         var result = keysFunc(object);
         return isArray(object) ? result : function(array, values) {
@@ -1584,10 +568,8 @@ function getAllKeys(object) {
     }(object, keys, getSymbols$1);
 }
 
-/* Built-in method references that are verified to be native. */ var DataView = getNative(root, "DataView"), Promise$1 = getNative(root, "Promise"), Set = getNative(root, "Set"), dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map$1), promiseCtorString = toSource(Promise$1), setCtorString = toSource(Set), weakMapCtorString = toSource(WeakMap), getTag = baseGetTag;
+var DataView = getNative(root, "DataView"), Promise$1 = getNative(root, "Promise"), Set = getNative(root, "Set"), dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map$1), promiseCtorString = toSource(Promise$1), setCtorString = toSource(Set), weakMapCtorString = toSource(WeakMap), getTag = baseGetTag;
 
-/* Built-in method references that are verified to be native. */
-// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
 (DataView && "[object DataView]" != getTag(new DataView(new ArrayBuffer(1))) || Map$1 && "[object Map]" != getTag(new Map$1) || Promise$1 && "[object Promise]" != getTag(Promise$1.resolve()) || Set && "[object Set]" != getTag(new Set) || WeakMap && "[object WeakMap]" != getTag(new WeakMap)) && (getTag = function(value) {
     var result = baseGetTag(value), Ctor = "[object Object]" == result ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : "";
     if (ctorString) switch (ctorString) {
@@ -1611,113 +593,36 @@ function getAllKeys(object) {
 
 var getTag$1 = getTag, Uint8Array$1 = root.Uint8Array;
 
-/** Built-in value references. */
-/**
- * Creates a clone of `typedArray`.
- *
- * @private
- * @param {Object} typedArray The typed array to clone.
- * @param {boolean} [isDeep] Specify a deep clone.
- * @returns {Object} Returns the cloned typed array.
- */
 function cloneTypedArray(typedArray, isDeep) {
     var arrayBuffer, result, buffer = isDeep ? (arrayBuffer = typedArray.buffer, result = new arrayBuffer.constructor(arrayBuffer.byteLength), 
     new Uint8Array$1(result).set(new Uint8Array$1(arrayBuffer)), result) : typedArray.buffer;
     return new typedArray.constructor(buffer, typedArray.byteOffset, typedArray.length);
 }
 
-/**
- * Initializes an object clone.
- *
- * @private
- * @param {Object} object The object to clone.
- * @returns {Object} Returns the initialized clone.
- */
-/**
- *
- * Creates an array cache object to store unique values.
- *
- * @private
- * @constructor
- * @param {Array} [values] The values to cache.
- */
 function SetCache(values) {
     var index = -1, length = null == values ? 0 : values.length;
     for (this.__data__ = new MapCache; ++index < length; ) this.add(values[index]);
 }
 
-// Add methods to `SetCache`.
-/**
- * A specialized version of `_.some` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {boolean} Returns `true` if any element passes the predicate check,
- *  else `false`.
- */
 function arraySome(array, predicate) {
     for (var index = -1, length = null == array ? 0 : array.length; ++index < length; ) if (predicate(array[index], index, array)) return !0;
     return !1;
 }
 
-/**
- * Checks if a `cache` value for `key` exists.
- *
- * @private
- * @param {Object} cache The cache to query.
- * @param {string} key The key of the entry to check.
- * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
- */ SetCache.prototype.add = SetCache.prototype.push = 
-/**
- * Adds `value` to the array cache.
- *
- * @private
- * @name add
- * @memberOf SetCache
- * @alias push
- * @param {*} value The value to cache.
- * @returns {Object} Returns the cache instance.
- */
-function(value) {
+SetCache.prototype.add = SetCache.prototype.push = function(value) {
     return this.__data__.set(value, "__lodash_hash_undefined__"), this;
-}
-/**
- * Checks if `value` is in the array cache.
- *
- * @private
- * @name has
- * @memberOf SetCache
- * @param {*} value The value to search for.
- * @returns {number} Returns `true` if `value` is found, else `false`.
- */ , SetCache.prototype.has = function(value) {
+}, SetCache.prototype.has = function(value) {
     return this.__data__.has(value);
 };
 
-/** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG$3 = 1, COMPARE_UNORDERED_FLAG$1 = 2;
 
-/**
- * A specialized version of `baseIsEqualDeep` for arrays with support for
- * partial deep comparisons.
- *
- * @private
- * @param {Array} array The array to compare.
- * @param {Array} other The other array to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} stack Tracks traversed `array` and `other` objects.
- * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
- */ function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
+function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
     var isPartial = bitmask & COMPARE_PARTIAL_FLAG$3, arrLength = array.length, othLength = other.length;
     if (arrLength != othLength && !(isPartial && othLength > arrLength)) return !1;
-    // Check that cyclic values are equal.
-        var arrStacked = stack.get(array), othStacked = stack.get(other);
+    var arrStacked = stack.get(array), othStacked = stack.get(other);
     if (arrStacked && othStacked) return arrStacked == other && othStacked == array;
     var index = -1, result = !0, seen = bitmask & COMPARE_UNORDERED_FLAG$1 ? new SetCache : void 0;
-    // Ignore non-index properties.
     for (stack.set(array, other), stack.set(other, array); ++index < arrLength; ) {
         var arrValue = array[index], othValue = other[index];
         if (customizer) var compared = isPartial ? customizer(othValue, arrValue, index, other, array, stack) : customizer(arrValue, othValue, index, array, other, stack);
@@ -1726,8 +631,7 @@ var COMPARE_PARTIAL_FLAG$3 = 1, COMPARE_UNORDERED_FLAG$1 = 2;
             result = !1;
             break;
         }
-        // Recursively compare arrays (susceptible to call stack limits).
-                if (seen) {
+        if (seen) {
             if (!arraySome(other, (function(othValue, othIndex) {
                 if (key = othIndex, !seen.has(key) && (arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) return seen.push(othIndex);
                 var key;
@@ -1743,82 +647,33 @@ var COMPARE_PARTIAL_FLAG$3 = 1, COMPARE_UNORDERED_FLAG$1 = 2;
     return stack.delete(array), stack.delete(other), result;
 }
 
-/**
- * Converts `map` to its key-value pairs.
- *
- * @private
- * @param {Object} map The map to convert.
- * @returns {Array} Returns the key-value pairs.
- */ function mapToArray(map) {
+function mapToArray(map) {
     var index = -1, result = Array(map.size);
     return map.forEach((function(value, key) {
         result[++index] = [ key, value ];
     })), result;
 }
 
-/**
- * Converts `set` to an array of its values.
- *
- * @private
- * @param {Object} set The set to convert.
- * @returns {Array} Returns the values.
- */ function setToArray(set) {
+function setToArray(set) {
     var index = -1, result = Array(set.size);
     return set.forEach((function(value) {
         result[++index] = value;
     })), result;
 }
 
-/** Used to compose bitmasks for value comparisons. */ var COMPARE_PARTIAL_FLAG$2 = 1, COMPARE_UNORDERED_FLAG = 2, boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", mapTag = "[object Map]", numberTag = "[object Number]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag$1 = "[object String]", symbolTag = "[object Symbol]", arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
+var COMPARE_PARTIAL_FLAG$2 = 1, COMPARE_UNORDERED_FLAG = 2, boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", mapTag = "[object Map]", numberTag = "[object Number]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag$1 = "[object String]", symbolTag = "[object Symbol]", arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
 
-/** `Object#toString` result references. */
-/** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG$1 = 1, hasOwnProperty$1 = Object.prototype.hasOwnProperty;
 
-/** Used for built-in method references. */
-/** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1, argsTag = "[object Arguments]", arrayTag = "[object Array]", objectTag = "[object Object]", hasOwnProperty = Object.prototype.hasOwnProperty;
 
-/** `Object#toString` result references. */
-/**
- * A specialized version of `baseIsEqual` for arrays and objects which performs
- * deep comparisons and tracks traversed objects enabling objects with circular
- * references to be compared.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} [stack] Tracks traversed `object` and `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
 function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
     var objIsArr = isArray(object), othIsArr = isArray(other), objTag = objIsArr ? arrayTag : getTag$1(object), othTag = othIsArr ? arrayTag : getTag$1(other), objIsObj = (objTag = objTag == argsTag ? objectTag : objTag) == objectTag, othIsObj = (othTag = othTag == argsTag ? objectTag : othTag) == objectTag, isSameTag = objTag == othTag;
     if (isSameTag && isBuffer(object)) {
         if (!isBuffer(other)) return !1;
         objIsArr = !0, objIsObj = !1;
     }
-    if (isSameTag && !objIsObj) return stack || (stack = new Stack), objIsArr || isTypedArray(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack) : 
-    /**
- * A specialized version of `baseIsEqualDeep` for comparing objects of
- * the same `toStringTag`.
- *
- * **Note:** This function only supports comparing values with tags of
- * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {string} tag The `toStringTag` of the objects to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} stack Tracks traversed `object` and `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-    function(object, other, tag, bitmask, customizer, equalFunc, stack) {
+    if (isSameTag && !objIsObj) return stack || (stack = new Stack), objIsArr || isTypedArray(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack) : function(object, other, tag, bitmask, customizer, equalFunc, stack) {
         switch (tag) {
           case dataViewTag:
             if (object.byteLength != other.byteLength || object.byteOffset != other.byteOffset) return !1;
@@ -1830,8 +685,6 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
           case boolTag:
           case dateTag:
           case numberTag:
-            // Coerce booleans to `1` or `0` and dates to milliseconds.
-            // Invalid dates are coerced to `NaN`.
             return eq(+object, +other);
 
           case errorTag:
@@ -1839,9 +692,6 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
 
           case regexpTag:
           case stringTag$1:
-            // Coerce regexes to strings and treat strings, primitives and objects,
-            // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
-            // for more details.
             return object == other + "";
 
           case mapTag:
@@ -1850,12 +700,9 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
           case setTag:
             var isPartial = bitmask & COMPARE_PARTIAL_FLAG$2;
             if (convert || (convert = setToArray), object.size != other.size && !isPartial) return !1;
-            // Assume cyclic values are equal.
-                        var stacked = stack.get(object);
+            var stacked = stack.get(object);
             if (stacked) return stacked == other;
-            bitmask |= COMPARE_UNORDERED_FLAG, 
-            // Recursively compare objects (susceptible to call stack limits).
-            stack.set(object, other);
+            bitmask |= COMPARE_UNORDERED_FLAG, stack.set(object, other);
             var result = equalArrays(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
             return stack.delete(object), result;
 
@@ -1871,37 +718,21 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
             return stack || (stack = new Stack), equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
         }
     }
-    return !!isSameTag && (stack || (stack = new Stack), 
-    /**
- * A specialized version of `baseIsEqualDeep` for objects with support for
- * partial deep comparisons.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {number} bitmask The bitmask flags. See `baseIsEqual` for more details.
- * @param {Function} customizer The function to customize comparisons.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Object} stack Tracks traversed `object` and `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-    function(object, other, bitmask, customizer, equalFunc, stack) {
+    return !!isSameTag && (stack || (stack = new Stack), function(object, other, bitmask, customizer, equalFunc, stack) {
         var isPartial = bitmask & COMPARE_PARTIAL_FLAG$1, objProps = getAllKeys(object), objLength = objProps.length;
         if (objLength != getAllKeys(other).length && !isPartial) return !1;
         for (var index = objLength; index--; ) {
             var key = objProps[index];
             if (!(isPartial ? key in other : hasOwnProperty$1.call(other, key))) return !1;
         }
-        // Check that cyclic values are equal.
-                var objStacked = stack.get(object), othStacked = stack.get(other);
+        var objStacked = stack.get(object), othStacked = stack.get(other);
         if (objStacked && othStacked) return objStacked == other && othStacked == object;
         var result = !0;
         stack.set(object, other), stack.set(other, object);
         for (var skipCtor = isPartial; ++index < objLength; ) {
             var objValue = object[key = objProps[index]], othValue = other[key];
             if (customizer) var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack) : customizer(objValue, othValue, key, object, other, stack);
-            // Recursively compare objects (susceptible to call stack limits).
-                        if (!(void 0 === compared ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack) : compared)) {
+            if (!(void 0 === compared ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack) : compared)) {
                 result = !1;
                 break;
             }
@@ -1909,48 +740,16 @@ function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
         }
         if (result && !skipCtor) {
             var objCtor = object.constructor, othCtor = other.constructor;
-            // Non `Object` object instances with different constructors are not equal.
-                        objCtor == othCtor || !("constructor" in object) || !("constructor" in other) || "function" == typeof objCtor && objCtor instanceof objCtor && "function" == typeof othCtor && othCtor instanceof othCtor || (result = !1);
+            objCtor == othCtor || !("constructor" in object) || !("constructor" in other) || "function" == typeof objCtor && objCtor instanceof objCtor && "function" == typeof othCtor && othCtor instanceof othCtor || (result = !1);
         }
         return stack.delete(object), stack.delete(other), result;
     }(object, other, bitmask, customizer, equalFunc, stack));
 }
 
-/**
- * The base implementation of `_.isEqual` which supports partial comparisons
- * and tracks traversed objects.
- *
- * @private
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @param {boolean} bitmask The bitmask flags.
- *  1 - Unordered comparison
- *  2 - Partial comparison
- * @param {Function} [customizer] The function to customize comparisons.
- * @param {Object} [stack] Tracks traversed `value` and `other` objects.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- */ function baseIsEqual(value, other, bitmask, customizer, stack) {
+function baseIsEqual(value, other, bitmask, customizer, stack) {
     return value === other || (null == value || null == other || !isObjectLike(value) && !isObjectLike(other) ? value != value && other != other : baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack));
 }
 
-/**
- * Creates a base function for methods like `_.forIn` and `_.forOwn`.
- *
- * @private
- * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {Function} Returns the new base function.
- */
-/**
- * The base implementation of `baseForOwn` which iterates over `object`
- * properties returned by `keysFunc` and invokes `iteratee` for each property.
- * Iteratee functions may exit iteration early by explicitly returning `false`.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @param {Function} keysFunc The function to get the keys of `object`.
- * @returns {Object} Returns `object`.
- */
 var fromRight, baseFor = function(object, iteratee, keysFunc) {
     for (var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length; length--; ) {
         var key = props[fromRight ? length : ++index];
@@ -1959,79 +758,15 @@ var fromRight, baseFor = function(object, iteratee, keysFunc) {
     return object;
 };
 
-/**
- * This function is like `assignValue` except that it doesn't assign
- * `undefined` values.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */ function assignMergeValue(object, key, value) {
+function assignMergeValue(object, key, value) {
     (void 0 !== value && !eq(object[key], value) || void 0 === value && !(key in object)) && baseAssignValue(object, key, value);
 }
 
-/**
- * This method is like `_.isArrayLike` except that it also checks if `value`
- * is an object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array-like object,
- *  else `false`.
- * @example
- *
- * _.isArrayLikeObject([1, 2, 3]);
- * // => true
- *
- * _.isArrayLikeObject(document.body.children);
- * // => true
- *
- * _.isArrayLikeObject('abc');
- * // => false
- *
- * _.isArrayLikeObject(_.noop);
- * // => false
- */
-/**
- * Gets the value at `key`, unless `key` is "__proto__" or "constructor".
- *
- * @private
- * @param {Object} object The object to query.
- * @param {string} key The key of the property to get.
- * @returns {*} Returns the property value.
- */
 function safeGet(object, key) {
     if (("constructor" !== key || "function" != typeof object[key]) && "__proto__" != key) return object[key];
 }
 
-/**
- * Converts `value` to a plain object flattening inherited enumerable string
- * keyed properties of `value` to own properties of the plain object.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {Object} Returns the converted plain object.
- * @example
- *
- * function Foo() {
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.assign({ 'a': 1 }, new Foo);
- * // => { 'a': 1, 'b': 2 }
- *
- * _.assign({ 'a': 1 }, _.toPlainObject(new Foo));
- * // => { 'a': 1, 'b': 2, 'c': 3 }
- */ function toPlainObject(value) {
+function toPlainObject(value) {
     return function(source, props, object, customizer) {
         var isNew = !object;
         object || (object = {});
@@ -2043,21 +778,7 @@ function safeGet(object, key) {
     }(value, keysIn(value));
 }
 
-/**
- * A specialized version of `baseMerge` for arrays and objects which performs
- * deep merges and tracks traversed objects enabling objects with circular
- * references to be merged.
- *
- * @private
- * @param {Object} object The destination object.
- * @param {Object} source The source object.
- * @param {string} key The key of the value to merge.
- * @param {number} srcIndex The index of `source`.
- * @param {Function} mergeFunc The function to merge values.
- * @param {Function} [customizer] The function to customize assigned values.
- * @param {Object} [stack] Tracks traversed source values and their merged
- *  counterparts.
- */ function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
+function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
     var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack.get(srcValue);
     if (stacked) assignMergeValue(object, key, stacked); else {
         var value, newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack) : void 0, isCommon = void 0 === newValue;
@@ -2067,49 +788,11 @@ function safeGet(object, key) {
                 var index = -1, length = source.length;
                 for (array || (array = Array(length)); ++index < length; ) array[index] = source[index];
                 return array;
-            }(objValue) : isBuff ? (isCommon = !1, newValue = 
-            /**
- * Creates a clone of  `buffer`.
- *
- * @private
- * @param {Buffer} buffer The buffer to clone.
- * @param {boolean} [isDeep] Specify a deep clone.
- * @returns {Buffer} Returns the cloned buffer.
- */
-            function(buffer, isDeep) {
+            }(objValue) : isBuff ? (isCommon = !1, newValue = function(buffer, isDeep) {
                 if (isDeep) return buffer.slice();
                 var length = buffer.length, result = allocUnsafe ? allocUnsafe(length) : new buffer.constructor(length);
                 return buffer.copy(result), result;
-            }(srcValue, !0)) : isTyped ? (isCommon = !1, newValue = cloneTypedArray(srcValue, !0)) : newValue = [] : 
-            /**
- * Checks if `value` is a plain object, that is, an object created by the
- * `Object` constructor or one with a `[[Prototype]]` of `null`.
- *
- * @static
- * @memberOf _
- * @since 0.8.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- * }
- *
- * _.isPlainObject(new Foo);
- * // => false
- *
- * _.isPlainObject([1, 2, 3]);
- * // => false
- *
- * _.isPlainObject({ 'x': 0, 'y': 0 });
- * // => true
- *
- * _.isPlainObject(Object.create(null));
- * // => true
- */
-            function(value) {
+            }(srcValue, !0)) : isTyped ? (isCommon = !1, newValue = cloneTypedArray(srcValue, !0)) : newValue = [] : function(value) {
                 if (!isObjectLike(value) || baseGetTag(value) != objectTag$2) return !1;
                 var proto = getPrototype(value);
                 if (null === proto) return !0;
@@ -2117,27 +800,14 @@ function safeGet(object, key) {
                 return "function" == typeof Ctor && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
             }(srcValue) || isArguments$1(srcValue) ? (newValue = objValue, isArguments$1(objValue) ? newValue = toPlainObject(objValue) : isObject(objValue) && !isFunction(objValue) || (newValue = function(object) {
                 return "function" != typeof object.constructor || isPrototype(object) ? {} : baseCreate(getPrototype(object));
-            }
-            /** Used to stand-in for `undefined` hash values. */ (srcValue))) : isCommon = !1;
+            }(srcValue))) : isCommon = !1;
         }
-        isCommon && (
-        // Recursively merge objects and arrays (susceptible to call stack limits).
-        stack.set(srcValue, newValue), mergeFunc(newValue, srcValue, srcIndex, customizer, stack), 
+        isCommon && (stack.set(srcValue, newValue), mergeFunc(newValue, srcValue, srcIndex, customizer, stack), 
         stack.delete(srcValue)), assignMergeValue(object, key, newValue);
     }
 }
 
-/**
- * The base implementation of `_.merge` without support for multiple sources.
- *
- * @private
- * @param {Object} object The destination object.
- * @param {Object} source The source object.
- * @param {number} srcIndex The index of `source`.
- * @param {Function} [customizer] The function to customize merged values.
- * @param {Object} [stack] Tracks traversed source values and their merged
- *  counterparts.
- */ function baseMerge(object, source, srcIndex, customizer, stack) {
+function baseMerge(object, source, srcIndex, customizer, stack) {
     object !== source && baseFor(source, (function(srcValue, key) {
         if (stack || (stack = new Stack), isObject(srcValue)) baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack); else {
             var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack) : void 0;
@@ -2146,72 +816,10 @@ function safeGet(object, key) {
     }), keysIn);
 }
 
-/**
- * This method is like `_.merge` except that it accepts `customizer` which
- * is invoked to produce the merged values of the destination and source
- * properties. If `customizer` returns `undefined`, merging is handled by the
- * method instead. The `customizer` is invoked with six arguments:
- * (objValue, srcValue, key, object, source, stack).
- *
- * **Note:** This method mutates `object`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Object
- * @param {Object} object The destination object.
- * @param {...Object} sources The source objects.
- * @param {Function} customizer The function to customize assigned values.
- * @returns {Object} Returns `object`.
- * @example
- *
- * function customizer(objValue, srcValue) {
- *   if (_.isArray(objValue)) {
- *     return objValue.concat(srcValue);
- *   }
- * }
- *
- * var object = { 'a': [1], 'b': [2] };
- * var other = { 'a': [3], 'b': [4] };
- *
- * _.mergeWith(object, other, customizer);
- * // => { 'a': [1, 3], 'b': [2, 4] }
- */ var mergeWith = createAssigner((function(object, source, srcIndex, customizer) {
+var mergeWith = createAssigner((function(object, source, srcIndex, customizer) {
     baseMerge(object, source, srcIndex, customizer);
 }));
 
-/** `Object#toString` result references. */
-/**
- * This method is like `_.assign` except that it recursively merges own and
- * inherited enumerable string keyed properties of source objects into the
- * destination object. Source properties that resolve to `undefined` are
- * skipped if a destination value exists. Array and plain object properties
- * are merged recursively. Other objects and value types are overridden by
- * assignment. Source objects are applied from left to right. Subsequent
- * sources overwrite property assignments of previous sources.
- *
- * **Note:** This method mutates `object`.
- *
- * @static
- * @memberOf _
- * @since 0.5.0
- * @category Object
- * @param {Object} object The destination object.
- * @param {...Object} [sources] The source objects.
- * @returns {Object} Returns `object`.
- * @example
- *
- * var object = {
- *   'a': [{ 'b': 2 }, { 'd': 4 }]
- * };
- *
- * var other = {
- *   'a': [{ 'c': 3 }, { 'e': 5 }]
- * };
- *
- * _.merge(object, other);
- * // => { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
- */
 var merge = createAssigner((function(object, source, srcIndex) {
     baseMerge(object, source, srcIndex);
 })), merge$1 = merge, zhcnLocale = {
@@ -2448,13 +1056,6 @@ const localeLang = {
     localeRef.value.name = lang, localeRef.value.next = nextLang.next;
 };
 
-/**
- * 颜色转换函数
- * @method hexToRgb hex 颜色转 rgb 颜色
- * @method rgbToHex rgb 颜色转 Hex 颜色
- * @method getDarkColor 加深颜色值
- * @method getLightColor 变浅颜色值
- */
 function useChangeColor() {
     return {
         hexToRgb: str => {
@@ -2510,8 +1111,7 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
     conf.isDark ? body.setAttribute("data-theme", "dark") : body.setAttribute("data-theme", "");
 }, detectVideoFrame = async (video, model, ctx, tf, classNames, classInput = [], detect_ctx, success) => {
     const {videoWidth: videoWidth, videoHeight: videoHeight} = video;
-    // 当视频关闭，及没有宽高时不识别
-        if (!videoWidth || !videoHeight) return;
+    if (!videoWidth || !videoHeight) return;
     let [modelWeight, modelHeight] = model.inputs[0].shape.slice(1, 3), input = tf.tidy((() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [ modelWeight, modelHeight ]).div(255).expandDims(0)));
     ctx.clearRect(0, 0, videoWidth, videoHeight), detect_ctx.clearRect(0, 0, videoWidth, videoHeight), 
     await model.executeAsync(input).then((async res => {
@@ -2524,25 +1124,19 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
             y0 = Math.round(Math.abs(y0) * videoHeight), y1 = Math.round(Math.abs(y1) * videoHeight);
             const width = x1 - x0, height = y1 - y0, left = x0, top = y0;
             let cls = classes.dataSync()[i], score = scores.dataSync()[i].toFixed(2);
- // 类别
-                        // 置信度
             const drawOutcome = (name, score, ctx) => {
                 const color = `#${(1 << 24 | Math.floor(256 * Math.random()) << 16 | Math.floor(256 * Math.random()) << 8 | Math.floor(256 * Math.random())).toString(16).slice(1)}`;
                 ctx.strokeStyle = color, ctx.lineWidth = 2, ctx.beginPath(), ctx.rect(left, top, width, height), 
                 ctx.stroke(), ctx.font = "bold 16px Arial", ctx.fillStyle = color, ctx.fillText(`${name} ${score}`, left + 10, top < 20 ? 20 : top - 10);
             };
-            if (classInput?.length) 
-            // 有检测到目标才回调
-            for (let k = 0; k < classInput.length; k++) {
+            if (classInput?.length) for (let k = 0; k < classInput.length; k++) {
                 const item = classInput[k];
                 if (item.cls == cls && Number(score) > item.score) {
                     const target = classNames.find((o => o.value == cls));
                     if (target) {
                         const name = target.label;
-                        // 绘制视频帧加结果
-                        drawOutcome(name, score, await drawVideoFrame(video, detect_ctx)), 
-                        // 只绘制检测结果
-                        drawOutcome(name, score, ctx), success && success(name, score);
+                        drawOutcome(name, score, await drawVideoFrame(video, detect_ctx)), drawOutcome(name, score, ctx), 
+                        success && success(name, score);
                     }
                 }
             } else if (score > .5) {
@@ -2552,11 +1146,7 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
                 }
             }
         }
-        // boxes.dispose();
-        // scores.dispose();
-        // classes.dispose();
-        // valid_detections.dispose();
-                input.dispose(), tf.dispose(res);
+        input.dispose(), tf.dispose(res);
     }));
 }, drawVideoFrame = (videoElement, ctx) => {
     const width = videoElement.videoWidth, height = videoElement.videoHeight, mediaRatio = width / height, canvasRatio = width / height, sw = width, sh = height;
@@ -2564,19 +1154,13 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
     return mediaRatio > canvasRatio ? (dw = width, dh = width / mediaRatio, dx = 0, 
     dy = Math.round((height - dh) / 2)) : mediaRatio === canvasRatio ? (dw = width, 
     dh = height, dx = 0, dy = 0) : mediaRatio < canvasRatio && (dw = height * mediaRatio, 
-    dh = height, dx = Math.round((width - dw) / 2), dy = 0)
-    /**
-   * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-   * sx, sy 资源文件左上角坐标， sw, sh 需要截取资源文件宽高
-   * dx, dy 目标文件画布的左上角坐标， dw, dh 目标画布上绘制的宽高
-   */ , ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), ctx;
+    dh = height, dx = Math.round((width - dw) / 2), dy = 0), ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), 
+    ctx;
 }, useDetectVideo = () => ({
     detectVideoFrameImage: ({container: container, video: video, modelUrl: modelUrl, classNames: classNames, classInput: classInput = []}, success, error) => modelUrl ? classNames ? void tf.loadGraphModel(modelUrl).then((model => {
-        // 这里canvas只绘制识别结果，并覆盖到视频上
         const canvas = document.createElement("canvas"), ctx = canvas.getContext("2d");
         canvas.style.position = "absolute", canvas.style.zIndex = "99", canvas.style.pointerEvents = "none", 
         container && container.appendChild(canvas);
-        // 绘制视频帧加识别结果
         const detectCanvas = document.createElement("canvas"), detect_ctx = detectCanvas.getContext("2d");
         video.ontimeupdate = e => {
             const {clientWidth: clientWidth, clientHeight: clientHeight} = e.target, {videoWidth: videoWidth, videoHeight: videoHeight, offsetTop: offsetTop, offsetLeft: offsetLeft} = video;
@@ -2586,11 +1170,8 @@ const {getLightColor: getLightColor$4} = useChangeColor(), nextUseCssVar = (cssv
             detectCanvas.style.width = clientWidth + "px", detectCanvas.style.height = clientHeight + "px", 
             detectVideoFrame(video, model, ctx, tf, classNames, classInput, detect_ctx, ((name, score) => {
                 const type = "image/png";
- // 图片格式，默认为 image/png
-                                // 图片质量设置，0-1区间，超出会使用默认值0.92
                 let imageDataURL = canvas.toDataURL(type, .92).replace(type, "image/octet-stream");
                 imageDataURL = imageDataURL.replace(/^data:image\/[^;]+/, "data:application/octet-stream");
-                // 绘制最终识别结果
                 const detectImage = detectCanvas.toDataURL(type, .92);
                 success && success({
                     name: name,
@@ -2644,23 +1225,14 @@ var defaultConfig$2 = {
     menuRouter: !0,
     menuMode: "horizontal",
     setting: {
-        // 布局方式
         layout: "transverse",
-        // 主题颜色
         themeColor: "#c71585",
-        // 头部栏背景颜色
         headerBarColor: "#282c34",
-        // 头部栏字体颜色
         headerBarFontColor: "#FFFFFF",
-        // 头部栏背景颜色是否渐变
         isHeaderBarColorGradual: !1,
-        // 左侧侧边栏背景颜色
         asidebarColor: "#282c34",
-        // 左侧侧边栏字体颜色
         asidebarFontColor: "#ffffff",
-        // 左侧侧边栏背景色是否渐变
         isAsidebarColorGradual: !1,
-        // 是否暗黑模式
         isDark: !1
     }
 };
@@ -2756,307 +1328,261 @@ var LogoView = defineComponent({
 }, _hoisted_16 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_36 = [  createElementVNode("path", {
+}, _hoisted_36 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-/*! Element Plus Icons Vue v2.1.0 */
-// unplugin-vue:/plugin-vue/export-helper
-var arrow_down_default =  export_helper_default(arrow_down_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var arrow_down_default = export_helper_default(arrow_down_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_16, _hoisted_36);
 } ], [ "__file", "arrow-down.vue" ] ]), arrow_up_vue_vue_type_script_lang_default = {
     name: "ArrowUp"
 }, _hoisted_112 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_312 = [  createElementVNode("path", {
+}, _hoisted_312 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "m488.832 344.32-339.84 356.672a32 32 0 0 0 0 44.16l.384.384a29.44 29.44 0 0 0 42.688 0l320-335.872 319.872 335.872a29.44 29.44 0 0 0 42.688 0l.384-.384a32 32 0 0 0 0-44.16L535.168 344.32a32 32 0 0 0-46.336 0z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/arrow-up.vue?vue&type=script&lang.ts
-var arrow_up_default =  export_helper_default(arrow_up_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var arrow_up_default = export_helper_default(arrow_up_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_112, _hoisted_312);
 } ], [ "__file", "arrow-up.vue" ] ]), back_vue_vue_type_script_lang_default = {
     name: "Back"
 }, _hoisted_114 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_44 = [  createElementVNode("path", {
+}, _hoisted_44 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
-}, null, -1
-/* HOISTED */),  createElementVNode("path", {
+}, null, -1), createElementVNode("path", {
     fill: "currentColor",
     d: "m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/back.vue?vue&type=script&lang.ts
-var back_default =  export_helper_default(back_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var back_default = export_helper_default(back_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_114, _hoisted_44);
 } ], [ "__file", "back.vue" ] ]), camera_vue_vue_type_script_lang_default = {
     name: "Camera"
 }, _hoisted_131 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_330 = [  createElementVNode("path", {
+}, _hoisted_330 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M896 256H128v576h768V256zm-199.424-64-32.064-64h-304.96l-32 64h369.024zM96 192h160l46.336-92.608A64 64 0 0 1 359.552 64h304.96a64 64 0 0 1 57.216 35.328L768.192 192H928a32 32 0 0 1 32 32v640a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V224a32 32 0 0 1 32-32zm416 512a160 160 0 1 0 0-320 160 160 0 0 0 0 320zm0 64a224 224 0 1 1 0-448 224 224 0 0 1 0 448z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/camera.vue?vue&type=script&lang.ts
-var camera_default =  export_helper_default(camera_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var camera_default = export_helper_default(camera_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_131, _hoisted_330);
 } ], [ "__file", "camera.vue" ] ]), close_vue_vue_type_script_lang_default = {
     name: "Close"
 }, _hoisted_156 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_355 = [  createElementVNode("path", {
+}, _hoisted_355 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/close.vue?vue&type=script&lang.ts
-var close_default =  export_helper_default(close_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var close_default = export_helper_default(close_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_156, _hoisted_355);
 } ], [ "__file", "close.vue" ] ]), d_arrow_left_vue_vue_type_script_lang_default = {
     name: "DArrowLeft"
 }, _hoisted_172 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_371 = [  createElementVNode("path", {
+}, _hoisted_371 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M529.408 149.376a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L259.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L197.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224zm256 0a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L515.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L453.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/d-arrow-left.vue?vue&type=script&lang.ts
-var d_arrow_left_default =  export_helper_default(d_arrow_left_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var d_arrow_left_default = export_helper_default(d_arrow_left_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_172, _hoisted_371);
 } ], [ "__file", "d-arrow-left.vue" ] ]), d_arrow_right_vue_vue_type_script_lang_default = {
     name: "DArrowRight"
 }, _hoisted_173 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_372 = [  createElementVNode("path", {
+}, _hoisted_372 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M452.864 149.312a29.12 29.12 0 0 1 41.728.064L826.24 489.664a32 32 0 0 1 0 44.672L494.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L764.736 512 452.864 192a30.592 30.592 0 0 1 0-42.688zm-256 0a29.12 29.12 0 0 1 41.728.064L570.24 489.664a32 32 0 0 1 0 44.672L238.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L508.736 512 196.864 192a30.592 30.592 0 0 1 0-42.688z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/d-arrow-right.vue?vue&type=script&lang.ts
-var d_arrow_right_default =  export_helper_default(d_arrow_right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var d_arrow_right_default = export_helper_default(d_arrow_right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_173, _hoisted_372);
 } ], [ "__file", "d-arrow-right.vue" ] ]), delete_vue_vue_type_script_lang_default = {
     name: "Delete"
 }, _hoisted_180 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_379 = [  createElementVNode("path", {
+}, _hoisted_379 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/delete.vue?vue&type=script&lang.ts
-var delete_default =  export_helper_default(delete_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var delete_default = export_helper_default(delete_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_180, _hoisted_379);
 } ], [ "__file", "delete.vue" ] ]), edit_pen_vue_vue_type_script_lang_default = {
     name: "EditPen"
 }, _hoisted_193 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_392 = [  createElementVNode("path", {
+}, _hoisted_392 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "m199.04 672.64 193.984 112 224-387.968-193.92-112-224 388.032zm-23.872 60.16 32.896 148.288 144.896-45.696L175.168 732.8zM455.04 229.248l193.92 112 56.704-98.112-193.984-112-56.64 98.112zM104.32 708.8l384-665.024 304.768 175.936L409.152 884.8h.064l-248.448 78.336L104.32 708.8zm384 254.272v-64h448v64h-448z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/edit-pen.vue?vue&type=script&lang.ts
-var edit_pen_default =  export_helper_default(edit_pen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var edit_pen_default = export_helper_default(edit_pen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_193, _hoisted_392);
 } ], [ "__file", "edit-pen.vue" ] ]), full_screen_vue_vue_type_script_lang_default = {
     name: "FullScreen"
 }, _hoisted_1118 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3117 = [  createElementVNode("path", {
+}, _hoisted_3117 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "m160 96.064 192 .192a32 32 0 0 1 0 64l-192-.192V352a32 32 0 0 1-64 0V96h64v.064zm0 831.872V928H96V672a32 32 0 1 1 64 0v191.936l192-.192a32 32 0 1 1 0 64l-192 .192zM864 96.064V96h64v256a32 32 0 1 1-64 0V160.064l-192 .192a32 32 0 1 1 0-64l192-.192zm0 831.872-192-.192a32 32 0 0 1 0-64l192 .192V672a32 32 0 1 1 64 0v256h-64v-.064z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/full-screen.vue?vue&type=script&lang.ts
-var full_screen_default =  export_helper_default(full_screen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var full_screen_default = export_helper_default(full_screen_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1118, _hoisted_3117);
 } ], [ "__file", "full-screen.vue" ] ]), info_filled_vue_vue_type_script_lang_default = {
     name: "InfoFilled"
 }, _hoisted_1143 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3142 = [  createElementVNode("path", {
+}, _hoisted_3142 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344zM590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/info-filled.vue?vue&type=script&lang.ts
-var info_filled_default =  export_helper_default(info_filled_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var info_filled_default = export_helper_default(info_filled_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1143, _hoisted_3142);
 } ], [ "__file", "info-filled.vue" ] ]), moon_night_vue_vue_type_script_lang_default = {
     name: "MoonNight"
 }, _hoisted_1172 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_449 = [  createElementVNode("path", {
+}, _hoisted_449 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M384 512a448 448 0 0 1 215.872-383.296A384 384 0 0 0 213.76 640h188.8A448.256 448.256 0 0 1 384 512zM171.136 704a448 448 0 0 1 636.992-575.296A384 384 0 0 0 499.328 704h-328.32z"
-}, null, -1
-/* HOISTED */),  createElementVNode("path", {
+}, null, -1), createElementVNode("path", {
     fill: "currentColor",
     d: "M32 640h960q32 0 32 32t-32 32H32q-32 0-32-32t32-32zm128 128h384a32 32 0 1 1 0 64H160a32 32 0 1 1 0-64zm160 127.68 224 .256a32 32 0 0 1 32 32V928a32 32 0 0 1-32 32l-224-.384a32 32 0 0 1-32-32v-.064a32 32 0 0 1 32-32z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/moon-night.vue?vue&type=script&lang.ts
-var moon_night_default =  export_helper_default(moon_night_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var moon_night_default = export_helper_default(moon_night_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1172, _hoisted_449);
 } ], [ "__file", "moon-night.vue" ] ]), picture_vue_vue_type_script_lang_default = {
     name: "Picture"
 }, _hoisted_1197 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_460 = [  createElementVNode("path", {
+}, _hoisted_460 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M160 160v704h704V160H160zm-32-64h768a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H128a32 32 0 0 1-32-32V128a32 32 0 0 1 32-32z"
-}, null, -1
-/* HOISTED */),  createElementVNode("path", {
+}, null, -1), createElementVNode("path", {
     fill: "currentColor",
     d: "M384 288q64 0 64 64t-64 64q-64 0-64-64t64-64zM185.408 876.992l-50.816-38.912L350.72 556.032a96 96 0 0 1 134.592-17.856l1.856 1.472 122.88 99.136a32 32 0 0 0 44.992-4.864l216-269.888 49.92 39.936-215.808 269.824-.256.32a96 96 0 0 1-135.04 14.464l-122.88-99.072-.64-.512a32 32 0 0 0-44.8 5.952L185.408 876.992z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/picture.vue?vue&type=script&lang.ts
-var picture_default =  export_helper_default(picture_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var picture_default = export_helper_default(picture_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1197, _hoisted_460);
 } ], [ "__file", "picture.vue" ] ]), plus_vue_vue_type_script_lang_default = {
     name: "Plus"
 }, _hoisted_1201 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3200 = [  createElementVNode("path", {
+}, _hoisted_3200 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/plus.vue?vue&type=script&lang.ts
-var plus_default =  export_helper_default(plus_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var plus_default = export_helper_default(plus_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1201, _hoisted_3200);
 } ], [ "__file", "plus.vue" ] ]), refresh_vue_vue_type_script_lang_default = {
     name: "Refresh"
 }, _hoisted_1217 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3216 = [  createElementVNode("path", {
+}, _hoisted_3216 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M771.776 794.88A384 384 0 0 1 128 512h64a320 320 0 0 0 555.712 216.448H654.72a32 32 0 1 1 0-64h149.056a32 32 0 0 1 32 32v148.928a32 32 0 1 1-64 0v-50.56zM276.288 295.616h92.992a32 32 0 0 1 0 64H220.16a32 32 0 0 1-32-32V178.56a32 32 0 0 1 64 0v50.56A384 384 0 0 1 896.128 512h-64a320 320 0 0 0-555.776-216.384z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/refresh.vue?vue&type=script&lang.ts
-var refresh_default =  export_helper_default(refresh_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var refresh_default = export_helper_default(refresh_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1217, _hoisted_3216);
 } ], [ "__file", "refresh.vue" ] ]), right_vue_vue_type_script_lang_default = {
     name: "Right"
 }, _hoisted_1221 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3220 = [  createElementVNode("path", {
+}, _hoisted_3220 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M754.752 480H160a32 32 0 1 0 0 64h594.752L521.344 777.344a32 32 0 0 0 45.312 45.312l288-288a32 32 0 0 0 0-45.312l-288-288a32 32 0 1 0-45.312 45.312L754.752 480z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/right.vue?vue&type=script&lang.ts
-var right_default =  export_helper_default(right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var right_default = export_helper_default(right_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1221, _hoisted_3220);
 } ], [ "__file", "right.vue" ] ]), search_vue_vue_type_script_lang_default = {
     name: "Search"
 }, _hoisted_1225 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3224 = [  createElementVNode("path", {
+}, _hoisted_3224 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "m795.904 750.72 124.992 124.928a32 32 0 0 1-45.248 45.248L750.656 795.904a416 416 0 1 1 45.248-45.248zM480 832a352 352 0 1 0 0-704 352 352 0 0 0 0 704z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/search.vue?vue&type=script&lang.ts
-var search_default =  export_helper_default(search_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var search_default = export_helper_default(search_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1225, _hoisted_3224);
 } ], [ "__file", "search.vue" ] ]), setting_vue_vue_type_script_lang_default = {
     name: "Setting"
 }, _hoisted_1231 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3230 = [  createElementVNode("path", {
+}, _hoisted_3230 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384zm0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/setting.vue?vue&type=script&lang.ts
-var setting_default =  export_helper_default(setting_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var setting_default = export_helper_default(setting_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1231, _hoisted_3230);
 } ], [ "__file", "setting.vue" ] ]), sunny_vue_vue_type_script_lang_default = {
     name: "Sunny"
 }, _hoisted_1253 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3252 = [  createElementVNode("path", {
+}, _hoisted_3252 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M512 704a192 192 0 1 0 0-384 192 192 0 0 0 0 384zm0 64a256 256 0 1 1 0-512 256 256 0 0 1 0 512zm0-704a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32zm0 768a32 32 0 0 1 32 32v64a32 32 0 1 1-64 0v-64a32 32 0 0 1 32-32zM195.2 195.2a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 1 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248zm543.104 543.104a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 0 1-45.248 45.248l-45.248-45.248a32 32 0 0 1 0-45.248zM64 512a32 32 0 0 1 32-32h64a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32zm768 0a32 32 0 0 1 32-32h64a32 32 0 1 1 0 64h-64a32 32 0 0 1-32-32zM195.2 828.8a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248L240.448 828.8a32 32 0 0 1-45.248 0zm543.104-543.104a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248l-45.248 45.248a32 32 0 0 1-45.248 0z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/sunny.vue?vue&type=script&lang.ts
-var sunny_default =  export_helper_default(sunny_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var sunny_default = export_helper_default(sunny_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1253, _hoisted_3252);
 } ], [ "__file", "sunny.vue" ] ]), tools_vue_vue_type_script_lang_default = {
     name: "Tools"
 }, _hoisted_1264 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3263 = [  createElementVNode("path", {
+}, _hoisted_3263 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M764.416 254.72a351.68 351.68 0 0 1 86.336 149.184H960v192.064H850.752a351.68 351.68 0 0 1-86.336 149.312l54.72 94.72-166.272 96-54.592-94.72a352.64 352.64 0 0 1-172.48 0L371.136 936l-166.272-96 54.72-94.72a351.68 351.68 0 0 1-86.336-149.312H64v-192h109.248a351.68 351.68 0 0 1 86.336-149.312L204.8 160l166.208-96h.192l54.656 94.592a352.64 352.64 0 0 1 172.48 0L652.8 64h.128L819.2 160l-54.72 94.72zM704 499.968a192 192 0 1 0-384 0 192 192 0 0 0 384 0z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/tools.vue?vue&type=script&lang.ts
-var tools_default =  export_helper_default(tools_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var tools_default = export_helper_default(tools_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1264, _hoisted_3263);
 } ], [ "__file", "tools.vue" ] ]), view_vue_vue_type_script_lang_default = {
     name: "View"
 }, _hoisted_1283 = {
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 1024 1024"
-}, _hoisted_3282 = [  createElementVNode("path", {
+}, _hoisted_3282 = [ createElementVNode("path", {
     fill: "currentColor",
     d: "M512 160c320 0 512 352 512 352S832 864 512 864 0 512 0 512s192-352 512-352zm0 64c-225.28 0-384.128 208.064-436.8 288 52.608 79.872 211.456 288 436.8 288 225.28 0 384.128-208.064 436.8-288-52.608-79.872-211.456-288-436.8-288zm0 64a224 224 0 1 1 0 448 224 224 0 0 1 0-448zm0 64a160.192 160.192 0 0 0-160 160c0 88.192 71.744 160 160 160s160-71.808 160-160-71.744-160-160-160z"
-}, null, -1
-/* HOISTED */) ];
+}, null, -1) ];
 
-// unplugin-vue:/home/runner/work/element-plus-icons/element-plus-icons/packages/vue/src/components/view.vue?vue&type=script&lang.ts
-var view_default =  export_helper_default(view_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
+var view_default = export_helper_default(view_vue_vue_type_script_lang_default, [ [ "render", function(_ctx, _cache, $props, $setup, $data, $options) {
     return openBlock(), createElementBlock("svg", _hoisted_1283, _hoisted_3282);
 } ], [ "__file", "view.vue" ] ]), LayoutSetting = defineComponent({
     setup() {},
@@ -3382,13 +1908,6 @@ var collectionUtils = {
     exports: {}
 };
 
-/**
- * Loops through the collection and calls the callback for each element. if the callback returns truthy, the loop is broken and returns the same value.
- * @public
- * @param {*} collection The collection to loop through. Needs to have a length property set and have indices set from 0 to length - 1.
- * @param {function} callback The callback to be called for each element. The element will be given as a parameter to the callback. If this callback returns truthy, the loop is broken and the same value is returned.
- * @returns {*} The value that a callback has returned (if truthy). Otherwise nothing.
- */
 (collectionUtils.exports = {}).forEach = function(collection, callback) {
     for (var i = 0; i < collection.length; i++) {
         var result = callback(collection[i]);
@@ -3459,60 +1978,28 @@ var stateHandler$1 = {
     }
 }, browserDetector$1 = browserDetectorExports, forEach$1 = collectionUtilsExports.forEach, forEach = collectionUtilsExports.forEach, elementUtilsMaker = function(options) {
     var getState = options.stateHandler.getState;
-    /**
-     * Tells if the element has been made detectable and ready to be listened for resize events.
-     * @public
-     * @param {element} The element to check.
-     * @returns {boolean} True or false depending on if the element is detectable or not.
-     */    return {
+    return {
         isDetectable: function(element) {
             var state = getState(element);
             return state && !!state.isDetectable;
-        }
-        /**
-     * Marks the element that it has been made detectable and ready to be listened for resize events.
-     * @public
-     * @param {element} The element to mark.
-     */ ,
+        },
         markAsDetectable: function(element) {
             getState(element).isDetectable = !0;
-        }
-        /**
-     * Tells if the element is busy or not.
-     * @public
-     * @param {element} The element to check.
-     * @returns {boolean} True or false depending on if the element is busy or not.
-     */ ,
+        },
         isBusy: function(element) {
             return !!getState(element).busy;
-        }
-        /**
-     * Marks the object is busy and should not be made detectable.
-     * @public
-     * @param {element} element The element to mark.
-     * @param {boolean} busy If the element is busy or not.
-     */ ,
+        },
         markBusy: function(element, busy) {
             getState(element).busy = !!busy;
         }
     };
 }, listenerHandlerMaker = function(idHandler) {
     var eventListeners = {};
-    /**
-     * Gets all listeners for the given element.
-     * @public
-     * @param {element} element The element to get all listeners for.
-     * @returns All listeners for the given element.
-     */    function getListeners(element) {
+    function getListeners(element) {
         var id = idHandler.get(element);
         return void 0 === id ? [] : eventListeners[id] || [];
     }
-    /**
-     * Stores the given listener for the given element. Will not actually add the listener to the element.
-     * @public
-     * @param {element} element The element that should have the listener added.
-     * @param {function} listener The callback that the element has added.
-     */    return {
+    return {
         get: getListeners,
         add: function(element, listener) {
             var id = idHandler.get(element);
@@ -3531,11 +2018,7 @@ var stateHandler$1 = {
     };
 }, idGeneratorMaker = function() {
     var idCount = 1;
-    /**
-     * Generates a new unique id in the context.
-     * @public
-     * @returns {number} A unique id in the context.
-     */    return {
+    return {
         generate: function() {
             return idCount++;
         }
@@ -3543,23 +2026,10 @@ var stateHandler$1 = {
 }, idHandlerMaker = function(options) {
     var idGenerator = options.idGenerator, getState = options.stateHandler.getState;
     return {
-        get: 
-        /**
-     * Gets the resize detector id of the element.
-     * @public
-     * @param {element} element The target element to get the id of.
-     * @returns {string|number|null} The id of the element. Null if it has no id.
-     */
-        function(element) {
+        get: function(element) {
             var state = getState(element);
             return state && void 0 !== state.id ? state.id : null;
-        }
-        /**
-     * Sets the resize detector id of the element. Requires the element to have a resize detector state initialized.
-     * @public
-     * @param {element} element The target element to set the id of.
-     * @returns {string|number|null} The id of the element.
-     */ ,
+        },
         set: function(element) {
             var state = getState(element);
             if (!state) throw new Error("setId required the element to have a resize detection state.");
@@ -3568,9 +2038,7 @@ var stateHandler$1 = {
         }
     };
 }, reporterMaker = function(quiet) {
-    function noop() {
-        //Does nothing.
-    }
+    function noop() {}
     var reporter = {
         log: noop,
         warn: noop,
@@ -3578,12 +2046,9 @@ var stateHandler$1 = {
     };
     if (!quiet && window.console) {
         var attachFunction = function(reporter, name) {
-            //The proxy is needed to be able to call the method with the console context,
-            //since we cannot use bind.
             reporter[name] = function() {
                 var f = console[name];
-                if (f.apply) //IE9 does not support console.log.apply :)
-                f.apply(console, arguments); else for (var i = 0; i < arguments.length; i++) f(arguments[i]);
+                if (f.apply) f.apply(console, arguments); else for (var i = 0; i < arguments.length; i++) f(arguments[i]);
             };
         };
         attachFunction(reporter, "log"), attachFunction(reporter, "warn"), attachFunction(reporter, "error");
@@ -3595,10 +2060,7 @@ var stateHandler$1 = {
     asyncProcess = !0);
     var asyncFrameHandler, batch = Batch(), isProcessing = !1;
     function processBatch() {
-        for (
-        // Save the current batch, and create a new batch so that incoming functions are not added into the currently processing batch.
-        // Continue processing until the top-level batch is empty (functions may be added to the new batch while processing, and so on).
-        isProcessing = !0; batch.size(); ) {
+        for (isProcessing = !0; batch.size(); ) {
             var processingBatch = batch;
             batch = Batch(), processingBatch.process();
         }
@@ -3610,10 +2072,8 @@ var stateHandler$1 = {
     }
     return {
         add: function(level, fn) {
-            !isProcessing && autoProcess && asyncProcess && 0 === batch.size() && 
-            // Since this is async, it is guaranteed to be executed after that the fn is added to the batch.
-            // This needs to be done before, since we're checking the size of the batch to be 0.
-            processBatchAsync(), batch.add(level, fn);
+            !isProcessing && autoProcess && asyncProcess && 0 === batch.size() && processBatchAsync(), 
+            batch.add(level, fn);
         },
         force: function(localAsyncProcess) {
             isProcessing || (void 0 === localAsyncProcess && (localAsyncProcess = asyncProcess), 
@@ -3624,43 +2084,19 @@ var stateHandler$1 = {
 }, stateHandler = stateHandler$1, objectStrategyMaker = function(options) {
     var reporter = (options = options || {}).reporter, batchProcessor = options.batchProcessor, getState = options.stateHandler.getState;
     if (!reporter) throw new Error("Missing required dependency: reporter.");
-    /**
-     * Adds a resize event listener to the element.
-     * @public
-     * @param {element} element The element that should have the listener added.
-     * @param {function} listener The listener callback to be called for each resize event of the element. The element will be given as a parameter to the listener callback.
-     */    function buildCssTextString(rules) {
+    function buildCssTextString(rules) {
         var seperator = options.important ? " !important; " : "; ";
         return (rules.join(seperator) + seperator).trim();
     }
-    /**
-     * Makes an element detectable and ready to be listened for resize events. Will call the callback when the element is ready to be listened for resize changes.
-     * @private
-     * @param {object} options Optional options object.
-     * @param {element} element The element to make detectable
-     * @param {function} callback The callback to be called when the element is ready to be listened for resize changes. Will be called with the element as first parameter.
-     */    
-    /**
-     * Returns the child object of the target element.
-     * @private
-     * @param {element} element The target element.
-     * @returns The object element of the target.
-     */
     function getObject(element) {
         return getState(element).object;
     }
     return {
         makeDetectable: function(options, element, callback) {
             callback || (callback = element, element = options, options = null), (options = options || {}).debug, 
-            browserDetector$1.isIE(8) ? 
-            //IE 8 does not support objects properly. Luckily they do support the resize event.
-            //So do not inject the object and notify that the element is already ready to be listened to.
-            //The event handler for the resize event is attached in the utils.addListener instead.
-            callback(element) : function(element, callback) {
+            browserDetector$1.isIE(8) ? callback(element) : function(element, callback) {
                 var OBJECT_STYLE = buildCssTextString([ "display: block", "position: absolute", "top: 0", "left: 0", "width: 100%", "height: 100%", "border: none", "padding: 0", "margin: 0", "opacity: 0", "z-index: -1000", "pointer-events: none" ]), positionCheckPerformed = !1, style = window.getComputedStyle(element), width = element.offsetWidth, height = element.offsetHeight;
-                //The target element needs to be positioned (everything except static) so the absolute positioned object will be positioned relative to the target element.
-                // Position altering may be performed directly or on object load, depending on if style resolution is possible directly or not.
-                                function mutateDom() {
+                function mutateDom() {
                     function alterPositionStyles() {
                         if ("static" === style.position) {
                             element.style.setProperty("position", "relative", options.important ? "important" : "");
@@ -3671,28 +2107,15 @@ var stateHandler$1 = {
                                 }(value) && (reporter.warn("An element that is positioned static has style." + property + "=" + value + " which is ignored due to the static positioning. The element will need to be positioned relative, so the style." + property + " will be set to 0. Element: ", element), 
                                 element.style.setProperty(property, "0", options.important ? "important" : ""));
                             };
-                            //Check so that there are no accidental styles that will make the element styled differently now that is is relative.
-                            //If there are any, set them to 0 (this should be okay with the user since the style properties did nothing before [since the element was positioned static] anyway).
-                                                        removeRelativeStyles(reporter, element, style, "top"), 
-                            removeRelativeStyles(reporter, element, style, "right"), removeRelativeStyles(reporter, element, style, "bottom"), 
-                            removeRelativeStyles(reporter, element, style, "left");
+                            removeRelativeStyles(reporter, element, style, "top"), removeRelativeStyles(reporter, element, style, "right"), 
+                            removeRelativeStyles(reporter, element, style, "bottom"), removeRelativeStyles(reporter, element, style, "left");
                         }
                     }
-                    // The element may be detached from the DOM, and some browsers does not support style resolving of detached elements.
-                    // The alterPositionStyles needs to be delayed until we know the element has been attached to the DOM (which we are sure of when the onObjectLoad has been fired), if style resolution is not possible.
                     "" !== style.position && (alterPositionStyles(), positionCheckPerformed = !0);
-                    //Add an object element as a child to the target element that will be listened to for resize events.
-                                        var object = document.createElement("object");
+                    var object = document.createElement("object");
                     object.style.cssText = OBJECT_STYLE, object.tabIndex = -1, object.type = "text/html", 
                     object.setAttribute("aria-hidden", "true"), object.onload = function() {
-                        // The object has been loaded, which means that the element now is guaranteed to be attached to the DOM.
-                        positionCheckPerformed || alterPositionStyles()
-                        /*jshint validthis: true */ , 
-                        //Create the style element to be added to the object.
-                        function getDocument(element, callback) {
-                            //Opera 12 seem to call the object.onload before the actual document has been created.
-                            //So if it is not present, poll it with an timeout until it is present.
-                            //TODO: Could maybe be handled better with object.onreadystatechange or similar.
+                        positionCheckPerformed || alterPositionStyles(), function getDocument(element, callback) {
                             if (!element.contentDocument) {
                                 var state = getState(element);
                                 return state.checkForObjectDocumentTimeoutId && window.clearTimeout(state.checkForObjectDocumentTimeoutId), 
@@ -3701,20 +2124,11 @@ var stateHandler$1 = {
                                 }), 100));
                             }
                             callback(element.contentDocument);
-                        }
-                        //Mutating the object element here seems to fire another load event.
-                        //Mutating the inner document of the object element is fine though.
-                        (this, (function(objectDocument) {
-                            //Notify that the element is ready to be listened to.
+                        }(this, (function(objectDocument) {
                             callback(element);
                         }));
-                    }, 
-                    //Safari: This must occur before adding the object to the DOM.
-                    //IE: Does not like that this happens before, even if it is also added after.
-                    browserDetector$1.isIE() || (object.data = "about:blank"), getState(element) && (element.appendChild(object), 
-                    getState(element).object = object, 
-                    //IE: This must occur after adding the object to the DOM.
-                    browserDetector$1.isIE() && (object.data = "about:blank"));
+                    }, browserDetector$1.isIE() || (object.data = "about:blank"), getState(element) && (element.appendChild(object), 
+                    getState(element).object = object, browserDetector$1.isIE() && (object.data = "about:blank"));
                 }
                 getState(element).startSize = {
                     width: width,
@@ -3726,9 +2140,7 @@ var stateHandler$1 = {
             function listenerProxy() {
                 listener(element);
             }
-            if (browserDetector$1.isIE(8)) 
-            //IE 8 does not support object, but supports the resize event directly on elements.
-            getState(element).object = {
+            if (browserDetector$1.isIE(8)) getState(element).object = {
                 proxy: listenerProxy
             }, element.attachEvent("onresize", listenerProxy); else {
                 var object = getObject(element);
@@ -3751,8 +2163,7 @@ var stateHandler$1 = {
     var idHandler = options.idHandler;
     if (!batchProcessor) throw new Error("Missing required dependency: batchProcessor");
     if (!reporter) throw new Error("Missing required dependency: reporter.");
-    //TODO: Could this perhaps be done at installation time?
-        var scrollbarSizes = function() {
+    var scrollbarSizes = function() {
         var child = document.createElement("div");
         child.style.cssText = buildCssTextString([ "position: absolute", "width: 1000px", "height: 1000px", "visibility: hidden", "margin: 0", "padding: 0" ]);
         var container = document.createElement("div");
@@ -3765,8 +2176,6 @@ var stateHandler$1 = {
         };
     }(), detectionContainerClass = "erd_scroll_detection_container";
     function initDocument(targetDocument) {
-        // Inject the scrollbar styling that prevents them from appearing sometimes in Chrome.
-        // The injected container needs to have a class, so that it may be styled with CSS (pseudo elements).
         !function(targetDocument, styleId, containerClass) {
             function injectStyle(style, method) {
                 method = method || function(element) {
@@ -3807,21 +2216,8 @@ var stateHandler$1 = {
     function getShrinkElement(element) {
         return getState(element).container.childNodes[0].childNodes[0].childNodes[1];
     }
-    /**
-     * Adds a resize event listener to the element.
-     * @public
-     * @param {element} element The element that should have the listener added.
-     * @param {function} listener The listener callback to be called for each resize event of the element. The element will be given as a parameter to the listener callback.
-     */    return initDocument(window.document), {
-        makeDetectable: 
-        /**
-     * Makes an element detectable and ready to be listened for resize events. Will call the callback when the element is ready to be listened for resize changes.
-     * @private
-     * @param {object} options Optional options object.
-     * @param {element} element The element to make detectable
-     * @param {function} callback The callback to be called when the element is ready to be listened for resize changes. Will be called with the element as first parameter.
-     */
-        function(options, element, callback) {
+    return initDocument(window.document), {
+        makeDetectable: function(options, element, callback) {
             function debug() {
                 if (options.debug) {
                     var args = Array.prototype.slice.call(arguments);
@@ -3829,14 +2225,10 @@ var stateHandler$1 = {
                 }
             }
             function isUnrendered(element) {
-                // Check the absolute positioned container since the top level container is display: inline.
                 var container = getState(element).container.childNodes[0], style = window.getComputedStyle(container);
                 return !style.width || -1 === style.width.indexOf("px");
- //Can only compute pixel value when rendered.
-                        }
+            }
             function getStyle() {
-                // Some browsers only force layouts when actually reading the style properties of the style object, so make sure that they are all read here,
-                // so that the user of the function can be sure that it will perform the layout here, instead of later (important for batching).
                 var elementStyle = window.getComputedStyle(element), style = {};
                 return style.position = elementStyle.position, style.width = element.offsetWidth, 
                 style.height = element.offsetHeight, style.top = elementStyle.top, style.right = elementStyle.right, 
@@ -3884,10 +2276,7 @@ var stateHandler$1 = {
                     var onAnimationStart = function() {
                         getState(element).onRendered && getState(element).onRendered();
                     };
-                    addEvent(container, "animationstart", onAnimationStart), 
-                    // Store the event handler here so that they may be removed when uninstall is called.
-                    // See uninstall function for an explanation why it is needed.
-                    getState(element).onAnimationStart = onAnimationStart;
+                    addEvent(container, "animationstart", onAnimationStart), getState(element).onAnimationStart = onAnimationStart;
                 }
                 return container;
             }
@@ -3904,24 +2293,13 @@ var stateHandler$1 = {
                                 }(value) && (reporter.warn("An element that is positioned static has style." + property + "=" + value + " which is ignored due to the static positioning. The element will need to be positioned relative, so the style." + property + " will be set to 0. Element: ", element), 
                                 element.style[property] = 0);
                             };
-                            //Check so that there are no accidental styles that will make the element styled differently now that is is relative.
-                            //If there are any, set them to 0 (this should be okay with the user since the style properties did nothing before [since the element was positioned static] anyway).
-                                                        removeRelativeStyles(reporter, element, style, "top"), 
-                            removeRelativeStyles(reporter, element, style, "right"), removeRelativeStyles(reporter, element, style, "bottom"), 
-                            removeRelativeStyles(reporter, element, style, "left");
+                            removeRelativeStyles(reporter, element, style, "top"), removeRelativeStyles(reporter, element, style, "right"), 
+                            removeRelativeStyles(reporter, element, style, "bottom"), removeRelativeStyles(reporter, element, style, "left");
                         }
                     }();
                     var rootContainer = getState(element).container;
                     rootContainer || (rootContainer = injectContainerElement());
-                    // Due to this WebKit bug https://bugs.webkit.org/show_bug.cgi?id=80808 (currently fixed in Blink, but still present in WebKit browsers such as Safari),
-                    // we need to inject two containers, one that is width/height 100% and another that is left/top -1px so that the final container always is 1x1 pixels bigger than
-                    // the targeted element.
-                    // When the bug is resolved, "containerContainer" may be removed.
-                    // The outer container can occasionally be less wide than the targeted when inside inline elements element in WebKit (see https://bugs.webkit.org/show_bug.cgi?id=152980).
-                    // This should be no problem since the inner container either way makes sure the injected scroll elements are at least 1x1 px.
-                                        var left, top, bottom, right, scrollbarWidth = scrollbarSizes.width, scrollbarHeight = scrollbarSizes.height, containerContainerStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: hidden", "z-index: -1", "visibility: hidden", "width: 100%", "height: 100%", "left: 0px", "top: 0px" ]), containerStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: hidden", "z-index: -1", "visibility: hidden" ].concat([ "left: " + (left = (left = -(1 + scrollbarWidth)) ? left + "px" : "0"), "top: " + (top = (top = -(1 + scrollbarHeight)) ? top + "px" : "0"), "right: " + (right = (right = -scrollbarWidth) ? right + "px" : "0"), "bottom: " + (bottom = (bottom = -scrollbarHeight) ? bottom + "px" : "0") ])), expandStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: scroll", "z-index: -1", "visibility: hidden", "width: 100%", "height: 100%" ]), shrinkStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: scroll", "z-index: -1", "visibility: hidden", "width: 100%", "height: 100%" ]), expandChildStyle = buildCssTextString([ "position: absolute", "left: 0", "top: 0" ]), shrinkChildStyle = buildCssTextString([ "position: absolute", "width: 200%", "height: 200%" ]), containerContainer = document.createElement("div"), container = document.createElement("div"), expand = document.createElement("div"), expandChild = document.createElement("div"), shrink = document.createElement("div"), shrinkChild = document.createElement("div");
-                    // Some browsers choke on the resize system being rtl, so force it to ltr. https://github.com/wnr/element-resize-detector/issues/56
-                    // However, dir should not be set on the top level container as it alters the dimensions of the target element in some browsers.
+                    var left, top, bottom, right, scrollbarWidth = scrollbarSizes.width, scrollbarHeight = scrollbarSizes.height, containerContainerStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: hidden", "z-index: -1", "visibility: hidden", "width: 100%", "height: 100%", "left: 0px", "top: 0px" ]), containerStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: hidden", "z-index: -1", "visibility: hidden" ].concat([ "left: " + (left = (left = -(1 + scrollbarWidth)) ? left + "px" : "0"), "top: " + (top = (top = -(1 + scrollbarHeight)) ? top + "px" : "0"), "right: " + (right = (right = -scrollbarWidth) ? right + "px" : "0"), "bottom: " + (bottom = (bottom = -scrollbarHeight) ? bottom + "px" : "0") ])), expandStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: scroll", "z-index: -1", "visibility: hidden", "width: 100%", "height: 100%" ]), shrinkStyle = buildCssTextString([ "position: absolute", "flex: none", "overflow: scroll", "z-index: -1", "visibility: hidden", "width: 100%", "height: 100%" ]), expandChildStyle = buildCssTextString([ "position: absolute", "left: 0", "top: 0" ]), shrinkChildStyle = buildCssTextString([ "position: absolute", "width: 200%", "height: 200%" ]), containerContainer = document.createElement("div"), container = document.createElement("div"), expand = document.createElement("div"), expandChild = document.createElement("div"), shrink = document.createElement("div"), shrinkChild = document.createElement("div");
                     containerContainer.dir = "ltr", containerContainer.style.cssText = containerContainerStyle, 
                     containerContainer.className = detectionContainerClass, container.className = detectionContainerClass, 
                     container.style.cssText = containerStyle, expand.style.cssText = expandStyle, expandChild.style.cssText = expandChildStyle, 
@@ -3929,8 +2307,6 @@ var stateHandler$1 = {
                     expand.appendChild(expandChild), shrink.appendChild(shrinkChild), container.appendChild(expand), 
                     container.appendChild(shrink), containerContainer.appendChild(container), rootContainer.appendChild(containerContainer), 
                     addEvent(expand, "scroll", onExpandScroll), addEvent(shrink, "scroll", onShrinkScroll), 
-                    // Store the event handlers here so that they may be removed when uninstall is called.
-                    // See uninstall function for an explanation why it is needed.
                     getState(element).onExpandScroll = onExpandScroll, getState(element).onShrinkScroll = onShrinkScroll;
                 } else debug("Aborting because element has been uninstalled");
                 function onExpandScroll() {
@@ -3952,12 +2328,7 @@ var stateHandler$1 = {
                 }
                 function updateDetectorElements(done) {
                     var width = element.offsetWidth, height = element.offsetHeight, sizeChanged = width !== getState(element).lastWidth || height !== getState(element).lastHeight;
-                    debug("Storing current size", width, height), 
-                    // Store the size of the element sync here, so that multiple scroll events may be ignored in the event listeners.
-                    // Otherwise the if-check in handleScroll is useless.
-                    storeCurrentSize(element, width, height), 
-                    // Since we delay the processing of the batch, there is a risk that uninstall has been called before the batch gets to execute.
-                    // Since there is no way to cancel the fn executions, we need to add an uninstall guard to all fns of the batch.
+                    debug("Storing current size", width, height), storeCurrentSize(element, width, height), 
                     batchProcessor.add(0, (function() {
                         if (sizeChanged) if (getState(element)) if (areElementsInjected()) {
                             if (options.debug) {
@@ -3967,8 +2338,6 @@ var stateHandler$1 = {
                             updateChildSizes(element, width, height);
                         } else debug("Aborting because element container has not been initialized"); else debug("Aborting because element has been uninstalled");
                     })), batchProcessor.add(1, (function() {
-                        // This function needs to be invoked event though the size is unchanged. The element could have been resized very quickly and then
-                        // been restored to the original size, which will have changed the scrollbar positions.
                         getState(element) ? areElementsInjected() ? positionScrollbars(element, width, height) : debug("Aborting because element container has not been initialized") : debug("Aborting because element has been uninstalled");
                     })), sizeChanged && done && batchProcessor.add(2, (function() {
                         getState(element) ? areElementsInjected() ? done() : debug("Aborting because element container has not been initialized") : debug("Aborting because element has been uninstalled");
@@ -3980,19 +2349,14 @@ var stateHandler$1 = {
                 function notifyListenersIfNeeded() {
                     debug("notifyListenersIfNeeded invoked");
                     var state = getState(element);
-                    // Don't notify if the current size is the start size, and this is the first notification.
-                                        return void 0 === getState(element).lastNotifiedWidth && state.lastWidth === state.startSize.width && state.lastHeight === state.startSize.height ? debug("Not notifying: Size is the same as the start size, and there has been no notification yet.") : 
-                    // Don't notify if the size already has been notified.
-                    state.lastWidth === state.lastNotifiedWidth && state.lastHeight === state.lastNotifiedHeight ? debug("Not notifying: Size already notified") : (debug("Current size not notified, notifying..."), 
+                    return void 0 === getState(element).lastNotifiedWidth && state.lastWidth === state.startSize.width && state.lastHeight === state.startSize.height ? debug("Not notifying: Size is the same as the start size, and there has been no notification yet.") : state.lastWidth === state.lastNotifiedWidth && state.lastHeight === state.lastNotifiedHeight ? debug("Not notifying: Size already notified") : (debug("Current size not notified, notifying..."), 
                     state.lastNotifiedWidth = state.lastWidth, state.lastNotifiedHeight = state.lastHeight, 
                     void forEach$1(getState(element).listeners, (function(listener) {
                         listener(element);
                     })));
                 }
                 function handleScroll() {
-                    debug("Scroll detected."), isUnrendered(element) ? 
-                    // Element is still unrendered. Skip this scroll event.
-                    debug("Scroll event fired while unrendered. Ignoring...") : updateDetectorElements(notifyListenersIfNeeded);
+                    debug("Scroll detected."), isUnrendered(element) ? debug("Scroll event fired while unrendered. Ignoring...") : updateDetectorElements(notifyListenersIfNeeded);
                 }
                 if (debug("registerListenersAndPositionElements invoked."), getState(element)) {
                     getState(element).onRendered = function() {
@@ -4031,8 +2395,7 @@ var stateHandler$1 = {
                     var isInShadowRoot = element.getRootNode && element.getRootNode().contains(element);
                     return element === element.ownerDocument.body || element.ownerDocument.body.contains(element) || isInShadowRoot;
                 }(element) || null === window.getComputedStyle(element);
-                // FireFox returns null style in hidden iframes. See https://github.com/wnr/element-resize-detector/issues/68 and https://bugzilla.mozilla.org/show_bug.cgi?id=795520
-                        }(element) ? install() : (debug("Element is detached"), injectContainerElement(), 
+            }(element) ? install() : (debug("Element is detached"), injectContainerElement(), 
             debug("Waiting until element is attached..."), getState(element).onRendered = function() {
                 debug("Element is now attached"), install();
             });
@@ -4043,14 +2406,7 @@ var stateHandler$1 = {
         },
         uninstall: function(element) {
             var state = getState(element);
-            state && (
-            // Uninstall may have been called in the following scenarios:
-            // (1) Right between the sync code and async batch (here state.busy = true, but nothing have been registered or injected).
-            // (2) In the ready callback of the last level of the batch by another element (here, state.busy = true, but all the stuff has been injected).
-            // (3) After the installation process (here, state.busy = false and all the stuff has been injected).
-            // So to be on the safe side, let's check for each thing before removing.
-            // We need to remove the event listeners, because otherwise the event might fire on an uninstall element which results in an error when trying to get the state of the element.
-            state.onExpandScroll && removeEvent(getExpandElement(element), "scroll", state.onExpandScroll), 
+            state && (state.onExpandScroll && removeEvent(getExpandElement(element), "scroll", state.onExpandScroll), 
             state.onShrinkScroll && removeEvent(getShrinkElement(element), "scroll", state.onShrinkScroll), 
             state.onAnimationStart && removeEvent(state.container, "animationstart", state.onAnimationStart), 
             state.container && element.removeChild(state.container));
@@ -4059,10 +2415,7 @@ var stateHandler$1 = {
     };
 };
 
-/**
- * Resize detection strategy that injects objects to elements in order to detect resize events.
- * Heavily inspired by: http://www.backalleycoder.com/2013/03/18/cross-browser-event-based-element-resize-detection/
- */ function isCollection(obj) {
+function isCollection(obj) {
     return Array.isArray(obj) || void 0 !== obj.length;
 }
 
@@ -4078,36 +2431,9 @@ function isElement(obj) {
     return obj && 1 === obj.nodeType;
 }
 
-/**
- * @typedef idHandler
- * @type {object}
- * @property {function} get Gets the resize detector id of the element.
- * @property {function} set Generate and sets the resize detector id of the element.
- */
-/**
- * @typedef Options
- * @type {object}
- * @property {boolean} callOnAdd    Determines if listeners should be called when they are getting added.
-                                    Default is true. If true, the listener is guaranteed to be called when it has been added.
-                                    If false, the listener will not be guarenteed to be called when it has been added (does not prevent it from being called).
- * @property {idHandler} idHandler  A custom id handler that is responsible for generating, setting and retrieving id's for elements.
-                                    If not provided, a default id handler will be used.
- * @property {reporter} reporter    A custom reporter that handles reporting logs, warnings and errors.
-                                    If not provided, a default id handler will be used.
-                                    If set to false, then nothing will be reported.
- * @property {boolean} debug        If set to true, the the system will report debug messages as default for the listenTo method.
- */
-/**
- * Creates an element resize detector instance.
- * @public
- * @param {Options?} options Optional global options object that will decide how this instance will work.
- */ var elementResizeDetector = function(options) {
-    //idHandler is currently not an option to the listenTo function, so it should not be added to globalOptions.
+var elementResizeDetector = function(options) {
     var idHandler;
-    if ((options = options || {}).idHandler) 
-    // To maintain compatability with idHandler.get(element, readonly), make sure to wrap the given idHandler
-    // so that readonly flag always is true when it's used here. This may be removed next major version bump.
-    idHandler = {
+    if ((options = options || {}).idHandler) idHandler = {
         get: function(element) {
             return options.idHandler.get(element, !0);
         },
@@ -4119,15 +2445,12 @@ function isElement(obj) {
         });
         idHandler = defaultIdHandler;
     }
-    //reporter is currently not an option to the listenTo function, so it should not be added to globalOptions.
-        var reporter = options.reporter;
+    var reporter = options.reporter;
     reporter || (reporter = reporterMaker(!1 === reporter));
-    //batchProcessor is currently not an option to the listenTo function, so it should not be added to globalOptions.
-        var batchProcessor = getOption(options, "batchProcessor", batchProcessorMaker({
+    var batchProcessor = getOption(options, "batchProcessor", batchProcessorMaker({
         reporter: reporter
     })), globalOptions = {};
-    //Options to be used as default for the listenTo function.
-        globalOptions.callOnAdd = !!getOption(options, "callOnAdd", !0), globalOptions.debug = !!getOption(options, "debug", !1);
+    globalOptions.callOnAdd = !!getOption(options, "callOnAdd", !0), globalOptions.debug = !!getOption(options, "debug", !1);
     var detectionStrategy, eventListenerHandler = listenerHandlerMaker(idHandler), elementUtils = elementUtilsMaker({
         stateHandler: stateHandler
     }), desiredStrategy = getOption(options, "strategy", "object"), importantCssRules = getOption(options, "important", !1), strategyOptions = {
@@ -4141,21 +2464,10 @@ function isElement(obj) {
     desiredStrategy = "object") : browserDetector.isIE(9) && (reporter.warn("Scroll strategy is not supported on IE9. Changing to object strategy."), 
     desiredStrategy = "object")), "scroll" === desiredStrategy) detectionStrategy = scrollStrategyMaker(strategyOptions); else {
         if ("object" !== desiredStrategy) throw new Error("Invalid strategy name: " + desiredStrategy);
-        //Calls can be made to listenTo with elements that are still being installed.
-        //Also, same elements can occur in the elements list in the listenTo function.
-        //With this map, the ready callbacks can be synchronized between the calls
-        //so that the ready callback can always be called when an element is ready - even if
-        //it wasn't installed from the function itself.
-                detectionStrategy = objectStrategyMaker(strategyOptions);
+        detectionStrategy = objectStrategyMaker(strategyOptions);
     }
     var onReadyCallbacks = {};
-    /**
-     * Makes the given elements resize-detectable and starts listening to resize events on the elements. Calls the event callback for each event for each element.
-     * @public
-     * @param {Options?} options Optional options object. These options will override the global options. Some options may not be overriden, such as idHandler.
-     * @param {element[]|element} elements The given array of elements to detect resize events of. Single element is also valid.
-     * @param {function} listener The callback to be executed for each resize event for each element.
-     */    return {
+    return {
         listenTo: function(options, elements, listener) {
             function onResizeCallback(element) {
                 var listeners = eventListenerHandler.get(element);
@@ -4166,16 +2478,10 @@ function isElement(obj) {
             function addListener(callOnAdd, element, listener) {
                 eventListenerHandler.add(element, listener), callOnAdd && listener(element);
             }
-            //Options object may be omitted.
-                        if (listener || (listener = elements, elements = options, options = {}), 
-            !elements) throw new Error("At least one element required.");
+            if (listener || (listener = elements, elements = options, options = {}), !elements) throw new Error("At least one element required.");
             if (!listener) throw new Error("Listener required.");
-            if (isElement(elements)) 
-            // A single element has been passed in.
-            elements = [ elements ]; else {
+            if (isElement(elements)) elements = [ elements ]; else {
                 if (!isCollection(elements)) return reporter.error("Invalid arguments. Must be a DOM element or a collection of DOM elements.");
-                // Convert collection to array for plugins.
-                // TODO: May want to check so that all the elements in the collection are valid elements.
                 elements = toArray(elements);
             }
             var elementsReady = 0, callOnAdd = getOption(options, "callOnAdd", globalOptions.callOnAdd), onReadyCallback = getOption(options, "onReady", (function() {})), debug = getOption(options, "debug", globalOptions.debug);
@@ -4184,24 +2490,17 @@ function isElement(obj) {
                 var id = idHandler.get(element);
                 if (debug && reporter.log("Attaching listener to element", id, element), !elementUtils.isDetectable(element)) return debug && reporter.log(id, "Not detectable."), 
                 elementUtils.isBusy(element) ? (debug && reporter.log(id, "System busy making it detectable"), 
-                //The element is being prepared to be detectable. Do not make it detectable.
-                //Just add the listener, because the element will soon be detectable.
                 addListener(callOnAdd, element, listener), onReadyCallbacks[id] = onReadyCallbacks[id] || [], 
                 void onReadyCallbacks[id].push((function() {
                     ++elementsReady === elements.length && onReadyCallback();
-                }))) : (debug && reporter.log(id, "Making detectable..."), 
-                //The element is not prepared to be detectable, so do prepare it and add a listener to it.
-                elementUtils.markBusy(element, !0), detectionStrategy.makeDetectable({
+                }))) : (debug && reporter.log(id, "Making detectable..."), elementUtils.markBusy(element, !0), 
+                detectionStrategy.makeDetectable({
                     debug: debug,
                     important: importantCssRules
                 }, element, (function(element) {
                     if (debug && reporter.log(id, "onElementDetectable"), stateHandler.getState(element)) {
                         elementUtils.markAsDetectable(element), elementUtils.markBusy(element, !1), detectionStrategy.addListener(element, onResizeCallback), 
                         addListener(callOnAdd, element, listener);
-                        // Since the element size might have changed since the call to "listenTo", we need to check for this change,
-                        // so that a resize event may be emitted.
-                        // Having the startSize object is optional (since it does not make sense in some cases such as unrendered elements), so check for its existance before.
-                        // Also, check the state existance before since the element may have been uninstalled in the installation process.
                         var state = stateHandler.getState(element);
                         if (state && state.startSize) {
                             var width = element.offsetWidth, height = element.offsetHeight;
@@ -4210,26 +2509,19 @@ function isElement(obj) {
                         onReadyCallbacks[id] && forEach(onReadyCallbacks[id], (function(callback) {
                             callback();
                         }));
-                    } else 
-                    // The element has been unisntalled before being detectable.
-                    debug && reporter.log(id, "Element uninstalled before being detectable.");
+                    } else debug && reporter.log(id, "Element uninstalled before being detectable.");
                     delete onReadyCallbacks[id], ++elementsReady === elements.length && onReadyCallback();
                 })));
-                debug && reporter.log(id, "Already detecable, adding listener."), 
-                //The element has been prepared to be detectable and is ready to be listened to.
-                addListener(callOnAdd, element, listener), elementsReady++;
+                debug && reporter.log(id, "Already detecable, adding listener."), addListener(callOnAdd, element, listener), 
+                elementsReady++;
             })), elementsReady === elements.length && onReadyCallback();
         },
         removeListener: eventListenerHandler.removeListener,
         removeAllListeners: eventListenerHandler.removeAllListeners,
         uninstall: function(elements) {
             if (!elements) return reporter.error("At least one element is required.");
-            if (isElement(elements)) 
-            // A single element has been passed in.
-            elements = [ elements ]; else {
+            if (isElement(elements)) elements = [ elements ]; else {
                 if (!isCollection(elements)) return reporter.error("Invalid arguments. Must be a DOM element or a collection of DOM elements.");
-                // Convert collection to array for plugins.
-                // TODO: May want to check so that all the elements in the collection are valid elements.
                 elements = toArray(elements);
             }
             forEach(elements, (function(element) {
@@ -4248,17 +2540,12 @@ function getOption(options, name, defaultValue) {
     return null == value && void 0 !== defaultValue ? defaultValue : value;
 }
 
-var elementResizeDetectorMaker =  getDefaultExportFromCjs(elementResizeDetector);
+var elementResizeDetectorMaker = getDefaultExportFromCjs(elementResizeDetector);
 
-/**
- * 监听元素宽高缩放
- * @param el
- * @param cb
- */ const elementResize = (el, cb) => {
+const elementResize = (el, cb) => {
     const erd = elementResizeDetectorMaker();
     let timer = null;
     erd.listenTo(el, (() => {
-        // 添加防抖模式
         null !== timer && clearTimeout(timer), timer = setTimeout((() => {
             cb && cb(el), clearTimeout(timer);
         }), 200);
@@ -4297,12 +2584,7 @@ var elementResizeDetectorMaker =  getDefaultExportFromCjs(elementResizeDetector)
     source: source
 });
 
-/**
- *  根据传入元素宽度动态设置col的span
- * @param el
- * @param minWidth
- * @returns
- */ var MenuItemTitle = defineComponent({
+var MenuItemTitle = defineComponent({
     props: {
         meta: {
             type: Object,
@@ -4670,7 +2952,6 @@ const ns$b = useNamespace("layout"), layouts = {
     if (Array.isArray(objValue)) return srcValue;
 };
 
-// 引入布局组件
 const NextLayout = withInstall(defineComponent({
     name: "NextLayout",
     props: {
@@ -4696,9 +2977,7 @@ const NextLayout = withInstall(defineComponent({
             _config.value = mergeWith(_config.value, cfg, customizerCoverArray), updateThemeColorCssVar(_config.value?.setting), 
             emit("changeOptions", _config.value);
         };
-        return provide("updateOptions", updateOptions), 
-        // 外部props数据触发更新
-        watch((() => props.options), (cfg => {
+        return provide("updateOptions", updateOptions), watch((() => props.options), (cfg => {
             updateOptions(cfg);
         }), {
             deep: !0,
@@ -4711,9 +2990,7 @@ const NextLayout = withInstall(defineComponent({
     render() {
         const props = this.$props, slots = this.$slots, layout = this.options.setting?.layout || "transverse", activeLayout = ref(layouts[layout]);
         watchEffect((() => {
-            activeLayout.value = layouts[layout], 
-            // 当配置项没有定义时使用默认布局
-            activeLayout.value || (activeLayout.value = layouts.transverse);
+            activeLayout.value = layouts[layout], activeLayout.value || (activeLayout.value = layouts.transverse);
         }));
         const _activeSlots = {};
         for (const key in slots) Object.prototype.hasOwnProperty.call(slots, key) && (_activeSlots[key] = () => slots[key]?.());
@@ -4924,34 +3201,7 @@ const NextContainer = withInstall(defineComponent({
     }
 }));
 
-/**
- * Performs a deep comparison between two values to determine if they are
- * equivalent.
- *
- * **Note:** This method supports comparing arrays, array buffers, booleans,
- * date objects, error objects, maps, numbers, `Object` objects, regexes,
- * sets, strings, symbols, and typed arrays. `Object` objects are compared
- * by their own, not inherited, enumerable properties. Functions and DOM
- * nodes are compared by strict equality, i.e. `===`.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- * @example
- *
- * var object = { 'a': 1 };
- * var other = { 'a': 1 };
- *
- * _.isEqual(object, other);
- * // => true
- *
- * object === other;
- * // => false
- */ var defaultPropsConfig = {
+var defaultPropsConfig = {
     className: {
         type: String,
         default: ""
@@ -5035,7 +3285,6 @@ var defaultConfig$1 = {
     cellAlign: "center",
     columnMinWidth: "100px",
     columns: [],
-    // 搜兰模块
     showSearchForm: !0,
     showHeaderMenu: !0,
     showSearchLabel: !0,
@@ -5044,7 +3293,6 @@ var defaultConfig$1 = {
     searchLabelWidth: "5em",
     searchColumnMinWidth: 300,
     searchColumns: [],
-    // 操作栏显示按钮
     addBtn: !0,
     viewBtn: !0,
     delBtn: !0,
@@ -5058,9 +3306,7 @@ var defaultConfig$1 = {
     operationsBtnText: !0,
     operationsBtnSize: "small",
     addBtnText: "",
-    // 分页
     isPagination: !0,
-    // 新增/编辑/详情 弹框
     dialogTitle: "",
     dialogWidth: "60%",
     dialogFullscreen: !1,
@@ -5071,11 +3317,7 @@ var defaultConfig$1 = {
     formColumnMinWidth: 350
 };
 
-/**
- * 自定义table中column的slot name
- * @param prop
- * @returns
- */ const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$8 = useNamespace("spin-loading");
+const columnSlotName = prop => "column-" + prop, searchFormSlotName = prop => "search-" + prop, formSlotName = prop => "form-" + prop, ns$8 = useNamespace("spin-loading");
 
 var SpinLoading = defineComponent({
     name: "NextSpinLoading",
@@ -5228,10 +3470,9 @@ var SpinLoading = defineComponent({
                     placeholder: placeholder,
                     onInput: e => ((val, key) => {
                         let value = val;
-                        value = value.replace(/[^0-9\.]/g, ""), 
-                        // 如果有多个小数点，则只保留第一个
-                        value = value.replace(/^\./, "0."), value = value.replace(/\.{2,}/g, "."), value = value.replace(".", "DUMMY"), 
-                        value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), formParams.value[key] = value;
+                        value = value.replace(/[^0-9\.]/g, ""), value = value.replace(/^\./, "0."), value = value.replace(/\.{2,}/g, "."), 
+                        value = value.replace(".", "DUMMY"), value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), 
+                        formParams.value[key] = value;
                     })(e, col.prop)
                 }, {
                     prefix: col.prefix ? () => col.prefix(formParams, col) : null,
@@ -5367,32 +3608,22 @@ var HeaderSearch = defineComponent({
         }, onClearSearch = () => {
             _initSearchFormParams(), onConfirmSearch(), emit("clearSearch");
         }, searchSpan = ref(options.searchSpan), columnsLength = columns.value.length, sliceIndex = ref(columnsLength), showColumns = ref(columns.value), moreColumns = ref([]), isColumnMinWidth = ref(!1), {proxy: proxy} = getCurrentInstance();
-        // 清空重置表单并查询
-                onMounted((() => {
+        onMounted((() => {
             const tableSearchFormEl = proxy.$refs.tableSearchForm?.$el;
             tableSearchFormEl && elementResize(tableSearchFormEl, (el => {
                 (el => {
                     const formWidth = el.clientWidth, minWidth = options.searchColumnMinWidth;
-                    // 一行最多多少列
                     let span = Math.floor(formWidth / minWidth);
-                    // 每列的span数量
-                                        searchSpan.value = Math.ceil(24 / span);
+                    searchSpan.value = Math.ceil(24 / span);
                     const remainder = 24 % searchSpan.value;
-                    if (remainder && (
-                    // 当不能被24除尽，取余作为span数量
-                    searchSpan.value = remainder, span = 24 / searchSpan.value), sliceIndex.value = span, 
+                    if (remainder && (searchSpan.value = remainder, span = 24 / searchSpan.value), sliceIndex.value = span, 
                     columnsLength >= sliceIndex.value) {
                         const index = sliceIndex.value - 1;
                         showColumns.value = columns.value.slice(0, index), moreColumns.value = columns.value.slice(index);
-                    } else 
-                    // 当总长度小于span时
-                    showColumns.value = columns.value, moreColumns.value = [];
-                    // 当column小于最新宽度时修改缩小（展开/收起）按钮
-                                        const columnWidth = Math.floor(formWidth / span);
+                    } else showColumns.value = columns.value, moreColumns.value = [];
+                    const columnWidth = Math.floor(formWidth / span);
                     isColumnMinWidth.value = columnWidth < minWidth;
-                })(el), 
-                // 头部搜索栏窗口大小发生变化时，更新table内容高度
-                emit("zoomResize");
+                })(el), emit("zoomResize");
             }));
         }));
         const isExpand = ref(!1), onSwitchExpand = () => {
@@ -5617,7 +3848,6 @@ const TableColumnDynamic = defineComponent({
         }
     },
     setup(props, {slots: slots}) {
-        // const { t } = useLocale();
         const columnSlots = inject("columnSlots"), column_slots = {};
         columnSlots.value.forEach((slotName => {
             column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
@@ -5634,9 +3864,7 @@ const TableColumnDynamic = defineComponent({
                 });
                 var s;
             })) ]);
-            if (slots[columnSlotName(columnOption.prop)]) 
-            // 如果有传入slot，根据 #column-XXX 自定义显示内容
-            return slots[columnSlotName(columnOption.prop)]({
+            if (slots[columnSlotName(columnOption.prop)]) return slots[columnSlotName(columnOption.prop)]({
                 row: row,
                 index: $index
             });
@@ -5670,7 +3898,6 @@ const TableColumnDynamic = defineComponent({
             formatter: columnOption.formatter || null,
             showOverflowTooltip: valueExist(columnOption.showOverflowTooltip, !0)
         }, {
-            // header: () => <NextTextEllipsis content={t(columnOption.label)}></NextTextEllipsis>,
             default: ({row: row, $index: $index}) => renderCustomItem(row, $index)
         }) ]);
     }
@@ -5923,7 +4150,6 @@ var NextDialog$1 = defineComponent({
 const tableSelectConfig = {
     selection: !1,
     selectType: "radio",
-    // 操作栏显示按钮
     addBtn: !1,
     viewBtn: !1,
     delBtn: !1,
@@ -5947,7 +4173,9 @@ var defaultConfig = {
     tableSelectConfig: tableSelectConfig,
     isEditing: !0,
     showResetBtn: !0,
-    showFooter: !0
+    showFooter: !0,
+    submitText: null,
+    resetText: null
 };
 
 const ns$6 = useNamespace("form");
@@ -5983,8 +4211,7 @@ var NumberRangePicker = defineComponent({
         }, controls = ref(!0), numberRangeRef = ref();
         onMounted((() => {
             const element = numberRangeRef.value;
-            // 根据宽度判断是否隐藏加减控制按钮
-                        elementResize(element, (el => {
+            elementResize(element, (el => {
                 const width = el.clientWidth;
                 controls.value = width > 200;
             }));
@@ -6390,10 +4617,6 @@ var UploadImage = defineComponent({
     }
 });
 
-function _isSlot$2(s) {
-    return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s);
-}
-
 const ns$3 = useNamespace("form");
 
 var Element$4 = defineComponent({
@@ -6419,13 +4642,10 @@ var Element$4 = defineComponent({
             (() => {
                 const columns = props.columns;
                 _formColumns.value = columns;
-                // 可以编辑时
                 for (let i = 0; i < columns.length; i++) {
                     const col = columns[i], value = formDatum[col.prop];
-                    // 编辑时传入的值
-                                        isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
-                    // 设置表单验证rules
-                                        const rules = [], {label: label} = col;
+                    isValueExist(value) ? formParams[col.prop] = value : formParams[col.prop] = isValueExist(col.defaultValue) ? col.defaultValue : "";
+                    const rules = [], {label: label} = col;
                     col.required && rules.push({
                         required: !0,
                         message: label + t("next.form.requiredInput"),
@@ -6433,9 +4653,7 @@ var Element$4 = defineComponent({
                     }), col.rules?.length && rules.push(...col.rules), formRules[col.prop] = rules, 
                     !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
                         data?.length && (col.dicData = data);
-                    })), 
-                    // 当默认设置了disabled时不操作，只有当默认没有设置或者为false时才跟随isEditing
-                    "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
+                    })), "boolean" == typeof col.disabled && col.disabled || (col.disabled = !_isEditing.value);
                 }
             })();
         }), {
@@ -6450,8 +4668,7 @@ var Element$4 = defineComponent({
                 null !== timer && clearTimeout(timer), timer = setTimeout((() => {
                     colSpan.value = ((el, minWidth = 350) => {
                         const el_width = el.clientWidth;
-                        // 一行最多多少列
-                                                let span = Math.floor(el_width / minWidth);
+                        let span = Math.floor(el_width / minWidth);
                         return span > 4 && (span = 4), Math.ceil(24 / span);
                     })(el, options.columnMinWidth), clearTimeout(timer);
                 }), 200);
@@ -6467,9 +4684,7 @@ var Element$4 = defineComponent({
                     }), (() => {
                         submitLoading.value = !1;
                     }));
-                } else 
-                // eslint-disable-next-line no-console
-                console.error("error submit!", fields);
+                } else console.error("error submit!", fields);
             }));
         }, onResetForm = () => {
             const formInstance = ruleFormRef.value;
@@ -6577,10 +4792,9 @@ var Element$4 = defineComponent({
                     placeholder: placeholder,
                     onInput: event => ((val, key) => {
                         let value = val;
-                        value = value.replace(/[^0-9\.]/g, ""), 
-                        // 如果有多个小数点，则只保留第一个
-                        value = value.replace(/^\./, "0."), value = value.replace(/\.{2,}/g, "."), value = value.replace(".", "DUMMY"), 
-                        value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), formParams[key] = Number(value);
+                        value = value.replace(/[^0-9\.]/g, ""), value = value.replace(/^\./, "0."), value = value.replace(/\.{2,}/g, "."), 
+                        value = value.replace(".", "DUMMY"), value = value.replace(/\./g, ""), value = value.replace("DUMMY", "."), 
+                        formParams[key] = Number(value);
                     })(event, col.prop),
                     onChange: event => col.onChange?.(event, col, formParams, formColumns)
                 }, {
@@ -6764,7 +4978,7 @@ var Element$4 = defineComponent({
             getFormParams: () => toRaw(formParams)
         });
         const renderContent = () => {
-            let _slot, _slot2, _slot3;
+            let _slot;
             return createVNode(ElForm, {
                 ref: ruleFormRef,
                 class: ns$3.b(),
@@ -6772,53 +4986,56 @@ var Element$4 = defineComponent({
                 model: formParams,
                 size: options.size
             }, {
-                default: () => [ createVNode(ElRow, {
-                    gutter: 20
-                }, _isSlot$2(_slot = formColumns.map((column => !column.hide && createVNode(ElCol, {
-                    span: valueExist(column.span, colSpan.value)
-                }, {
-                    default: () => [ createVNode(ElFormItem, {
-                        prop: column.prop,
-                        required: column.required,
-                        rules: formRules[column.prop],
-                        style: {
-                            "--form-label-width": valueExist(options.formLabelWidth, options.labelWidth)
-                        }
+                default: () => {
+                    return [ createVNode(ElRow, {
+                        gutter: 20
+                    }, (s = _slot = formColumns.map((column => !column.hide && createVNode(ElCol, {
+                        span: valueExist(column.span, colSpan.value)
                     }, {
-                        label: () => column.label ? createVNode(Fragment, null, [ createVNode(NextTextEllipsis, {
-                            content: t(column.label),
-                            class: ns$3.e("item-label")
-                        }, null), column.tip ? createVNode(ElTooltip, {
-                            effect: "dark",
-                            content: column.tip,
-                            placement: "top"
+                        default: () => [ createVNode(ElFormItem, {
+                            prop: column.prop,
+                            required: column.required,
+                            rules: formRules[column.prop],
+                            style: {
+                                "--form-label-width": valueExist(options.formLabelWidth, options.labelWidth)
+                            }
                         }, {
-                            default: () => [ createVNode(ElIcon, {
-                                style: {
-                                    "margin-left": "5px"
-                                },
-                                color: "#f3d19e"
+                            label: () => column.label ? createVNode(Fragment, null, [ createVNode(NextTextEllipsis, {
+                                content: t(column.label),
+                                class: ns$3.e("item-label")
+                            }, null), column.tip ? createVNode(ElTooltip, {
+                                effect: "dark",
+                                content: column.tip,
+                                placement: "top"
                             }, {
-                                default: () => [ createVNode(info_filled_default, null, null) ]
-                            }) ]
-                        }) : null ]) : null,
-                        default: () => renderFormItem(column)
-                    }) ]
-                })))) ? _slot : {
-                    default: () => [ _slot ]
-                }), _isEditing.value && options.showFooter ? createVNode("div", {
-                    class: ns$3.e("footer")
-                }, [ createVNode(ElButton, {
-                    type: "primary",
-                    loading: submitLoading.value,
-                    onClick: onSubmitAddEdit
-                }, _isSlot$2(_slot2 = t("next.form.submit")) ? _slot2 : {
-                    default: () => [ _slot2 ]
-                }), options.showResetBtn ? createVNode(ElButton, {
-                    onClick: onResetForm
-                }, _isSlot$2(_slot3 = t("next.form.reset")) ? _slot3 : {
-                    default: () => [ _slot3 ]
-                }) : null ]) : null ]
+                                default: () => [ createVNode(ElIcon, {
+                                    style: {
+                                        "margin-left": "5px"
+                                    },
+                                    color: "#f3d19e"
+                                }, {
+                                    default: () => [ createVNode(info_filled_default, null, null) ]
+                                }) ]
+                            }) : null ]) : null,
+                            default: () => renderFormItem(column)
+                        }) ]
+                    }))), "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !isVNode(s) ? _slot : {
+                        default: () => [ _slot ]
+                    })), _isEditing.value && options.showFooter ? createVNode("div", {
+                        class: ns$3.e("footer")
+                    }, [ createVNode(ElButton, {
+                        type: "primary",
+                        loading: submitLoading.value,
+                        onClick: onSubmitAddEdit
+                    }, {
+                        default: () => [ t(options.submitText) || t("next.form.submit") ]
+                    }), options.showResetBtn ? createVNode(ElButton, {
+                        onClick: onResetForm
+                    }, {
+                        default: () => [ t(options.resetText) || t("next.form.reset") ]
+                    }) : null ]) : null ];
+                    var s;
+                }
             });
         };
         return () => createVNode(Fragment, null, [ renderContent() ]);
@@ -6851,9 +5068,8 @@ var AddEditForm = defineComponent({
         }));
         const _options = inject("options", {}), options = deepClone(isRef(_options) ? unref(_options) : _options);
         options.columnMinWidth = options.formColumnMinWidth, options.isEditing = props.isEditing;
-        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns).map((col => (
-        // 重新赋值hide，避免被search栏的影响
-        col.hide = valueExist(col.formHide, col.hide, !1), col))), onSubmit = (...arg) => {
+        const formRef = ref(), formDatum = deepClone(isRef(props.formDatum) ? unref(props.formDatum) : props.formDatum), _columns = deepClone(props.columns).map((col => (col.hide = valueExist(col.formHide, col.hide, !1), 
+        col))), onSubmit = (...arg) => {
             emit("submit", ...arg);
         };
         expose({
@@ -6894,11 +5110,9 @@ var Element$3 = defineComponent({
             const cfg = unref(props.options);
             return merge$1(_config, cfg);
         })), options = unref(_options);
-        provide("options", computed((() => _options.value))), // prettier-ignore
-        provide("ns", ns$2);
+        provide("options", computed((() => _options.value))), provide("ns", ns$2);
         const {t: t} = useLocale(), _columns = ref(options.columns), _searchColumns = ref([]), _formColumns = ref([]), _updateColumnsAll = ops => {
             ((options, cb) => {
-                // 处理表单模块column，这里使用reactive是关键，当数据更新后界面更新
                 const _columns = reactive(options.columns), _loadDicData = col => {
                     !col.dicData?.length && col.loadDicData && col.loadDicData(col, (data => {
                         data?.length && (col.dicData = data);
@@ -6955,14 +5169,8 @@ var Element$3 = defineComponent({
                         treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseForm, col.treeSelecNodeCollapse, null),
                         treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeForm, col.treeSelecCurrentChange, null)
                     };
-                    /**
-     * 对应属性指向原数据，search和form共享数据和方法
-     * 好处是数据共享，缺点是共享数据会相互篡改
-     */
-                    // return Object.assign(col, item);
-                                        return !col.dicData?.length && col.loadDicData && 
-                    // 只共享dicData属性，替换 Object.assign
-                    shareObjectProperty(item, col, "dicData"), item;
+                    return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
+                    item;
                 })).filter((o => o.sort && o.prop)).sort(((a, b) => a.sort - b.sort)), _formatSearchColumn = (col, index) => {
                     const item = {
                         prop: col.prop,
@@ -6980,7 +5188,6 @@ var Element$3 = defineComponent({
                         append: valueExist(col.searchAppend, col.append, null),
                         hide: valueExist(col.searchHide, !1),
                         sort: valueExist(col.searchSort, col.sort, index),
-                        // tree select
                         nodeKey: valueExist(col.searchNodeKey, col.nodeKey),
                         accordion: valueExist(col.searchAccordion, col.accordion, !1),
                         leafOnly: valueExist(col.searchLeafOnly, col.leafOnly, !1),
@@ -6996,11 +5203,8 @@ var Element$3 = defineComponent({
                         treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseSearch, col.treeSelecNodeCollapse, null),
                         treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeSearch, col.treeSelecCurrentChange, null)
                     };
-                    // 对应属性指向原数据，search和form共享数据和方法
-                    // return Object.assign(col, item);
-                                        return !col.dicData?.length && col.loadDicData && 
-                    // 只共享dicData属性，替换 Object.assign
-                    shareObjectProperty(item, col, "dicData"), item;
+                    return !col.dicData?.length && col.loadDicData && shareObjectProperty(item, col, "dicData"), 
+                    item;
                 }, initSearchColumns = options.searchColumns.map(((col, index) => (_loadDicData(col), 
                 _formatSearchColumn(col, index)))), initSearchColumnsLength = initSearchColumns.length, mergeSearchColumns = initSearchColumns.concat((list => {
                     let cols = [];
@@ -7014,27 +5218,20 @@ var Element$3 = defineComponent({
                     columns: _columns
                 });
             })(ops, (({formColumns: formColumns, searchColumns: searchColumns, columns: columns}) => {
-                // 获取搜索栏数据
-                _searchColumns.value = searchColumns, 
-                // 获取新增编辑表单栏数据
-                _formColumns.value = formColumns, 
-                // 获取table column数据
-                _columns.value = columns;
+                _searchColumns.value = searchColumns, _formColumns.value = formColumns, _columns.value = columns;
             }));
         }, tableData = ref(props.data), _searchFormParams = ref((() => {
             const list = _searchColumns.value;
             let params = {};
             for (let i = 0; i < list.length; i++) {
                 const item = list[i];
-                // 设置搜索表单默认值，只取有值属性
-                                isValueExist(item.defaultValue) && (params[item.prop] = item.defaultValue);
+                isValueExist(item.defaultValue) && (params[item.prop] = item.defaultValue);
             }
             return params;
         })()), onConfirmSearch = searchParams => {
             const params = deepClone(toRaw(searchParams));
-            // 参数对比，当查询参数有修改时设置分页为第一页
-                        baseIsEqual(_searchFormParams.value, params) || (props.page.pageIndex = 1, 
-            _searchFormParams.value = params), emit("confirm-search", params);
+            baseIsEqual(_searchFormParams.value, params) || (props.page.pageIndex = 1, _searchFormParams.value = params), 
+            emit("confirm-search", params);
         }, onClearSearch = () => {
             emit("clear-search");
         }, onClickRefresh = () => {
@@ -7044,10 +5241,7 @@ var Element$3 = defineComponent({
             tableData.value = list;
         }), {
             immediate: !0
-        }), 
-        // 监听配置项数据
-        watch((() => _options), (ops => {
-            // 重新格式化所有模块的columns
+        }), watch((() => _options), (ops => {
             _updateColumnsAll(ops.value);
         }), {
             deep: !0,
@@ -7064,9 +5258,7 @@ var Element$3 = defineComponent({
         onMounted((() => {
             elementResize(crudTableRef.value, (() => {
                 updateTableContentHeight();
-            })), options.initLoadData && 
-            // 初始默认加载数据
-            onConfirmSearch(_searchFormParams.value), options.fullscreenchangeContentHeight && (document.addEventListener("fullscreenchange", fullscreenChangeListener), 
+            })), options.initLoadData && onConfirmSearch(_searchFormParams.value), options.fullscreenchangeContentHeight && (document.addEventListener("fullscreenchange", fullscreenChangeListener), 
             document.addEventListener("keydown", fullscreenChangeListener));
         })), onUnmounted((() => {
             options.fullscreenchangeContentHeight && (document.removeEventListener("fullscreenchange", fullscreenChangeListener), 
@@ -7101,9 +5293,7 @@ var Element$3 = defineComponent({
         }, onClickRowEdit = scoped => {
             const {dialogTitle: dialogTitle} = options;
             addEditDialog.isEditing = !0, addEditDialog.title = dialogTitle + " " + t("next.table.edit"), 
-            addEditDialog.rowInfo = scoped.row, emit("click-add-edit", scoped.row), 
-            // 将编辑弹框中的表单数据传出去
-            nextTick((() => {
+            addEditDialog.rowInfo = scoped.row, emit("click-add-edit", scoped.row), nextTick((() => {
                 addEditDialog.visible = !0;
             }));
         }, onClickRowView = scoped => {
@@ -7121,21 +5311,16 @@ var Element$3 = defineComponent({
         for (const key in slots) key.includes("column-") ? columnSlots.value.push(key) : key.includes("search-") ? searchFormSlots.value.push(key) : key.includes("form-") && addEditFormSlots.value.push(key);
         provide("columnSlots", columnSlots), provide("searchFormSlots", searchFormSlots), 
         provide("addEditFormSlots", addEditFormSlots);
-        // 自定义序号
         const _customRowIndex = index => {
             const {pageIndex: pageIndex, pageSize: pageSize} = props.page;
             return (pageIndex - 1) * pageSize + (index + 1);
         }, _sortNumberMinWidth = computed((() => {
             const {total: total} = props.page, tempElement = document.createElement("span");
-            tempElement.innerText = total, tempElement.style.visibility = "hidden", // 隐藏临时元素
-            document.body.appendChild(tempElement);
-            // 将临时元素添加到文档中
+            tempElement.innerText = total, tempElement.style.visibility = "hidden", document.body.appendChild(tempElement);
             const width = tempElement.getBoundingClientRect().width, minWidth = Math.ceil(width) + 25;
-            // 从文档中移除临时元素
             return document.body.removeChild(tempElement), minWidth > 50 ? minWidth : 50;
         })), searchFrom_slots = {};
-        // 根据总条数自动设置序号列宽度
-                searchFormSlots.value.forEach((slotName => {
+        searchFormSlots.value.forEach((slotName => {
             searchFrom_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
         }));
         const column_slots = {};
@@ -7158,7 +5343,6 @@ var Element$3 = defineComponent({
             onClickRowAdd: onClickHeaderAdd,
             columns: _columns.value,
             getFormExpose: () => addEditFormRef.value?.getFormExpose(),
-            // options数据更新异步调用
             updateColumns: ops => {
                 _updateColumnsAll(ops);
             }
@@ -7353,11 +5537,6 @@ const NextUpload = withInstall(defineComponent({
     }
 })), ns = useNamespace("video-player");
 
-// const enum VideoType {
-// 	mp4 = 'video/mp4',
-// 	flv = 'video/x-flv',
-// 	m3u8 = 'application/x-mpegURL',
-// }
 var Element$1 = defineComponent({
     name: "NextVideoPlayer",
     props: {
@@ -7402,13 +5581,8 @@ var Element$1 = defineComponent({
                         mediaRatio > canvasRatio ? (dw = canvas.width, dh = canvas.width / mediaRatio, dx = 0, 
                         dy = Math.round((canvas.height - dh) / 2)) : mediaRatio === canvasRatio ? (dw = canvas.width, 
                         dh = canvas.height, dx = 0, dy = 0) : mediaRatio < canvasRatio && (dw = canvas.height * mediaRatio, 
-                        dh = canvas.height, dx = Math.round((canvas.width - dw) / 2), dy = 0)
-                        /**
-   * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-   * sx, sy 资源文件左上角坐标， sw, sh 需要截取资源文件宽高
-   * dx, dy 目标文件画布的左上角坐标， dw, dh 目标画布上绘制的宽高
-   */ , ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), detectFrameCanvas && ctx.drawImage(detectFrameCanvas, 0, 0);
-                        // 图片质量设置，0-1区间，超出会使用默认值0.92
+                        dh = canvas.height, dx = Math.round((canvas.width - dw) / 2), dy = 0), ctx.drawImage(videoElement, 0, 0, sw, sh, dx, dy, dw, dh), 
+                        detectFrameCanvas && ctx.drawImage(detectFrameCanvas, 0, 0);
                         let imageDataURL = canvas.toDataURL("image/png", .92).replace("image/png", "image/octet-stream");
                         imageDataURL = imageDataURL.replace(/^data:image\/[^;]+/, "data:application/octet-stream");
                         const downloadLink = document.createElement("a");
@@ -7548,7 +5722,6 @@ var Element$1 = defineComponent({
                     playerMpgets.value.on("error", (() => {
                         emit("error", video);
                     })), _createScreenshotBtn(container);
-                    // 创建一个canvas画布，并将画布放置播放器前面，防止遮挡播放器上面其他功能按钮
                     const canvasContainer = document.createElement("div");
                     container.children[0].appendChild(canvasContainer), playerMpgets.value.on("metadata_arrived", (() => {
                         emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);
@@ -7619,7 +5792,7 @@ const NextDragResize = withInstall(defineComponent({
     setup: () => () => createVNode(Fragment, null, [ createVNode(Fragment, null, null) ])
 }));
 
-var components =  Object.freeze({
+var components = Object.freeze({
     __proto__: null,
     NextContainer: NextContainer,
     NextCrudTable: NextCrudTable,
@@ -7641,23 +5814,6 @@ const zoomDialog = app => {
         mounted(el, binding) {
             if (!binding.value) return !1;
             const zoomDomBindData = "string" == typeof (value = binding.value) || !isArray(value) && isObjectLike(value) && "[object String]" == baseGetTag(value) ? [ binding.value, ".el-dialog__body", !1, !0 ] : binding.value;
-            /**
- * Checks if `value` is classified as a `String` primitive or object.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a string, else `false`.
- * @example
- *
- * _.isString('abc');
- * // => true
- *
- * _.isString(1);
- * // => false
- */
             var value;
             zoomDomBindData[1] = zoomDomBindData[1] ? zoomDomBindData[1] : ".el-dialog__body", 
             zoomDomBindData[2] = void 0 !== zoomDomBindData[2] && zoomDomBindData[2], zoomDomBindData[3] = void 0 === zoomDomBindData[3] || zoomDomBindData[3], 
@@ -7668,7 +5824,6 @@ const zoomDialog = app => {
                         const x = e.clientX, y = e.clientY, zoomDomWidth = zoomDom.offsetWidth, zoomDomHeight = zoomDom.offsetHeight, zoomDomBoxWidth = zoomDomBox.offsetWidth, zoomDomBoxHeight = zoomDomBox.offsetHeight;
                         document.onmousemove = e => {
                             e.preventDefault();
-                            // 移动时禁用默认事件
                             const w = zoomDomWidth + 2 * (e.clientX - x), h = zoomDomHeight + (e.clientY - y);
                             if (zoomDom.style.width = `${w}px`, zoomDom.style.height = `${h}px`, zoomDomBindData[2]) {
                                 const boxH = zoomDomBoxHeight + (e.clientY - y);

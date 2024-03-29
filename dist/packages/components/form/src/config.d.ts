@@ -96,5 +96,7 @@ declare const _default: {
     isEditing: boolean;
     showResetBtn: boolean;
     showFooter: boolean;
+    submitText: any;
+    resetText: any;
 };
 export default _default;

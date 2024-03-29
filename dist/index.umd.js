@@ -1,3 +1,12 @@
+
+/**
+ * 作　　者：huangteng
+ * 邮　　箱：htengweb@163.com
+ * 当前版本：0.1.20 v
+ * 发布日期：2024-03-29
+ * 地　　址：https://www.npmjs.com/package/next-element-vue
+ */
+
 !function(global, factory) {
     "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("@tensorflow/tfjs"), require("video.js"), require("video.js/dist/video-js.css"), require("video.js/dist/lang/zh-CN.json"), require("video.js/dist/lang/en.json"), require("video.js/dist/lang/zh-TW.json"), require("mpegts.js")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "@tensorflow/tfjs", "video.js", "video.js/dist/video-js.css", "video.js/dist/lang/zh-CN.json", "video.js/dist/lang/en.json", "video.js/dist/lang/zh-TW.json", "mpegts.js" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore, global.tf, global.videojs, null, global.zhCN, global.En, global.zhTW, global.mpegts);
 }(this, (function(exports, vue, elementPlus, core, tf, videojs, videoJs_css, zhCN, En, zhTW, Mpegts) {
@@ -3944,7 +3953,9 @@
         tableSelectConfig: tableSelectConfig,
         isEditing: !0,
         showResetBtn: !0,
-        showFooter: !0
+        showFooter: !0,
+        submitText: null,
+        resetText: null
     };
     const ns$6 = useNamespace("form");
     var NumberRangePicker = vue.defineComponent({
@@ -4379,9 +4390,6 @@
             }, null) ]);
         }
     });
-    function _isSlot$2(s) {
-        return "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s);
-    }
     const ns$3 = useNamespace("form");
     var Element$4 = vue.defineComponent({
         name: "NextForm",
@@ -4742,7 +4750,7 @@
                 getFormParams: () => vue.toRaw(formParams)
             });
             const renderContent = () => {
-                let _slot, _slot2, _slot3;
+                let _slot;
                 return vue.createVNode(elementPlus.ElForm, {
                     ref: ruleFormRef,
                     class: ns$3.b(),
@@ -4750,53 +4758,56 @@
                     model: formParams,
                     size: options.size
                 }, {
-                    default: () => [ vue.createVNode(elementPlus.ElRow, {
-                        gutter: 20
-                    }, _isSlot$2(_slot = formColumns.map((column => !column.hide && vue.createVNode(elementPlus.ElCol, {
-                        span: valueExist(column.span, colSpan.value)
-                    }, {
-                        default: () => [ vue.createVNode(elementPlus.ElFormItem, {
-                            prop: column.prop,
-                            required: column.required,
-                            rules: formRules[column.prop],
-                            style: {
-                                "--form-label-width": valueExist(options.formLabelWidth, options.labelWidth)
-                            }
+                    default: () => {
+                        return [ vue.createVNode(elementPlus.ElRow, {
+                            gutter: 20
+                        }, (s = _slot = formColumns.map((column => !column.hide && vue.createVNode(elementPlus.ElCol, {
+                            span: valueExist(column.span, colSpan.value)
                         }, {
-                            label: () => column.label ? vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextTextEllipsis, {
-                                content: t(column.label),
-                                class: ns$3.e("item-label")
-                            }, null), column.tip ? vue.createVNode(elementPlus.ElTooltip, {
-                                effect: "dark",
-                                content: column.tip,
-                                placement: "top"
+                            default: () => [ vue.createVNode(elementPlus.ElFormItem, {
+                                prop: column.prop,
+                                required: column.required,
+                                rules: formRules[column.prop],
+                                style: {
+                                    "--form-label-width": valueExist(options.formLabelWidth, options.labelWidth)
+                                }
                             }, {
-                                default: () => [ vue.createVNode(elementPlus.ElIcon, {
-                                    style: {
-                                        "margin-left": "5px"
-                                    },
-                                    color: "#f3d19e"
+                                label: () => column.label ? vue.createVNode(vue.Fragment, null, [ vue.createVNode(NextTextEllipsis, {
+                                    content: t(column.label),
+                                    class: ns$3.e("item-label")
+                                }, null), column.tip ? vue.createVNode(elementPlus.ElTooltip, {
+                                    effect: "dark",
+                                    content: column.tip,
+                                    placement: "top"
                                 }, {
-                                    default: () => [ vue.createVNode(info_filled_default, null, null) ]
-                                }) ]
-                            }) : null ]) : null,
-                            default: () => renderFormItem(column)
-                        }) ]
-                    })))) ? _slot : {
-                        default: () => [ _slot ]
-                    }), _isEditing.value && options.showFooter ? vue.createVNode("div", {
-                        class: ns$3.e("footer")
-                    }, [ vue.createVNode(elementPlus.ElButton, {
-                        type: "primary",
-                        loading: submitLoading.value,
-                        onClick: onSubmitAddEdit
-                    }, _isSlot$2(_slot2 = t("next.form.submit")) ? _slot2 : {
-                        default: () => [ _slot2 ]
-                    }), options.showResetBtn ? vue.createVNode(elementPlus.ElButton, {
-                        onClick: onResetForm
-                    }, _isSlot$2(_slot3 = t("next.form.reset")) ? _slot3 : {
-                        default: () => [ _slot3 ]
-                    }) : null ]) : null ]
+                                    default: () => [ vue.createVNode(elementPlus.ElIcon, {
+                                        style: {
+                                            "margin-left": "5px"
+                                        },
+                                        color: "#f3d19e"
+                                    }, {
+                                        default: () => [ vue.createVNode(info_filled_default, null, null) ]
+                                    }) ]
+                                }) : null ]) : null,
+                                default: () => renderFormItem(column)
+                            }) ]
+                        }))), "function" == typeof s || "[object Object]" === Object.prototype.toString.call(s) && !vue.isVNode(s) ? _slot : {
+                            default: () => [ _slot ]
+                        })), _isEditing.value && options.showFooter ? vue.createVNode("div", {
+                            class: ns$3.e("footer")
+                        }, [ vue.createVNode(elementPlus.ElButton, {
+                            type: "primary",
+                            loading: submitLoading.value,
+                            onClick: onSubmitAddEdit
+                        }, {
+                            default: () => [ t(options.submitText) || t("next.form.submit") ]
+                        }), options.showResetBtn ? vue.createVNode(elementPlus.ElButton, {
+                            onClick: onResetForm
+                        }, {
+                            default: () => [ t(options.resetText) || t("next.form.reset") ]
+                        }) : null ]) : null ];
+                        var s;
+                    }
                 });
             };
             return () => vue.createVNode(vue.Fragment, null, [ renderContent() ]);
