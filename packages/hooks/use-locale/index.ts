@@ -28,7 +28,7 @@ export type LocaleContext = {
 	t: Translator;
 };
 export const translate = (path: string, option: undefined | TranslatorOption, locale: Language): string =>
-	(get(locale, path, path) as string).replace(/\{(\w+)\}/g, (_, key) => `${option?.[key] ?? `{${key}}`}`);
+	(get(locale, path, path) as string)?.replace(/\{(\w+)\}/g, (_, key) => `${option?.[key] ?? `{${key}}`}`);
 
 export const buildTranslator =
 	(locale: MaybeRef<Language>): Translator =>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
-const emit = defineEmits(['update-formdatum']);
+const emit = defineEmits(['update-formdatum', 'reset']);
 const props = defineProps({
 	config: {
 		type: Object,
@@ -38,6 +38,9 @@ const onSubmitForm = (formParams: any, done: Function, error: Function) => {
 	emit('update-formdatum');
 	done();
 };
+const onReset = () => {
+	emit('reset');
+};
 watch(
 	() => props.config,
 	() => {
@@ -48,7 +51,7 @@ watch(
 </script>
 
 <template>
-	<NextForm ref="nextFormRef" :options="{ labelWidth: '8em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm"> </NextForm>
+	<NextForm ref="nextFormRef" :options="{ labelWidth: '8em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm" @reset="onReset"> </NextForm>
 </template>
 
 <style lang="scss" scoped></style>

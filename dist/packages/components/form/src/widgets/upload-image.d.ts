@@ -30,16 +30,16 @@ declare const _default: import("vue").DefineComponent<{
     appContext: any;
     defaultPreviewSrcList: any;
     uploadfilesPreview: import("vue").Ref<{
+        size?: number;
         name: string;
         percentage?: number;
-        size?: number;
         response?: unknown;
         url?: string;
         raw?: import("element-plus").UploadRawFile;
         status?: import("element-plus").UploadStatus;
         uid?: number;
     }[]>;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "change"[], "change", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "change"[], "change", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;

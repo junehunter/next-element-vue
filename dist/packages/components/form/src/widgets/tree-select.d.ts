@@ -15,7 +15,7 @@ declare const _default: import("vue").DefineComponent<{
         type: ObjectConstructor;
         default: () => {};
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change")[], "change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change")[], "change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: (NumberConstructor | StringConstructor | BooleanConstructor | ObjectConstructor | ArrayConstructor)[];
         default: string;

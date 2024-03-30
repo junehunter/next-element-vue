@@ -8,7 +8,7 @@ export declare const NextTabs: import("../../utils/install").SFCWithInstall<impo
         type: import("vue").PropType<import("./src/interface").TabInterface[]>;
         default: () => any[];
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "select" | "close")[], "change" | "select" | "close", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "select" | "close")[], "change" | "select" | "close", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     activeTab: {
         type: (StringConstructor | NumberConstructor)[];
         default: string;

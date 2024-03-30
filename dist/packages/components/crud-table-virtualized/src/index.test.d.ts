@@ -1,5 +1,4 @@
-import './src/index.scss';
-export declare const NextCrudTableVirtualized: import("../../utils/install").SFCWithInstall<import("vue").DefineComponent<{
+declare const _default: import("vue").DefineComponent<{
     className: {
         type: StringConstructor;
         default: string;
@@ -28,7 +27,7 @@ export declare const NextCrudTableVirtualized: import("../../utils/install").SFC
             total: number;
         };
     };
-}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, any[], any, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;
@@ -57,12 +56,14 @@ export declare const NextCrudTableVirtualized: import("../../utils/install").SFC
             total: number;
         };
     };
-}>>, {
-    className: string;
+}>> & {
+    [x: `on${Capitalize<any>}`]: (...args: any[]) => any;
+}, {
+    data: unknown[];
     style: import("vue").CSSProperties;
+    className: string;
     options: Record<string, any>;
     loading: boolean;
-    data: unknown[];
     page: Record<string, any>;
-}, {}>> & Record<string, any>;
-export default NextCrudTableVirtualized;
+}, {}>;
+export default _default;

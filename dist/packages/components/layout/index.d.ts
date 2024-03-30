@@ -15,7 +15,7 @@ export declare const NextLayout: import("../../utils/install").SFCWithInstall<im
 }, {
     options: any;
     updateOptions: (cfg: any) => void;
-}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("changeLanguage" | "changeUserDropdown" | "changeOptions" | "tabsChange" | "tabsSelect" | "tabsClose")[], "changeLanguage" | "changeUserDropdown" | "changeOptions" | "tabsChange" | "tabsSelect" | "tabsClose", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("changeLanguage" | "changeUserDropdown" | "changeOptions" | "tabsChange" | "tabsSelect" | "tabsClose")[], "changeLanguage" | "changeUserDropdown" | "changeOptions" | "tabsChange" | "tabsSelect" | "tabsClose", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;

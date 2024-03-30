@@ -1,35 +1,39 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import ChildForm from './child-form.vue';
-
-const config = reactive({
-	num: '001',
-	name: 'next element',
-	url: 'xxx',
-});
-const list = [
+const config = {};
+const columns = [
 	{
-		num: '001',
-		name: 'next element',
-		url: 'xxx',
+		prop: 'num',
+		label: '编号',
+		type: 'input',
+		disabled: true,
+		span: 24,
+		required: true,
+		defaultValue: '这是一个默认值',
 	},
 	{
-		num: '002',
-		name: 'next element vue',
-		url: 'xxxxx',
+		prop: 'name',
+		label: '名称',
+		type: 'input',
+		span: 24,
+		required: true,
+	},
+	{
+		prop: 'url',
+		label: '地址',
+		type: 'input',
+		span: 24,
+		required: true,
 	},
 ];
-const key = ref<number>(0);
-const updateFormdatum = () => {
-	key.value = 1;
-	console.log(list[key.value]);
+
+const onSubmitForm = (formParams: any, done: Function, error: Function) => {
+	done();
 };
+const onReset = () => {};
 </script>
 
 <template>
-	<div class="container">
-		<ChildForm :config="list[key]" @update-formdatum="updateFormdatum"></ChildForm>
-	</div>
+	<NextForm ref="nextFormRef" :options="{ labelWidth: '8em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm" @reset="onReset"> </NextForm>
 </template>
 
 <style lang="scss" scoped></style>

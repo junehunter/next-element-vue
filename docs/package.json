@@ -10,7 +10,8 @@
 	},
 	"dependencies": {
 		"markdown-it": "^13.0.1",
-		"markdown-it-container": "^3.0.0"
+		"markdown-it-container": "^3.0.0",
+		"next-element-vue": "npm:next-element-vue@latest"
 	},
 	"devDependencies": {
 		"@types/markdown-it": "^13.0.1",
@@ -24,7 +25,8 @@
 		"rimraf": "^5.0.1",
 		"unplugin-icons": "^0.17.0",
 		"unplugin-vue-components": "^0.25.2",
-		"vite": "^4.4.9",
-		"vitepress": "1.0.0-rc.12"
+		"vite": "^5.2.7",
+		"vitepress": "1.0.1"
 	}
 }
+

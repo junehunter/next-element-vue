@@ -20,7 +20,7 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     tensorflow: {
         type: ObjectConstructor;
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("loaded" | "play" | "error" | "detector")[], "loaded" | "play" | "error" | "detector", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("loaded" | "play" | "error" | "detector")[], "loaded" | "play" | "error" | "detector", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;

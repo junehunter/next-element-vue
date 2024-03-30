@@ -64,7 +64,7 @@ export declare const NextCrudTable: import("../../utils/install").SFCWithInstall
         type: FunctionConstructor;
         default: any;
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "row-contextmenu" | "row-dblclick" | "cell-click" | "cell-dblclick" | "cell-contextmenu" | "cell-mouse-enter" | "cell-mouse-leave" | "expand-change" | "click-add-edit" | "close-add-edit" | "view-add-edit" | "delete-rows" | "delete-row" | "submit-form")[], "confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "row-contextmenu" | "row-dblclick" | "cell-click" | "cell-dblclick" | "cell-contextmenu" | "cell-mouse-enter" | "cell-mouse-leave" | "expand-change" | "click-add-edit" | "close-add-edit" | "view-add-edit" | "delete-rows" | "delete-row" | "submit-form", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "row-contextmenu" | "row-dblclick" | "cell-click" | "cell-dblclick" | "cell-contextmenu" | "cell-mouse-enter" | "cell-mouse-leave" | "expand-change" | "click-add-edit" | "close-add-edit" | "view-add-edit" | "delete-rows" | "delete-row" | "submit-form")[], "confirm-search" | "clear-search" | "change-pagination" | "selection-change" | "row-click" | "row-contextmenu" | "row-dblclick" | "cell-click" | "cell-dblclick" | "cell-contextmenu" | "cell-mouse-enter" | "cell-mouse-leave" | "expand-change" | "click-add-edit" | "close-add-edit" | "view-add-edit" | "delete-rows" | "delete-row" | "submit-form", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     className: {
         type: StringConstructor;
         default: string;
@@ -150,11 +150,11 @@ export declare const NextCrudTable: import("../../utils/install").SFCWithInstall
     "onDelete-row"?: (...args: any[]) => any;
     "onSubmit-form"?: (...args: any[]) => any;
 }, {
-    data: unknown[];
     className: string;
     style: import("vue").CSSProperties;
     options: Record<string, any>;
     loading: boolean;
+    data: unknown[];
     page: Record<string, any>;
     rowStyle: Function;
     rowClassName: Function;

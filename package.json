@@ -1,6 +1,6 @@
 {
 	"name": "next-element-vue",
-	"version": "0.1.20",
+	"version": "0.2.1",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
@@ -98,7 +98,7 @@
 		"unplugin-vue-macros": "^2.5.1",
 		"video.js": "^8.6.0",
 		"vitest": "^0.34.5",
-		"vue": "^3.3.4",
+		"vue": "^3.4.21",
 		"vue-eslint-parser": "^9.3.1",
 		"vue-i18n": "^9.4.1",
 		"vue-router": "^4.2.5"

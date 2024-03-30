@@ -16,7 +16,7 @@ export declare const NextTreeSelect: import("../../utils/install").SFCWithInstal
         type: ObjectConstructor;
         default: () => {};
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change")[], "change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change")[], "change" | "node-click" | "node-contextmenu" | "check" | "check-change" | "node-expand" | "node-collapse" | "current-change", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: (NumberConstructor | StringConstructor | BooleanConstructor | ObjectConstructor | ArrayConstructor)[];
         default: string;
@@ -61,7 +61,7 @@ export declare const NextForm: import("../../utils/install").SFCWithInstall<impo
         type: ObjectConstructor;
         default: () => {};
     };
-}, () => JSX.Element, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("submit" | "close")[], "submit" | "close", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+}, () => any, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("submit" | "close" | "reset")[], "submit" | "close" | "reset", import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     options: {
         type: ObjectConstructor;
         default: () => {};
@@ -77,6 +77,7 @@ export declare const NextForm: import("../../utils/install").SFCWithInstall<impo
 }>> & {
     onSubmit?: (...args: any[]) => any;
     onClose?: (...args: any[]) => any;
+    onReset?: (...args: any[]) => any;
 }, {
     options: Record<string, any>;
     columns: unknown[];

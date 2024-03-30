@@ -47,7 +47,7 @@ export function MarkdownTransform(): Plugin {
 			const append: Append = {
 				headers: [],
 				footers: [],
-				scriptSetups: [`const demos = import.meta.globEager('../examples/${componentId}/*.vue')`],
+				scriptSetups: [`const demos = import.meta.glob('../examples/${componentId}/*.vue', { eager: true })`],
 			};
 			code = transformVpScriptSetup(code, append);
 

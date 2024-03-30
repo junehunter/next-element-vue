@@ -52,7 +52,7 @@ export default defineComponent({
 			default: () => ({}),
 		},
 	},
-	emits: ['submit', 'close'],
+	emits: ['submit', 'close', 'reset'],
 	setup(props, { slots, emit, expose }) {
 		const _config = deepClone(defaultConfig);
 		const options = reactive(merge(_config, props.options));
@@ -162,6 +162,7 @@ export default defineComponent({
 			if (!formInstance) return;
 			formInstance.resetFields();
 			submitLoading.value = false;
+			emit('reset', formParams);
 		};
 		const _onInputInteger = (event: any, key: string) => {
 			const value = event.replace(/\D/g, '');

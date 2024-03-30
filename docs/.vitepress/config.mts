@@ -80,6 +80,10 @@ const createdSidebar = () => {
 					link: 'crud-table',
 				},
 				{
+					text: 'NextCrudTableVirtualized 虚拟表格',
+					link: 'crud-table-virtualized',
+				},
+				{
 					text: 'NextForm 表单',
 					link: 'form',
 				},
