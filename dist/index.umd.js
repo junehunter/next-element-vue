@@ -2,7 +2,7 @@
 /**
  * 作　　者：huangteng
  * 邮　　箱：htengweb@163.com
- * 当前版本：0.2.1 v
+ * 当前版本：0.2.2 v
  * 发布日期：2024-04-01
  * 地　　址：https://www.npmjs.com/package/next-element-vue
  */
@@ -5676,7 +5676,7 @@
         })(app);
     };
     var index = {
-        version: "0.2.1",
+        version: "0.2.2",
         install: install
     };
     exports.NextContainer = NextContainer, exports.NextCrudTable = NextCrudTable, exports.NextCrudTableVirtualized = NextCrudTableVirtualized, 
@@ -5721,7 +5721,7 @@
     }), exports.useGetDerivedNamespace = useGetDerivedNamespace, exports.useLanguage = (locale, lang) => {
         const localeRef = vue.isRef(locale) ? locale : vue.ref(locale), nextLang = localeLang[lang] || localeLang["zh-cn"];
         localeRef.value.name = lang, localeRef.value.next = nextLang.next;
-    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.2.1", 
+    }, exports.useLocale = useLocale, exports.useNamespace = useNamespace, exports.version = "0.2.2", 
     Object.defineProperty(exports, "__esModule", {
         value: !0
     });

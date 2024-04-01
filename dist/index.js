@@ -2,7 +2,7 @@
 /**
  * 作　　者：huangteng
  * 邮　　箱：htengweb@163.com
- * 当前版本：0.2.1 v
+ * 当前版本：0.2.2 v
  * 发布日期：2024-04-01
  * 地　　址：https://www.npmjs.com/package/next-element-vue
  */
@@ -5908,7 +5908,7 @@ const zoomDialog = app => {
             }));
         }
     });
-}, version = "0.2.1", install = function(app) {
+}, version = "0.2.2", install = function(app) {
     Object.keys(components).forEach((key => {
         const component = components[key];
         app.component(component.name, component);
@@ -5918,7 +5918,7 @@ const zoomDialog = app => {
 };
 
 var index = {
-    version: "0.2.1",
+    version: "0.2.2",
     install: install
 };
 
