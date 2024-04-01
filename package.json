@@ -6,12 +6,19 @@
 		"email": "htengweb@163.com"
 	},
 	"description": "Component library based on element-plus secondary encapsulation",
-	"keywords": ["next", "element", "vue3", "next-element-vue"],
+	"keywords": [
+		"next",
+		"element",
+		"vue3",
+		"next-element-vue"
+	],
 	"main": "dist/index.min.js",
 	"module": "dist/index.js",
 	"unpkg": "dist/index.umd.min.js",
 	"jsdelivr": "dist/index.umd.min.js",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"repository": {
 		"type": "git",
@@ -43,10 +50,11 @@
 		"@types/lodash-es": "^4.17.9",
 		"@vueuse/core": "^10.4.1",
 		"element-plus": "^2.3.14",
+		"flv.js": "^1.6.2",
 		"lodash-es": "^4.17.21",
 		"mpegts.js": "^1.7.3",
 		"video.js": "^8.6.0",
-		"vue": "^3.3.4",
+		"vue": "^3.4.21",
 		"vue-i18n": "^9.4.1",
 		"vue-router": "^4.2.5"
 	},
@@ -78,6 +86,7 @@
 		"eslint": "^8.50.0",
 		"eslint-plugin-unicorn": "^48.0.1",
 		"eslint-plugin-vue": "^9.17.0",
+		"flv.js": "^1.6.2",
 		"lint-staged": "^14.0.1",
 		"lodash-es": "^4.17.21",
 		"mockjs": "^1.1.0",
@@ -107,12 +116,15 @@
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*.{vue,js,jsx,json}": ["eslint --fix"],
-		"*.ts?(x)": ["eslint --fix"]
+		"*.{vue,js,jsx,json}": [
+			"eslint --fix"
+		],
+		"*.ts?(x)": [
+			"eslint --fix"
+		]
 	},
 	"engines": {
 		"node": ">=16"
 	},
 	"license": "MIT"
 }
-

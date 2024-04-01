@@ -18,6 +18,10 @@ declare const _default: import("vue").DefineComponent<{
         type: StringConstructor;
         default: string;
     };
+    autoplay: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
     tensorflow: {
         type: ObjectConstructor;
     };
@@ -39,6 +43,10 @@ declare const _default: import("vue").DefineComponent<{
         type: StringConstructor;
         default: string;
     };
+    autoplay: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
     tensorflow: {
         type: ObjectConstructor;
     };
@@ -52,5 +60,6 @@ declare const _default: import("vue").DefineComponent<{
     style: CSSProperties;
     type: string;
     src: string;
+    autoplay: boolean;
 }, {}>;
 export default _default;

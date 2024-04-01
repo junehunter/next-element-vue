@@ -3,13 +3,13 @@
  * 作　　者：huangteng
  * 邮　　箱：htengweb@163.com
  * 当前版本：0.2.1 v
- * 发布日期：2024-03-30
+ * 发布日期：2024-04-01
  * 地　　址：https://www.npmjs.com/package/next-element-vue
  */
 
 !function(global, factory) {
-    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("@tensorflow/tfjs"), require("video.js"), require("video.js/dist/video-js.css"), require("video.js/dist/lang/zh-CN.json"), require("video.js/dist/lang/en.json"), require("video.js/dist/lang/zh-TW.json"), require("mpegts.js")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "@tensorflow/tfjs", "video.js", "video.js/dist/video-js.css", "video.js/dist/lang/zh-CN.json", "video.js/dist/lang/en.json", "video.js/dist/lang/zh-TW.json", "mpegts.js" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore, global.tf, global.videojs, null, global.zhCN, global.En, global.zhTW, global.mpegts);
-}(this, (function(exports, vue, elementPlus, core, tf, videojs, videoJs_css, zhCN, En, zhTW, Mpegts) {
+    "object" == typeof exports && "undefined" != typeof module ? factory(exports, require("vue"), require("element-plus"), require("@vueuse/core"), require("@tensorflow/tfjs"), require("video.js"), require("video.js/dist/video-js.css"), require("video.js/dist/lang/zh-CN.json"), require("video.js/dist/lang/en.json"), require("video.js/dist/lang/zh-TW.json")) : "function" == typeof define && define.amd ? define([ "exports", "vue", "element-plus", "@vueuse/core", "@tensorflow/tfjs", "video.js", "video.js/dist/video-js.css", "video.js/dist/lang/zh-CN.json", "video.js/dist/lang/en.json", "video.js/dist/lang/zh-TW.json" ], factory) : factory((global = "undefined" != typeof globalThis ? globalThis : global || self).NEXT_ELEMENT = {}, global.Vue, global.ElementPlus, global.VueuseCore, global.tf, global.videojs, null, global.zhCN, global.En, global.zhTW);
+}(this, (function(exports, vue, elementPlus, core, tf, videojs, videoJs_css, zhCN, En, zhTW) {
     "use strict";
     function _interopNamespaceDefault(e) {
         var n = Object.create(null);
@@ -5383,6 +5383,10 @@
                 type: String,
                 default: ""
             },
+            autoplay: {
+                type: Boolean,
+                default: !0
+            },
             tensorflow: {
                 type: Object
             }
@@ -5453,7 +5457,7 @@
             const switchVideo = url => {
                 if (!url) return (() => {
                     const container = videoBoxRef.value, video = document.createElement("video");
-                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.className = "video-js vjs-default-skin", props.autoplay && video.setAttribute("autoplay", "true"), 
                     video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video), 
                     player.value = videojs(video, {
                         techOrder: [ "html5" ],
@@ -5474,7 +5478,7 @@
                 const type = props.type;
                 "m3u8" === type ? (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
-                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.className = "video-js vjs-default-skin", props.autoplay && video.setAttribute("autoplay", "true"), 
                     video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                     const options = {
                         techOrder: [ "html5" ],
@@ -5503,7 +5507,7 @@
                     });
                 })(url) : "mp4" === type ? (url => {
                     const container = videoBoxRef.value, video = document.createElement("video");
-                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                    video.className = "video-js vjs-default-skin", props.autoplay && video.setAttribute("autoplay", "true"), 
                     video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                     const options = {
                         techOrder: [ "html5" ],
@@ -5524,15 +5528,15 @@
                         player: player.value,
                         video: video
                     });
-                })(url) : "mpegts" === type ? (url => {
-                    const mpegts = window.mpegts || Mpegts;
-                    if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
+                })(url) : "mpegts" === type ? (async url => {
+                    let mpegts = window.mpegts;
+                    if (mpegts || (mpegts = await import("mpegts.js")), mpegts && mpegts.getFeatureList().mseLivePlayback) {
                         const container = videoBoxRef.value, video = document.createElement("video");
-                        video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
+                        video.className = "video-js vjs-default-skin", props.autoplay && video.setAttribute("autoplay", "true"), 
                         video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
                         const defaultOptions = {
                             controls: !0,
-                            autoplay: !0,
+                            autoplay: !1,
                             fluid: !0,
                             muted: !0,
                             liveui: !0,
@@ -5544,8 +5548,7 @@
                             type: "flv",
                             isLive: !0,
                             url: url
-                        }), playerMpgets.value.attachMediaElement(video), playerMpgets.value.load(), playerMpgets.value.play(), 
-                        playerMpgets.value.on("error", (() => {
+                        }), playerMpgets.value.attachMediaElement(video), playerMpgets.value.load(), playerMpgets.value.on("error", (() => {
                             emit("error", video);
                         })), _createScreenshotBtn(container);
                         const canvasContainer = document.createElement("div");
@@ -5556,12 +5559,14 @@
                             video: video
                         });
                     }
-                })(url) : "flv" === type && (url => {
+                })(url) : "flv" === type && (async url => {
+                    let flvjs = window.flvjs;
+                    flvjs || (flvjs = await import("flv.js"));
                     const container = videoBoxRef.value, video = document.createElement("video");
-                    video.className = "video-js vjs-default-skin", video.setAttribute("autoplay", "true"), 
-                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video);
-                    const options = {
-                        techOrder: [ "html5" ],
+                    video.className = "video-js vjs-default-skin", props.autoplay && video.setAttribute("autoplay", "true"), 
+                    video.setAttribute("muted", "true"), videoElement.value = video, container.appendChild(video), 
+                    player.value = videojs(video, {
+                        techOrder: [ "html5", "flvjs" ],
                         flvjs: {
                             mediaDataSource: {
                                 cors: !0,
@@ -5571,13 +5576,11 @@
                         controls: !0,
                         fluid: !0,
                         preload: "auto",
-                        language: "zh-CN",
-                        sources: [ {
-                            src: url,
-                            type: "video/x-flv"
-                        } ]
-                    };
-                    player.value = videojs(video, options);
+                        language: "zh-CN"
+                    }), flvjs.isSupported() && (playerFlv.value = flvjs.createPlayer({
+                        type: "flv",
+                        url: url
+                    }), playerFlv.value.attachMediaElement(video), playerFlv.value.load());
                     const canvasContainer = document.createElement("div");
                     container.children[0].appendChild(canvasContainer), player.value.on("play", (() => {
                         emit("play", video, container), _loadModelDetectFrame(canvasContainer, video);

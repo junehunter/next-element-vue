@@ -99,6 +99,9 @@ importers:
       eslint-plugin-vue:
         specifier: ^9.17.0
         version: 9.17.0(eslint@8.50.0)
+      flv.js:
+        specifier: ^1.6.2
+        version: 1.6.2
       lint-staged:
         specifier: ^14.0.1
         version: 14.0.1
@@ -180,6 +183,9 @@ importers:
       markdown-it-container:
         specifier: ^3.0.0
         version: 3.0.0
+      next-element-vue:
+        specifier: npm:next-element-vue@latest
+        version: link:..
     devDependencies:
       '@types/markdown-it':
         specifier: ^13.0.1
@@ -537,7 +543,7 @@ packages:
     resolution: {integrity: sha512-qLNsZbgrNh0fDQBCPocSL8guki1hcPvltGDv/NxvUoABwFq7GkKSu1nRXeJkVZc+wJvne2E0RKQz+2SQrz6eAA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/types': 7.22.19
+      '@babel/types': 7.24.0
     dev: true
 
   /@babel/helper-module-imports@7.22.15:
@@ -642,7 +648,7 @@ packages:
     dependencies:
       '@babel/helper-function-name': 7.22.5
       '@babel/template': 7.22.15
-      '@babel/types': 7.22.19
+      '@babel/types': 7.24.0
     dev: true
 
   /@babel/helpers@7.22.15:
@@ -2964,7 +2970,7 @@ packages:
   /@vitest/snapshot@0.34.5:
     resolution: {integrity: sha512-+ikwSbhu6z2yOdtKmk/aeoDZ9QPm2g/ZO5rXT58RR9Vmu/kB2MamyDSx77dctqdZfP3Diqv4mbc/yw2kPT8rmA==}
     dependencies:
-      magic-string: 0.30.3
+      magic-string: 0.30.8
       pathe: 1.1.1
       pretty-format: 29.7.0
     dev: true
@@ -3052,7 +3058,7 @@ packages:
     dependencies:
       '@babel/types': 7.24.0
       '@rollup/pluginutils': 5.1.0(rollup@3.29.4)
-      '@vue/compiler-sfc': 3.3.4
+      '@vue/compiler-sfc': 3.4.21
       ast-kit: 0.11.2(rollup@3.29.4)
       local-pkg: 0.4.3
       magic-string-ast: 0.3.0
@@ -3072,7 +3078,7 @@ packages:
     dependencies:
       '@babel/types': 7.24.0
       '@rollup/pluginutils': 5.1.0(rollup@4.13.0)
-      '@vue/compiler-sfc': 3.3.4
+      '@vue/compiler-sfc': 3.4.21
       ast-kit: 0.11.2(rollup@4.13.0)
       local-pkg: 0.4.3
       magic-string-ast: 0.3.0
@@ -3201,7 +3207,7 @@ packages:
       vue: ^2.7.0 || ^3.2.25
     dependencies:
       '@vue-macros/common': 1.8.0(rollup@4.13.0)(vue@3.4.21)
-      '@vue/compiler-sfc': 3.3.4
+      '@vue/compiler-sfc': 3.4.21
       unplugin: 1.5.0
       vue: 3.4.21(typescript@5.2.2)
     transitivePeerDependencies:
@@ -3228,7 +3234,7 @@ packages:
       vue: ^2.7.0 || ^3.2.25
     dependencies:
       '@vue-macros/common': 1.8.0(rollup@4.13.0)(vue@3.4.21)
-      '@vue/compiler-sfc': 3.3.4
+      '@vue/compiler-sfc': 3.4.21
       unplugin: 1.5.0
       vue: 3.4.21(typescript@5.2.2)
     transitivePeerDependencies:
@@ -4862,6 +4868,13 @@ packages:
 
   /flatted@3.2.9:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
+    dev: true
+
+  /flv.js@1.6.2:
+    resolution: {integrity: sha512-xre4gUbX1MPtgQRKj2pxJENp/RnaHaxYvy3YToVVCrSmAWUu85b9mug6pTXF6zakUjNP2lFWZ1rkSX7gxhB/2A==}
+    dependencies:
+      es6-promise: 4.2.8
+      webworkify-webpack: 2.1.5
     dev: true
 
   /focus-trap@7.5.4:

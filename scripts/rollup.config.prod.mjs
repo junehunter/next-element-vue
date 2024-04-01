@@ -31,6 +31,7 @@ const globals_cfg = {
 	'video.js/dist/lang/zh-TW.json': 'zhTW',
 	'@tensorflow/tfjs': 'tf',
 	'mpegts.js': 'mpegts',
+	'flv.js': 'flvjs',
 };
 
 const outDir = './dist';
@@ -235,6 +236,7 @@ export default {
 		'video.js/dist/lang/zh-TW.json',
 		'@tensorflow/tfjs',
 		'mpegts.js',
+		'flv.js',
 	],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {

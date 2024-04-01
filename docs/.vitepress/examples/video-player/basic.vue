@@ -60,30 +60,48 @@ const mp4_url = new URL('./assets/video/demo02.mp4', import.meta.url).href;
 <template>
 	<div class="layout-container">
 		<el-row :gutter="20">
-			<!-- <el-col :span="12">
+			<el-col :span="12">
 				<div class="card-title">
 					<span>m3u8</span>
 				</div>
 				<div class="card-body">
-					<NextVideoPlayer type="m3u8" src="http://220.161.87.62:8800/hls/0/index.m3u8" :tensorflow="modelCfg"></NextVideoPlayer>
+					<NextVideoPlayer type="m3u8" :autoplay="false" src="http://220.161.87.62:8800/hls/0/index.m3u8" :tensorflow="modelCfg"></NextVideoPlayer>
 				</div>
-			</el-col> -->
-			<el-col :span="24">
+			</el-col>
+			<el-col :span="12">
 				<div class="card-title">
 					<span>MP4</span>
 				</div>
 				<div class="card-body">
-					<NextVideoPlayer type="mp4" :src="mp4_url" :tensorflow="modelCfg"></NextVideoPlayer>
+					<NextVideoPlayer type="mp4" :autoplay="false" :src="mp4_url" :tensorflow="modelCfg"></NextVideoPlayer>
 				</div>
 			</el-col>
-			<!-- <el-col :span="12">
+			<el-col :span="12">
 				<div class="card-title">
 					<span>mpegts</span>
 				</div>
 				<div class="card-body">
-					<NextVideoPlayer type="mpegts" :src="'http://10.0.40.220:8080/live/livestream/13_0.flv'" :tensorflow="modelCfg"></NextVideoPlayer>
+					<NextVideoPlayer
+						type="mpegts"
+						:autoplay="false"
+						:src="'//sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'"
+						:tensorflow="modelCfg"
+					></NextVideoPlayer>
 				</div>
-			</el-col> -->
+			</el-col>
+			<el-col :span="12">
+				<div class="card-title">
+					<span>flv</span>
+				</div>
+				<div class="card-body">
+					<NextVideoPlayer
+						type="flv"
+						:autoplay="false"
+						:src="'//sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'"
+						:tensorflow="modelCfg"
+					></NextVideoPlayer>
+				</div>
+			</el-col>
 		</el-row>
 	</div>
 </template>

@@ -9,7 +9,7 @@ import 'video.js/dist/video-js.css';
 import zhCN from 'video.js/dist/lang/zh-CN.json';
 import En from 'video.js/dist/lang/en.json';
 import zhTW from 'video.js/dist/lang/zh-TW.json';
-import Mpegts from 'mpegts.js';
+// import Mpegts from 'mpegts.js';
 import { useNamespace, useLocale } from 'packages/hooks';
 import * as tf from '@tensorflow/tfjs';
 import { screenshotVideoDetectFrame, detectVideoFrame } from './hook';
@@ -41,6 +41,10 @@ export default defineComponent({
 		src: {
 			type: String,
 			default: '',
+		},
+		autoplay: {
+			type: Boolean,
+			default: true,
 		},
 		tensorflow: {
 			type: Object,
@@ -90,7 +94,9 @@ export default defineComponent({
 			const container = videoBoxRef.value as HTMLElement;
 			const video = document.createElement('video');
 			video.className = 'video-js vjs-default-skin';
-			video.setAttribute('autoplay', 'true');
+			if (props.autoplay) {
+				video.setAttribute('autoplay', 'true');
+			}
 			video.setAttribute('muted', 'true');
 			videoElement.value = video;
 			container.appendChild(video);
@@ -122,7 +128,9 @@ export default defineComponent({
 			const container = videoBoxRef.value as HTMLElement;
 			const video = document.createElement('video');
 			video.className = 'video-js vjs-default-skin';
-			video.setAttribute('autoplay', 'true');
+			if (props.autoplay) {
+				video.setAttribute('autoplay', 'true');
+			}
 			video.setAttribute('muted', 'true');
 			videoElement.value = video;
 			container.appendChild(video);
@@ -156,16 +164,22 @@ export default defineComponent({
 			_createScreenshotBtn(container);
 			emit('loaded', { player: player.value, video });
 		};
-		const loadVideo_flv = (url: string) => {
+		const loadVideo_flv = async (url: string) => {
+			let flvjs = (window as any).flvjs;
+			if (!flvjs) {
+				flvjs = await import('flv.js');
+			}
 			const container = videoBoxRef.value as HTMLElement;
 			const video = document.createElement('video');
 			video.className = 'video-js vjs-default-skin';
-			video.setAttribute('autoplay', 'true');
+			if (props.autoplay) {
+				video.setAttribute('autoplay', 'true');
+			}
 			video.setAttribute('muted', 'true');
 			videoElement.value = video;
 			container.appendChild(video);
 			const options = {
-				techOrder: ['html5'],
+				techOrder: ['html5', 'flvjs'],
 				flvjs: {
 					mediaDataSource: {
 						cors: true,
@@ -176,14 +190,17 @@ export default defineComponent({
 				fluid: true, // 自适应宽高
 				preload: 'auto',
 				language: 'zh-CN',
-				sources: [
-					{
-						src: url,
-						type: 'video/x-flv',
-					},
-				],
 			};
 			player.value = videojs(video, options);
+			if (flvjs.isSupported()) {
+				playerFlv.value = flvjs.createPlayer({
+					type: 'flv',
+					url: url,
+				});
+				playerFlv.value.attachMediaElement(video);
+				playerFlv.value.load();
+				// playerFlv.value.play();
+			}
 			const canvasContainer = document.createElement('div');
 			const palyerContainer = container.children[0];
 			palyerContainer.appendChild(canvasContainer);
@@ -194,19 +211,24 @@ export default defineComponent({
 			_createScreenshotBtn(container);
 			emit('loaded', { player: player.value, video });
 		};
-		const loadVideo_mpegts = (url: string) => {
-			const mpegts = (window as any).mpegts || Mpegts;
+		const loadVideo_mpegts = async (url: string) => {
+			let mpegts = (window as any).mpegts;
+			if (!mpegts) {
+				mpegts = await import('mpegts.js');
+			}
 			if (mpegts && mpegts.getFeatureList().mseLivePlayback) {
 				const container = videoBoxRef.value as HTMLElement;
 				const video = document.createElement('video');
 				video.className = 'video-js vjs-default-skin';
-				video.setAttribute('autoplay', 'true');
+				if (props.autoplay) {
+					video.setAttribute('autoplay', 'true');
+				}
 				video.setAttribute('muted', 'true');
 				videoElement.value = video;
 				container.appendChild(video);
 				const defaultOptions = {
 					controls: true, // 显示控制栏
-					autoplay: true, // 自动播放
+					autoplay: false, // 自动播放
 					fluid: true, // 自适应宽高
 					muted: true, // 禁音播放
 					liveui: true,
@@ -222,7 +244,7 @@ export default defineComponent({
 				});
 				playerMpgets.value.attachMediaElement(video as HTMLVideoElement);
 				playerMpgets.value.load();
-				playerMpgets.value.play();
+				// playerMpgets.value.play();
 				playerMpgets.value.on('error', () => {
 					emit('error', video);
 				});
@@ -242,7 +264,9 @@ export default defineComponent({
 			const container = videoBoxRef.value as HTMLElement;
 			const video = document.createElement('video');
 			video.className = 'video-js vjs-default-skin';
-			video.setAttribute('autoplay', 'true');
+			if (props.autoplay) {
+				video.setAttribute('autoplay', 'true');
+			}
 			video.setAttribute('muted', 'true');
 			videoElement.value = video;
 			container.appendChild(video);

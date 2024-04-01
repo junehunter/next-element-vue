@@ -17,6 +17,10 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
         type: StringConstructor;
         default: string;
     };
+    autoplay: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
     tensorflow: {
         type: ObjectConstructor;
     };
@@ -38,6 +42,10 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
         type: StringConstructor;
         default: string;
     };
+    autoplay: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
     tensorflow: {
         type: ObjectConstructor;
     };
@@ -51,5 +59,6 @@ export declare const NextVideoPlayer: import("../../utils/install").SFCWithInsta
     style: import("vue").CSSProperties;
     type: string;
     src: string;
+    autoplay: boolean;
 }, {}>> & Record<string, any>;
 export default NextVideoPlayer;
