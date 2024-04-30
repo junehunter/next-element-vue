@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, inject } from 'vue';
-import { useLanguage, localeContextKey } from '../../../../dist/index.js';
+import { useLanguage, localeContextKey } from '../../../../publish/dist/index.js';
 
 const locale = inject(localeContextKey, ref())!;
 const layout = ref<string>('transverse');

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useDetectVideo } from '../../../../dist/index.js';
+import { useDetectVideo } from '../../../../publish/dist/index.js';
 const base_url = window.location.origin + window.location.pathname;
 
 const modelCfg = {

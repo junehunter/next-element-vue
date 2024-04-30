@@ -41,8 +41,8 @@ const dynamicLoadNextElement = async () => {
 		NextElement = await import('packages/index');
 	} else {
 		// 生产环境
-		import('../../../dist/index.css');
-		NextElement = await import('../../../dist/index.js');
+		import('../../../publish/dist/index.css');
+		NextElement = await import('../../../publish/dist/index.js');
 	}
 	return NextElement;
 };

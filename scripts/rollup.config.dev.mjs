@@ -21,7 +21,7 @@ import fs from 'fs';
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
 
-const outDir = './dist';
+const outDir = './publish/dist';
 const outputDir = path.resolve(outDir);
 const output = [
 	{
@@ -93,7 +93,7 @@ export default {
 				},
 				{
 					src: 'packages/index.d.ts',
-					dest: 'dist',
+					dest: 'publish',
 				},
 			],
 		}),

@@ -247,7 +247,7 @@ interface DetectVideoOptions {
 	classInput: ClassInputInterface[];
 }
 export const useDetectVideo = () => {
-	const detectVideoFrameImage = ({ container, video, modelUrl, classNames, classInput = [] }: DetectVideoOptions, success: Function, error: Function) => {
+	const detectVideoFrameImage = ({ container, video, modelUrl, classNames, classInput = [] }: DetectVideoOptions, success?: Function, error?: Function) => {
 		if (!modelUrl) {
 			error && error('模型文件地址不能为空');
 			return false;

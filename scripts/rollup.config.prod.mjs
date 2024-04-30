@@ -20,6 +20,16 @@ import fs from 'fs';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
+const packageJson = JSON.parse(JSON.stringify(pkg));
+delete packageJson['scripts'];
+delete packageJson['simple-git-hooks'];
+delete packageJson['lint-staged'];
+const packageJsonContent = JSON.stringify(packageJson, null, 4);
+const dirname = 'publish';
+if (!fs.existsSync(path.resolve(dirname))) {
+	fs.mkdirSync(dirname);
+}
+fs.writeFileSync(path.resolve(dirname, 'package.json'), packageJsonContent, 'utf-8');
 const globals_cfg = {
 	vue: 'Vue',
 	'element-plus': 'ElementPlus',
@@ -34,8 +44,7 @@ const globals_cfg = {
 	'flv.js': 'flvjs',
 };
 
-const outDir = './dist';
-const outputDir = path.resolve(outDir);
+const outputDir = path.resolve(dirname, 'dist');
 const getDate = () => {
 	const date = new Date();
 	const year = date.getFullYear();
@@ -173,11 +182,15 @@ export default {
 			targets: [
 				{
 					src: 'packages/assets/*',
-					dest: path.resolve(outDir, 'assets/'),
+					dest: path.resolve(outputDir, 'assets/'),
 				},
 				{
 					src: 'packages/index.d.ts',
-					dest: path.resolve(outDir),
+					dest: path.resolve(outputDir),
+				},
+				{
+					src: 'README.md',
+					dest: path.resolve(dirname),
 				},
 			],
 		}),
@@ -196,18 +209,18 @@ export default {
 			// 在打包完成后的钩子中监听输出文件的更改
 			// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 			writeBundle: (options, bundle) => {
-				const inputPath = path.resolve(outDir, 'index.d.ts');
+				const inputPath = path.resolve(outputDir, 'index.d.ts');
 				for (let i = 0; i < output.length; i++) {
 					const entryFileNames = output[i].entryFileNames;
 					if (entryFileNames) {
 						const pathFile = entryFileNames.replace(/\[name\]/g, 'index');
 						const name = pathFile.replace(/\.[^.]+$/, '.d.ts');
-						const outputPath = path.resolve(outDir, name);
+						const outputPath = path.resolve(outputDir, name);
 						try {
 							fs.copyFileSync(inputPath, outputPath);
 							const cssFileName = pathFile.replace(/\.js$/, '.css');
 							if (cssFileName !== 'index.css') {
-								const cssFilePath = path.resolve(outDir, cssFileName);
+								const cssFilePath = path.resolve(outputDir, cssFileName);
 								if (fs.existsSync(cssFilePath)) {
 									// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 									fs.unlinkSync(cssFilePath, err => {

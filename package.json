@@ -1,6 +1,6 @@
 {
 	"name": "next-element-vue",
-	"version": "0.2.2",
+	"version": "0.2.4",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
@@ -23,13 +23,14 @@
 	"homepage": "https://junehunter.github.io/next-element-vue",
 	"scripts": {
 		"dev": "rollup -c scripts/rollup.config.dev.mjs -w",
-		"build": "rimraf ./dist && rollup -c scripts/rollup.config.prod.mjs",
+		"build": "rimraf ./publish && rollup -c scripts/rollup.config.prod.mjs",
 		"prettier": "prettier --config .prettierrc.cjs -l -w \"./packages/**/*.{ts,tsx,js,json}\"",
 		"lint-fix": "eslint --fix --ext .vue,.ts,tsx,.js,.jsx,.json packages/ --max-warnings 0 --cache",
 		"clean": "pnpm -r exec -- cmd.exe /C rmdir /s /q node_modules",
 		"docs:dev": "pnpm run -C docs dev",
 		"docs:build": "pnpm -F=docs build",
 		"docs:preview": "pnpm -F=docs preview",
+		"publish": "npm publish ./publish",
 		"prepare": "git init && concurrently \"pnpm run postinstall\"",
 		"postinstall": "simple-git-hooks"
 	},
@@ -117,4 +118,3 @@
 	},
 	"license": "MIT"
 }
-
