@@ -149,7 +149,7 @@ export default defineComponent({
 			} else if (col.type === 'select') {
 				const placeholder = t('next.form.select') + (col.searchPlaceholder || col.searchLabel || col.label);
 				return (
-					<ElSelect v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} multiple={col.searchMultiple || false} collapse-tags collapse-tags-tooltip>
+					<ElSelect v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} multiple={col.multiple || false} collapse-tags collapse-tags-tooltip>
 						{col.dicData &&
 							(col.dicData as any[]).map(item => {
 								return <ElOption value={item.value} label={item.label}></ElOption>;

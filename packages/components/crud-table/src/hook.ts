@@ -190,6 +190,8 @@ export const updateFormColumns = (options: any, cb: Function) => {
 		const item: SearchColumnProps & FormItemProps = {
 			prop: col.prop,
 			type: valueExist(col.searchType, col.type),
+			multiple: valueExist(col.searchMultiple, col.multiple),
+			searchFormat: valueExist(col.searchFormat, null),
 			label: valueExist(col.searchLabel, col.label),
 			defaultValue: valueExist(col.searchDefaultValue, col.defaultValue, null),
 			placeholder: valueExist(col.searchPlaceholder, col.placeholder, null),
