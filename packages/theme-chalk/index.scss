@@ -2,6 +2,11 @@
 @use 'sass:map';
 @import './varilable';
 @import './common.scss';
+* {
+	padding: 0px;
+	margin: 0px;
+	list-style: none;
+}
 
 :root {
 	--next-layout-bg-color: #282c34;

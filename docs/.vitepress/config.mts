@@ -111,6 +111,10 @@ const createdSidebar = () => {
 					text: 'NextVideoPlayer 视频播放器',
 					link: 'video-player',
 				},
+				{
+					text: 'NextLabelimg 图片标注',
+					link: 'labelimg',
+				},
 			],
 		},
 	};
