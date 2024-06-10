@@ -24,7 +24,10 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function) =
 	const canvasWidth = canvas.width;
 	const canvasHeight = canvas.height;
 	const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
-	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	const clearCanvas = () => {
+		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+	};
+	clearCanvas();
 	let startX: any,
 		startY: any,
 		endX: any,
@@ -82,13 +85,14 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function) =
 		isRectDraw = false;
 	});
 	const drawRect = (color = '#f30635') => {
-		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+		clearCanvas();
 		ctx.strokeStyle = color;
 		ctx.strokeRect(startX, startY, endX - startX, endY - startY);
 	};
 	return {
 		canvas,
 		ctx,
+		clearCanvas,
 		drawRect,
 	};
 };
@@ -100,8 +104,8 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
 		for (let i = 0; i < labels.length; i++) {
 			const rect = labels[i];
-			const { startX, startY, rectWidth, rectHeight } = rect;
-			const color = colors[i % colors.length];
+			const { startX, startY, rectWidth, rectHeight, type } = rect;
+			const color = colors[type % colors.length];
 			ctx.font = 'bold 14px serif';
 			ctx.textBaseline = 'top';
 			ctx.save();
@@ -121,16 +125,18 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		ctx.strokeStyle = color;
 		ctx.strokeRect(startX, startY, rectWidth, rectHeight);
 	};
-	const hitCanvasLabel = (x: number, y: number): RectProps => {
-		let hit_rect = null;
+	const hitCanvasLabel = (x: number, y: number): any => {
+		let hit_rect = null,
+			hit_index = null;
 		for (let i = 0; i < labels.length; i++) {
 			const rect = labels[i];
 			const { startX, startY, rectWidth, rectHeight } = rect;
 			if (x >= startX && x <= startX + rectWidth && y >= startY && y <= startY + rectHeight) {
 				hit_rect = rect;
+				hit_index = i;
 			}
 		}
-		return hit_rect;
+		return { hit_rect, hit_index };
 	};
 	return {
 		updateLabels,

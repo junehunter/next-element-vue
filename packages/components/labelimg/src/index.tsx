@@ -46,6 +46,7 @@ export default defineComponent({
 					<div class={[ns.b('main')]}>
 						<CanvasContext classes={classes} rowInfo={currentNode.value}></CanvasContext>
 					</div>
+					<footer class={[ns.b('footer')]}></footer>
 				</ElScrollbar>
 			);
 		};
