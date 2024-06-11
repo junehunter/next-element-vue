@@ -1,4 +1,4 @@
-import { defineComponent, inject, ref, onMounted, toRaw, computed, watch } from 'vue';
+import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone } from 'packages/hooks/global-hook';
 import { DrawBaseCanvas, DrawRectCanvas } from '../hooks/canvas-context-hook';
@@ -91,8 +91,12 @@ export default defineComponent({
 				const x = e.offsetX,
 					y = e.offsetY;
 				const { hit_rect } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
+				onCloseContentmenuLabel();
+				onCloseDraggableRectFixed();
 				if (hit_rect) {
-					updateContextmenuLabelFixed(x, y, hit_rect);
+					nextTick(() => {
+						updateContextmenuLabelFixed(x, y, hit_rect);
+					});
 				}
 			});
 			canvasBaseRef.value.addEventListener('click', e => {
@@ -100,8 +104,11 @@ export default defineComponent({
 					y = e.offsetY;
 				const { hit_rect, hit_index } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
 				onCloseDraggableRectFixed();
+				onCloseContentmenuLabel();
 				if (hit_rect) {
-					updateDraggableRectFixed(x, y, hit_rect, hit_index);
+					nextTick(() => {
+						updateDraggableRectFixed(x, y, hit_rect, hit_index);
+					});
 				}
 			});
 		};
@@ -133,11 +140,8 @@ export default defineComponent({
 			contextmenuLabelFixed.value.canvasWidth = canvasBaseRef.value!.width;
 			contextmenuLabelFixed.value.canvasHeight = canvasBaseRef.value!.height;
 			contextmenuLabelFixed.value.activateRect = rect;
+			activate_add_label.value = rect;
 		};
-		const contextmenuLabelRect = computed(() => {
-			const { top, left, canvasWidth, canvasHeight } = contextmenuLabelFixed.value;
-			return { top, left, canvasWidth, canvasHeight };
-		});
 		const onCloseContentmenuLabel = () => {
 			contextmenuLabelFixed.value.show = false;
 			contextmenuLabelFixed.value.top = 0;
@@ -147,6 +151,10 @@ export default defineComponent({
 			drawBaseCanvas.value.updateLabels();
 			drawBaseCanvas.value!.clearCanvasRect();
 		};
+		const contextmenuLabelRect = computed(() => {
+			const { top, left, canvasWidth, canvasHeight } = contextmenuLabelFixed.value;
+			return { top, left, canvasWidth, canvasHeight };
+		});
 		const draggableRectFixed = ref<any>({
 			show: false,
 			top: 0,
@@ -174,12 +182,18 @@ export default defineComponent({
 			draggableRectFixed.value.activateRect = null;
 			draggableRectFixed.value.activateIndex = null;
 		};
-		const onDraggleRect = (rect: RectProps) => {
-			// const i = draggableRectFixed.value.activateIndex;
-			// labels.value[i] = rect;
+		const onDraggleRectResize = (rect: RectProps) => {
 			draggableRectFixed.value.activateRect = rect;
 			drawBaseCanvas.value.updateLabels();
-			// console.log(rect.startX, rect.startY);
+		};
+		const onContextmenuDraggable = (e: MouseEvent, rect: RectProps) => {
+			e.preventDefault();
+			const x = e.offsetX,
+				y = e.offsetY;
+			onCloseContentmenuLabel();
+			nextTick(() => {
+				updateContextmenuLabelFixed(x, y, rect);
+			});
 		};
 		const activate_add_label = ref<RectProps>();
 		// 添加标注
@@ -189,7 +203,12 @@ export default defineComponent({
 			if (typeName) {
 				activate_add_label.value!.typeName = typeName;
 			}
-			labels.value.push(activate_add_label.value);
+			const i = labels.value.findIndex((o: RectProps) => isEqual(o, activate_add_label.value));
+			if (i > -1) {
+				labels.value.splice(i, 1, activate_add_label.value);
+			} else {
+				labels.value.push(activate_add_label.value);
+			}
 			onCloseContentmenuLabel();
 			_emit('change', formatLabelsType());
 		};
@@ -198,6 +217,7 @@ export default defineComponent({
 			const i = labels.value.findIndex((o: RectProps) => isEqual(o, rect));
 			labels.value.splice(i, 1);
 			onCloseContentmenuLabel();
+			onCloseDraggableRectFixed();
 			drawBaseCanvas.value.updateLabels();
 			_emit('change', formatLabelsType());
 		};
@@ -216,7 +236,14 @@ export default defineComponent({
 							onDelete={onDeleteLabel}
 						></ContextMenuLabel>
 					) : null}
-					{draggableRectFixed.value.show ? <DraggableRect parentEl={canvasMainRef.value} rect={draggableRectFixed.value.activateRect} onDraggle={onDraggleRect}></DraggableRect> : null}
+					{draggableRectFixed.value.show ? (
+						<DraggableRect
+							parentEl={canvasMainRef.value}
+							rect={draggableRectFixed.value.activateRect}
+							onDraggleResize={onDraggleRectResize}
+							onContextmenu={onContextmenuDraggable}
+						></DraggableRect>
+					) : null}
 				</div>
 			);
 		};

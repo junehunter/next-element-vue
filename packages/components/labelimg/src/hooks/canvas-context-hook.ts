@@ -1,4 +1,16 @@
 import { isValueExist } from 'packages/hooks/global-hook';
+
+export interface ResizeCorner {
+	topLeft: boolean;
+	topCenter: boolean;
+	topRight: boolean;
+	leftCenter: boolean;
+	rightCenter: boolean;
+	bottomLeft: boolean;
+	bottomCenter: boolean;
+	bottomRight: boolean;
+}
+
 export interface RectProps {
 	type?: number;
 	typeName?: string;
