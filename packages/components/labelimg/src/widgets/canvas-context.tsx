@@ -1,4 +1,4 @@
-import { defineComponent, inject, ref, onMounted, toRaw, computed } from 'vue';
+import { defineComponent, inject, ref, onMounted, toRaw, computed, watch } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone } from 'packages/hooks/global-hook';
 import { DrawBaseCanvas, DrawRectCanvas } from '../hooks/canvas-context-hook';
@@ -20,11 +20,10 @@ export default defineComponent({
 	setup(props) {
 		const ns = inject('ns', {} as any);
 		const _emit = inject('_emit', null as any);
-		const rowInfo = toRaw(props.rowInfo);
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const canvasRectRef = ref<HTMLCanvasElement>();
-		const formatLabelsTypeName = () => {
+		const formatLabelsTypeName = (rowInfo: any) => {
 			return rowInfo.labels.map((rect: RectProps) => {
 				const typeName = props.classes[rect.type] as string;
 				if (typeName) {
@@ -41,7 +40,7 @@ export default defineComponent({
 			});
 			return rects;
 		};
-		const labels = ref<RectProps[]>(formatLabelsTypeName());
+		const labels = ref<RectProps[]>([]);
 		const drawBaseCanvas = ref<any>({});
 		const setContainerWidthHeight = (canvasWidth: number, canvasHeight: number) => {
 			canvasMainRef.value!.style.width = canvasWidth + 'px';
@@ -55,7 +54,8 @@ export default defineComponent({
 			canvasRectRef.value!.style.width = canvasWidth + 'px';
 			canvasRectRef.value!.style.height = canvasHeight + 'px';
 		};
-		const renderImageLabel = () => {
+		const renderImageLabel = (rowInfo: any) => {
+			labels.value = formatLabelsTypeName(rowInfo);
 			const clientHeight = canvasMainRef.value?.clientHeight as number;
 			const ctx = canvasBaseRef.value?.getContext('2d') as CanvasRenderingContext2D;
 			if (rowInfo?.imageSrc) {
@@ -106,7 +106,19 @@ export default defineComponent({
 			});
 		};
 		onMounted(() => {
-			renderImageLabel();
+			// const rowInfo = toRaw(props.rowInfo);
+			// renderImageLabel(rowInfo);
+			watch(
+				() => props.rowInfo,
+				info => {
+					const rowInfo = toRaw(info);
+					renderImageLabel(rowInfo);
+				},
+				{
+					deep: true,
+					immediate: true,
+				}
+			);
 		});
 		const contextmenuLabelFixed = ref<any>({
 			show: false,

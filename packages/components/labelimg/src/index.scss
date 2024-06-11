@@ -35,6 +35,52 @@ $block: 'labelimg';
 			}
 		}	
 	}
+	&-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 12px 8px;
+        .left-right {
+            flex: 0 0 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .el-icon {
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+        &__left {
+            @extend .left-right;
+        }
+        &__right {
+            @extend .left-right;
+        }
+        &__center {
+            flex: 1 1 auto;
+            &--list {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                >li {
+                    flex: 0 0 100px;
+                    height: 80px;
+                    border: 1px solid #eeeeee;
+                    background-color: #ffffff;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                    text-align: center;
+                    cursor: pointer;
+                    margin: 0 5px;
+                    &:hover {
+                        border: 1px solid $theme-color
+                    }
+                }
+            }
+        }
+	}
 
 	.#{bf($block, 'contextmenu-label')} {
 		position: absolute;

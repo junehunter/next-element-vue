@@ -1,11 +1,10 @@
 <script setup lang="ts">
 const classes = ['三色瓶', '大白瓶', '小白瓶', '杂色瓶'];
-const imageSrc = 'http://127.0.0.1:5000/detected/image/preview/images/2024-06-06/三色瓶_00001.jpg';
 const options = {
 	classes: classes,
 	list: [
 		{
-			imageSrc: imageSrc,
+			imageSrc: 'http://127.0.0.1:5000/detected/image/preview/images/2024-06-06/三色瓶_00001.jpg',
 			labels: [
 				{
 					type: 3,
@@ -36,6 +35,20 @@ const options = {
 				},
 			],
 		},
+		{
+			imageSrc: 'http://127.0.0.1:5000/detected/image/preview/images/2024-06-06/大白瓶_00003.jpg',
+			labels: [
+				{
+					startX: 120,
+					startY: 108,
+					rectWidth: 207,
+					rectHeight: 221,
+					canvasWidth: 375,
+					canvasHeight: 500,
+					type: 1,
+				},
+			],
+		},
 	],
 };
 const onChangeLabel = rects => {
@@ -51,9 +64,6 @@ const onChangeLabel = rects => {
 
 <style lang="scss" scoped>
 .layout-container {
-	background-color: #f5f5f5;
-	.main {
-		background-color: #c8c9cc;
-	}
+	// background-color: #f5f5f5;
 }
 </style>
