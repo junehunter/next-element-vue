@@ -157,13 +157,14 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 	};
 };
 export const convertToLabel = (rect: RectProps) => {
+	const label_type = rect.type;
 	const x_center = rect.startX + rect.rectWidth / 2;
 	const y_center = rect.startY + rect.rectHeight / 2;
 	const x_start = parseFloat((x_center / rect.canvasWidth).toFixed(6));
 	const y_start = parseFloat((y_center / rect.canvasHeight).toFixed(6));
 	const width = parseFloat((rect.rectWidth / rect.canvasWidth).toFixed(6));
 	const height = parseFloat((rect.rectHeight / rect.canvasHeight).toFixed(6));
-	return [x_start, y_start, width, height];
+	return [label_type, x_start, y_start, width, height];
 };
 export const canvertToCanvas = (labelData: number[], canvasWidth: number, canvasHeight: number) => {
 	const [label_type, x_center, y_center, width, height] = labelData;

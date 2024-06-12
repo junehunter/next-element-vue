@@ -66,5 +66,8 @@ export default {
 			tabsAll: '关闭全部',
 			systemSetting: '系统配置',
 		},
+		labelimg: {
+			saveTxt: '保存中...',
+		},
 	},
 };

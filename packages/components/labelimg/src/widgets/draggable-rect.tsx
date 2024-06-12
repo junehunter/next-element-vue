@@ -40,6 +40,7 @@ export default defineComponent({
 		};
 		const onMouseup = (e: MouseEvent) => {
 			e.preventDefault();
+			e.stopPropagation();
 			isDraggle.value = false;
 			isResizeCorner.value.topLeft = false;
 			isResizeCorner.value.topCenter = false;
@@ -151,8 +152,8 @@ export default defineComponent({
 			document.addEventListener('mouseup', onMouseup);
 		});
 		onUnmounted(() => {
-			document.removeEventListener('mouseup', onMouseup, false);
 			document.removeEventListener('mousemove', onMousemove, false);
+			document.removeEventListener('mouseup', onMouseup, false);
 		});
 		return { onMousedown, onMouseup, onContextmenu, rect, onMousedownDot };
 	},

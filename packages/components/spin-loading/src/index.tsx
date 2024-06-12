@@ -34,6 +34,7 @@ export default defineComponent({
 		const loadingText = props.tip || _t('next.loading');
 		return (
 			<div class={[ns.b(), props.className]} style={props.style}>
+				{slots.default?.()}
 				{props.loading ? (
 					<div class={ns.b('mask')}>
 						<span class={ns.b('mask-dot')}>
@@ -45,7 +46,6 @@ export default defineComponent({
 						<span class={ns.be('mask', 'text')}>{loadingText}</span>
 					</div>
 				) : null}
-				{slots.default?.()}
 			</div>
 		);
 	},

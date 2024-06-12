@@ -24,6 +24,7 @@ const packageJson = JSON.parse(JSON.stringify(pkg));
 delete packageJson['scripts'];
 delete packageJson['simple-git-hooks'];
 delete packageJson['lint-staged'];
+delete packageJson['devDependencies'];
 const packageJsonContent = JSON.stringify(packageJson, null, 4);
 const dirname = 'publish';
 if (!fs.existsSync(path.resolve(dirname))) {

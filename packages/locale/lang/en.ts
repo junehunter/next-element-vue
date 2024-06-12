@@ -66,5 +66,8 @@ export default {
 			tabsAll: 'close all',
 			systemSetting: 'system setting',
 		},
+		labelimg: {
+			saveTxt: 'saving...',
+		},
 	},
 };

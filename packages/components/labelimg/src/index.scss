@@ -2,6 +2,13 @@
 @import 'packages/theme-chalk/varilable';
 
 $block: 'labelimg'; 
+.#{bf($block, 'loading')} {
+    .#{bem('spin-loading')} {
+        &-mask__text {
+            text-shadow: unset;
+        }
+    }
+}
 .#{bf($block)} {
 	width: 100%;
 	height: 100%;
@@ -78,6 +85,9 @@ $block: 'labelimg';
                         border: 1px solid $theme-color
                     }
                 }
+                >li.is-activate {
+                    border: 1px solid $theme-color
+                }
             }
         }
 	}
@@ -106,6 +116,9 @@ $block: 'labelimg';
 		}
 		.label-main {
 			padding-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            @include setScrollBar();
 			> li {
 				padding: 3px 0;
 				font-size: 12px;

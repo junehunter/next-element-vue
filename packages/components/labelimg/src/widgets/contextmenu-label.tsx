@@ -78,7 +78,7 @@ export default defineComponent({
 							<Close />
 						</ElIcon>
 					</div>
-					<div class="label-main">
+					<ul class="label-main">
 						{props.classes.map((name, index) => {
 							return (
 								<li key={index} onClick={() => onSelectLabelItem(index)} class={{ 'activate-label': activateIndex.value === index }}>
@@ -87,14 +87,14 @@ export default defineComponent({
 								</li>
 							);
 						})}
-						{isValueExist(activateIndex.value) ? (
-							<div style="margin: 10px auto 0">
-								<ElButton icon={Delete} plain size="small" type="danger" onClick={onDelete}>
-									删除标注框
-								</ElButton>
-							</div>
-						) : null}
-					</div>
+					</ul>
+					{isValueExist(activateIndex.value) ? (
+						<div style="margin: 10px auto 0">
+							<ElButton icon={Delete} plain size="small" type="danger" onClick={onDelete}>
+								删除标注框
+							</ElButton>
+						</div>
+					) : null}
 				</div>
 			);
 		};

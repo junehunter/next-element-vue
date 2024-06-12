@@ -1,7 +1,7 @@
 import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone } from 'packages/hooks/global-hook';
-import { DrawBaseCanvas, DrawRectCanvas } from '../hooks/canvas-context-hook';
+import { DrawBaseCanvas, DrawRectCanvas, convertToLabel } from '../hooks/canvas-context-hook';
 import type { RectProps } from '../hooks/canvas-context-hook';
 import ContextMenuLabel from './contextmenu-label';
 import DraggableRect from './draggable-rect';
@@ -34,11 +34,17 @@ export default defineComponent({
 		};
 		const formatLabelsType = () => {
 			const _labels = deepClone(labels.value);
+			let yolo_label = [];
 			const rects = _labels.map((rect: RectProps) => {
 				delete rect.typeName;
+				const label_rect = convertToLabel(rect);
+				yolo_label.push(label_rect.join(' '));
 				return toRaw(rect);
 			});
-			return rects;
+			return {
+				rects,
+				label_txt: yolo_label.join('\n'),
+			};
 		};
 		const labels = ref<RectProps[]>([]);
 		const drawBaseCanvas = ref<any>({});
@@ -113,8 +119,6 @@ export default defineComponent({
 			});
 		};
 		onMounted(() => {
-			// const rowInfo = toRaw(props.rowInfo);
-			// renderImageLabel(rowInfo);
 			watch(
 				() => props.rowInfo,
 				info => {
@@ -185,6 +189,12 @@ export default defineComponent({
 		const onDraggleRectResize = (rect: RectProps) => {
 			draggableRectFixed.value.activateRect = rect;
 			drawBaseCanvas.value.updateLabels();
+			const i = labels.value.findIndex((o: RectProps) => isEqual(o, rect));
+			if (i > -1) {
+				labels.value.splice(i, 1, rect);
+			}
+			const { rects, label_txt } = formatLabelsType();
+			_emit('change', rects, label_txt);
 		};
 		const onContextmenuDraggable = (e: MouseEvent, rect: RectProps) => {
 			e.preventDefault();
@@ -210,7 +220,8 @@ export default defineComponent({
 				labels.value.push(activate_add_label.value);
 			}
 			onCloseContentmenuLabel();
-			_emit('change', formatLabelsType());
+			const { rects, label_txt } = formatLabelsType();
+			_emit('change', rects, label_txt);
 		};
 		// 删除标注
 		const onDeleteLabel = (rect: RectProps) => {
@@ -219,7 +230,8 @@ export default defineComponent({
 			onCloseContentmenuLabel();
 			onCloseDraggableRectFixed();
 			drawBaseCanvas.value.updateLabels();
-			_emit('change', formatLabelsType());
+			const { rects, label_txt } = formatLabelsType();
+			_emit('change', rects, label_txt);
 		};
 		const renderContent = () => {
 			return (

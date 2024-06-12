@@ -1,10 +1,9 @@
 <script setup lang="ts">
-const classes = ['三色瓶', '大白瓶', '小白瓶', '杂色瓶'];
 const options = {
-	classes: classes,
+	classes: ['三色瓶', '大白瓶', '小白瓶', '杂色瓶', '玻璃', '铁'],
 	list: [
 		{
-			imageSrc: 'http://127.0.0.1:5000/detected/image/preview/images/2024-06-06/三色瓶_00001.jpg',
+			imageSrc: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
 			labels: [
 				{
 					type: 3,
@@ -36,7 +35,7 @@ const options = {
 			],
 		},
 		{
-			imageSrc: 'http://127.0.0.1:5000/detected/image/preview/images/2024-06-06/大白瓶_00003.jpg',
+			imageSrc: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
 			labels: [
 				{
 					startX: 120,
@@ -51,14 +50,21 @@ const options = {
 		},
 	],
 };
-const onChangeLabel = rects => {
+const onChangeLabel = (rects, txt) => {
 	console.log(rects);
+	console.log(txt);
+};
+const onSave = (node, done) => {
+	console.log(node);
+	setTimeout(() => {
+		done();
+	}, 500);
 };
 </script>
 
 <template>
 	<div class="layout-container">
-		<NextLabelimg :options="options" @change="onChangeLabel"> </NextLabelimg>
+		<NextLabelimg :options="options" @change="onChangeLabel" @save="onSave"> </NextLabelimg>
 	</div>
 </template>
 
