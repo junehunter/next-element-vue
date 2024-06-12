@@ -22,12 +22,13 @@ $block: 'labelimg';
 	}
 	&-main {
 		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		.#{bf($block, 'canvas')} {
 			width: 100%;
 			min-height: 500px;
 			position: relative;
-			left: 50%;
-			transform: translateX(-50%);
 			&__context {
 				position: absolute;
 				height: 100%;

@@ -1,9 +1,9 @@
-import { defineComponent, provide, ref, computed, onMounted, onUnmounted } from 'vue';
+import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar, ElIcon, ElImage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
-import { deepClone } from 'packages/hooks/global-hook';
+import { deepClone, elementResize } from 'packages/hooks/global-hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
 import CanvasContext from './widgets/canvas-context';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
@@ -23,7 +23,7 @@ export default defineComponent({
 		},
 		options: {
 			type: Object,
-			default: () => ({}),
+			default: () => ({ classes: [], list: [] }),
 		},
 	},
 	emits: ['change', 'save', 'prev-click', 'next-click'],
@@ -53,8 +53,9 @@ export default defineComponent({
 				label_txt: yolo_label.join('\n'),
 			};
 		};
-		const onKeydown = (e: KeyboardEvent) => {
+		const onKeydownPrevNext = (e: KeyboardEvent) => {
 			if (loading.value) return;
+			if (!['KeyA', 'KeyD'].includes(e.code)) return;
 			loading.value = true;
 			const { node, label_txt } = formatNodeLabels();
 			emit(
@@ -101,11 +102,28 @@ export default defineComponent({
 		const onPaginationNext = () => {
 			emit('next-click');
 		};
+		const layoutRef = ref<HTMLElement>();
+		const headerRef = ref<HTMLElement>();
+		const mainRef = ref<HTMLElement>();
+		const footerRef = ref<HTMLDivElement>();
+		const mainContentHeight = ref(500);
+		const updateMainContentHeight = () => {
+			nextTick(() => {
+				const layoutCrudHeight = (layoutRef.value as HTMLDivElement)?.clientHeight || 0;
+				const headerHeight = (headerRef.value as HTMLDivElement)?.clientHeight || 0;
+				const footerHeight = (footerRef.value as HTMLDivElement)?.clientHeight || 0;
+				const contentHeight = layoutCrudHeight - (headerHeight + footerHeight);
+				mainContentHeight.value = contentHeight;
+			});
+		};
 		onMounted(() => {
-			document.addEventListener('keydown', onKeydown);
+			document.addEventListener('keydown', onKeydownPrevNext);
+			elementResize(layoutRef.value as HTMLElement, () => {
+				updateMainContentHeight();
+			});
 		});
 		onUnmounted(() => {
-			document.removeEventListener('keydown', onKeydown);
+			document.removeEventListener('keydown', onKeydownPrevNext);
 		});
 		expose({
 			convertToLabel,
@@ -113,50 +131,52 @@ export default defineComponent({
 		});
 		const renderContent = () => {
 			return (
-				<NextSpinLoading loading={loading.value} tip={t('next.labelimg.saveTxt')} class={[ns.b('loading')]}>
-					<ElScrollbar class={[ns.b(), props.className]} style={{ ...props.style }}>
-						<header class={[ns.b('header')]}>
-							{slots['header'] ? (
-								slots['header']()
-							) : (
-								<>
-									<ul></ul>
-									<ul></ul>
-								</>
-							)}
-						</header>
-						<div class={[ns.b('main')]}>
-							<CanvasContext classes={classes} rowInfo={currentNode.value}></CanvasContext>
-						</div>
-						<footer class={[ns.b('footer')]}>
-							<div class={[ns.be('footer', 'left')]}>
-								<ElIcon size={24} onClick={onPaginationPrev}>
-									<ArrowLeft />
-								</ElIcon>
+				<div ref={layoutRef} class={[ns.b(), props.className]} style={{ ...props.style }}>
+					<NextSpinLoading loading={loading.value} tip={t('next.labelimg.saveTxt')} class={[ns.b('loading')]}>
+						<ElScrollbar>
+							<header ref={headerRef} class={[ns.b('header')]}>
+								{slots['header'] ? (
+									slots['header']()
+								) : (
+									<>
+										<ul></ul>
+										<ul></ul>
+									</>
+								)}
+							</header>
+							<div ref={mainRef} class={[ns.b('main')]}>
+								<CanvasContext classes={classes} rowInfo={currentNode.value}></CanvasContext>
 							</div>
-							<div class={[ns.be('footer', 'center')]}>
-								<ElScrollbar>
-									<ul class={[ns.bem('footer', 'center', 'list')]}>
-										{list.map((item, index) => {
-											return (
-												<li key={index} onClick={() => onChangeActivateNode(index)} class={{ 'is-activate': activateNodeIndex.value === index }}>
-													<ElImage style="height: 100%" src={item.imageSrc} zoom-rate={1.2} max-scale={2} min-scale={0.2} fit="cover" />
-												</li>
-											);
-										})}
-									</ul>
-								</ElScrollbar>
-							</div>
-							<div class={[ns.be('footer', 'right')]}>
-								<ElIcon size={24} onClick={onPaginationNext}>
-									<ArrowRight />
-								</ElIcon>
-							</div>
-						</footer>
-					</ElScrollbar>
-				</NextSpinLoading>
+							<footer ref={footerRef} class={[ns.b('footer')]}>
+								<div class={[ns.be('footer', 'left')]}>
+									<ElIcon size={24} onClick={onPaginationPrev}>
+										<ArrowLeft />
+									</ElIcon>
+								</div>
+								<div class={[ns.be('footer', 'center')]}>
+									<ElScrollbar>
+										<ul class={[ns.bem('footer', 'center', 'list')]}>
+											{list.map((item, index) => {
+												return (
+													<li key={index} onClick={() => onChangeActivateNode(index)} class={{ 'is-activate': activateNodeIndex.value === index }}>
+														<ElImage style="height: 100%" src={item.imageSrc} zoom-rate={1.2} max-scale={2} min-scale={0.2} fit="cover" />
+													</li>
+												);
+											})}
+										</ul>
+									</ElScrollbar>
+								</div>
+								<div class={[ns.be('footer', 'right')]}>
+									<ElIcon size={24} onClick={onPaginationNext}>
+										<ArrowRight />
+									</ElIcon>
+								</div>
+							</footer>
+						</ElScrollbar>
+					</NextSpinLoading>
+				</div>
 			);
 		};
-		return () => renderContent();
+		return () => <>{renderContent()}</>;
 	},
 });

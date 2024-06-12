@@ -24,6 +24,7 @@ export default defineComponent({
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const canvasRectRef = ref<HTMLCanvasElement>();
 		const formatLabelsTypeName = (rowInfo: any) => {
+			if (!rowInfo.labels) return [];
 			return rowInfo.labels.map((rect: RectProps) => {
 				const typeName = props.classes[rect.type] as string;
 				if (typeName) {
@@ -198,8 +199,10 @@ export default defineComponent({
 		};
 		const onContextmenuDraggable = (e: MouseEvent, rect: RectProps) => {
 			e.preventDefault();
-			const x = e.offsetX,
-				y = e.offsetY;
+			const rect_x = e.offsetX,
+				rect_y = e.offsetY;
+			const x = rect_x + rect.startX,
+				y = rect_y + rect.startY;
 			onCloseContentmenuLabel();
 			nextTick(() => {
 				updateContextmenuLabelFixed(x, y, rect);

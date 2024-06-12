@@ -1,6 +1,6 @@
 {
 	"name": "next-element-vue",
-	"version": "0.2.7",
+	"version": "0.2.8",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
@@ -118,4 +118,3 @@
 	},
 	"license": "MIT"
 }
-
