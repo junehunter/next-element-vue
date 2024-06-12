@@ -30,7 +30,7 @@ export default defineComponent({
 			diff_x: null,
 			diff_y: null,
 		});
-		let parentRect: any = {};
+		let parentRect = {} as DOMRect;
 		const rect = toRef<RectProps>(props.rect);
 		const onMousedown = (e: MouseEvent) => {
 			e.preventDefault();
@@ -60,6 +60,7 @@ export default defineComponent({
 			e.stopPropagation();
 			isResizeCorner.value[corner] = true;
 		};
+		const min_size = 30;
 		const onMousemove = (e: MouseEvent) => {
 			if (isDraggle.value) {
 				const newLeft = e.clientX - parentRect.left - draggleOffset.value.diff_x;
@@ -67,19 +68,9 @@ export default defineComponent({
 				rect.value.startX = Math.max(0, Math.min(newLeft, parentRect.width - rect.value.rectWidth));
 				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
 			}
-			if (isResizeCorner.value.bottomRight) {
-				let newWidth = e.clientX - parentRect.left - rect.value.startX;
-				let newHeight = e.clientY - parentRect.top - rect.value.startY;
-				if (newWidth < 30) newWidth = 30;
-				if (newHeight < 30) newHeight = 30;
-				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
-				if (newHeight + rect.value.startY > parentRect.height) newHeight = parentRect.height - rect.value.startY;
-				rect.value.rectWidth = newWidth;
-				rect.value.rectHeight = newHeight;
-			}
 			if (isResizeCorner.value.bottomCenter) {
 				let newHeight = e.clientY - parentRect.top - rect.value.startY;
-				if (newHeight < 30) newHeight = 30;
+				if (newHeight < min_size) newHeight = min_size;
 				if (newHeight + rect.value.startY > parentRect.height) newHeight = parentRect.height - rect.value.startY;
 				rect.value.rectHeight = newHeight;
 			}
@@ -87,9 +78,71 @@ export default defineComponent({
 				let newTop = e.clientY - parentRect.top;
 				let newHeight = rect.value.startY - newTop + rect.value.rectHeight;
 				if (newTop < 0) return;
-				if (newHeight < 30) return;
+				if (newHeight < min_size) return;
 				rect.value.rectHeight = newHeight;
 				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
+			}
+			if (isResizeCorner.value.leftCenter) {
+				let newLeft = e.clientX - parentRect.left;
+				let newWidth = rect.value.startX - newLeft + rect.value.rectWidth;
+				if (newLeft < 0) return;
+				if (newWidth < min_size) return;
+				rect.value.startX = Math.max(0, Math.min(newLeft, parentRect.width - rect.value.rectWidth));
+				rect.value.rectWidth = newWidth;
+			}
+			if (isResizeCorner.value.rightCenter) {
+				let newWidth = e.clientX - parentRect.left - rect.value.startX;
+				if (newWidth < min_size) newWidth = min_size;
+				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
+				rect.value.rectWidth = newWidth;
+			}
+			if (isResizeCorner.value.bottomRight) {
+				let newWidth = e.clientX - parentRect.left - rect.value.startX;
+				let newHeight = e.clientY - parentRect.top - rect.value.startY;
+				if (newWidth < min_size) newWidth = min_size;
+				if (newHeight < min_size) newHeight = min_size;
+				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
+				if (newHeight + rect.value.startY > parentRect.height) newHeight = parentRect.height - rect.value.startY;
+				rect.value.rectWidth = newWidth;
+				rect.value.rectHeight = newHeight;
+			}
+			if (isResizeCorner.value.bottomLeft) {
+				let newLeft = e.clientX - parentRect.left;
+				let newWidth = rect.value.startX - newLeft + rect.value.rectWidth;
+				let newHeight = e.clientY - parentRect.top - rect.value.startY;
+				if (newLeft < 0) return;
+				if (newWidth < min_size) return;
+				if (newHeight < min_size) newHeight = min_size;
+				if (newHeight + rect.value.startY > parentRect.height) newHeight = parentRect.height - rect.value.startY;
+				rect.value.startX = Math.max(0, Math.min(newLeft, parentRect.width - rect.value.rectWidth));
+				rect.value.rectWidth = newWidth;
+				rect.value.rectHeight = newHeight;
+			}
+			if (isResizeCorner.value.topLeft) {
+				let newTop = e.clientY - parentRect.top;
+				let newHeight = rect.value.startY - newTop + rect.value.rectHeight;
+				if (newTop < 0) return;
+				if (newHeight < min_size) return;
+				rect.value.rectHeight = newHeight;
+				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
+				let newLeft = e.clientX - parentRect.left;
+				let newWidth = rect.value.startX - newLeft + rect.value.rectWidth;
+				if (newLeft < 0) return;
+				if (newWidth < min_size) return;
+				rect.value.startX = Math.max(0, Math.min(newLeft, parentRect.width - rect.value.rectWidth));
+				rect.value.rectWidth = newWidth;
+			}
+			if (isResizeCorner.value.topRight) {
+				let newTop = e.clientY - parentRect.top;
+				let newHeight = rect.value.startY - newTop + rect.value.rectHeight;
+				if (newTop < 0) return;
+				if (newHeight < min_size) return;
+				rect.value.rectHeight = newHeight;
+				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
+				let newWidth = e.clientX - parentRect.left - rect.value.startX;
+				if (newWidth < min_size) newWidth = min_size;
+				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
+				rect.value.rectWidth = newWidth;
 			}
 		};
 		onMounted(() => {
@@ -117,12 +170,12 @@ export default defineComponent({
 		return (
 			<div class={[_ns.b('draggable-rect')]} style={draggableRectStyle()} onMousedown={this.onMousedown} onMouseup={this.onMouseup} onContextmenu={this.onContextmenu}>
 				<ul class={[_ns.be('draggable-rect', 'resize')]}>
-					<li class="top-left"></li>
+					<li class="top-left" onMousedown={event => this.onMousedownDot(event, 'topLeft')}></li>
 					<li class="top-center" onMousedown={event => this.onMousedownDot(event, 'topCenter')}></li>
-					<li class="top-right"></li>
-					<li class="left-center"></li>
-					<li class="right-center"></li>
-					<li class="bottom-left"></li>
+					<li class="top-right" onMousedown={event => this.onMousedownDot(event, 'topRight')}></li>
+					<li class="left-center" onMousedown={event => this.onMousedownDot(event, 'leftCenter')}></li>
+					<li class="right-center" onMousedown={event => this.onMousedownDot(event, 'rightCenter')}></li>
+					<li class="bottom-left" onMousedown={event => this.onMousedownDot(event, 'bottomLeft')}></li>
 					<li class="bottom-center" onMousedown={event => this.onMousedownDot(event, 'bottomCenter')}></li>
 					<li class="bottom-right" onMousedown={event => this.onMousedownDot(event, 'bottomRight')}></li>
 				</ul>

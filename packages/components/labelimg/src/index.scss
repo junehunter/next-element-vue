@@ -139,8 +139,8 @@ $block: 'labelimg';
 				position: absolute;
 				width: $dot-size;
 				height: $dot-size;
-				border: 1px solid #cccccc;
-				background-color: #ffffff;
+				border: 1px solid $theme-color;
+				background-color: $theme-color;
 				box-sizing: border-box;
 			}
 			.top-left {

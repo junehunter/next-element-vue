@@ -39,7 +39,7 @@ export default defineComponent({
 			() => props.activateRect,
 			() => {
 				const { type } = props.activateRect;
-				activateIndex.value = type || null;
+				activateIndex.value = isValueExist(type) ? type : null;
 			},
 			{
 				deep: true,
