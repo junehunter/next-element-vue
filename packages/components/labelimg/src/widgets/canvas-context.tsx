@@ -17,7 +17,8 @@ export default defineComponent({
 			default: () => ({}),
 		},
 	},
-	setup(props) {
+	emits: ['change'],
+	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const _emit = inject('_emit', null as any);
 		const canvasMainRef = ref<HTMLElement>();
@@ -85,11 +86,17 @@ export default defineComponent({
 					drawBaseCanvas.value!.updateLabels = updateLabels;
 					drawBaseCanvas.value!.addDrawRect = addDrawRect;
 					drawBaseCanvas.value!.hitCanvasLabel = hitCanvasLabel;
-					const { clearCanvas } = DrawRectCanvas(canvasRectRef.value, (rect: RectProps, { endX, endY }: any) => {
-						activate_add_label.value = rect;
-						drawBaseCanvas.value.addDrawRect(rect);
-						updateContextmenuLabelFixed(endX, endY, rect);
-					});
+					const { clearCanvas } = DrawRectCanvas(
+						canvasRectRef.value,
+						(rect: RectProps, { endX, endY }: any) => {
+							activate_add_label.value = rect;
+							drawBaseCanvas.value.addDrawRect(rect);
+							updateContextmenuLabelFixed(endX, endY, rect);
+						},
+						() => {
+							onCloseDraggableRectFixed();
+						}
+					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
 				};
 			}
@@ -153,7 +160,7 @@ export default defineComponent({
 			contextmenuLabelFixed.value.left = 0;
 			contextmenuLabelFixed.value.activateRect = null;
 			activate_add_label.value = null;
-			drawBaseCanvas.value.updateLabels();
+			drawBaseCanvas.value!.updateLabels();
 			drawBaseCanvas.value!.clearCanvasRect();
 		};
 		const contextmenuLabelRect = computed(() => {
@@ -196,6 +203,7 @@ export default defineComponent({
 			}
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
+			emit('change', rects, label_txt);
 		};
 		const onContextmenuDraggable = (e: MouseEvent, rect: RectProps) => {
 			e.preventDefault();
@@ -225,6 +233,7 @@ export default defineComponent({
 			onCloseContentmenuLabel();
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
+			emit('change', rects, label_txt);
 		};
 		// 删除标注
 		const onDeleteLabel = (rect: RectProps) => {
@@ -235,7 +244,12 @@ export default defineComponent({
 			drawBaseCanvas.value.updateLabels();
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
+			emit('change', rects, label_txt);
 		};
+		expose({
+			onCloseDraggableRectFixed,
+			onCloseContentmenuLabel,
+		});
 		const renderContent = () => {
 			return (
 				<div ref={canvasMainRef} class={[ns.b('canvas')]}>

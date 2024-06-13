@@ -82,7 +82,7 @@ export default defineComponent({
 						{props.classes.map((name, index) => {
 							return (
 								<li key={index} onClick={() => onSelectLabelItem(index)} class={{ 'activate-label': activateIndex.value === index }}>
-									<span style={{ 'background-color': colors[index] }} class="label-line"></span>
+									<span style={{ 'background-color': colors[index % colors.length] }} class="label-line"></span>
 									<span>{name}</span>
 								</li>
 							);

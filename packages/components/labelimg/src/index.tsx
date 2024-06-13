@@ -1,4 +1,4 @@
-import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar, ElIcon, ElImage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
@@ -23,7 +23,15 @@ export default defineComponent({
 		},
 		options: {
 			type: Object,
-			default: () => ({ classes: [], list: [] }),
+			default: () => ({}),
+		},
+		classes: {
+			type: Array,
+			default: () => [],
+		},
+		data: {
+			type: Array,
+			default: () => [],
 		},
 	},
 	emits: ['change', 'save', 'prev-click', 'next-click'],
@@ -31,17 +39,39 @@ export default defineComponent({
 		const { t } = useLocale();
 		provide('ns', ns);
 		provide('_emit', emit);
-		const { classes, list } = props.options;
 		const activateNodeIndex = ref<number>(0);
+		const classes = ref<any>(props.classes);
+		const labelImages = ref<any>(deepClone(props.data));
+		watch(
+			() => props.data,
+			data => {
+				activateNodeIndex.value = 0;
+				labelImages.value = deepClone(data);
+			},
+			{
+				deep: true,
+			}
+		);
+		watch(
+			() => props.classes,
+			val => {
+				classes.value = val;
+			},
+			{
+				deep: true,
+			}
+		);
 		const currentNode = computed(() => {
-			if (!list) return {};
-			const node = list[activateNodeIndex.value] || {};
-			return node;
+			if (!labelImages.value) return {};
+			const node = labelImages.value[activateNodeIndex.value] || {};
+			return deepClone(node);
 		});
-		const imageLength = list.length;
+		const onChangeNodeRect = (rects: RectProps) => {
+			currentNode.value.labels = rects;
+		};
 		const loading = ref<boolean>(false);
 		const formatNodeLabels = () => {
-			const node = deepClone(currentNode.value);
+			const node = currentNode.value;
 			let yolo_label = [];
 			node.labels.forEach((rect: RectProps) => {
 				delete rect.typeName;
@@ -57,6 +87,7 @@ export default defineComponent({
 			if (loading.value) return;
 			if (!['KeyA', 'KeyD'].includes(e.code)) return;
 			loading.value = true;
+			const imageLength = labelImages.value.length;
 			const { node, label_txt } = formatNodeLabels();
 			emit(
 				'save',
@@ -74,6 +105,8 @@ export default defineComponent({
 						}
 					}
 					loading.value = false;
+					// 新渲染图片关闭之前的操作框
+					canvasContextRef.value.onCloseDraggableRectFixed();
 				},
 				() => {
 					loading.value = false;
@@ -90,6 +123,8 @@ export default defineComponent({
 				() => {
 					activateNodeIndex.value = index;
 					loading.value = false;
+					// 新渲染图片关闭之前的操作框
+					canvasContextRef.value.onCloseDraggableRectFixed();
 				},
 				() => {
 					loading.value = false;
@@ -102,6 +137,7 @@ export default defineComponent({
 		const onPaginationNext = () => {
 			emit('next-click');
 		};
+		const canvasContextRef = ref<any>();
 		const layoutRef = ref<HTMLElement>();
 		const headerRef = ref<HTMLElement>();
 		const mainRef = ref<HTMLElement>();
@@ -145,7 +181,7 @@ export default defineComponent({
 								)}
 							</header>
 							<div ref={mainRef} class={[ns.b('main')]}>
-								<CanvasContext classes={classes} rowInfo={currentNode.value}></CanvasContext>
+								<CanvasContext ref={canvasContextRef} classes={classes.value} rowInfo={currentNode.value} onChange={onChangeNodeRect}></CanvasContext>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>
@@ -156,7 +192,7 @@ export default defineComponent({
 								<div class={[ns.be('footer', 'center')]}>
 									<ElScrollbar>
 										<ul class={[ns.bem('footer', 'center', 'list')]}>
-											{list.map((item, index) => {
+											{labelImages.value.map((item, index) => {
 												return (
 													<li key={index} onClick={() => onChangeActivateNode(index)} class={{ 'is-activate': activateNodeIndex.value === index }}>
 														<ElImage style="height: 100%" src={item.imageSrc} zoom-rate={1.2} max-scale={2} min-scale={0.2} fit="cover" />

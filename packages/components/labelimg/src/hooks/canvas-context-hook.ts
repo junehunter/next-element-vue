@@ -32,7 +32,7 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	labels: RectProps[];
 }
 
-export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function) => {
+export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
 	const canvasWidth = canvas.width;
 	const canvasHeight = canvas.height;
 	const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
@@ -49,14 +49,16 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function) =
 		isWKeyPressed = false;
 
 	document.addEventListener('keydown', event => {
-		if (event.key === 'w') {
+		if (event.code === 'KeyW') {
 			isWKeyPressed = true;
 			canvas!.style.cursor = 'crosshair';
 			canvas!.style.zIndex = '11';
+			keyW && keyW();
 		}
 	});
 	document.addEventListener('keyup', event => {
-		if (event.key === 'w') {
+		if (isDrawing) return;
+		if (event.code === 'KeyW') {
 			isWKeyPressed = false;
 			canvas!.style.cursor = 'unset';
 			canvas!.style.zIndex = '0';
@@ -81,6 +83,8 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function) =
 		if (!isRectDraw) return;
 		isDrawing = false;
 		isWKeyPressed = false;
+		canvas!.style.cursor = 'unset';
+		canvas!.style.zIndex = '0';
 		const rectWidth = Math.abs(endX - startX);
 		const rectHeight = Math.abs(endY - startY);
 		if (startX > endX) startX = endX;
