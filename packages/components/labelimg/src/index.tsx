@@ -45,11 +45,16 @@ export default defineComponent({
 		watch(
 			() => props.data,
 			data => {
-				activateNodeIndex.value = 0;
 				labelImages.value = deepClone(data);
 			},
 			{
 				deep: true,
+			}
+		);
+		watch(
+			() => props.data.length,
+			() => {
+				activateNodeIndex.value = 0;
 			}
 		);
 		watch(
