@@ -55,3 +55,11 @@ execSync('rimraf ./.vitepress/dist', { stdio: 'inherit' });
 
 
  */
+
+/**
+ * 提交报错： Failed to connect to github.com port 443 after 21096 ms: Couldn't connect to server
+ *
+ * 处理：
+ * $ git config --global --unset http.proxy
+ * $ git config --global --unset https.proxy
+ */
