@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-const classes = ref<any>(['三色瓶', '大白瓶', '小白瓶', '杂色瓶', '玻璃', '铁']);
+const classes = ref<any>(['动物-马', '动物-鹿', '动物-狼', '动物-狐狸']);
 const list = ref<any>([
 	{
 		id: 1,
@@ -31,15 +31,25 @@ const list = ref<any>([
 		imageSrc: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
 		labels: [
 			{
-				startX: 120,
-				startY: 108,
+				startX: 264.5,
+				startY: 172,
 				rectWidth: 207,
 				rectHeight: 221,
 				canvasWidth: 750,
 				canvasHeight: 500,
-				type: 1,
+				type: 0,
 			},
 		],
+	},
+	{
+		id: 3,
+		imageSrc: 'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+		labels: [],
+	},
+	{
+		id: 4,
+		imageSrc: 'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
+		labels: [],
 	},
 ]);
 // setTimeout(() => {
@@ -76,12 +86,29 @@ const onSave = (node, done) => {
 
 <template>
 	<div class="layout-container">
+		<NextLabelimgPreview
+			style="margin: 20px auto"
+			:classes="classes"
+			src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
+			:labels="[
+				{
+					startX: 264.5,
+					startY: 172,
+					rectWidth: 207,
+					rectHeight: 221,
+					canvasWidth: 750,
+					canvasHeight: 500,
+					type: 0,
+				},
+			]"
+		></NextLabelimgPreview>
 		<NextLabelimg :classes="classes" :data="list" @change="onChangeLabel" @save="onSave"> </NextLabelimg>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .layout-container {
+	text-align: center;
 	// background-color: #f5f5f5;
 	// height: 500px;
 }

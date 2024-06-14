@@ -143,16 +143,18 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 	};
 	const hitCanvasLabel = (x: number, y: number): any => {
 		let hit_rect = null,
-			hit_index = null;
+			hit_index = null,
+			color = null;
 		for (let i = 0; i < labels.length; i++) {
 			const rect = labels[i];
 			const { startX, startY, rectWidth, rectHeight } = rect;
 			if (x >= startX && x <= startX + rectWidth && y >= startY && y <= startY + rectHeight) {
 				hit_rect = rect;
 				hit_index = i;
+				color = colors[i];
 			}
 		}
-		return { hit_rect, hit_index };
+		return { hit_rect, hit_index, color };
 	};
 	return {
 		updateLabels,

@@ -1,7 +1,9 @@
 import { defineComponent, inject, onMounted, onUnmounted, ref, toRef } from 'vue';
-import type { PropType } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 import type { RectProps, ResizeCorner } from '../hooks/canvas-context-hook';
+import { useChangeColor } from 'packages/utils/theme';
 
+const { hexToRgb } = useChangeColor();
 export default defineComponent({
 	props: {
 		parentEl: {
@@ -11,6 +13,10 @@ export default defineComponent({
 		rect: {
 			type: Object as PropType<RectProps>,
 			default: () => ({}),
+		},
+		color: {
+			type: String,
+			default: null,
 		},
 	},
 	emits: ['draggle-resize', 'contextmenu'],
@@ -159,14 +165,21 @@ export default defineComponent({
 	},
 	render() {
 		const _ns = inject('ns', {} as any);
+		const props = this.$props;
 		const draggableRectStyle = () => {
 			const { startX, startY, rectWidth, rectHeight } = this.rect;
-			return {
+			const style = {
 				top: startY + 'px',
 				left: startX + 'px',
 				width: rectWidth + 'px',
 				height: rectHeight + 'px',
-			};
+			} as CSSProperties;
+			const color = props.color;
+			if (color) {
+				const rgb_color = hexToRgb(color);
+				if (rgb_color) style.backgroundColor = `rgba(${rgb_color[0]},${rgb_color[1]},${rgb_color[2]}, 0.5)`;
+			}
+			return style;
 		};
 		return (
 			<div class={[_ns.b('draggable-rect')]} style={draggableRectStyle()} onMousedown={this.onMousedown} onMouseup={this.onMouseup} onContextmenu={this.onContextmenu}>

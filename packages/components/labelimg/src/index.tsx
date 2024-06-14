@@ -1,13 +1,16 @@
-import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch, unref } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar, ElIcon, ElImage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
+import { merge } from 'lodash-unified';
+import isEqual from 'lodash-es/isequal';
 import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, elementResize } from 'packages/hooks/global-hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
 import CanvasContext from './widgets/canvas-context';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
 import type { RectProps } from './hooks/canvas-context-hook';
+import defaultConfig from './config';
 
 const ns = useNamespace('labelimg');
 export default defineComponent({
@@ -19,7 +22,13 @@ export default defineComponent({
 		},
 		style: {
 			type: Object as PropType<CSSProperties>,
-			default: () => ({}),
+			default: () => ({
+				position: 'unset',
+			}),
+		},
+		rowKey: {
+			type: String,
+			default: 'id',
 		},
 		options: {
 			type: Object,
@@ -37,6 +46,12 @@ export default defineComponent({
 	emits: ['change', 'save', 'prev-click', 'next-click'],
 	setup(props, { emit, slots, expose }) {
 		const { t } = useLocale();
+		const _config = deepClone(defaultConfig);
+		const _options = computed(() => {
+			const cfg = unref(props.options);
+			return merge(_config, cfg);
+		});
+		const options = unref(_options);
 		provide('ns', ns);
 		provide('_emit', emit);
 		const activateNodeIndex = ref<number>(0);
@@ -88,30 +103,45 @@ export default defineComponent({
 				label_txt: yolo_label.join('\n'),
 			};
 		};
+		const isChangeNodeLabels = () => {
+			const node = labelImages.value[activateNodeIndex.value];
+			return isEqual(node.labels, currentNode.value.labels);
+		};
+		const switchKeydownAD = (e: KeyboardEvent) => {
+			const imageLength = labelImages.value.length;
+			if (e.code === 'KeyD') {
+				activateNodeIndex.value++;
+				if (activateNodeIndex.value >= imageLength) {
+					activateNodeIndex.value = 0;
+				}
+			} else if (e.code === 'KeyA') {
+				activateNodeIndex.value--;
+				if (activateNodeIndex.value < 0) {
+					activateNodeIndex.value = imageLength - 1;
+				}
+			}
+		};
 		const onKeydownPrevNext = (e: KeyboardEvent) => {
 			if (loading.value) return;
 			if (!['KeyA', 'KeyD'].includes(e.code)) return;
 			loading.value = true;
-			const imageLength = labelImages.value.length;
 			const { node, label_txt } = formatNodeLabels();
+			// 新渲染图片关闭之前的操作框
+			canvasContextRef.value.onCloseDraggableRectFixed();
+			if (isChangeNodeLabels()) {
+				// 当标注数据没更新
+				switchKeydownAD(e);
+				loading.value = false;
+				return;
+			}
 			emit(
 				'save',
 				{ node, label_txt },
-				() => {
-					if (e.code === 'KeyD') {
-						activateNodeIndex.value++;
-						if (activateNodeIndex.value >= imageLength) {
-							activateNodeIndex.value = 0;
-						}
-					} else if (e.code === 'KeyA') {
-						activateNodeIndex.value--;
-						if (activateNodeIndex.value < 0) {
-							activateNodeIndex.value = imageLength - 1;
-						}
-					}
+				(imageItem?: any) => {
+					// 保存成功后更新当前图片数据
+					labelImages.value[activateNodeIndex.value] = imageItem ? imageItem : node;
+					switchKeydownAD(e);
 					loading.value = false;
-					// 新渲染图片关闭之前的操作框
-					canvasContextRef.value.onCloseDraggableRectFixed();
 				},
 				() => {
 					loading.value = false;
@@ -122,14 +152,21 @@ export default defineComponent({
 			if (loading.value) return;
 			loading.value = true;
 			const { node, label_txt } = formatNodeLabels();
+			// 新渲染图片关闭之前的操作框
+			canvasContextRef.value.onCloseDraggableRectFixed();
+			if (isChangeNodeLabels()) {
+				// 当标注数据没更新
+				activateNodeIndex.value = index;
+				loading.value = false;
+				return;
+			}
 			emit(
 				'save',
 				{ node, label_txt },
-				() => {
+				(imageItem?: any) => {
+					labelImages.value[activateNodeIndex.value] = imageItem ? imageItem : node;
 					activateNodeIndex.value = index;
 					loading.value = false;
-					// 新渲染图片关闭之前的操作框
-					canvasContextRef.value.onCloseDraggableRectFixed();
 				},
 				() => {
 					loading.value = false;
@@ -137,29 +174,33 @@ export default defineComponent({
 			);
 		};
 		const onPaginationPrev = () => {
+			const imageLength = labelImages.value.length;
+			let i = activateNodeIndex.value - 1;
+			if (i < 0) i = imageLength - 1;
+			onChangeActivateNode(i);
 			emit('prev-click');
 		};
 		const onPaginationNext = () => {
+			const imageLength = labelImages.value.length;
+			let i = activateNodeIndex.value + 1;
+			if (i >= imageLength) i = 0;
+			onChangeActivateNode(i);
 			emit('next-click');
 		};
 		const canvasContextRef = ref<any>();
-		const layoutRef = ref<HTMLElement>();
+		const layoutLabelRef = ref<HTMLElement>();
 		const headerRef = ref<HTMLElement>();
 		const mainRef = ref<HTMLElement>();
 		const footerRef = ref<HTMLDivElement>();
-		const mainContentHeight = ref(500);
+		const mainContentHeight = ref(options.mainContentHeight);
 		const updateMainContentHeight = () => {
 			nextTick(() => {
-				const layoutCrudHeight = (layoutRef.value as HTMLDivElement)?.clientHeight || 0;
-				const headerHeight = (headerRef.value as HTMLDivElement)?.clientHeight || 0;
-				const footerHeight = (footerRef.value as HTMLDivElement)?.clientHeight || 0;
-				const contentHeight = layoutCrudHeight - (headerHeight + footerHeight);
-				mainContentHeight.value = contentHeight;
+				layoutLabelRef.value.style.position = 'unset';
 			});
 		};
 		onMounted(() => {
 			document.addEventListener('keydown', onKeydownPrevNext);
-			elementResize(layoutRef.value as HTMLElement, () => {
+			elementResize(layoutLabelRef.value as HTMLElement, () => {
 				updateMainContentHeight();
 			});
 		});
@@ -172,7 +213,7 @@ export default defineComponent({
 		});
 		const renderContent = () => {
 			return (
-				<div ref={layoutRef} class={[ns.b(), props.className]} style={{ ...props.style }}>
+				<div ref={layoutLabelRef} class={[ns.b(), props.className]} style={{ ...props.style }}>
 					<NextSpinLoading loading={loading.value} tip={t('next.labelimg.saveTxt')} class={[ns.b('loading')]}>
 						<ElScrollbar>
 							<header ref={headerRef} class={[ns.b('header')]}>
@@ -185,7 +226,7 @@ export default defineComponent({
 									</>
 								)}
 							</header>
-							<div ref={mainRef} class={[ns.b('main')]}>
+							<div ref={mainRef} class={[ns.b('main')]} style={{ height: mainContentHeight.value + 'px' }}>
 								<CanvasContext ref={canvasContextRef} classes={classes.value} rowInfo={currentNode.value} onChange={onChangeNodeRect}></CanvasContext>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>

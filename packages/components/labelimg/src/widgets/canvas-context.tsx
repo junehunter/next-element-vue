@@ -116,12 +116,12 @@ export default defineComponent({
 			canvasBaseRef.value.addEventListener('click', e => {
 				const x = e.offsetX,
 					y = e.offsetY;
-				const { hit_rect, hit_index } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
+				const { hit_rect, hit_index, color } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
 				onCloseDraggableRectFixed();
 				onCloseContentmenuLabel();
 				if (hit_rect) {
 					nextTick(() => {
-						updateDraggableRectFixed(x, y, hit_rect, hit_index);
+						updateDraggableRectFixed(x, y, hit_rect, hit_index, color);
 					});
 				}
 			});
@@ -175,8 +175,9 @@ export default defineComponent({
 			height: 0,
 			activateRect: null,
 			activateIndex: null,
+			color: null,
 		});
-		const updateDraggableRectFixed = (x: number, y: number, rect: RectProps, index: number) => {
+		const updateDraggableRectFixed = (x: number, y: number, rect: RectProps, index: number, color: string) => {
 			draggableRectFixed.value.show = true;
 			draggableRectFixed.value.top = y;
 			draggableRectFixed.value.left = x;
@@ -184,6 +185,7 @@ export default defineComponent({
 			draggableRectFixed.value.height = rect.rectHeight;
 			draggableRectFixed.value.activateRect = rect;
 			draggableRectFixed.value.activateIndex = index;
+			draggableRectFixed.value.color = color;
 		};
 		const onCloseDraggableRectFixed = () => {
 			draggableRectFixed.value.show = false;
@@ -193,6 +195,7 @@ export default defineComponent({
 			draggableRectFixed.value.height = 0;
 			draggableRectFixed.value.activateRect = null;
 			draggableRectFixed.value.activateIndex = null;
+			draggableRectFixed.value.color = null;
 		};
 		const onDraggleRectResize = (rect: RectProps) => {
 			draggableRectFixed.value.activateRect = rect;
@@ -269,6 +272,7 @@ export default defineComponent({
 						<DraggableRect
 							parentEl={canvasMainRef.value}
 							rect={draggableRectFixed.value.activateRect}
+							color={draggableRectFixed.value.color}
 							onDraggleResize={onDraggleRectResize}
 							onContextmenu={onContextmenuDraggable}
 						></DraggableRect>

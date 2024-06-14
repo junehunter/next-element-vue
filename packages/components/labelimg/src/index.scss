@@ -11,7 +11,7 @@ $block: 'labelimg';
 }
 .#{bf($block)} {
 	width: 100%;
-	height: 100%;
+	// height: 100%;
 	box-sizing: border-box;
 	user-select: none;
 	&-header {
@@ -28,6 +28,7 @@ $block: 'labelimg';
 		.#{bf($block, 'canvas')} {
 			width: 100%;
 			min-height: 500px;
+            height: 100%;
 			position: relative;
 			&__context {
 				position: absolute;
@@ -141,7 +142,8 @@ $block: 'labelimg';
 	.#{bf($block, 'draggable-rect')} {
 		position: absolute;
 		z-index: 999;
-		background-color: rgba($color: #ffffff, $alpha: 0.5);
+        $color: #fcfcfc;
+        background-color: rgba-color($color, 0.5);
 		cursor: move;
 		&__resize {
 			position: relative;
@@ -211,4 +213,9 @@ $block: 'labelimg';
 			}
 		}
 	}
+}
+
+
+.#{bf('labelimg-preview')} {
+    display: inline-block;
 }

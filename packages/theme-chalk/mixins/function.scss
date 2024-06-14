@@ -51,3 +51,7 @@
 @function getCssVar($args...) {
 	@return var(#{joinVarName($args)});
 }
+
+@function rgba-color($color, $opacity) {
+	@return rgba(red($color), green($color), blue($color), $opacity);
+}
