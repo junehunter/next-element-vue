@@ -68,6 +68,8 @@ export default {
 		},
 		labelimg: {
 			saveTxt: 'saving...',
+			emptyLabelText: 'No label data',
+			confirmDeleteLabel: 'Are you sure you want to delete this annotation?',
 		},
 	},
 };

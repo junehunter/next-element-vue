@@ -40,7 +40,7 @@ export default defineComponent({
 			default: () => [],
 		},
 		data: {
-			type: Array as PropType<RectProps[]>,
+			type: Array as PropType<any[]>,
 			default: () => [],
 		},
 	},
@@ -87,8 +87,16 @@ export default defineComponent({
 			const node = labelImages.value[activateNodeIndex.value] || {};
 			return deepClone(node);
 		});
+		const activateNodeLabels = ref<any>(currentNode.value.labels || []);
+		watch(
+			() => currentNode.value,
+			() => {
+				activateNodeLabels.value = currentNode.value.labels || [];
+			}
+		);
 		const onChangeNodeRect = (rects: RectProps) => {
 			currentNode.value.labels = rects;
+			activateNodeLabels.value = rects;
 		};
 		const loading = ref<boolean>(false);
 		const formatNodeLabels = () => {
@@ -213,6 +221,12 @@ export default defineComponent({
 		onUnmounted(() => {
 			document.removeEventListener('keydown', onKeydownPrevNext);
 		});
+		const onSelectLabelNode = (rect: RectProps, index: number) => {
+			canvasContextRef.value.onSelectedLabel(rect, index);
+		};
+		const onDeleteLabelNode = (rect: RectProps) => {
+			canvasContextRef.value.onDeleteLabel(rect);
+		};
 		expose({
 			convertToLabel,
 			canvertToCanvas,
@@ -242,7 +256,7 @@ export default defineComponent({
 										onChange={onChangeNodeRect}
 									></CanvasContext>
 								</div>
-								<RightLabel></RightLabel>
+								<RightLabel classes={classes.value} labels={activateNodeLabels.value} onDelete={onDeleteLabelNode} onSelect={onSelectLabelNode}></RightLabel>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>

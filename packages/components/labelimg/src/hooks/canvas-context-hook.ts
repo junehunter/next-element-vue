@@ -148,11 +148,11 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 			color = null;
 		for (let i = 0; i < labels.length; i++) {
 			const rect = labels[i];
-			const { startX, startY, rectWidth, rectHeight } = rect;
+			const { type, startX, startY, rectWidth, rectHeight } = rect;
 			if (x >= startX && x <= startX + rectWidth && y >= startY && y <= startY + rectHeight) {
 				hit_rect = rect;
 				hit_index = i;
-				color = colors[i];
+				color = colors[type];
 			}
 		}
 		return { hit_rect, hit_index, color };

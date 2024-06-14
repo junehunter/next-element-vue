@@ -68,6 +68,8 @@ export default {
 		},
 		labelimg: {
 			saveTxt: '保存中...',
+			emptyLabelText: '暂无标签数据',
+			confirmDeleteLabel: '确定要删除该标注吗？',
 		},
 	},
 };

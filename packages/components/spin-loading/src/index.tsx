@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { useLocale, useNamespace } from 'packages/hooks';
 
@@ -23,9 +23,13 @@ export default defineComponent({
 			default: '',
 		},
 	},
-	setup() {
+	setup(props, { expose }) {
 		const { t } = useLocale();
-		return { t };
+		const elementInstance = ref<HTMLElement>();
+		expose({
+			elementInstance,
+		});
+		return { t, elementInstance };
 	},
 	render() {
 		const _t = this.t;
@@ -33,7 +37,7 @@ export default defineComponent({
 		const props = this.$props;
 		const loadingText = props.tip || _t('next.loading');
 		return (
-			<div class={[ns.b(), props.className]} style={props.style}>
+			<div ref="elementInstance" class={[ns.b(), props.className]} style={props.style}>
 				{slots.default?.()}
 				{props.loading ? (
 					<div class={ns.b('mask')}>

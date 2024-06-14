@@ -1,8 +1,9 @@
 import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone, valueExist } from 'packages/hooks/global-hook';
-import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale } from '../hooks/canvas-context-hook';
+import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale, colors } from '../hooks/canvas-context-hook';
 import type { RectProps } from '../hooks/canvas-context-hook';
+import { NextSpinLoading } from 'packages/components';
 import ContextMenuLabel from './contextmenu-label';
 import DraggableRect from './draggable-rect';
 export default defineComponent({
@@ -66,6 +67,7 @@ export default defineComponent({
 			canvasRectRef.value!.style.width = canvasWidth + 'px';
 			canvasRectRef.value!.style.height = canvasHeight + 'px';
 		};
+		const loadingImage = ref<boolean>(false);
 		const renderImageLabel = (rowInfo: any) => {
 			labels.value = formatLabelsTypeName(rowInfo);
 			const clientHeight = canvasMainRef.value?.clientHeight as number;
@@ -73,7 +75,9 @@ export default defineComponent({
 			if (rowInfo?.imageSrc) {
 				const image = new Image();
 				image.src = rowInfo.imageSrc;
+				loadingImage.value = true;
 				image.onload = () => {
+					loadingImage.value = false;
 					const { width, height } = image;
 					const canvasHeight = clientHeight;
 					const scaleFactor = parseFloat((canvasHeight / height).toFixed(3));
@@ -105,6 +109,9 @@ export default defineComponent({
 						}
 					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
+				};
+				image.onerror = () => {
+					loadingImage.value = false;
 				};
 			}
 			canvasBaseRef.value.addEventListener('contextmenu', e => {
@@ -267,35 +274,47 @@ export default defineComponent({
 			_emit('change', rects, label_txt);
 			emit('change', rects, label_txt);
 		};
+		const onSelectedLabel = (rect: RectProps, index: number) => {
+			onCloseDraggableRectFixed();
+			nextTick(() => {
+				const { startX: x, startY: y, type } = rect;
+				const color = colors[type];
+				updateDraggableRectFixed(x, y, rect, index, color);
+			});
+		};
 		expose({
 			onCloseDraggableRectFixed,
 			onCloseContentmenuLabel,
+			onSelectedLabel,
+			onDeleteLabel,
 		});
 		const renderContent = () => {
 			return (
-				<div ref={canvasMainRef} class={[ns.b('canvas')]}>
-					<canvas ref={canvasBaseRef} class={[ns.be('canvas', 'context')]}></canvas>
-					<canvas ref={canvasRectRef} class={[ns.be('canvas', 'rect')]}></canvas>
-					{contextmenuLabelFixed.value.show ? (
-						<ContextMenuLabel
-							labelRect={contextmenuLabelRect.value}
-							classes={props.classes}
-							activateRect={contextmenuLabelFixed.value.activateRect}
-							onClose={onCloseContentmenuLabel}
-							onSelect={onSelectLabel}
-							onDelete={onDeleteLabel}
-						></ContextMenuLabel>
-					) : null}
-					{draggableRectFixed.value.show ? (
-						<DraggableRect
-							parentEl={canvasMainRef.value}
-							rect={draggableRectFixed.value.activateRect}
-							color={draggableRectFixed.value.color}
-							onDraggleResize={onDraggleRectResize}
-							onContextmenu={onContextmenuDraggable}
-						></DraggableRect>
-					) : null}
-				</div>
+				<NextSpinLoading loading={loadingImage.value} class={[ns.b('loading')]}>
+					<div ref={canvasMainRef} class={[ns.b('canvas')]}>
+						<canvas ref={canvasBaseRef} class={[ns.be('canvas', 'context')]}></canvas>
+						<canvas ref={canvasRectRef} class={[ns.be('canvas', 'rect')]}></canvas>
+						{contextmenuLabelFixed.value.show ? (
+							<ContextMenuLabel
+								labelRect={contextmenuLabelRect.value}
+								classes={props.classes}
+								activateRect={contextmenuLabelFixed.value.activateRect}
+								onClose={onCloseContentmenuLabel}
+								onSelect={onSelectLabel}
+								onDelete={onDeleteLabel}
+							></ContextMenuLabel>
+						) : null}
+						{draggableRectFixed.value.show ? (
+							<DraggableRect
+								parentEl={canvasMainRef.value}
+								rect={draggableRectFixed.value.activateRect}
+								color={draggableRectFixed.value.color}
+								onDraggleResize={onDraggleRectResize}
+								onContextmenu={onContextmenuDraggable}
+							></DraggableRect>
+						) : null}
+					</div>
+				</NextSpinLoading>
 			);
 		};
 		return () => <>{renderContent()}</>;

@@ -31,9 +31,15 @@ $block: 'labelimg';
             align-items: center;
             justify-content: center;
         }
+		.#{bf($block, 'loading')} {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 		.#{bf($block, 'canvas')} {
 			width: 100%;
-			min-height: 300px;
+			min-height: 500px;
             height: 100%;
 			position: relative;
 			&__context {
@@ -52,6 +58,36 @@ $block: 'labelimg';
 		.#{bf($block, 'right')} {
             flex: 0 0 200px;
             height: inherit;
+			text-align: left;
+			box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+			margin: 10px;
+			padding: 10px;
+			box-sizing: border-box;
+			border-radius: 5px;
+			li {
+				margin: 5px 0;
+				padding: 3px 6px;
+				font-size: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				line-height: 20px;
+				border: 1px solid #ddd;
+				border-radius: 3px;
+				.el-icon {
+					cursor: pointer;
+				}
+				&:hover {
+					border: 1px solid $theme-color
+				}
+				.label-line {
+					display: inline-block;
+					width: 3px;
+					height: 10px;
+					margin-right: 6px;
+					border-radius: 3px;
+				}
+			}
         }
 	}
 	&-footer {
@@ -113,7 +149,7 @@ $block: 'labelimg';
 		white-space: nowrap;
 		box-shadow: 0 0 50px 3px #cccccc;
 		transition: all 0.3s;
-		.label-head {
+		>.label-head {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -127,7 +163,7 @@ $block: 'labelimg';
 				}
 			}
 		}
-		.label-main {
+		>.label-main {
             max-height: 300px;
             overflow-y: auto;
             @include setScrollBar();

@@ -73,8 +73,8 @@ const list = ref<any>([
 // 	console.log('数据更新了');
 // }, 3000);
 const onChangeLabel = (rects, txt) => {
-	console.log(rects);
-	console.log(txt);
+	// console.log(rects);
+	// console.log(txt);
 };
 const onSave = (node, done) => {
 	console.log(node);
@@ -102,7 +102,7 @@ const onSave = (node, done) => {
 				},
 			]"
 		></NextLabelimgPreview>
-		<div style="height: 500px">
+		<div>
 			<NextLabelimg :classes="classes" :data="list" @change="onChangeLabel" @save="onSave"> </NextLabelimg>
 		</div>
 	</div>
