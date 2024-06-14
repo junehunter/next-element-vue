@@ -8,6 +8,7 @@ import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, elementResize } from 'packages/hooks/global-hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
 import CanvasContext from './widgets/canvas-context';
+import RightLabel from './widgets/right-label';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
 import type { RectProps } from './hooks/canvas-context-hook';
 import defaultConfig from './config';
@@ -39,7 +40,7 @@ export default defineComponent({
 			default: () => [],
 		},
 		data: {
-			type: Array,
+			type: Array as PropType<RectProps[]>,
 			default: () => [],
 		},
 	},
@@ -196,6 +197,11 @@ export default defineComponent({
 		const updateMainContentHeight = () => {
 			nextTick(() => {
 				layoutLabelRef.value.style.position = 'unset';
+				const layoutCrudHeight = (layoutLabelRef.value as HTMLDivElement)?.clientHeight || 0;
+				const headerHeight = (headerRef.value as HTMLDivElement)?.clientHeight || 0;
+				const footerHeight = (footerRef.value as HTMLDivElement)?.clientHeight || 0;
+				const contentHeight = layoutCrudHeight - (headerHeight + footerHeight);
+				mainContentHeight.value = contentHeight;
 			});
 		};
 		onMounted(() => {
@@ -227,11 +233,20 @@ export default defineComponent({
 								)}
 							</header>
 							<div ref={mainRef} class={[ns.b('main')]} style={{ height: mainContentHeight.value + 'px' }}>
-								<CanvasContext ref={canvasContextRef} classes={classes.value} rowInfo={currentNode.value} onChange={onChangeNodeRect}></CanvasContext>
+								<div class={[ns.be('main', 'content')]}>
+									<CanvasContext
+										ref={canvasContextRef}
+										contextClientHeight={mainContentHeight.value}
+										classes={classes.value}
+										rowInfo={currentNode.value}
+										onChange={onChangeNodeRect}
+									></CanvasContext>
+								</div>
+								<RightLabel></RightLabel>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>
-									<ElIcon size={24} onClick={onPaginationPrev}>
+									<ElIcon size={24} color="#797979" onClick={onPaginationPrev}>
 										<ArrowLeft />
 									</ElIcon>
 								</div>
@@ -249,7 +264,7 @@ export default defineComponent({
 									</ElScrollbar>
 								</div>
 								<div class={[ns.be('footer', 'right')]}>
-									<ElIcon size={24} onClick={onPaginationNext}>
+									<ElIcon size={24} color="#797979" onClick={onPaginationNext}>
 										<ArrowRight />
 									</ElIcon>
 								</div>

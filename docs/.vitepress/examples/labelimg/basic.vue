@@ -8,21 +8,21 @@ const list = ref<any>([
 		labels: [
 			{
 				type: 3,
-				startX: 87,
-				startY: 72,
-				rectWidth: 235,
-				rectHeight: 323,
+				startX: 182.5,
+				startY: 28,
+				rectWidth: 418,
+				rectHeight: 288,
 				canvasWidth: 750,
 				canvasHeight: 500,
 			},
 			{
-				startX: 120,
-				startY: 108,
-				rectWidth: 207,
-				rectHeight: 221,
+				type: 1,
+				startX: 216.5,
+				startY: 163,
+				rectWidth: 344,
+				rectHeight: 302,
 				canvasWidth: 750,
 				canvasHeight: 500,
-				type: 1,
 			},
 		],
 	},
@@ -102,7 +102,9 @@ const onSave = (node, done) => {
 				},
 			]"
 		></NextLabelimgPreview>
-		<NextLabelimg :classes="classes" :data="list" @change="onChangeLabel" @save="onSave"> </NextLabelimg>
+		<div style="height: 500px">
+			<NextLabelimg :classes="classes" :data="list" @change="onChangeLabel" @save="onSave"> </NextLabelimg>
+		</div>
 	</div>
 </template>
 

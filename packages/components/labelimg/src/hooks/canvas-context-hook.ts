@@ -30,6 +30,7 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	ctx: CanvasRenderingContext2D;
 	image: HTMLImageElement;
 	labels: RectProps[];
+	scaleFactor?: number;
 }
 
 export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
@@ -162,6 +163,29 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		hitCanvasLabel,
 	};
 };
+/**
+ * 根据比例重新设置标注框位置和大小
+ * @param labels
+ * @returns
+ */
+export const formatCanvasLabelScale = (labels: RectProps[], canvasHeight: number): RectProps[] => {
+	let scale_rects = [];
+	for (let i = 0; i < labels.length; i++) {
+		const rect = labels[i];
+		const scale = parseFloat((canvasHeight / rect.canvasHeight).toFixed(3));
+		if (scale) {
+			rect.startX = Math.ceil(rect.startX * scale);
+			rect.startY = Math.ceil(rect.startY * scale);
+			rect.rectWidth = Math.ceil(rect.rectWidth * scale);
+			rect.rectHeight = Math.ceil(rect.rectHeight * scale);
+			rect.canvasWidth = Math.ceil(rect.canvasWidth * scale);
+			rect.canvasHeight = canvasHeight;
+		}
+		scale_rects.push(rect);
+	}
+	return scale_rects;
+};
+
 export const convertToLabel = (rect: RectProps) => {
 	const label_type = rect.type;
 	const x_center = rect.startX + rect.rectWidth / 2;

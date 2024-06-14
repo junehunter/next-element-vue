@@ -1,7 +1,7 @@
 import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick } from 'vue';
 import isEqual from 'lodash-es/isequal';
-import { deepClone } from 'packages/hooks/global-hook';
-import { DrawBaseCanvas, DrawRectCanvas, convertToLabel } from '../hooks/canvas-context-hook';
+import { deepClone, valueExist } from 'packages/hooks/global-hook';
+import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale } from '../hooks/canvas-context-hook';
 import type { RectProps } from '../hooks/canvas-context-hook';
 import ContextMenuLabel from './contextmenu-label';
 import DraggableRect from './draggable-rect';
@@ -11,6 +11,10 @@ export default defineComponent({
 		classes: {
 			type: Array,
 			default: () => [],
+		},
+		contextClientHeight: {
+			type: Number,
+			default: null,
 		},
 		rowInfo: {
 			type: Object,
@@ -24,6 +28,8 @@ export default defineComponent({
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const canvasRectRef = ref<HTMLCanvasElement>();
+		const labels = ref<RectProps[]>([]);
+		const drawBaseCanvas = ref<any>({});
 		const formatLabelsTypeName = (rowInfo: any) => {
 			if (!rowInfo.labels) return [];
 			return rowInfo.labels.map((rect: RectProps) => {
@@ -48,8 +54,6 @@ export default defineComponent({
 				label_txt: yolo_label.join('\n'),
 			};
 		};
-		const labels = ref<RectProps[]>([]);
-		const drawBaseCanvas = ref<any>({});
 		const setContainerWidthHeight = (canvasWidth: number, canvasHeight: number) => {
 			canvasMainRef.value!.style.width = canvasWidth + 'px';
 			canvasMainRef.value!.style.height = canvasHeight + 'px';
@@ -72,9 +76,11 @@ export default defineComponent({
 				image.onload = () => {
 					const { width, height } = image;
 					const canvasHeight = clientHeight;
-					const scaleFactor = canvasHeight / height;
+					const scaleFactor = parseFloat((canvasHeight / height).toFixed(3));
 					const canvasWidth = Math.ceil(width * scaleFactor);
 					setContainerWidthHeight(canvasWidth, canvasHeight);
+					// 当跟上一次画布宽高不一直时，根据当前预览的比例重新设置标注框位置和大小
+					labels.value = formatCanvasLabelScale(labels.value, canvasHeight);
 					const { updateLabels, addDrawRect, hitCanvasLabel } = DrawBaseCanvas({
 						canvas: canvasBaseRef.value,
 						ctx: ctx,
@@ -82,6 +88,7 @@ export default defineComponent({
 						canvasWidth,
 						canvasHeight,
 						labels: labels.value,
+						scaleFactor: scaleFactor,
 					});
 					drawBaseCanvas.value!.updateLabels = updateLabels;
 					drawBaseCanvas.value!.addDrawRect = addDrawRect;
@@ -136,6 +143,17 @@ export default defineComponent({
 				{
 					deep: true,
 					immediate: true,
+				}
+			);
+			// 当画布主体高度变化重新计算绘制
+			watch(
+				() => props.contextClientHeight,
+				height => {
+					if (valueExist(height)) {
+						canvasMainRef.value!.style.height = height + 'px';
+						const rowInfo = toRaw(props.rowInfo);
+						renderImageLabel(rowInfo);
+					}
 				}
 			);
 		});
