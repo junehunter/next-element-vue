@@ -350,6 +350,14 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 			@delete-rows="onDeleteRows"
 			@submit-form="onsubmitForm"
 		>
+			<template #menu-left-suffix="{ size }">
+				<el-button type="primary" :size="size">
+					<template #icon>
+						<el-icon><Upload /></el-icon>
+					</template>
+					<span>批量上传</span>
+				</el-button>
+			</template>
 			<template #form-name="{ formParams }">
 				<div>自定义表单{{ formParams.name }}列</div>
 			</template>

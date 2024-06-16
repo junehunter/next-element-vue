@@ -51,9 +51,9 @@ export default defineComponent({
 		return (
 			<div class={ns.b('header-menu')}>
 				<div class={ns.b('header-menu-left')}>
-					{this.$slots['menu-left-prefix']?.()}
+					{this.$slots['menu-left-prefix']?.({ size: options.size })}
 					{options.addBtn && (
-						<ElButton type="primary" onClick={onClickAdd}>
+						<ElButton type="primary" size={options.size} onClick={onClickAdd}>
 							{{
 								icon: () => (
 									<ElIcon>
@@ -65,7 +65,7 @@ export default defineComponent({
 						</ElButton>
 					)}
 					{options.batchDelBtn && (
-						<ElButton type="danger" disabled={!multipleSelectionLength.value} onClick={onClickBatchDelete}>
+						<ElButton type="danger" size={options.size} disabled={!multipleSelectionLength.value} onClick={onClickBatchDelete}>
 							{{
 								icon: () => (
 									<ElIcon>
@@ -76,12 +76,12 @@ export default defineComponent({
 							}}
 						</ElButton>
 					)}
-					{this.$slots['menu-left-suffix']?.()}
+					{this.$slots['menu-left-suffix']?.({ size: options.size })}
 				</div>
 				<div class={ns.b('header-menu-right')}>
-					{this.$slots['menu-right-prefix']?.()}
+					{this.$slots['menu-right-prefix']?.({ size: options.size })}
 					{options.refreshBtn && (
-						<ElButton circle onClick={onClickRefresh}>
+						<ElButton circle size={options.size} onClick={onClickRefresh}>
 							{{
 								icon: () => (
 									<ElIcon>
@@ -92,7 +92,7 @@ export default defineComponent({
 						</ElButton>
 					)}
 					{options.settingBtn && (
-						<ElButton circle onClick={onClickSetting}>
+						<ElButton circle size={options.size} onClick={onClickSetting}>
 							{{
 								icon: () => (
 									<ElIcon>
@@ -102,7 +102,7 @@ export default defineComponent({
 							}}
 						</ElButton>
 					)}
-					{this.$slots['menu-right-suffix']?.()}
+					{this.$slots['menu-right-suffix']?.({ size: options.size })}
 				</div>
 				<DrawerSetting ref={drawerSettingRef}></DrawerSetting>
 			</div>
