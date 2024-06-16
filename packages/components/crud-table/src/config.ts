@@ -93,6 +93,7 @@ export interface FormColunmProps extends Column {
 	formRules?: any[];
 	formDicKey?: string;
 	formMultiple?: boolean;
+	formLimit?: number;
 	formDicData?: DictData[];
 	formLoadDicData?: Function;
 	formAccordion?: boolean;

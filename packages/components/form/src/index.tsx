@@ -24,7 +24,7 @@ import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, updateColSpan, elementResize, isValueExist, valueExist, arrayObjNoRepeat } from 'packages/hooks/global-hook';
 import defaultConfig from './config';
 import type { FormItemProps, DicData } from './config';
-import { NextTextEllipsis } from 'packages/components';
+import { NextTextEllipsis, NextSpinLoading } from 'packages/components';
 import { formSlotName } from 'packages/components/crud-table/src/hook';
 import NumberRangePicker from './widgets/number-range-picker';
 import InputTableSelect from './widgets/input-table-select';
@@ -117,13 +117,19 @@ export default defineComponent({
 			}
 		);
 		const formColumns = arrayObjNoRepeat(_formColumns.value, 'prop');
+		const spanResizeLoading = ref<boolean>(false);
 		onMounted(() => {
 			const formEl = ruleFormRef.value?.$el;
 			let timer: any = null;
 			elementResize(formEl, (el: HTMLElement) => {
-				if (timer !== null) clearTimeout(timer);
+				if (timer !== null) {
+					clearTimeout(timer);
+				} else {
+					spanResizeLoading.value = true;
+				}
 				timer = setTimeout(() => {
 					colSpan.value = updateColSpan(el, options.columnMinWidth);
+					spanResizeLoading.value = false;
 					clearTimeout(timer);
 				}, 200);
 			});
@@ -467,7 +473,16 @@ export default defineComponent({
 					<InputTableSelect v-model={formParams[col.prop]} formParams={formParams} column={col} disabled={col.disabled} onSelect={rows => _onInputTableSelect(rows, col)}></InputTableSelect>
 				);
 			} else if (col.type === 'uploadImage') {
-				return <UploadImage v-model={formParams[col.prop]} disabled={col.disabled} onChange={(...arg) => col.onChange?.(...arg, col, formParams, formColumns)}></UploadImage>;
+				return (
+					<UploadImage
+						v-model={formParams[col.prop]}
+						disabled={col.disabled}
+						multiple={col.multiple}
+						limit={col.limit}
+						onChange={(...arg) => col.onChange?.(...arg, col, formParams, formColumns)}
+						onExceed={(...arg) => col.onExceed?.(...arg, col, formParams, formColumns)}
+					></UploadImage>
+				);
 			} else if (col.type === 'treeSelect') {
 				return <NextTreeSelect v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeSelect>;
 			}
@@ -532,6 +547,6 @@ export default defineComponent({
 				</ElForm>
 			);
 		};
-		return () => <>{renderContent()}</>;
+		return () => <NextSpinLoading loading={spanResizeLoading.value}>{renderContent()}</NextSpinLoading>;
 	},
 });

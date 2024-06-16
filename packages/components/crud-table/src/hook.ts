@@ -148,6 +148,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			rules: valueExist(col.formRules, col.rules, null),
 			span: valueExist(col.formSpan, col.span, null),
 			multiple: valueExist(col.formMultiple, col.multiple, false),
+			limit: valueExist(col.formLimit, col.limit, 1),
 			dicData: valueExist(col.formDicData, col.dicData, []),
 			loadDicData: valueExist(col.formLoadDicData, col.loadDicData, null),
 			onChange: valueExist(col.onChangeForm, col.onChange, null),

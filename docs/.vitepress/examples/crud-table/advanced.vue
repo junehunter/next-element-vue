@@ -16,6 +16,7 @@ const options = reactive({
 	viewBtn: true,
 	batchDelBtn: true,
 	searchColumn: [],
+	formLabelWidth: '6em',
 	columns: [
 		{
 			prop: 'name',
@@ -200,6 +201,7 @@ const options = reactive({
 			type: 'uploadImage',
 			sort: 20,
 			span: 24,
+			tip: '限制上传一张图片',
 			onChangeForm: (file: any, files: any[], formParams: any) => {
 				const reader = new FileReader();
 				reader.readAsDataURL(file.raw);
@@ -348,8 +350,8 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 			@delete-rows="onDeleteRows"
 			@submit-form="onsubmitForm"
 		>
-			<template #form-name="{ row }">
-				<div>自定义表单{{ row.name }}列</div>
+			<template #form-name="{ formParams }">
+				<div>自定义表单{{ formParams.name }}列</div>
 			</template>
 			<template #column-name="{ row }">
 				<span>{{ row.name }}</span>

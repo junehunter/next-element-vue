@@ -1,6 +1,6 @@
 import { defineComponent, ref, getCurrentInstance, createVNode, Teleport, h, render } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
-import { ElButton, ElIcon, ElUpload, ElImageViewer, ElImage } from 'element-plus';
+import { ElButton, ElIcon, ElUpload, ElImageViewer, ElImage, ElMessage } from 'element-plus';
 import type { UploadUserFile } from 'element-plus';
 import { Picture, Plus } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
@@ -31,12 +31,20 @@ export default defineComponent({
 			values: ['text', 'picture', 'picture-card'],
 			default: 'picture-card',
 		},
+		multiple: {
+			type: Boolean,
+			default: false,
+		},
+		limit: {
+			type: Number,
+			default: 1,
+		},
 		accept: {
 			type: String,
 			default: 'image/*',
 		},
 	},
-	emits: ['change'],
+	emits: ['change', 'exceed'],
 	setup(props) {
 		const { appContext } = getCurrentInstance()! as any;
 		const { t } = useLocale();
@@ -54,6 +62,13 @@ export default defineComponent({
 		const _onChange = (uploadfile, uploadfiles) => {
 			uploadfilesPreview.value = uploadfiles;
 			emit('change', uploadfile, uploadfiles);
+		};
+		const _onExceed = (uploadfile, uploadfiles) => {
+			ElMessage({
+				type: 'info',
+				message: _t('next.table.uploadfileExceed'),
+			});
+			emit('exceed', uploadfile, uploadfiles);
 		};
 		let previewImagesContainer: any = null;
 		const _onPreview = uploadFile => {
@@ -124,7 +139,17 @@ export default defineComponent({
 			<>
 				{renderPreviewImageContent()}
 				{!_disabled ? (
-					<ElUpload class={[ns.b('upload-image'), props.className]} style={props.style} list-type={props.listType} auto-upload={false} on-preview={_onPreview} onChange={_onChange}>
+					<ElUpload
+						class={[ns.b('upload-image'), props.className]}
+						style={props.style}
+						list-type={props.listType}
+						multiple={props.multiple}
+						limit={props.limit}
+						auto-upload={false}
+						on-preview={_onPreview}
+						on-change={_onChange}
+						on-exceed={_onExceed}
+					>
 						{{
 							trigger: () => (slots.default ? slots.default() : renderUploadContent()),
 						}}

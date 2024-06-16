@@ -33,6 +33,7 @@ export default {
 				confirmButtonText: '確 定',
 				cancelButtonText: '取 消',
 			},
+			uploadfileExceed: '上传文件数量超出限制范围',
 		},
 		form: {
 			input: '請輸入',

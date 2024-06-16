@@ -26,6 +26,7 @@ export interface FormItemProps {
 	loadDicData?: Function;
 	hide?: boolean;
 	multiple?: boolean;
+	limit?: number;
 	editable?: boolean;
 	rules?: any;
 	disabledDate?: Function;
@@ -33,6 +34,7 @@ export interface FormItemProps {
 	divider?: any;
 	remark?: string;
 	onChange?: Function;
+	onExceed?: Function;
 	tableSelect?: any;
 	tableSelectRows?: any[];
 	tableSelectProps?: {

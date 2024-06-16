@@ -33,6 +33,7 @@ export default {
 				confirmButtonText: 'OK',
 				cancelButtonText: 'Cancel',
 			},
+			uploadfileExceed: 'The number of uploaded files exceeds the limit',
 		},
 		form: {
 			input: 'please input ',
