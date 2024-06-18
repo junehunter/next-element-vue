@@ -109,7 +109,7 @@ export default defineComponent({
 					</li>
 					{slots[slots_config.headerToolsSuffix]?.()}
 					<li>
-						<ElDropdown show-timeout={70} hide-timeout={80} onCommand={onChangeUserDropdown}>
+						<ElDropdown show-timeout={70} hide-timeout={80} popper-class={_ns.be('header-tools', 'userDropdown')} onCommand={onChangeUserDropdown}>
 							{{
 								default: () => (
 									<span class={_ns.be('header-tools', 'user')}>
@@ -125,6 +125,8 @@ export default defineComponent({
 										{_userDropdown?.map(item => {
 											return (
 												<ElDropdownItem command={item.value} divided={!!item.divided}>
+													{item.svg ? <span v-html={item.svg} class="item-svg"></span> : null}
+													{item.iconfont ? <i class={item.iconfont}></i> : null}
 													{_t(item.label)}
 												</ElDropdownItem>
 											);

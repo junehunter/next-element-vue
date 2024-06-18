@@ -69,7 +69,27 @@ $block: 'layout';
     }
 
 }
-
+.#{bf($block ,'header', 'tools')} {
+    &__userDropdown {
+        .el-dropdown-menu {
+            .el-dropdown-menu__item {
+                .item-svg {
+                    display: flex;
+                    align-items: center;
+                    padding-right: 5px;
+                    .icon {
+                        fill: var(--el-text-color-regular);
+                    }
+                }
+                &:hover {
+                    .icon {
+                        fill: $theme-color;
+                    }
+                }
+            }
+        }
+    }
+}
 // 系統配置彈框
 .#{bf($block, 'drawer')} {
     &__setting {

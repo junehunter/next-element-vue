@@ -96,10 +96,10 @@ const changeOptions = opt => {};
 	<div class="layout-container">
 		<div class="tabs">
 			<el-radio-group v-model="layout" size="large" @change="onChangeLayout">
-				<el-radio-button label="transverse">横向布局</el-radio-button>
-				<el-radio-button label="columns">分栏布局</el-radio-button>
-				<el-radio-button label="classic">经典布局</el-radio-button>
-				<el-radio-button label="defaults">默认布局</el-radio-button>
+				<el-radio-button value="transverse">横向布局</el-radio-button>
+				<el-radio-button value="columns">分栏布局</el-radio-button>
+				<el-radio-button value="classic">经典布局</el-radio-button>
+				<el-radio-button value="defaults">默认布局</el-radio-button>
 			</el-radio-group>
 			<div>
 				<span style="padding: 0 20px">是否显示导航栏</span>

@@ -144,7 +144,7 @@ export default defineComponent({
 				<div class={_ns.b('config-bar-item')} style={{ 'margin-top': '20px' }}>
 					<span class={_ns.be('config-bar-item', 'label')}>是否显示标签栏</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
-						<el-switch v-model={_config.showTabs} />
+						<ElSwitch v-model={_config.showTabs} />
 					</div>
 				</div>
 				{_slots.setting?.()}
