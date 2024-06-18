@@ -1,0 +1,33 @@
+.example-showcase {
+	ul,
+	ol {
+		padding: 0px;
+		margin: 0px;
+		list-style: none;
+	}
+	li + li {
+		margin-top: 0px;
+	}
+	table {
+		display: table;
+		margin: 0;
+		tr {
+			border: unset;
+		}
+		tr:nth-child(2n) {
+			background-color: transparent;
+		}
+		th,
+		td {
+			border: unset;
+		}
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+	}
+
+	ol {
+		list-style: none;
+	}
+}

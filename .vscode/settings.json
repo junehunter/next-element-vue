@@ -1,0 +1,56 @@
+{
+    "editor.formatOnSave": true, // Ctrl + S 保存代码自动格式化
+    "editor.tabSize": 4,
+    "prettier.printWidth": 1000, // 行內匹配代码数
+    "prettier.bracketSameLine": true, // 超出后是否单独一行
+    "prettier.tabWidth": 4,
+    "prettier.useEditorConfig": false,
+    "prettier.semi": true, // 是否带分号
+    "prettier.singleQuote": true, // 是否为单引
+    "prettier.proseWrap": "never",
+    "prettier.endOfLine": "crlf",
+    "prettier.requireConfig": true,
+    "prettier.useTabs": true,
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "stylelint.validate": [
+        "css",
+        "less",
+        "scss",
+        "vue"
+    ],
+    "files.associations": {
+        "*.svg": "html"
+    },
+    // 开启eslint检测
+    "eslint.enable": true,
+    "vite.autoStart": false,
+    "volar.inlayHints.eventArgumentInInlineHandlers": false,
+    "vue.codeActions.enabled": false,
+    "i18n-ally.localesPaths": [
+        "packages/locale",
+        "packages/locale/lang"
+    ]
+}

@@ -1,0 +1,9 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+@use 'packages/theme-chalk/mixins/_var' as *;
+
+$block: 'crud-table-virtualized';
+.#{bem($block)} {
+	width: inherit;
+	height: 100%;
+	transition: all 0.3s;
+}
