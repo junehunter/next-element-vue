@@ -391,7 +391,7 @@ export default defineComponent({
 						{col.dicData &&
 							(col.dicData as DicData[]).map((item: DicData) => {
 								return (
-									<ElRadio key={item.value} label={item.value} disabled={valueExist(item.disabled, false)}>
+									<ElRadio key={item.value} value={item.value} disabled={valueExist(item.disabled, false)}>
 										{item.label}
 									</ElRadio>
 								);

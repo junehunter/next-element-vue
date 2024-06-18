@@ -124,7 +124,7 @@ const InputTableSelect = defineComponent({
 			}
 			return (
 				<ElRadio
-					label={value}
+					value={value}
 					onChange={() => {
 						sinleSelection.value = value;
 						multipleSelection.value = [row];
