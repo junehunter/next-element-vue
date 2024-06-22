@@ -86,7 +86,7 @@ const onSave = (node, done) => {
 
 <template>
 	<div class="layout-container">
-		<NextLabelimgPreview
+		<!-- <NextLabelimgPreview
 			style="margin: 20px auto"
 			:classes="classes"
 			src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg"
@@ -101,7 +101,7 @@ const onSave = (node, done) => {
 					type: 0,
 				},
 			]"
-		></NextLabelimgPreview>
+		></NextLabelimgPreview> -->
 		<div>
 			<NextLabelimg :classes="classes" :data="list" @change="onChangeLabel" @save="onSave"> </NextLabelimg>
 		</div>
@@ -112,6 +112,6 @@ const onSave = (node, done) => {
 .layout-container {
 	text-align: center;
 	// background-color: #f5f5f5;
-	// height: 500px;
+	// height: 700px;
 }
 </style>

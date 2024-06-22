@@ -57,9 +57,10 @@ export default defineComponent({
 		});
 		const labelMenuRef = ref<HTMLElement>();
 		const labelStyleFixed = computed(() => {
-			const { left, top, canvasHeight } = props.labelRect;
+			const { left, top } = props.labelRect;
 			const clientHeight = labelRectWidthHeight.value.height;
-			const height_diff = top + clientHeight - canvasHeight;
+			// 根据整个窗口设置定位
+			const height_diff = top + clientHeight - window.innerHeight;
 			let y = top;
 			if (height_diff > 0) {
 				y = y - height_diff;

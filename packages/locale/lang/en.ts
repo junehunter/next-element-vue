@@ -71,6 +71,9 @@ export default {
 			saveTxt: 'saving...',
 			emptyLabelText: 'No label data',
 			confirmDeleteLabel: 'Are you sure you want to delete this annotation?',
+			saveLabel: 'save label',
+			instructions: 'instructions',
+			labelNoUpdate: 'No label data update',
 		},
 	},
 };

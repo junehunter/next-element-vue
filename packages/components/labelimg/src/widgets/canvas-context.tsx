@@ -78,8 +78,16 @@ export default defineComponent({
 				loadingImage.value = true;
 				image.onload = () => {
 					loadingImage.value = false;
-					const { width, height } = image;
-					const canvasHeight = clientHeight;
+					let { width, height } = image;
+					// 当图片高度大于容器高度，缩放
+					if (height > clientHeight) {
+						// 缩放比例
+						const scale = height / clientHeight;
+						height = clientHeight;
+						image.style.height = height + 'px';
+						width = width / scale;
+					}
+					const canvasHeight = height;
 					const scaleFactor = parseFloat((canvasHeight / height).toFixed(3));
 					const canvasWidth = Math.ceil(width * scaleFactor);
 					setContainerWidthHeight(canvasWidth, canvasHeight);
@@ -171,9 +179,11 @@ export default defineComponent({
 			activateRect: null,
 		});
 		const updateContextmenuLabelFixed = (x: number, y: number, rect: RectProps) => {
+			// 根据绘制区域在窗口位置设置标注菜单栏位置
+			const contextRect = canvasBaseRef.value.getBoundingClientRect();
 			contextmenuLabelFixed.value.show = true;
-			contextmenuLabelFixed.value.left = x;
-			contextmenuLabelFixed.value.top = y;
+			contextmenuLabelFixed.value.left = x + contextRect.x;
+			contextmenuLabelFixed.value.top = y + contextRect.y;
 			contextmenuLabelFixed.value.canvasWidth = canvasBaseRef.value!.width;
 			contextmenuLabelFixed.value.canvasHeight = canvasBaseRef.value!.height;
 			contextmenuLabelFixed.value.activateRect = rect;
@@ -282,11 +292,21 @@ export default defineComponent({
 				updateDraggableRectFixed(x, y, rect, index, color);
 			});
 		};
+		const rerenderImage = () => {
+			setContainerWidthHeight(0, 0);
+			onCloseContentmenuLabel();
+			onCloseDraggableRectFixed();
+			nextTick(() => {
+				const rowInfo = toRaw(props.rowInfo);
+				renderImageLabel(rowInfo);
+			});
+		};
 		expose({
 			onCloseDraggableRectFixed,
 			onCloseContentmenuLabel,
 			onSelectedLabel,
 			onDeleteLabel,
+			rerenderImage,
 		});
 		const renderContent = () => {
 			return (

@@ -9,19 +9,50 @@ $block: 'labelimg';
         }
     }
 }
+.#{bf($block, 'fullscreen')} {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 999;
+	background-color: #ffffff;
+	overflow: hidden;
+	transition: all 0.3s;
+}
 .#{bf($block)} {
 	width: 100%;
 	height: 100%;
 	box-sizing: border-box;
 	user-select: none;
+	border: 1px solid #eee;
+	border-radius: 3px;
 	&-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 8px 12px;
+		padding: 10px 12px;
+		font-size: 12px;
+		box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+		&__tool {
+			display: flex;
+			align-items: center;
+			>li {
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				margin: 0 6px;
+				&:hover {
+					color: $theme-color;
+					svg {
+						fill: $theme-color;
+					}
+				}
+			}
+		}
 	}
 	&-main {
-		width: 100%;
+		// width: 100%;
 		display: flex;
 		align-items: center;
         justify-content: space-between;
@@ -59,33 +90,37 @@ $block: 'labelimg';
             flex: 0 0 200px;
             height: inherit;
 			text-align: left;
-			box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
-			margin: 10px;
 			padding: 10px;
 			box-sizing: border-box;
-			border-radius: 5px;
-			li {
-				margin: 5px 0;
-				padding: 3px 6px;
-				font-size: 12px;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				line-height: 20px;
-				border: 1px solid #ddd;
-				border-radius: 3px;
-				.el-icon {
-					cursor: pointer;
-				}
-				&:hover {
-					border: 1px solid $theme-color
-				}
-				.label-line {
-					display: inline-block;
-					width: 3px;
-					height: 10px;
-					margin-right: 6px;
+			> ul {
+				box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+				padding: 10px;
+				box-sizing: border-box;
+				border-radius: 5px;
+				height: 100%;
+				li {
+					margin: 5px 0;
+					padding: 3px 6px;
+					font-size: 12px;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					line-height: 20px;
+					border: 1px solid #ddd;
 					border-radius: 3px;
+					.el-icon {
+						cursor: pointer;
+					}
+					&:hover {
+						border: 1px solid $theme-color;
+					}
+					.label-line {
+						display: inline-block;
+						width: 3px;
+						height: 10px;
+						margin-right: 6px;
+						border-radius: 3px;
+					}
 				}
 			}
         }
@@ -141,7 +176,7 @@ $block: 'labelimg';
 	}
 
 	.#{bf($block, 'contextmenu-label')} {
-		position: absolute;
+		position: fixed;
 		z-index: 9999;
 		background-color: #ffffff;
 		padding: 10px 15px;
@@ -264,4 +299,5 @@ $block: 'labelimg';
 
 .#{bf('labelimg-preview')} {
     display: inline-block;
+	height: 100%;
 }

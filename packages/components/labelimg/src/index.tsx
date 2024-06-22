@@ -1,12 +1,13 @@
 import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch, unref } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
-import { ElScrollbar, ElIcon, ElImage } from 'element-plus';
+import { ElScrollbar, ElIcon, ElImage, ElMessage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
 import isEqual from 'lodash-es/isequal';
 import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, elementResize } from 'packages/hooks/global-hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';
+import ToolHeader from './widgets/tool-header';
 import CanvasContext from './widgets/canvas-context';
 import RightLabel from './widgets/right-label';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
@@ -23,9 +24,7 @@ export default defineComponent({
 		},
 		style: {
 			type: Object as PropType<CSSProperties>,
-			default: () => ({
-				position: 'unset',
-			}),
+			default: () => ({}),
 		},
 		rowKey: {
 			type: String,
@@ -167,7 +166,7 @@ export default defineComponent({
 				// 当标注数据没更新
 				activateNodeIndex.value = index;
 				loading.value = false;
-				return;
+				return false;
 			}
 			emit(
 				'save',
@@ -181,6 +180,7 @@ export default defineComponent({
 					loading.value = false;
 				}
 			);
+			return true;
 		};
 		const onPaginationPrev = () => {
 			const imageLength = labelImages.value.length;
@@ -201,10 +201,9 @@ export default defineComponent({
 		const headerRef = ref<HTMLElement>();
 		const mainRef = ref<HTMLElement>();
 		const footerRef = ref<HTMLDivElement>();
-		const mainContentHeight = ref(options.mainContentHeight);
+		const mainContentHeight = ref(options.minContentHeight);
 		const updateMainContentHeight = () => {
 			nextTick(() => {
-				layoutLabelRef.value.style.position = 'unset';
 				const layoutCrudHeight = (layoutLabelRef.value as HTMLDivElement)?.clientHeight || 0;
 				const headerHeight = (headerRef.value as HTMLDivElement)?.clientHeight || 0;
 				const footerHeight = (footerRef.value as HTMLDivElement)?.clientHeight || 0;
@@ -214,12 +213,14 @@ export default defineComponent({
 		};
 		onMounted(() => {
 			document.addEventListener('keydown', onKeydownPrevNext);
-			elementResize(layoutLabelRef.value as HTMLElement, () => {
+			elementResize(layoutLabelRef.value.parentElement as HTMLElement, () => {
 				updateMainContentHeight();
 			});
+			window.addEventListener('resize', updateMainContentHeight);
 		});
 		onUnmounted(() => {
 			document.removeEventListener('keydown', onKeydownPrevNext);
+			window.removeEventListener('resize', updateMainContentHeight);
 		});
 		const onSelectLabelNode = (rect: RectProps, index: number) => {
 			canvasContextRef.value.onSelectedLabel(rect, index);
@@ -227,36 +228,54 @@ export default defineComponent({
 		const onDeleteLabelNode = (rect: RectProps) => {
 			canvasContextRef.value.onDeleteLabel(rect);
 		};
+		const isFullscreen = ref<boolean>(false);
+		const onSwitchFillscreen = (val: boolean) => {
+			isFullscreen.value = val;
+			updateMainContentHeight();
+			nextTick(() => {
+				canvasContextRef.value.rerenderImage();
+			});
+		};
+		const onToolHeaderSave = () => {
+			const status = onChangeActivateNode(activateNodeIndex.value);
+			if (!status) {
+				ElMessage({
+					type: 'info',
+					message: t('next.labelimg.labelNoUpdate'),
+				});
+			}
+		};
 		expose({
 			convertToLabel,
 			canvertToCanvas,
 		});
 		const renderContent = () => {
 			return (
-				<div ref={layoutLabelRef} class={[ns.b(), props.className]} style={{ ...props.style }}>
+				<div ref={layoutLabelRef} class={[ns.b(), props.className, isFullscreen.value ? ns.b('fullscreen') : '']} style={{ ...props.style }}>
 					<NextSpinLoading loading={loading.value} tip={t('next.labelimg.saveTxt')} class={[ns.b('loading')]}>
 						<ElScrollbar>
 							<header ref={headerRef} class={[ns.b('header')]}>
-								{slots['header'] ? (
-									slots['header']()
-								) : (
-									<>
-										<ul></ul>
-										<ul></ul>
-									</>
-								)}
+								{slots['header'] ? slots['header']() : <ToolHeader isFullscreen={isFullscreen.value} onFullscreen={onSwitchFillscreen} onSave={() => onToolHeaderSave()}></ToolHeader>}
 							</header>
-							<div ref={mainRef} class={[ns.b('main')]} style={{ height: mainContentHeight.value + 'px' }}>
-								<div class={[ns.be('main', 'content')]}>
-									<CanvasContext
-										ref={canvasContextRef}
-										contextClientHeight={mainContentHeight.value}
-										classes={classes.value}
-										rowInfo={currentNode.value}
-										onChange={onChangeNodeRect}
-									></CanvasContext>
-								</div>
-								<RightLabel classes={classes.value} labels={activateNodeLabels.value} onDelete={onDeleteLabelNode} onSelect={onSelectLabelNode}></RightLabel>
+							<div ref={mainRef} class={[ns.b('main')]}>
+								<ElScrollbar class={[ns.be('main', 'content')]}>
+									<div class={[ns.be('main', 'content')]} style={{ height: mainContentHeight.value + 'px' }}>
+										<CanvasContext
+											ref={canvasContextRef}
+											contextClientHeight={mainContentHeight.value}
+											classes={classes.value}
+											rowInfo={currentNode.value}
+											onChange={onChangeNodeRect}
+										></CanvasContext>
+									</div>
+								</ElScrollbar>
+								<RightLabel
+									contentHeight={mainContentHeight.value}
+									classes={classes.value}
+									labels={activateNodeLabels.value}
+									onDelete={onDeleteLabelNode}
+									onSelect={onSelectLabelNode}
+								></RightLabel>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>

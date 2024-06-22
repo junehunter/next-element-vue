@@ -8,6 +8,9 @@ import { colors } from '../hooks/canvas-context-hook';
 
 export default defineComponent({
 	props: {
+		contentHeight: {
+			type: Number,
+		},
 		classes: {
 			type: Array,
 			default: () => [],
@@ -51,7 +54,7 @@ export default defineComponent({
 		};
 		const renderContent = () => {
 			return (
-				<div class={[ns.b('right')]}>
+				<div class={[ns.b('right')]} style={{ height: props.contentHeight + 'px' }}>
 					{labels.value.length ? (
 						<ul>
 							{labels.value.map((rect: RectProps, index: number) => {

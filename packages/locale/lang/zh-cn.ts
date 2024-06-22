@@ -71,6 +71,9 @@ export default {
 			saveTxt: '保存中...',
 			emptyLabelText: '暂无标签数据',
 			confirmDeleteLabel: '确定要删除该标注吗？',
+			saveLabel: '保存当前标注',
+			instructions: '使用说明',
+			labelNoUpdate: '暂无标签数据更新',
 		},
 	},
 };

@@ -1,3 +1,3 @@
 export default {
-	mainContentHeight: 600,
+	minContentHeight: 500,
 };
