@@ -42,12 +42,15 @@ $block: 'labelimg';
 				display: flex;
 				align-items: center;
 				margin: 0 6px;
+			}
+			>li.hover {
 				&:hover {
 					color: $theme-color;
 					svg {
 						fill: $theme-color;
 					}
 				}
+
 			}
 		}
 	}
@@ -154,6 +157,7 @@ $block: 'labelimg';
                 align-items: center;
                 justify-content: flex-start;
                 flex-wrap: nowrap;
+				min-height: 80px;
                 >li {
                     flex: 0 0 100px;
                     height: 80px;

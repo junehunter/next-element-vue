@@ -255,7 +255,17 @@ export default defineComponent({
 					<NextSpinLoading loading={loading.value} tip={t('next.labelimg.saveTxt')} class={[ns.b('loading')]}>
 						<ElScrollbar>
 							<header ref={headerRef} class={[ns.b('header')]}>
-								{slots['header'] ? slots['header']() : <ToolHeader isFullscreen={isFullscreen.value} onFullscreen={onSwitchFillscreen} onSave={() => onToolHeaderSave()}></ToolHeader>}
+								{slots['header'] ? (
+									slots['header']()
+								) : (
+									<ToolHeader
+										isFullscreen={isFullscreen.value}
+										imageIndex={activateNodeIndex.value}
+										imageLength={labelImages.value.length}
+										onFullscreen={onSwitchFillscreen}
+										onSave={() => onToolHeaderSave()}
+									></ToolHeader>
+								)}
 							</header>
 							<div ref={mainRef} class={[ns.b('main')]}>
 								<ElScrollbar class={[ns.be('main', 'content')]}>

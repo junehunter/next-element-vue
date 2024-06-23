@@ -9,6 +9,14 @@ export default defineComponent({
 			type: Boolean,
 			default: false,
 		},
+		imageIndex: {
+			type: Number,
+			default: 0,
+		},
+		imageLength: {
+			type: Number,
+			default: 0,
+		},
 	},
 	emits: ['fullscreen', 'save'],
 	setup(props, { emit }) {
@@ -21,7 +29,7 @@ export default defineComponent({
 			return (
 				<>
 					<ul class={[_ns.be('header', 'tool')]}>
-						<li onClick={() => emit('save')}>
+						<li class="hover" onClick={() => emit('save')}>
 							<svg t="1719034799379" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4272" width="18" height="18">
 								<path
 									d="M831.4 252.2L711.5 132.4c-10.3-10.3-24.2-16.1-38.8-16.1h-450c-23.3 0-42.2 18.9-42.2 42.2v709.4c0 23.3 18.9 42.2 42.2 42.2h582.6c23.3 0 42.2-18.9 42.2-42.2V291c-0.1-14.5-5.8-28.5-16.1-38.8zM619.6 159v159.8c0 4-3.3 7.3-7.3 7.3H387.2c-4 0-7.3-3.3-7.3-7.3V159h239.7z m67.7 708.4H340.8v-292c0-3.9 3.2-7.1 7.1-7.1h332.4c3.9 0 7.1 3.2 7.1 7.1v292z m117.4 0H730v-292c0-27.5-22.3-49.8-49.8-49.8H347.8c-27.5 0-49.8 22.3-49.8 49.8v292h-74.7V159.1h113.9v159.8c0 27.6 22.4 50.1 50.1 50.1h225.1c27.6 0 50.1-22.4 50.1-50.1V159h10.4c3.2 0 6.3 1.3 8.6 3.6l119.9 119.9c2.3 2.3 3.6 5.3 3.6 8.6l-0.3 576.3z"
@@ -33,7 +41,14 @@ export default defineComponent({
 						</li>
 					</ul>
 					<ul class={[_ns.be('header', 'tool')]}>
-						<li style="margin-right: 30px;">
+						{props.imageLength ? (
+							<li>
+								<span>第 {props.imageIndex + 1} 张</span>
+								<em style="padding: 0 5px;">/</em>
+								<span>共 {props.imageLength} 张</span>
+							</li>
+						) : null}
+						<li style="margin-right: 30px;" class="hover">
 							<ElPopover trigger="hover" placement="bottom" width="none">
 								{{
 									reference: () => (
@@ -64,7 +79,7 @@ export default defineComponent({
 							</ElPopover>
 						</li>
 						{props.isFullscreen ? (
-							<li onClick={() => switchFillscreen(false)}>
+							<li class="hover" onClick={() => switchFillscreen(false)}>
 								<ElTooltip placement="top" content="取消全屏">
 									<svg t="1719035442027" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5388" width="18" height="18">
 										<path
@@ -75,7 +90,7 @@ export default defineComponent({
 								</ElTooltip>
 							</li>
 						) : (
-							<li onClick={() => switchFillscreen(true)}>
+							<li class="hover" onClick={() => switchFillscreen(true)}>
 								<ElTooltip placement="top" content="全屏">
 									<svg t="1719035375323" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5241" width="18" height="18">
 										<path
