@@ -1,4 +1,4 @@
-import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick } from 'vue';
+import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick, onUnmounted } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone, valueExist } from 'packages/hooks/global-hook';
 import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale, colors } from '../hooks/canvas-context-hook';
@@ -105,7 +105,7 @@ export default defineComponent({
 					drawBaseCanvas.value!.updateLabels = updateLabels;
 					drawBaseCanvas.value!.addDrawRect = addDrawRect;
 					drawBaseCanvas.value!.hitCanvasLabel = hitCanvasLabel;
-					const { clearCanvas } = DrawRectCanvas(
+					const { clearCanvas, removeEventAll } = DrawRectCanvas(
 						canvasRectRef.value,
 						(rect: RectProps, { endX, endY }: any) => {
 							activate_add_label.value = rect;
@@ -117,6 +117,7 @@ export default defineComponent({
 						}
 					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
+					drawBaseCanvas.value!.removeEventAll = removeEventAll;
 				};
 				image.onerror = () => {
 					loadingImage.value = false;
@@ -171,6 +172,9 @@ export default defineComponent({
 					}
 				}
 			);
+		});
+		onUnmounted(() => {
+			drawBaseCanvas.value!.removeEventAll();
 		});
 		const contextmenuLabelFixed = ref<any>({
 			show: false,
@@ -289,7 +293,8 @@ export default defineComponent({
 			nextTick(() => {
 				const { startX: x, startY: y, type } = rect;
 				const color = colors[type];
-				updateDraggableRectFixed(x, y, rect, index, color);
+				// 防止右侧选中数据与画布中不同步，使用labels.value中的标注数据
+				updateDraggableRectFixed(x, y, labels.value[index], index, color);
 			});
 		};
 		const rerenderImage = () => {

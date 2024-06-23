@@ -66,7 +66,7 @@ export default defineComponent({
 										</div>
 										<ElPopconfirm
 											title={t('next.labelimg.confirmDeleteLabel')}
-											width={180}
+											width={200}
 											v-slots={{
 												reference: () => (
 													<ElIcon

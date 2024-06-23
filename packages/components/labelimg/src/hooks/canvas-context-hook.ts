@@ -48,44 +48,7 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 		isDrawing = false,
 		isRectDraw = false,
 		isWKeyPressed = false;
-
-	document.addEventListener('keydown', event => {
-		if (event.code === 'KeyW') {
-			isWKeyPressed = true;
-			canvas!.style.cursor = 'crosshair';
-			canvas!.style.zIndex = '11';
-			keyW && keyW();
-		}
-	});
-	document.addEventListener('keyup', event => {
-		if (isDrawing) return;
-		if (event.code === 'KeyW') {
-			isWKeyPressed = false;
-			canvas!.style.cursor = 'unset';
-			canvas!.style.zIndex = '0';
-		}
-	});
-	canvas.addEventListener('mousedown', e => {
-		if (isWKeyPressed) {
-			isDrawing = true;
-			startX = e.offsetX;
-			startY = e.offsetY;
-		}
-	});
-	canvas.addEventListener('mousemove', e => {
-		if (isDrawing && isWKeyPressed) {
-			isRectDraw = true;
-			endX = e.offsetX;
-			endY = e.offsetY;
-			drawRect();
-		}
-	});
-	canvas.addEventListener('mouseup', () => {
-		if (!isRectDraw) return;
-		isDrawing = false;
-		isWKeyPressed = false;
-		canvas!.style.cursor = 'unset';
-		canvas!.style.zIndex = '0';
+	const drawRectDone = () => {
 		const rectWidth = Math.abs(endX - startX);
 		const rectHeight = Math.abs(endY - startY);
 		if (startX > endX) startX = endX;
@@ -99,8 +62,71 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 			canvasHeight: canvasHeight,
 		};
 		callback && callback(rect, { endX, endY });
+	};
+	const documentKeydown = event => {
+		if (event.code === 'KeyW') {
+			isWKeyPressed = true;
+			canvas!.style.cursor = 'crosshair';
+			canvas!.style.zIndex = '11';
+			keyW && keyW();
+		}
+	};
+	const documentKeyup = event => {
+		if (isDrawing) return;
+		if (event.code === 'KeyW') {
+			isWKeyPressed = false;
+			canvas!.style.cursor = 'unset';
+			canvas!.style.zIndex = '0';
+		}
+	};
+	const documentMouseup = () => {
+		if (!isRectDraw) return;
+		isDrawing = false;
+		isWKeyPressed = false;
+		canvas!.style.cursor = 'unset';
+		canvas!.style.zIndex = '0';
+		drawRectDone();
 		isRectDraw = false;
-	});
+	};
+	document.addEventListener('keydown', documentKeydown);
+	document.addEventListener('keyup', documentKeyup);
+	document.addEventListener('mouseup', documentMouseup);
+	const canvasMousedown = e => {
+		if (isWKeyPressed) {
+			isDrawing = true;
+			startX = e.offsetX;
+			startY = e.offsetY;
+		}
+	};
+	const canvasMousemove = e => {
+		if (isDrawing && isWKeyPressed) {
+			isRectDraw = true;
+			endX = e.offsetX;
+			endY = e.offsetY;
+			drawRect();
+		}
+	};
+	const canvasMouseup = e => {
+		e.stopPropagation();
+		if (!isRectDraw) return;
+		isDrawing = false;
+		isWKeyPressed = false;
+		canvas!.style.cursor = 'unset';
+		canvas!.style.zIndex = '0';
+		drawRectDone();
+		isRectDraw = false;
+	};
+	canvas.addEventListener('mousedown', canvasMousedown);
+	canvas.addEventListener('mousemove', canvasMousemove);
+	canvas.addEventListener('mouseup', canvasMouseup);
+	const removeEventAll = () => {
+		document.removeEventListener('mousedown', documentKeydown);
+		document.removeEventListener('keyup', documentKeyup);
+		document.removeEventListener('mouseup', documentMouseup);
+		canvas.removeEventListener('mousedown', canvasMousedown);
+		canvas.removeEventListener('mousemove', canvasMousemove);
+		canvas.removeEventListener('mouseup', canvasMouseup);
+	};
 	const drawRect = (color = '#f30635') => {
 		clearCanvas();
 		ctx.strokeStyle = color;
@@ -111,6 +137,7 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 		ctx,
 		clearCanvas,
 		drawRect,
+		removeEventAll,
 	};
 };
 export const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];

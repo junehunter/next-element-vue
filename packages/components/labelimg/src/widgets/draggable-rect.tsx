@@ -60,6 +60,7 @@ export default defineComponent({
 		};
 		const onContextmenu = (e: MouseEvent) => {
 			e.preventDefault();
+			e.preventDefault();
 			emit('contextmenu', e, rect.value);
 		};
 		const onMousedownDot = (e: MouseEvent, corner: string) => {
@@ -158,8 +159,8 @@ export default defineComponent({
 			document.addEventListener('mouseup', onMouseup);
 		});
 		onUnmounted(() => {
-			document.removeEventListener('mousemove', onMousemove, false);
-			document.removeEventListener('mouseup', onMouseup, false);
+			document.removeEventListener('mousemove', onMousemove);
+			document.removeEventListener('mouseup', onMouseup);
 		});
 		return { onMousedown, onMouseup, onContextmenu, rect, onMousedownDot };
 	},
