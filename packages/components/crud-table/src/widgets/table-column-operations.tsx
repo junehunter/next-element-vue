@@ -2,6 +2,7 @@ import { defineComponent, inject, computed, isRef, unref } from 'vue';
 import { ElTableColumn, ElTooltip, ElButton, ElIcon, ElMessageBox, ElMessage } from 'element-plus';
 import { EditPen, View, Delete } from '@element-plus/icons-vue';
 import { useLocale } from 'packages/hooks';
+import { valueExist } from 'packages/hooks/global-hook';
 
 export default defineComponent({
 	name: 'TableColumnOperations',
@@ -43,7 +44,13 @@ export default defineComponent({
 			const btnPlain = options.operationsBtnPlain;
 			const btnSize = options.operationsBtnSize;
 			return (
-				<ElTableColumn fixed="right" label={t('next.table.operation')} width={options.operationsWidth} headerAlign={options.headerAlign} align={options.cellAlign}>
+				<ElTableColumn
+					fixed="right"
+					label={t('next.table.operation')}
+					width={options.operationsWidth}
+					headerAlign={valueExist(options.operationsHeaderAlign, options.headerAlign)}
+					align={valueExist(options.operationsColumnAlign, options.cellAlign)}
+				>
 					{{
 						default: scoped => (
 							<>

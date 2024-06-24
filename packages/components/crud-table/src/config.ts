@@ -163,6 +163,8 @@ export default {
 	settingBtn: true, // table设置按钮
 	operations: true, // 是否显示操作栏
 	operationsWidth: 260,
+	operationsHeaderAlign: 'center',
+	operationsColumnAlign: 'center',
 	operationsBtnPlain: false,
 	operationsBtnText: true,
 	operationsBtnSize: 'small', // large / default / small
