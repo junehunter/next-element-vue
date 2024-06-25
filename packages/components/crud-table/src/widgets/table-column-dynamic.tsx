@@ -63,6 +63,13 @@ const TableColumnDynamic = defineComponent({
 				};
 				const mergeDicData = loopDicData(columnOption.dicData);
 				return <span>{_formatterColumnValue(row[columnOption.prop], mergeDicData)}</span>;
+			} else if (columnOption.cellUnit) {
+				return (
+					<>
+						<span>{row[columnOption.prop]}</span>
+						<em class="cell-unit">{columnOption.cellUnit}</em>
+					</>
+				);
 			}
 			return null;
 		};

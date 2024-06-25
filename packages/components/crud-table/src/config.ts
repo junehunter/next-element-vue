@@ -123,6 +123,7 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
 	headerAlign?: string;
 	align?: string;
 	sortable?: boolean;
+	cellUnit?: string;
 	children?: TableColumnProps[];
 }
 

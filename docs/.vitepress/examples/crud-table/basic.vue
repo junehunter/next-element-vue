@@ -37,6 +37,13 @@ const options = reactive({
 			},
 		},
 		{
+			prop: 'age',
+			label: '年龄',
+			type: 'input',
+			sort: 8,
+			cellUnit: '岁',
+		},
+		{
 			prop: 'email',
 			label: '邮箱',
 			searchType: 'input',
@@ -181,6 +188,7 @@ const tableReactive = reactive({
 			job: '1',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
+			age: 30,
 			deptId: 2,
 			children: [
 				{
@@ -190,6 +198,7 @@ const tableReactive = reactive({
 					username: 'zhngsan',
 					sex: '1',
 					phone: '1888888888',
+					age: 30,
 					job: '3',
 					startDate: '2023-9-7 12:00:00',
 					endDate: '2023-9-9 12:00:00',
@@ -203,6 +212,7 @@ const tableReactive = reactive({
 			username: 'zhngsan',
 			sex: '1',
 			phone: '1888888888',
+			age: 30,
 			job: '2',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
@@ -214,6 +224,7 @@ const tableReactive = reactive({
 			username: 'zhngsan',
 			sex: '2',
 			phone: '1888888888',
+			age: 30,
 			job: '3',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',

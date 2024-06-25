@@ -117,6 +117,15 @@ $block: 'crud-table';
 		}
 		.el-table__body-wrapper {
 			.el-table__body {
+				tr.el-table__row {
+					td.el-table__cell {
+						em.cell-unit {
+							color: #909399;
+							font-size: 12px;
+							padding-left: 2px;
+						}
+					}
+				}
 				tr.hover-row {
 					td.el-table__cell {
 						background-color: var(--el-color-primary-light-9);
