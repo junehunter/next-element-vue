@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useDateFormat, useFullscreen } from '@vueuse/core';
 
 const { toggle, isFullscreen } = useFullscreen();
@@ -231,12 +231,14 @@ const tableReactive = reactive({
 		},
 	],
 });
+const crudTable = ref<any>();
 setTimeout(() => {
 	options.columns[0].formHide = true;
 	options.columns[0].label = '哈哈哈';
 }, 5000);
 const onConfirmSearch = searchParams => {
 	tableReactive.loading = true;
+	console.log(crudTable.value.getSearchFormParams());
 	setTimeout(() => {
 		tableReactive.loading = false;
 	}, 500);
@@ -268,6 +270,7 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 <template>
 	<div class="layout-container">
 		<NextCrudTable
+			ref="crudTable"
 			:loading="tableReactive.loading"
 			:data="tableReactive.data"
 			:options="options"

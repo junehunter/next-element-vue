@@ -275,6 +275,9 @@ export default defineComponent({
 		operation_column_slots_key.forEach(slotName => {
 			operation_column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
 		});
+		const getSearchFormParams = () => {
+			return _searchFormParams.value;
+		};
 		const _getFormExpose = () => {
 			return addEditFormRef.value?.getFormExpose();
 		};
@@ -286,6 +289,7 @@ export default defineComponent({
 			updateColumns: ops => {
 				_updateColumnsAll(ops);
 			},
+			getSearchFormParams: getSearchFormParams,
 		});
 		const renderContent = () => {
 			return (
