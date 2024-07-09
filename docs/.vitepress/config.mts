@@ -115,6 +115,10 @@ const createdSidebar = () => {
 					text: 'NextLabelimg 图片标注',
 					link: 'labelimg',
 				},
+				{
+					text: 'NextLabelme 图片标注',
+					link: 'labelme',
+				},
 			],
 		},
 	};

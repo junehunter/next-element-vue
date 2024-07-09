@@ -31,6 +31,10 @@ export default defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		showClose: {
+			type: Boolean,
+			default: true,
+		},
 		appendToBody: {
 			type: Boolean,
 			default: false,
@@ -102,11 +106,13 @@ export default defineComponent({
 											</ElIcon>
 										</span>
 									)}
-									<span class="icon-close" onClick={close}>
-										<ElIcon size="18">
-											<Close />
-										</ElIcon>
-									</span>
+									{props.showClose && (
+										<span class="icon-close" onClick={close}>
+											<ElIcon size="18">
+												<Close />
+											</ElIcon>
+										</span>
+									)}
 								</div>
 							</div>
 						),

@@ -1,0 +1,11 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+@import 'packages/theme-chalk/varilable';
+
+$block: 'labelme'; 
+.#{bf($block, 'loading')} {
+    .#{bem('spin-loading')} {
+        &-mask__text {
+            text-shadow: unset;
+        }
+    }
+}

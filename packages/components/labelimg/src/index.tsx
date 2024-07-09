@@ -26,10 +26,6 @@ export default defineComponent({
 			type: Object as PropType<CSSProperties>,
 			default: () => ({}),
 		},
-		rowKey: {
-			type: String,
-			default: 'id',
-		},
 		options: {
 			type: Object,
 			default: () => ({}),
