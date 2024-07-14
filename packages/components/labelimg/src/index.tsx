@@ -1,4 +1,4 @@
-import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch, unref } from 'vue';
+import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch, unref, toRaw } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar, ElIcon, ElImage, ElMessage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
@@ -109,7 +109,9 @@ export default defineComponent({
 		};
 		const isChangeNodeLabels = () => {
 			const node = labelImages.value[activateNodeIndex.value];
-			return isEqual(node.labels, currentNode.value.labels);
+			const original_node = toRaw(node.labels).map((rect: RectProps) => convertToLabel(rect));
+			const current_node = currentNode.value.labels.map((rect: RectProps) => convertToLabel(rect));
+			return isEqual(original_node, current_node);
 		};
 		const switchKeydownAD = (e: KeyboardEvent) => {
 			const imageLength = labelImages.value.length;

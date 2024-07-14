@@ -21,6 +21,18 @@ export function useChangeColor() {
 		for (let i = 0; i < 3; i++) hexs[i] = parseInt(hexs[i], 16);
 		return hexs;
 	};
+	const hexToRgba = (str: string, alpha = 1): any => {
+		let hexs: any = '';
+		let reg = /^\#?[0-9A-Fa-f]{6}$/;
+		if (!reg.test(str)) {
+			ElMessage.warning('输入错误的hex');
+			return '';
+		}
+		str = str.replace('#', '');
+		hexs = str.match(/../g);
+		for (let i = 0; i < 3; i++) hexs[i] = parseInt(hexs[i], 16);
+		return `rgba(${hexs.join(',')},${alpha})`;
+	};
 	// r 代表红色 | g 代表绿色 | b 代表蓝色
 	const rgbToHex = (r: any, g: any, b: any): string => {
 		let reg = /^\d{1,3}$/;
@@ -56,6 +68,7 @@ export function useChangeColor() {
 	};
 	return {
 		hexToRgb,
+		hexToRgba,
 		rgbToHex,
 		getDarkColor,
 		getLightColor,
