@@ -62,6 +62,7 @@ export default defineComponent({
 						canvasWidth,
 						canvasHeight,
 						scaleFactor: scaleFactor,
+						paths: rowInfo.labels,
 					});
 				};
 				image.onerror = () => {

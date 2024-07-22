@@ -72,11 +72,11 @@ class DrawPolygon {
 		this.isDrawing = false;
 		this.isEditor = false;
 		this.printsIndex = -1;
-		canvas.addEventListener('click', this.canvasClick);
-		canvas.addEventListener('mousemove', this.canvasMouseMove);
-		canvas.addEventListener('dblclick', this.canvasDblclick);
+		canvas.addEventListener('click', this.canvasClick.bind(this));
+		canvas.addEventListener('mousemove', this.canvasMouseMove.bind(this));
+		canvas.addEventListener('dblclick', this.canvasDblclick.bind(this));
 	}
-	createPolygon = () => {
+	createPolygon() {
 		const ctx = this.ctx;
 		const prints = this.prints;
 		this.updateRender();
@@ -96,22 +96,12 @@ class DrawPolygon {
 		ctx.closePath();
 		ctx.stroke();
 		ctx.fill();
-		for (let i = 0; i < prints.length; i++) {
-			const x = prints[i][0],
-				y = prints[i][1];
-			ctx.beginPath();
-			ctx.fillStyle = color;
-			ctx.arc(x, y, 5, 0, Math.PI * 2);
-			ctx.closePath();
-			ctx.fill();
-			ctx.beginPath();
-			ctx.fillStyle = '#FFFFFF';
-			ctx.arc(x, y, 3, 0, Math.PI * 2);
-			ctx.closePath();
-			ctx.fill();
-		}
-	};
-	editPolygon = (x: number, y: number) => {
+	}
+	updateEditPolygon(cb?: Function) {
+		this.isEditor = true;
+		cb && cb();
+	}
+	pointInPolygonStroke(x: number, y: number) {
 		const prints = this.prints;
 		const ctx = this.ctx;
 		const path = printsToPath(prints);
@@ -121,58 +111,85 @@ class DrawPolygon {
 			if (i > -1) {
 				this.canvas!.style.cursor = 'pointer';
 				this.printsIndex = i;
-				this.isEditor = true;
+				return true;
 			} else {
 				this.canvas!.style.cursor = 'unset';
 				this.printsIndex = -1;
-				this.isEditor = false;
 			}
-			return;
 		}
+		return false;
+	}
+	pointInPolygonPath(x: number, y: number) {
+		const prints = this.prints;
+		const ctx = this.ctx;
+		const path = printsToPath(prints);
 		const inside_path = ctx.isPointInPath(path, x, y);
 		if (inside_path) {
 			this.canvas!.style.cursor = 'move';
+			return true;
 		} else {
 			this.canvas!.style.cursor = 'unset';
+			return false;
 		}
-	};
-    drawPolygonEdgeCentre = () => {
-        const ctx = this.ctx
-        const prints = this.prints
+	}
+	drawPolygonEdgeCentre() {
+		const ctx = this.ctx;
+		const prints = this.prints;
 		const color = default_color;
-        for (let i = 0; i < prints.length; i++) {
-            const start = prints[i % prints.length], end = prints[(i+1) % prints.length]
-            const x = start[0] + (end[0] - start[0]) / 2
-            const y = start[1] + (end[1] - start[1]) / 2
+		for (let i = 0; i < prints.length; i++) {
+			const x = prints[i][0],
+				y = prints[i][1];
 			ctx.beginPath();
 			ctx.fillStyle = color;
+			ctx.arc(x, y, 8, 0, Math.PI * 2);
+			ctx.closePath();
+			ctx.fill();
+			ctx.beginPath();
+			ctx.fillStyle = '#FFFFFF';
 			ctx.arc(x, y, 5, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
-        }
-    }
-	canvasClick = (e: MouseEvent) => {
+		}
+		for (let i = 0; i < prints.length; i++) {
+			const start = prints[i % prints.length],
+				end = prints[(i + 1) % prints.length];
+			const x = start[0] + (end[0] - start[0]) / 2;
+			const y = start[1] + (end[1] - start[1]) / 2;
+			ctx.beginPath();
+			ctx.fillStyle = color;
+			ctx.arc(x, y, 6, 0, Math.PI * 2);
+			ctx.closePath();
+			ctx.fill();
+		}
+	}
+	canvasClick(e: MouseEvent) {
 		e.stopPropagation();
+		if (this.pointInPolygonStroke(e.offsetX, e.offsetY)) {
+			this.prints.splice(this.printsIndex + 1, 1);
+			this.createPolygon();
+			this.drawPolygonEdgeCentre();
+			return;
+		}
 		this.isDrawing = true;
 		this.canvas!.style.cursor = 'unset';
 		this.mouseX = e.offsetX;
 		this.mouseY = e.offsetY;
 		this.prints.push([this.mouseX, this.mouseY]);
 		this.prints = printsUnique(this.prints);
-	};
-	canvasMouseMove = (e: MouseEvent) => {
+	}
+	canvasMouseMove(e: MouseEvent) {
 		e.stopPropagation();
 		if (this.isDrawing) {
 			this.mouseX = e.offsetX;
 			this.mouseY = e.offsetY;
 			this.canvas!.style.cursor = 'crosshair';
 			this.createPolygon();
+		} else {
+			this.pointInPolygonPath(e.offsetX, e.offsetY);
+			this.pointInPolygonStroke(e.offsetX, e.offsetY);
 		}
-		if (this.isEditor) {
-			this.editPolygon(e.offsetX, e.offsetY);
-		}
-	};
-	canvasDblclick = (e: MouseEvent) => {
+	}
+	canvasDblclick(e: MouseEvent) {
 		e.stopPropagation();
 		this.isDrawing = false;
 		this.canvas!.style.cursor = 'unset';
@@ -181,14 +198,14 @@ class DrawPolygon {
 		this.prints.push([this.mouseX, this.mouseY]);
 		this.prints = printsUnique(this.prints);
 		this.createPolygon();
-        this.drawPolygonEdgeCentre()
-        this.isEditor = true
-	};
-	removeEventAll = () => {
+		this.drawPolygonEdgeCentre();
+		this.isEditor = true;
+	}
+	removeEventAll() {
 		this.canvas.removeEventListener('click', this.canvasClick);
 		this.canvas.removeEventListener('mousemove', this.canvasMouseMove);
 		this.canvas.removeEventListener('dblclick', this.canvasDblclick);
-	};
+	}
 }
 export class CreateDrawCanvas {
 	public canvas: HTMLCanvasElement;
@@ -218,7 +235,7 @@ export class CreateDrawCanvas {
 			if (!path.length) return;
 			const color = colors[i % colors.length];
 			ctx.beginPath();
-			ctx.lineWidth = 3;
+			ctx.lineWidth = 2;
 			ctx.strokeStyle = color;
 			ctx.fillStyle = hexToRgba(color, 0.2);
 			ctx.moveTo(path[0][0], path[0][1]);
@@ -232,6 +249,7 @@ export class CreateDrawCanvas {
 			ctx.fill();
 		}
 	}
+	editPolygon = () => {};
 	initCanvas = () => {
 		this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.ctx.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
