@@ -1,7 +1,7 @@
 import { defineComponent, ref, inject, watch, toRaw, onMounted } from 'vue';
 import { NextSpinLoading } from 'packages/components';
 import { valueExist } from 'packages/hooks/global-hook';
-import { DrawBaseCanvas } from '../hooks/canvas-content';
+import { CreateDrawCanvas } from '../hooks/canvas-content';
 
 export default defineComponent({
 	props: {
@@ -22,6 +22,7 @@ export default defineComponent({
 		const ns = inject('ns', {} as any);
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
+		const drawCanvas = ref<CreateDrawCanvas>();
 
 		const setContainerWidthHeight = (canvasWidth: number, canvasHeight: number) => {
 			canvasMainRef.value!.style.width = canvasWidth + 'px';
@@ -54,7 +55,7 @@ export default defineComponent({
 					const scaleFactor = parseFloat((canvasHeight / height).toFixed(3));
 					const canvasWidth = Math.ceil(width * scaleFactor);
 					setContainerWidthHeight(canvasWidth, canvasHeight);
-					DrawBaseCanvas({
+					drawCanvas.value = new CreateDrawCanvas({
 						canvas: canvasBaseRef.value,
 						ctx: ctx,
 						image: image,
