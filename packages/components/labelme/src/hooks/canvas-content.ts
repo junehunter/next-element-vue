@@ -104,6 +104,11 @@ class DrawPolygon {
 			ctx.arc(x, y, 5, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
+			ctx.beginPath();
+			ctx.fillStyle = '#FFFFFF';
+			ctx.arc(x, y, 3, 0, Math.PI * 2);
+			ctx.closePath();
+			ctx.fill();
 		}
 	};
 	editPolygon = (x: number, y: number) => {
@@ -131,6 +136,21 @@ class DrawPolygon {
 			this.canvas!.style.cursor = 'unset';
 		}
 	};
+    drawPolygonEdgeCentre = () => {
+        const ctx = this.ctx
+        const prints = this.prints
+		const color = default_color;
+        for (let i = 0; i < prints.length; i++) {
+            const start = prints[i % prints.length], end = prints[(i+1) % prints.length]
+            const x = start[0] + (end[0] - start[0]) / 2
+            const y = start[1] + (end[1] - start[1]) / 2
+			ctx.beginPath();
+			ctx.fillStyle = color;
+			ctx.arc(x, y, 5, 0, Math.PI * 2);
+			ctx.closePath();
+			ctx.fill();
+        }
+    }
 	canvasClick = (e: MouseEvent) => {
 		e.stopPropagation();
 		this.isDrawing = true;
@@ -161,6 +181,8 @@ class DrawPolygon {
 		this.prints.push([this.mouseX, this.mouseY]);
 		this.prints = printsUnique(this.prints);
 		this.createPolygon();
+        this.drawPolygonEdgeCentre()
+        this.isEditor = true
 	};
 	removeEventAll = () => {
 		this.canvas.removeEventListener('click', this.canvasClick);
