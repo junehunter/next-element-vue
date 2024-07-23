@@ -90,11 +90,14 @@ const list = ref<any>([
 		labels: {},
 	},
 ]);
+const onEditPolygon = (arg: any) => {
+	console.log(arg);
+};
 </script>
 
 <template>
 	<div class="container">
-		<NextLabelme :classes="classes" :data="list"></NextLabelme>
+		<NextLabelme :classes="classes" :data="list" @edit-polygon="onEditPolygon"></NextLabelme>
 	</div>
 </template>
 

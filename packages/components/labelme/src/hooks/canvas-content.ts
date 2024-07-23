@@ -1,5 +1,5 @@
 import { useChangeColor } from 'packages/utils/theme';
-import { valueExist } from 'packages/hooks/global-hook';
+import { isValueExist } from 'packages/hooks/global-hook';
 export interface CreateRectCanvasProps {
 	canvasWidth: number;
 	canvasHeight: number;
@@ -42,13 +42,13 @@ export const isPointOnLineSegment = (px: number, py: number, vertexes: [number, 
 	return index;
 };
 export const isPointInCircle = (mouseX: number, mouseY: number, circleX: number, circleY: number, radius: number) => {
-    const distance = Math.sqrt(Math.pow(mouseX - circleX, 2) + Math.pow(mouseY - circleY, 2))
-    if(distance < radius ) {
-        return true
-    } else {
-        return false
-    }
-}
+	const distance = Math.sqrt(Math.pow(mouseX - circleX, 2) + Math.pow(mouseY - circleY, 2));
+	if (distance < radius) {
+		return true;
+	} else {
+		return false;
+	}
+};
 /**
  * 点位数据去重
  * @param vertexes
@@ -68,82 +68,81 @@ class CreatePolygonVertexes {
 	public ctx: CanvasRenderingContext2D;
 	public vertexes: [number, number][];
 	private isDrawing: boolean;
-    private mouseOffset: {x: number,y: number};
-    private vertexesObservers: ((vertexes: [number, number][], mouseOffset: {x: number,y: number}) => void)[] = [];
-    private destroyedObservers?: (vertexes: [number, number][]) => void;
-    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+	private mouseOffset: { x: number; y: number };
+	private vertexesObservers: ((vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void)[] = [];
+	private destroyedObservers?: (vertexes: [number, number][]) => void;
+	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 		this.canvas = canvas;
 		this.ctx = ctx;
 		this.isDrawing = false;
 		this.vertexes = [];
-        this.mouseOffset = {x: 0, y: 0}
+		this.mouseOffset = { x: 0, y: 0 };
 		canvas.addEventListener('click', this.canvasMouseClick.bind(this));
-		canvas.addEventListener('mousemove', this.canvasMouseMove.bind(this));
+		canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
 		canvas.addEventListener('dblclick', this.canvasMouseDblclick.bind(this));
-        this.vertexes = new Proxy(this.vertexes, {
-            set: (target, property, value) => {
-                target[property] = value
-                this.notifyVertexChangeListeners()
-                return true
-            }
-        })
-        this.mouseOffset = new Proxy(this.mouseOffset, {
-            set: (target, property, value) => {
-                target[property] = value
-                this.notifyVertexChangeListeners()
-                return true
-            }
-        })
-    }
-    private notifyVertexChangeListeners() {
-        this.vertexesObservers.forEach(listener => {
-            listener(this.vertexes, this.mouseOffset);
-        });
-    }
-    public vertexesChangeEventListener(listener: (vertexes: [number, number][], mouseOffset: {x: number,y: number}) => void) {
-        this.vertexesObservers.push(listener);
-    }
-    private notifyDestryedListerers() {
-        this.destroyedObservers(this.vertexes)
-    }
-    public onDestroyed(callback: (vertexes: [number, number][]) => void) {
-        this.destroyedObservers = callback
-    }
-    canvasMouseClick(e: MouseEvent) {
+		this.vertexes = new Proxy(this.vertexes, {
+			set: (target, property, value) => {
+				target[property] = value;
+				this.notifyVertexChangeListeners();
+				return true;
+			},
+		});
+		this.mouseOffset = new Proxy(this.mouseOffset, {
+			set: (target, property, value) => {
+				target[property] = value;
+				this.notifyVertexChangeListeners();
+				return true;
+			},
+		});
+	}
+	private notifyVertexChangeListeners() {
+		this.vertexesObservers.forEach(listener => {
+			listener(this.vertexes, this.mouseOffset);
+		});
+	}
+	public vertexesChangeEventListener(listener: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
+		this.vertexesObservers.push(listener);
+	}
+	private notifyDestryedListerers() {
+		this.destroyedObservers(this.vertexes);
+	}
+	public onDestroyed(callback: (vertexes: [number, number][]) => void) {
+		this.destroyedObservers = callback;
+	}
+	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
 		this.isDrawing = true;
-        this.mouseOffset.x = e.offsetX
-        this.mouseOffset.y = e.offsetY
-		this.vertexes.push([e.offsetX, e.offsetY]);
-        this.vertexes = vertexesUnique(this.vertexes);
-    }
-    canvasMouseMove(e: MouseEvent) {
-		e.stopPropagation();
-        if(this.isDrawing) {
-            this.mouseOffset.x = e.offsetX
-            this.mouseOffset.y = e.offsetY
-            this.canvas!.style.cursor = 'crosshair';
-        }
-    }
-    canvasMouseDblclick(e: MouseEvent) {
-		e.stopPropagation();
-		this.canvas!.style.cursor = 'unset';
-        this.mouseOffset.x = e.offsetX
-        this.mouseOffset.y = e.offsetY
+		this.mouseOffset.x = e.offsetX;
+		this.mouseOffset.y = e.offsetY;
 		this.vertexes.push([e.offsetX, e.offsetY]);
 		this.vertexes = vertexesUnique(this.vertexes);
-        this.notifyDestryedListerers()
-        this.destroyed()
-    }
-    destroyed() {
-        this.isDrawing = false
-        this.vertexes = []
-        this.vertexesObservers = []
-        this.destroyedObservers = null
+	}
+	canvasMousemove(e: MouseEvent) {
+		e.stopPropagation();
+		if (this.isDrawing) {
+			this.mouseOffset.x = e.offsetX;
+			this.mouseOffset.y = e.offsetY;
+			this.canvas!.style.cursor = 'crosshair';
+		}
+	}
+	canvasMouseDblclick(e: MouseEvent) {
+		e.stopPropagation();
+		this.canvas!.style.cursor = 'unset';
+		this.mouseOffset.x = e.offsetX;
+		this.mouseOffset.y = e.offsetY;
+		this.vertexes.push([e.offsetX, e.offsetY]);
+		this.vertexes = vertexesUnique(this.vertexes);
+		this.notifyDestryedListerers();
+		this.destroyed();
+	}
+	destroyed() {
+		this.isDrawing = false;
+		this.vertexes = [];
+		this.vertexesObservers = [];
 		this.canvas.removeEventListener('click', this.canvasMouseClick);
-		this.canvas.removeEventListener('mousemove', this.canvasMouseMove);
+		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
 		this.canvas.removeEventListener('dblclick', this.canvasMouseDblclick);
-    }
+	}
 }
 /**
  * 绘制编辑多边形
@@ -151,14 +150,27 @@ class CreatePolygonVertexes {
 class EditPolygonPath {
 	public canvas: HTMLCanvasElement;
 	public ctx: CanvasRenderingContext2D;
-    private vertexes: [number, number][];
-    private isEditing: boolean;
+	private vertexes: [number, number][];
+	private isEditing: boolean;
+	private isMoveEditing: boolean;
+	private canClickEvent: boolean;
+	private pointVertexIndex: number;
+	private pointCentreIndex: number;
+	private vertexRadius: number;
+	private edgeCentreRadius: number;
+	private observers: ((vertexes: [number, number][]) => void)[] = [];
 	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-        this.canvas = canvas
+		this.canvas = canvas;
 		this.ctx = ctx;
-        this.vertexes = []
-        this.isEditing = false
-    }
+		this.vertexes = [];
+		this.isEditing = false;
+		this.canClickEvent = true;
+		this.isMoveEditing = false;
+		this.pointVertexIndex = -1;
+		this.pointCentreIndex = -1;
+		this.vertexRadius = 8;
+		this.edgeCentreRadius = 5;
+	}
 	drawPolygonPath(vertexes: [number, number][], mouseX?: number, mouseY?: number) {
 		const ctx = this.ctx;
 		if (!vertexes.length) return;
@@ -169,12 +181,12 @@ class EditPolygonPath {
 		ctx.fillStyle = hexToRgba(color, 0.2);
 		ctx.moveTo(vertexes[0][0], vertexes[0][1]);
 		for (let i = 1; i < vertexes.length; i++) {
-			const [x, y] = vertexes[i]
+			const [x, y] = vertexes[i];
 			ctx.lineTo(x, y);
 		}
-        if(!isNaN(mouseX) && !isNaN(mouseY)) {
-            ctx.lineTo(mouseX, mouseY)
-        }
+		if (!isNaN(mouseX) && !isNaN(mouseY)) {
+			ctx.lineTo(mouseX, mouseY);
+		}
 		ctx.closePath();
 		ctx.stroke();
 		ctx.fill();
@@ -183,15 +195,15 @@ class EditPolygonPath {
 		const ctx = this.ctx;
 		const color = default_color;
 		for (let i = 0; i < vertexes.length; i++) {
-			const [x, y] = vertexes[i]
+			const [x, y] = vertexes[i];
 			ctx.beginPath();
 			ctx.fillStyle = color;
-			ctx.arc(x, y, 8, 0, Math.PI * 2);
+			ctx.arc(x, y, this.vertexRadius, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
 			ctx.beginPath();
 			ctx.fillStyle = '#FFFFFF';
-			ctx.arc(x, y, 5, 0, Math.PI * 2);
+			ctx.arc(x, y, this.vertexRadius - 3, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
 		}
@@ -202,235 +214,162 @@ class EditPolygonPath {
 			const y = start[1] + (end[1] - start[1]) / 2;
 			ctx.beginPath();
 			ctx.fillStyle = color;
-			ctx.arc(x, y, 6, 0, Math.PI * 2);
+			ctx.arc(x, y, this.edgeCentreRadius, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
 		}
 	}
-    drawPolygon(vertexes: [number, number][] , mouseOffset?: {x: number, y: number}) {
-        this.vertexes = vertexes
-        if(mouseOffset) {
-            this.drawPolygonPath(vertexes, mouseOffset.x, mouseOffset.y)
-        } else {
-            this.drawPolygonPath(vertexes)
-            this.drawPolygonEdgeCentre(vertexes)
-        }
-    }
-    pointInEdgeCentre(x: number, y: number) {
+	drawPolygon(vertexes: [number, number][], mouseOffset?: { x: number; y: number }) {
+		this.vertexes = vertexes;
+		if (mouseOffset) {
+			this.drawPolygonPath(vertexes, mouseOffset.x, mouseOffset.y);
+		} else {
+			this.drawPolygonPath(vertexes);
+			this.drawPolygonEdgeCentre(vertexes);
+		}
+	}
+	pointInVertexes(x: number, y: number) {
 		const vertexes = this.vertexes;
-        let aimIndex = null
+		let aimIndex = null;
 		for (let i = 0; i < vertexes.length; i++) {
-            const [vertex_x, vertex_y] = vertexes[i]
-            const isIn = isPointInCircle(x, y, vertex_x, vertex_y, 8)
-            if(isIn) {
-                this.canvas!.style.cursor = 'pointer';
-                aimIndex = i
-                break
-            } else {
-                this.canvas!.style.cursor = 'unset';
-            }
-        }
-        return aimIndex
-    }
-    setEditPolygon(vertexes?: [number, number][]) {
-        if(vertexes) {
-            this.vertexes = vertexes
-        }
-        this.isEditing = true
+			const [vertex_x, vertex_y] = vertexes[i];
+			const isIn = isPointInCircle(x, y, vertex_x, vertex_y, this.vertexRadius);
+			if (isIn) {
+				this.canvas!.style.cursor = 'pointer';
+				aimIndex = i;
+				break;
+			} else {
+				this.canvas!.style.cursor = 'unset';
+			}
+		}
+		return aimIndex;
+	}
+	pointInEdgeCentre(x: number, y: number) {
+		const vertexes = this.vertexes;
+		let aimIndex = null;
+		for (let i = 0; i < vertexes.length; i++) {
+			const start = vertexes[i % vertexes.length],
+				end = vertexes[(i + 1) % vertexes.length];
+			const vertex_x = start[0] + (end[0] - start[0]) / 2;
+			const vertex_y = start[1] + (end[1] - start[1]) / 2;
+			const isIn = isPointInCircle(x, y, vertex_x, vertex_y, this.edgeCentreRadius);
+			if (isIn) {
+				this.canvas!.style.cursor = 'pointer';
+				aimIndex = i;
+				break;
+			} else {
+				this.canvas!.style.cursor = 'unset';
+			}
+		}
+		return aimIndex;
+	}
+	pointInVertexesOrEdgeCentre(x: number, y: number) {
+		const vertexes = this.vertexes;
+		for (let i = 0; i < vertexes.length; i++) {
+			const [vertex_x, vertex_y] = vertexes[i];
+			const isInVertex = isPointInCircle(x, y, vertex_x, vertex_y, this.vertexRadius);
+			const start = vertexes[i % vertexes.length],
+				end = vertexes[(i + 1) % vertexes.length];
+			const edge_center_x = start[0] + (end[0] - start[0]) / 2;
+			const edge_center_y = start[1] + (end[1] - start[1]) / 2;
+			const isInEdgeCenter = isPointInCircle(x, y, edge_center_x, edge_center_y, this.edgeCentreRadius);
+			if (isInVertex || isInEdgeCenter) {
+				this.canvas!.style.cursor = 'pointer';
+				break;
+			} else {
+				this.canvas!.style.cursor = 'unset';
+			}
+		}
+	}
+	private notifyObservers() {
+		this.observers.forEach(listener => {
+			listener(this.vertexes);
+		});
+	}
+	public updatePolygon(callback: (vertexes: [number, number][]) => void) {
+		this.isEditing = true;
+		this.canvas.addEventListener('mousedown', this.canvasMousedown.bind(this));
+		this.canvas.addEventListener('mouseup', this.canvasMouseup.bind(this));
 		this.canvas.addEventListener('click', this.canvasMouseClick.bind(this));
-		this.canvas.addEventListener('mousemove', this.canvasMouseMove.bind(this));
-    }
-    canvasMouseClick(e: MouseEvent) {
+		this.canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
+		this.observers.push(callback);
+	}
+	canvasMousedown(e: MouseEvent) {
 		e.stopPropagation();
-        const {offsetX: x, offsetY: y } = e
-        if(this.isEditing) {
-            const i = this.pointInEdgeCentre(x, y)
-            if(valueExist(i)) {
-                this.vertexes.splice(i, 1)
-                this.drawPolygon(this.vertexes)
-            }
-        }
-    }
-    canvasMouseMove(e: MouseEvent) {
-        e.stopPropagation()
-        // const {offsetX: x, offsetY: y } = e
-        // const i = this.pointInEdgeCentre(x, y)
-        // // console.log(i)
-    }
-    destroyed() {
+		e.preventDefault();
+		this.canClickEvent = true;
+		const { offsetX: x, offsetY: y } = e;
+		if (this.isEditing) {
+			const vertex_i = this.pointInVertexes(x, y);
+			if (isValueExist(vertex_i)) {
+				this.isMoveEditing = true;
+				this.pointVertexIndex = vertex_i;
+				this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
+			}
+			const i = this.pointInEdgeCentre(x, y);
+			if (isValueExist(i)) {
+				this.isMoveEditing = true;
+				this.pointCentreIndex = i + 1;
+				this.vertexes.splice(this.pointCentreIndex, 0, [x, y]);
+			}
+		}
+		setTimeout(() => {
+			this.canClickEvent = false;
+		}, 200);
+	}
+	canvasMouseup(e: MouseEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+		const { offsetX: x, offsetY: y } = e;
+		if (this.pointVertexIndex > -1) {
+			this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
+		}
+		if (this.pointCentreIndex > -1) {
+			this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
+		}
+		this.isMoveEditing = false;
+		this.pointVertexIndex = -1;
+		this.pointCentreIndex = -1;
+		this.notifyObservers();
+	}
+	canvasMouseClick(e: MouseEvent) {
+		e.stopPropagation();
+		const { offsetX: x, offsetY: y } = e;
+		if (this.isEditing && this.canClickEvent) {
+			e.stopImmediatePropagation();
+			const i = this.pointInVertexes(x, y);
+			if (isValueExist(i)) {
+				if (this.vertexes.length <= 3) return;
+				this.vertexes.splice(i, 1);
+				this.drawPolygon(this.vertexes);
+				this.notifyObservers();
+			}
+		}
+	}
+	canvasMousemove(e: MouseEvent) {
+		e.stopPropagation();
+		const { offsetX: x, offsetY: y } = e;
+		this.pointInVertexesOrEdgeCentre(x, y);
+		if (this.isMoveEditing) {
+			if (this.pointVertexIndex > -1) {
+				this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
+			}
+			if (this.pointCentreIndex > -1) {
+				this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
+			}
+			this.notifyObservers();
+		}
+	}
+	destroyed() {
+		this.vertexes = [];
+		this.observers = [];
+		this.isEditing = false;
+		this.canvas.removeEventListener('mousedown', this.canvasMousedown);
+		this.canvas.removeEventListener('mouseup', this.canvasMouseup);
 		this.canvas.removeEventListener('click', this.canvasMouseClick);
-		this.canvas.removeEventListener('mousemove', this.canvasMouseMove);
-    }
+		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
+	}
 }
-// class DrawPolygon {
-// 	public canvas: HTMLCanvasElement;
-// 	public ctx: CanvasRenderingContext2D;
-// 	public updateRender: Function;
-// 	private vertexes: [number, number][];
-// 	private mouseX: number;
-// 	private mouseY: number;
-// 	private isDrawing: boolean;
-// 	private isEditor: boolean;
-// 	private printsIndex: number;
-
-// 	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, updateRender: Function) {
-// 		this.canvas = canvas;
-// 		this.ctx = ctx;
-// 		this.updateRender = updateRender;
-// 		this.vertexes = [];
-// 		this.mouseX = 0;
-// 		this.mouseY = 0;
-// 		this.isDrawing = false;
-// 		this.isEditor = false;
-// 		this.printsIndex = -1;
-// 		canvas.addEventListener('click', this.canvasClick.bind(this));
-// 		canvas.addEventListener('mousemove', this.canvasMouseMove.bind(this));
-// 		canvas.addEventListener('dblclick', this.canvasDblclick.bind(this));
-// 	}
-// 	createPolygon() {
-// 		const ctx = this.ctx;
-// 		const vertexes = this.vertexes;
-// 		this.updateRender();
-// 		if (!vertexes.length) return;
-// 		const color = default_color;
-// 		ctx.beginPath();
-// 		ctx.lineWidth = 3;
-// 		ctx.strokeStyle = color;
-// 		ctx.fillStyle = hexToRgba(color, 0.2);
-// 		ctx.moveTo(vertexes[0][0], vertexes[0][1]);
-// 		for (let i = 1; i < vertexes.length; i++) {
-// 			const x = vertexes[i][0],
-// 				y = vertexes[i][1];
-// 			ctx.lineTo(x, y);
-// 		}
-// 		ctx.lineTo(this.mouseX, this.mouseY);
-// 		ctx.closePath();
-// 		ctx.stroke();
-// 		ctx.fill();
-// 	}
-// 	updateEditPolygon(cb?: Function) {
-// 		this.isEditor = true;
-// 		cb && cb();
-// 	}
-// 	pointInPolygonStroke(x: number, y: number) {
-// 		const vertexes = this.vertexes;
-// 		const ctx = this.ctx;
-// 		const path = printsToPath(vertexes);
-// 		const inside_stroke = ctx.isPointInStroke(path, x, y);
-// 		if (inside_stroke) {
-// 			const i = isPointOnLineSegment(x, y, vertexes, ctx);
-// 			if (i > -1) {
-// 				this.canvas!.style.cursor = 'pointer';
-// 				this.printsIndex = i;
-// 				return true;
-// 			} else {
-// 				this.canvas!.style.cursor = 'unset';
-// 				this.printsIndex = -1;
-// 			}
-// 		}
-// 		return false;
-// 	}
-//     pointInEdgeCentre(x: number, y: number) {
-// 		const vertexes = this.vertexes;
-// 		for (let i = 0; i < vertexes.length; i++) {
-//             const [vertex_x, vertex_y] = vertexes[i]
-//             const isIn = isPointInCircle(x, y, vertex_x, vertex_y, 8)
-//             if(isIn) {
-//                 this.canvas!.style.cursor = 'pointer';
-//                 break
-//             } else {
-//                 this.canvas!.style.cursor = 'unset';
-//             }
-//         }
-//     }
-// 	pointInPolygonPath(x: number, y: number) {
-// 		const vertexes = this.vertexes;
-// 		const ctx = this.ctx;
-// 		const path = printsToPath(vertexes);
-// 		const inside_path = ctx.isPointInPath(path, x, y);
-// 		if (inside_path) {
-// 			this.canvas!.style.cursor = 'move';
-// 			return true;
-// 		} else {
-// 			this.canvas!.style.cursor = 'unset';
-// 			return false;
-// 		}
-// 	}
-// 	drawPolygonEdgeCentre() {
-// 		const ctx = this.ctx;
-// 		const vertexes = this.vertexes;
-// 		const color = default_color;
-// 		for (let i = 0; i < vertexes.length; i++) {
-// 			const x = vertexes[i][0],
-// 				y = vertexes[i][1];
-// 			ctx.beginPath();
-// 			ctx.fillStyle = color;
-// 			ctx.arc(x, y, 8, 0, Math.PI * 2);
-// 			ctx.closePath();
-// 			ctx.fill();
-// 			ctx.beginPath();
-// 			ctx.fillStyle = '#FFFFFF';
-// 			ctx.arc(x, y, 5, 0, Math.PI * 2);
-// 			ctx.closePath();
-// 			ctx.fill();
-// 		}
-// 		for (let i = 0; i < vertexes.length; i++) {
-// 			const start = vertexes[i % vertexes.length],
-// 				end = vertexes[(i + 1) % vertexes.length];
-// 			const x = start[0] + (end[0] - start[0]) / 2;
-// 			const y = start[1] + (end[1] - start[1]) / 2;
-// 			ctx.beginPath();
-// 			ctx.fillStyle = color;
-// 			ctx.arc(x, y, 6, 0, Math.PI * 2);
-// 			ctx.closePath();
-// 			ctx.fill();
-// 		}
-// 	}
-// 	canvasClick(e: MouseEvent) {
-// 		e.stopPropagation();
-// 		if (this.pointInPolygonStroke(e.offsetX, e.offsetY)) {
-// 			this.vertexes.splice(this.printsIndex + 1, 1);
-// 			this.createPolygon();
-// 			this.drawPolygonEdgeCentre();
-// 			return;
-// 		}
-// 		this.isDrawing = true;
-// 		this.canvas!.style.cursor = 'unset';
-// 		this.mouseX = e.offsetX;
-// 		this.mouseY = e.offsetY;
-// 		this.vertexes.push([this.mouseX, this.mouseY]);
-// 		this.vertexes = vertexesUnique(this.vertexes);
-// 	}
-// 	canvasMouseMove(e: MouseEvent) {
-// 		e.stopPropagation();
-// 		if (this.isDrawing) {
-// 			this.mouseX = e.offsetX;
-// 			this.mouseY = e.offsetY;
-// 			this.canvas!.style.cursor = 'crosshair';
-// 			this.createPolygon();
-// 		} else {
-// 			this.pointInPolygonPath(e.offsetX, e.offsetY);
-// 			this.pointInEdgeCentre(e.offsetX, e.offsetY);
-// 		}
-// 	}
-// 	canvasDblclick(e: MouseEvent) {
-// 		e.stopPropagation();
-// 		this.isDrawing = false;
-// 		this.canvas!.style.cursor = 'unset';
-// 		this.mouseX = e.offsetX;
-// 		this.mouseY = e.offsetY;
-// 		this.vertexes.push([this.mouseX, this.mouseY]);
-// 		this.vertexes = vertexesUnique(this.vertexes);
-// 		this.createPolygon();
-// 		this.drawPolygonEdgeCentre();
-// 		this.isEditor = true;
-// 	}
-// 	removeEventAll() {
-// 		this.canvas.removeEventListener('click', this.canvasClick);
-// 		this.canvas.removeEventListener('mousemove', this.canvasMouseMove);
-// 		this.canvas.removeEventListener('dblclick', this.canvasDblclick);
-// 	}
-// }
 export class CreateDrawCanvas {
 	public canvas: HTMLCanvasElement;
 	public ctx: CanvasRenderingContext2D;
@@ -438,7 +377,10 @@ export class CreateDrawCanvas {
 	public canvasWidth: number;
 	public canvasHeight: number;
 	private paths: any[];
-	public editDrawPolygon: any;
+	private editDrawPolygon: EditPolygonPath;
+	private createPolygonVertexes: CreatePolygonVertexes;
+	private editVertexes: [number, number][];
+	private editPolygonObservers: ((vertexes: [number, number][]) => void)[] = [];
 
 	constructor(options: DrawBaseCanvasProps) {
 		const { canvas, ctx, image, canvasWidth, canvasHeight, paths } = options;
@@ -448,18 +390,35 @@ export class CreateDrawCanvas {
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
 		this.paths = paths || [];
+		this.editVertexes = [];
 		this.render();
-        const editDrawPolygon = new EditPolygonPath(canvas, ctx)
-		const createPolytonVertexes = new CreatePolygonVertexes(canvas, ctx);
-        createPolytonVertexes.vertexesChangeEventListener((vertexes, mouseOffset) => {
-            this.render();
-            editDrawPolygon.drawPolygon(vertexes, mouseOffset)
-        })
-        createPolytonVertexes.onDestroyed((vertexes) => {
-            this.render();
-            editDrawPolygon.drawPolygon(vertexes)
-            editDrawPolygon.setEditPolygon()
-        })
+		this.editDrawPolygon = new EditPolygonPath(canvas, ctx);
+		this.createPolygonVertexes = new CreatePolygonVertexes(canvas, ctx);
+		this.createPolygonVertexes.vertexesChangeEventListener((vertexes, mouseOffset) => {
+			this.render();
+			this.editDrawPolygon.drawPolygon(vertexes, mouseOffset);
+			this.editVertexes = vertexes;
+			this.notifyObservers();
+		});
+		this.createPolygonVertexes.onDestroyed(vertexes => {
+			this.render();
+			this.editDrawPolygon.drawPolygon(vertexes);
+			this.editDrawPolygon.updatePolygon(vertexes => {
+				this.render();
+				this.editDrawPolygon.drawPolygon(vertexes);
+				this.editVertexes = vertexes;
+				this.notifyObservers();
+			});
+		});
+	}
+
+	private notifyObservers() {
+		this.editPolygonObservers.forEach(listener => {
+			listener(this.editVertexes);
+		});
+	}
+	public updatePolygon(callback: (vertexes: [number, number][]) => void) {
+		this.editPolygonObservers.push(callback);
 	}
 	drawPolygons(paths: any[]) {
 		const ctx = this.ctx;
@@ -474,7 +433,7 @@ export class CreateDrawCanvas {
 			ctx.fillStyle = hexToRgba(color, 0.2);
 			ctx.moveTo(path[0][0], path[0][1]);
 			for (let i = 1; i < path.length; i++) {
-                const [x, y] = path[i]
+				const [x, y] = path[i];
 				ctx.lineTo(x, y);
 			}
 			ctx.closePath();
@@ -491,6 +450,8 @@ export class CreateDrawCanvas {
 		this.initCanvas();
 	};
 	destroyed() {
-		
+		this.paths = [];
+		this.editDrawPolygon.destroyed();
+		this.createPolygonVertexes.destroyed();
 	}
 }

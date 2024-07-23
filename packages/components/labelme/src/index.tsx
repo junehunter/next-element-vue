@@ -31,7 +31,9 @@ export default defineComponent({
 			default: () => [],
 		},
 	},
-	setup(props) {
+	emits: ['change', 'edit-polygon'],
+
+	setup(props, { emit }) {
 		const _config = deepClone(defaultConfig);
 		const _options = computed(() => {
 			const cfg = unref(props.options);
@@ -76,12 +78,15 @@ export default defineComponent({
 		const mainContentHeight = ref(options.minContentHeight);
 		const mainRef = ref<HTMLElement>();
 		const isFullscreen = ref<boolean>(false);
+		const onEditPlygonChange = (plygon: any) => {
+			emit('edit-polygon', plygon);
+		};
 		const renderContent = () => {
 			return (
 				<div class={[ns.b(), props.className, isFullscreen.value ? ns.b('fullscreen') : '']} style={{ ...props.style }}>
 					<div ref={mainRef} class={[ns.b('main')]}>
 						<div class={[ns.be('main', 'content')]} style={{ height: mainContentHeight.value + 'px' }}>
-							<CanvasContext rowInfo={currentNode.value}></CanvasContext>
+							<CanvasContext rowInfo={currentNode.value} onEditPolygon={onEditPlygonChange}></CanvasContext>
 						</div>
 					</div>
 				</div>

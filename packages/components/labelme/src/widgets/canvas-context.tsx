@@ -18,7 +18,8 @@ export default defineComponent({
 			default: () => ({}),
 		},
 	},
-	setup(props) {
+	emits: ['editPolygon'],
+	setup(props, { emit }) {
 		const ns = inject('ns', {} as any);
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
@@ -63,6 +64,13 @@ export default defineComponent({
 						canvasHeight,
 						scaleFactor: scaleFactor,
 						paths: rowInfo.labels,
+					});
+					drawCanvas.value.updatePolygon(vertexes => {
+						emit('editPolygon', {
+							vertexes,
+							canvasWidth,
+							canvasHeight,
+						});
 					});
 				};
 				image.onerror = () => {
