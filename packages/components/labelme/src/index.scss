@@ -43,16 +43,23 @@ $block: 'labelme';
 				cursor: pointer;
 				display: flex;
 				align-items: center;
+				justify-content: center;
 				margin: 0 6px;
+				text-align: center;
+				>.label-text {
+					margin: 0;
+					padding: 5px 8px;
+					line-height: normal;
+				}
 			}
-			>li.hover {
+			>li.tool-item {
+				flex-direction: column;
 				&:hover {
 					color: $theme-color;
 					svg {
 						fill: $theme-color;
 					}
 				}
-
 			}
 		}
 	}

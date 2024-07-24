@@ -75,5 +75,8 @@ export default {
 			instructions: '使用说明',
 			labelNoUpdate: '暂无标签数据更新',
 		},
+		labelme: {
+			saveLabel: '保存',
+		},
 	},
 };

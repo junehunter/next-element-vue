@@ -75,5 +75,11 @@ export default {
 			instructions: 'instructions',
 			labelNoUpdate: 'No label data update',
 		},
+		labelme: {
+			saveLabel: 'saving...',
+			createPolygon: 'create polygon',
+			editPolygon: 'edit polygon',
+			deletePolyton: 'delete polygon',
+		},
 	},
 };
