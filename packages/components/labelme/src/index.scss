@@ -9,7 +9,17 @@ $block: 'labelme';
         }
     }
 }
-
+.#{bf($block, 'fullscreen')} {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 999;
+	background-color: #ffffff;
+	overflow: hidden;
+	transition: all 0.3s;
+}
 
 .#{bf($block)} {
 	width: 100%;
@@ -19,6 +29,33 @@ $block: 'labelme';
 	border: 1px solid #eee;
 	border-radius: 3px;
     
+	&-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 12px;
+		font-size: 12px;
+		box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+		&__tool {
+			display: flex;
+			align-items: center;
+			>li {
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				margin: 0 6px;
+			}
+			>li.hover {
+				&:hover {
+					color: $theme-color;
+					svg {
+						fill: $theme-color;
+					}
+				}
+
+			}
+		}
+	}
 	&-main {
 		// width: 100%;
 		display: flex;
@@ -29,6 +66,7 @@ $block: 'labelme';
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 100%;
         }
 		.#{bf($block, 'loading')} {
 			width: 100%;
@@ -55,4 +93,55 @@ $block: 'labelme';
 			}
 		}	
     }
+    
+	&-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 12px 8px;
+        .left-right {
+            flex: 0 0 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .el-icon {
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+        &__left {
+            @extend .left-right;
+        }
+        &__right {
+            @extend .left-right;
+        }
+        &__center {
+            flex: 1 1 auto;
+            &--list {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+				min-height: 80px;
+                >li {
+                    flex: 0 0 100px;
+                    height: 80px;
+                    border: 1px solid #eeeeee;
+                    background-color: #ffffff;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                    text-align: center;
+                    cursor: pointer;
+                    margin: 0 5px;
+                    &:hover {
+                        border: 1px solid $theme-color
+                    }
+                }
+                >li.is-activate {
+                    border: 1px solid $theme-color
+                }
+            }
+        }
+	}
 }

@@ -127,11 +127,13 @@ class CreatePolygonVertexes {
 	}
 	canvasMouseDblclick(e: MouseEvent) {
 		e.stopPropagation();
-		this.canvas!.style.cursor = 'unset';
-		this.mouseOffset.x = e.offsetX;
-		this.mouseOffset.y = e.offsetY;
-		this.vertexes.push([e.offsetX, e.offsetY]);
-		this.vertexes = vertexesUnique(this.vertexes);
+		if (this.isDrawing) {
+            this.canvas!.style.cursor = 'unset';
+            this.mouseOffset.x = e.offsetX;
+            this.mouseOffset.y = e.offsetY;
+            this.vertexes.push([e.offsetX, e.offsetY]);
+            this.vertexes = vertexesUnique(this.vertexes);
+        }
 		this.notifyDestryedListerers();
 		this.destroyed();
 	}
@@ -139,6 +141,7 @@ class CreatePolygonVertexes {
 		this.isDrawing = false;
 		this.vertexes = [];
 		this.vertexesObservers = [];
+        this.destroyedObservers = () => void
 		this.canvas.removeEventListener('click', this.canvasMouseClick);
 		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
 		this.canvas.removeEventListener('dblclick', this.canvasMouseDblclick);
@@ -299,20 +302,18 @@ class EditPolygonPath {
 		e.preventDefault();
 		this.canClickEvent = true;
 		const { offsetX: x, offsetY: y } = e;
-		if (this.isEditing) {
-			const vertex_i = this.pointInVertexes(x, y);
-			if (isValueExist(vertex_i)) {
-				this.isMoveEditing = true;
-				this.pointVertexIndex = vertex_i;
-				this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
-			}
-			const i = this.pointInEdgeCentre(x, y);
-			if (isValueExist(i)) {
-				this.isMoveEditing = true;
-				this.pointCentreIndex = i + 1;
-				this.vertexes.splice(this.pointCentreIndex, 0, [x, y]);
-			}
-		}
+		const vertex_i = this.pointInVertexes(x, y);
+        if (isValueExist(vertex_i)) {
+            this.isMoveEditing = true;
+            this.pointVertexIndex = vertex_i;
+            this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
+        }
+        const i = this.pointInEdgeCentre(x, y);
+        if (isValueExist(i)) {
+            this.isMoveEditing = true;
+            this.pointCentreIndex = i + 1;
+            this.vertexes.splice(this.pointCentreIndex, 0, [x, y]);
+        }
 		setTimeout(() => {
 			this.canClickEvent = false;
 		}, 200);
@@ -335,8 +336,7 @@ class EditPolygonPath {
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
 		const { offsetX: x, offsetY: y } = e;
-		if (this.isEditing && this.canClickEvent) {
-			e.stopImmediatePropagation();
+		if (this.canClickEvent) {
 			const i = this.pointInVertexes(x, y);
 			if (isValueExist(i)) {
 				if (this.vertexes.length <= 3) return;
@@ -392,8 +392,8 @@ export class CreateDrawCanvas {
 		this.paths = paths || [];
 		this.editVertexes = [];
 		this.render();
-		this.editDrawPolygon = new EditPolygonPath(canvas, ctx);
 		this.createPolygonVertexes = new CreatePolygonVertexes(canvas, ctx);
+		this.editDrawPolygon = new EditPolygonPath(canvas, ctx);
 		this.createPolygonVertexes.vertexesChangeEventListener((vertexes, mouseOffset) => {
 			this.render();
 			this.editDrawPolygon.drawPolygon(vertexes, mouseOffset);

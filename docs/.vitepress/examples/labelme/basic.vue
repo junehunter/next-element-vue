@@ -91,13 +91,19 @@ const list = ref<any>([
 	},
 ]);
 const onEditPolygon = (arg: any) => {
-	console.log(arg);
+	// console.log(arg);
+};
+const onSave = (node, done) => {
+	console.log(node);
+	setTimeout(() => {
+		done();
+	}, 500);
 };
 </script>
 
 <template>
 	<div class="container">
-		<NextLabelme :classes="classes" :data="list" @edit-polygon="onEditPolygon"></NextLabelme>
+		<NextLabelme :classes="classes" :data="list" @edit-polygon="onEditPolygon"  @save="onSave"></NextLabelme>
 	</div>
 </template>
 
