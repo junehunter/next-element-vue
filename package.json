@@ -1,6 +1,6 @@
 {
 	"name": "next-element-vue",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
@@ -43,7 +43,7 @@
 		"@tensorflow/tfjs": "^4.11.0",
 		"@types/lodash-es": "^4.17.9",
 		"@vueuse/core": "^10.4.1",
-		"element-plus": "^2.7.4",
+		"element-plus": "^2.8.0",
 		"flv.js": "^1.6.2",
 		"lodash-es": "^4.17.21",
 		"mpegts.js": "^1.7.3",
@@ -76,7 +76,7 @@
 		"autoprefixer": "^10.4.16",
 		"concurrently": "^8.2.1",
 		"cssnano": "^6.0.1",
-		"element-plus": "^2.7.4",
+		"element-plus": "^2.8.0",
 		"eslint": "^8.50.0",
 		"eslint-plugin-unicorn": "^48.0.1",
 		"eslint-plugin-vue": "^9.17.0",
@@ -118,3 +118,4 @@
 	},
 	"license": "MIT"
 }
+

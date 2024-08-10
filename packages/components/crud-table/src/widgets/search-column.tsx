@@ -90,7 +90,7 @@ export default defineComponent({
 		];
 		const _onInputInteger = (val: any, key: string) => {
 			const value = val.replace(/\D/g, '');
-			formParams.value[key] = value;
+			formParams[key] = value;
 		};
 		const _onInputNumber = (val: any, key: string) => {
 			let value = val;
@@ -101,10 +101,10 @@ export default defineComponent({
 			value = value.replace('.', 'DUMMY');
 			value = value.replace(/\./g, '');
 			value = value.replace('DUMMY', '.');
-			formParams.value[key] = value;
+			formParams[key] = value;
 		};
 		const _onChangeNumberRange = (value: any, key: string) => {
-			formParams.value[key] = value;
+			formParams[key] = value;
 		};
 		const renderColItemContent = (col: SearchColumnProps) => {
 			const _disabled = valueExist(col.searchDisabled, col.disabled, false);

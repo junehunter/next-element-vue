@@ -212,6 +212,7 @@ const options = reactive({
 			},
 		},
 		{
+			prop: 'datetimerange',
 			label: '开始结束时间',
 			searchType: 'datetimerange',
 			searchSort: 4,
@@ -307,6 +308,7 @@ const tableReactive = reactive({
 	],
 });
 const onConfirmSearch = searchParams => {
+	console.log(searchParams);
 	tableReactive.loading = true;
 	setTimeout(() => {
 		tableReactive.loading = false;
