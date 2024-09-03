@@ -1,6 +1,6 @@
 {
 	"name": "next-element-vue",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
@@ -15,7 +15,7 @@
 	"type": "module",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/junehunter/next-element-vue"
+		"url": "git+https://github.com/junehunter/next-element-vue.git"
 	},
 	"bugs": {
 		"url": "https://github.com/junehunter/next-element-vue/issues"

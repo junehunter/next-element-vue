@@ -148,6 +148,10 @@ export default defineComponent({
 				);
 			} else if (col.type === 'select') {
 				const placeholder = t('next.form.select') + (col.searchPlaceholder || col.searchLabel || col.label);
+				// 当为多选且值为空字符会默认显示一个空标签，所以设置为空数组
+				if (!formParams[col.prop] && col.multiple) {
+					formParams[col.prop] = [];
+				}
 				return (
 					<ElSelect v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} multiple={col.multiple || false} collapse-tags collapse-tags-tooltip>
 						{col.dicData &&
