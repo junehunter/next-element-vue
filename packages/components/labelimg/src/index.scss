@@ -1,0 +1,307 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+@import 'packages/theme-chalk/varilable';
+
+$block: 'labelimg'; 
+.#{bf($block, 'loading')} {
+    .#{bem('spin-loading')} {
+        &-mask__text {
+            text-shadow: unset;
+        }
+    }
+}
+.#{bf($block, 'fullscreen')} {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 999;
+	background-color: #ffffff;
+	overflow: hidden;
+	transition: all 0.3s;
+}
+.#{bf($block)} {
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	user-select: none;
+	border: 1px solid #eee;
+	border-radius: 3px;
+	&-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 12px;
+		font-size: 12px;
+		box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+		&__tool {
+			display: flex;
+			align-items: center;
+			>li {
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				margin: 0 6px;
+			}
+			>li.hover {
+				&:hover {
+					color: $theme-color;
+					svg {
+						fill: $theme-color;
+					}
+				}
+
+			}
+		}
+	}
+	&-main {
+		// width: 100%;
+		display: flex;
+		align-items: center;
+        justify-content: space-between;
+        &__content {
+            flex: 1 1 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+		.#{bf($block, 'loading')} {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.#{bf($block, 'canvas')} {
+			width: 100%;
+			min-height: 500px;
+            height: 100%;
+			position: relative;
+			&__context {
+				position: absolute;
+				height: 100%;
+				width: 100%;
+				z-index: 3;
+			}
+			&__rect {
+				position: absolute;
+				height: 100%;
+				width: 100%;
+				z-index: 1;
+			}
+		}	
+		.#{bf($block, 'right')} {
+            flex: 0 0 200px;
+            height: inherit;
+			text-align: left;
+			padding: 10px;
+			box-sizing: border-box;
+			> ul {
+				box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+				padding: 10px;
+				box-sizing: border-box;
+				border-radius: 5px;
+				height: 100%;
+				li {
+					margin: 5px 0;
+					padding: 3px 6px;
+					font-size: 12px;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					line-height: 20px;
+					border: 1px solid #ddd;
+					border-radius: 3px;
+					.el-icon {
+						cursor: pointer;
+					}
+					&:hover {
+						border: 1px solid $theme-color;
+					}
+					.label-line {
+						display: inline-block;
+						width: 3px;
+						height: 10px;
+						margin-right: 6px;
+						border-radius: 3px;
+					}
+				}
+			}
+        }
+	}
+	&-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 12px 8px;
+        .left-right {
+            flex: 0 0 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .el-icon {
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+        &__left {
+            @extend .left-right;
+        }
+        &__right {
+            @extend .left-right;
+        }
+        &__center {
+            flex: 1 1 auto;
+            &--list {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+				min-height: 80px;
+                >li {
+                    flex: 0 0 100px;
+                    height: 80px;
+                    border: 1px solid #eeeeee;
+                    background-color: #ffffff;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                    text-align: center;
+                    cursor: pointer;
+                    margin: 0 5px;
+                    &:hover {
+                        border: 1px solid $theme-color
+                    }
+                }
+                >li.is-activate {
+                    border: 1px solid $theme-color
+                }
+            }
+        }
+	}
+
+	.#{bf($block, 'contextmenu-label')} {
+		position: fixed;
+		z-index: 9999;
+		background-color: #ffffff;
+		padding: 10px 15px;
+		border-radius: 8px;
+		white-space: nowrap;
+		box-shadow: 0 0 50px 3px #cccccc;
+		transition: all 0.3s;
+		>.label-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 14px;
+			padding-bottom: 10px;
+			.el-icon {
+				transition: all 0.3s;
+				&:hover {
+					cursor: pointer;
+					transform: rotate(90deg);
+				}
+			}
+		}
+		>.label-main {
+            max-height: 300px;
+            overflow-y: auto;
+            @include setScrollBar();
+			> li {
+				padding: 3px 0;
+				font-size: 12px;
+				display: flex;
+				align-items: center;
+				.label-line {
+					display: inline-block;
+					width: 3px;
+					height: 10px;
+					margin-right: 6px;
+					border-radius: 3px;
+				}
+			}
+			>li.activate-label {
+				color: $theme-color;
+			}
+		}
+	}
+	.#{bf($block, 'draggable-rect')} {
+		position: absolute;
+		z-index: 999;
+        $color: #fcfcfc;
+        background-color: rgba-color($color, 0.5);
+		cursor: move;
+		&__resize {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			$dot-size: 10px;
+			$dot-radius: calc($dot-size / 2);
+			.dot {
+				position: absolute;
+				width: $dot-size;
+				height: $dot-size;
+				border: 1px solid $theme-color;
+				background-color: $theme-color;
+				box-sizing: border-box;
+			}
+			.top-left {
+				@extend .dot;
+				top: - $dot-radius;
+				left: - $dot-radius;
+				cursor: nw-resize;
+			}
+			.top-center {
+				@extend .dot;
+				top: - $dot-radius;
+				left: 50%;
+				transform: translateX(-50%);
+				cursor: s-resize;
+			}
+			.top-right {
+				@extend .dot;
+				top: - $dot-radius;
+				right: - $dot-radius;
+				cursor: sw-resize;
+			}
+			.left-center {
+				@extend .dot;
+				left: - $dot-radius;
+				top: 50%;
+				transform: translateY(-50%);
+				cursor: w-resize;
+			}
+			.right-center {
+				@extend .dot;
+				right: - $dot-radius;
+				top: 50%;
+				transform: translateY(-50%);
+				cursor: w-resize;
+			}
+			.bottom-left {
+				@extend .dot;
+				bottom: - $dot-radius;
+				left: - $dot-radius;
+				cursor: sw-resize;
+			}
+			.bottom-center {
+				@extend .dot;
+				bottom: - $dot-radius;
+				left: 50%;
+				transform: translateX(-50%);
+				cursor: s-resize;
+			}
+			.bottom-right {
+				@extend .dot;
+				bottom: - $dot-radius;
+				right: - $dot-radius;
+				cursor: nw-resize;
+			}
+		}
+	}
+}
+
+
+.#{bf('labelimg-preview')} {
+    display: inline-block;
+	height: 100%;
+}

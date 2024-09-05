@@ -1,0 +1,8 @@
+@use 'packages/theme-chalk/mixins/index' as *;
+
+$block: 'upload'; 
+.#{bf($block)} {
+    .el-upload-list__item-thumbnail {
+        object-fit: cover;
+    }
+}

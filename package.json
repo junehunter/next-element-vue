@@ -1,0 +1,121 @@
+{
+	"name": "next-element-vue",
+	"version": "0.3.5",
+	"author": {
+		"name": "huangteng",
+		"email": "htengweb@163.com"
+	},
+	"description": "Component library based on element-plus secondary encapsulation",
+	"keywords": ["next", "element", "vue3", "next-element-vue"],
+	"main": "dist/index.min.js",
+	"module": "dist/index.js",
+	"unpkg": "dist/index.umd.min.js",
+	"jsdelivr": "dist/index.umd.min.js",
+	"files": ["dist"],
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/junehunter/next-element-vue.git"
+	},
+	"bugs": {
+		"url": "https://github.com/junehunter/next-element-vue/issues"
+	},
+	"homepage": "https://junehunter.github.io/next-element-vue",
+	"scripts": {
+		"dev": "rollup -c scripts/rollup.config.dev.mjs -w",
+		"build": "rimraf ./publish && rollup -c scripts/rollup.config.prod.mjs",
+		"prettier": "prettier --config .prettierrc.cjs -l -w \"./packages/**/*.{ts,tsx,js,json}\"",
+		"lint-fix": "eslint --fix --ext .vue,.ts,tsx,.js,.jsx,.json packages/ --max-warnings 0 --cache",
+		"clean": "pnpm -r exec -- cmd.exe /C rmdir /s /q node_modules",
+		"docs:dev": "pnpm run -C docs dev",
+		"docs:build": "pnpm -F=docs build",
+		"docs:preview": "pnpm -F=docs preview",
+		"publish": "npm publish ./publish",
+		"prepare": "git init && concurrently \"pnpm run postinstall\"",
+		"postinstall": "simple-git-hooks"
+	},
+	"dependencies": {
+		"@element-plus/icons-vue": "^2.1.0",
+		"element-resize-detector": "^1.2.4",
+		"lodash-unified": "^1.0.3"
+	},
+	"peerDependencies": {
+		"@tensorflow/tfjs": "^4.11.0",
+		"@types/lodash-es": "^4.17.9",
+		"@vueuse/core": "^10.4.1",
+		"element-plus": "^2.8.0",
+		"flv.js": "^1.6.2",
+		"lodash-es": "^4.17.21",
+		"mpegts.js": "^1.7.3",
+		"video.js": "^8.6.0",
+		"vue": "^3.4.21",
+		"vue-i18n": "^9.4.1",
+		"vue-router": "^4.2.5"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.22.20",
+		"@babel/plugin-transform-runtime": "^7.22.15",
+		"@babel/preset-env": "^7.22.20",
+		"@babel/preset-typescript": "^7.22.15",
+		"@rollup/plugin-alias": "^5.1.0",
+		"@rollup/plugin-babel": "^6.0.4",
+		"@rollup/plugin-commonjs": "^25.0.7",
+		"@rollup/plugin-json": "^6.1.0",
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@rollup/plugin-replace": "^5.0.5",
+		"@rollup/plugin-terser": "^0.4.4",
+		"@rollup/plugin-url": "^8.0.2",
+		"@tensorflow/tfjs": "^4.11.0",
+		"@types/lodash-es": "^4.17.9",
+		"@types/node": "^20.6.3",
+		"@typescript-eslint/eslint-plugin": "^6.7.2",
+		"@typescript-eslint/parser": "^6.7.2",
+		"@vue/babel-plugin-jsx": "^1.1.5",
+		"@vue/compiler-sfc": "^3.3.4",
+		"@vueuse/core": "^10.4.1",
+		"autoprefixer": "^10.4.16",
+		"concurrently": "^8.2.1",
+		"cssnano": "^6.0.1",
+		"element-plus": "^2.8.0",
+		"eslint": "^8.50.0",
+		"eslint-plugin-unicorn": "^48.0.1",
+		"eslint-plugin-vue": "^9.17.0",
+		"flv.js": "^1.6.2",
+		"lint-staged": "^14.0.1",
+		"lodash-es": "^4.17.21",
+		"mockjs": "^1.1.0",
+		"mpegts.js": "^1.7.3",
+		"postcss-import": "^15.1.0",
+		"postcss-scss": "^4.0.8",
+		"prettier": "^3.0.3",
+		"rimraf": "^5.0.1",
+		"rollup": "^4.13.0",
+		"rollup-plugin-copy": "^3.5.0",
+		"rollup-plugin-postcss": "^4.0.2",
+		"rollup-plugin-serve": "^1.1.1",
+		"rollup-plugin-typescript2": "^0.36.0",
+		"rollup-plugin-vue": "6.0.0",
+		"sass": "^1.68.0",
+		"simple-git-hooks": "^2.9.0",
+		"typescript": "^5.2.2",
+		"unplugin-vue-macros": "^2.5.1",
+		"video.js": "^8.6.0",
+		"vitest": "^0.34.5",
+		"vue": "^3.4.21",
+		"vue-eslint-parser": "^9.3.1",
+		"vue-i18n": "^9.4.1",
+		"vue-router": "^4.2.5"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "pnpm lint-staged"
+	},
+	"lint-staged": {
+		"*.{vue,js,jsx,json}": ["eslint --fix"],
+		"*.ts?(x)": ["eslint --fix"]
+	},
+	"engines": {
+		"node": ">=16"
+	},
+	"license": "MIT"
+}
+

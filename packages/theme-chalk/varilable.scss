@@ -1,0 +1,62 @@
+$theme-color: var(--el-color-primary);
+
+$layout-bg-color: var(--next-layout-bg-color);
+$layout-font-color: var(--next-layout-font-color);
+
+// layout transverse
+$layout-header-height: var(--next-layout-header-height, 64px);
+$layout-nav-height: var(--next-layout-nav-height, 45px);
+$layout-sidebar-width: var(--next-layout-sidebar-width, 240px);
+
+
+@mixin setScrollBar($color: #aaaaaa, $bg-color: transparent, $w: 6px, $resizer-color: transparent) {
+	overflow-y: auto;
+	/* 修改滚动条的颜色和宽度 */
+	&::-webkit-scrollbar {
+		max-width: $w;
+		width: $w;
+		height: 10px;
+		border-radius: $w;
+		background-color: $bg-color;
+	}
+
+	/* 修改滚动条滑块的颜色和圆角 */
+	&::-webkit-scrollbar-thumb {
+		background-color: rgba($color, 0.2);
+		border-radius: $w;
+	}
+
+	/* 鼠标悬停在滚动条上时的样式 */
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: $color;
+	}
+
+	/* 滚动条处于不活动状态时的样式 */
+	&::-webkit-scrollbar-thumb:inactive {
+		background-color: #eee;
+	}
+	/*鼠标悬停在元素内容上时设置滚动条样式*/
+	&:hover::-webkit-scrollbar-thumb {
+		background-color: rgba($color, 0.5);
+	}
+
+	&::-webkit-scrollbar-track-piece {
+		border-radius: $w;
+		background-color: $resizer-color;
+	}
+	&::-webkit-scrollbar-corner {
+		background-color: $resizer-color;
+	}
+	&::-webkit-resizer {
+		background-color: $resizer-color;
+	}
+	// IE
+	scrollbar-face-color: transparent;
+	scrollbar-shadow-color: $color;
+	scrollbar-3dlight-color: $color;
+	scrollbar-highlight-color: $color;
+	scrollbar-shadow-color: $color;
+	scrollbar-base-color: $color;
+	scrollbar-track-color: $bg-color;
+	scrollbar-arrow-color: $bg-color;
+}
