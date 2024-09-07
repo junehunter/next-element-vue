@@ -24,6 +24,11 @@ export default defineComponent({
 		const { t } = useLocale();
 		const switchFillscreen = (val: boolean) => {
 			emit('fullscreen', val);
+			if (val) {
+				document.body.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = 'auto';
+			}
 		};
 		const renderContent = () => {
 			return (
@@ -72,6 +77,10 @@ export default defineComponent({
 											<li>
 												<span>D：</span>
 												<span>D键进入下一张图片进行标注</span>
+											</li>
+											<li>
+												<span>Ctrl+鼠标滚轮：</span>
+												<span>Ctrl+鼠标滚轮对图片进行缩放</span>
 											</li>
 										</ul>
 									),
