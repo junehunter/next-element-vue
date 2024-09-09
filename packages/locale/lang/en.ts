@@ -74,6 +74,7 @@ export default {
 			saveLabel: 'save label',
 			instructions: 'instructions',
 			labelNoUpdate: 'No label data update',
+			zoomRestore: 'restore zoom',
 		},
 		labelme: {
 			saveLabel: 'saving...',

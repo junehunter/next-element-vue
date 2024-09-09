@@ -24,6 +24,11 @@ export default defineComponent({
 		const { t } = useLocale();
 		const switchFillscreen = (val: boolean) => {
 			emit('fullscreen', val);
+			if (val) {
+				document.body.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = 'auto';
+			}
 		};
 		const renderContent = () => {
 			return (

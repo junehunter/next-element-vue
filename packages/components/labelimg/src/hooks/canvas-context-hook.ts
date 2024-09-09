@@ -31,6 +31,7 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	image: HTMLImageElement;
 	labels: RectProps[];
 	scaleFactor?: number;
+	scaleOffset?: { x: number; y: number; scale: number };
 }
 
 export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
@@ -63,15 +64,17 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 		};
 		callback && callback(rect, { endX, endY });
 	};
-	const documentKeydown = event => {
+	const documentKeydown = (event: KeyboardEvent) => {
+		if (isWKeyPressed) return;
 		if (event.code === 'KeyW') {
+			event.preventDefault();
 			isWKeyPressed = true;
 			canvas!.style.cursor = 'crosshair';
 			canvas!.style.zIndex = '11';
 			keyW && keyW();
 		}
 	};
-	const documentKeyup = event => {
+	const documentKeyup = (event: KeyboardEvent) => {
 		if (isDrawing) return;
 		if (event.code === 'KeyW') {
 			isWKeyPressed = false;
@@ -91,23 +94,23 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 	document.addEventListener('keydown', documentKeydown);
 	document.addEventListener('keyup', documentKeyup);
 	document.addEventListener('mouseup', documentMouseup);
-	const canvasMousedown = e => {
+	const canvasMousedown = (event: MouseEvent) => {
 		if (isWKeyPressed) {
 			isDrawing = true;
-			startX = e.offsetX;
-			startY = e.offsetY;
+			startX = event.offsetX;
+			startY = event.offsetY;
 		}
 	};
-	const canvasMousemove = e => {
+	const canvasMousemove = (event: MouseEvent) => {
 		if (isDrawing && isWKeyPressed) {
 			isRectDraw = true;
-			endX = e.offsetX;
-			endY = e.offsetY;
+			endX = event.offsetX;
+			endY = event.offsetY;
 			drawRect();
 		}
 	};
-	const canvasMouseup = e => {
-		e.stopPropagation();
+	const canvasMouseup = (event: MouseEvent) => {
+		event.stopPropagation();
 		if (!isRectDraw) return;
 		isDrawing = false;
 		isWKeyPressed = false;
@@ -120,7 +123,7 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 	canvas.addEventListener('mousemove', canvasMousemove);
 	canvas.addEventListener('mouseup', canvasMouseup);
 	const removeEventAll = () => {
-		document.removeEventListener('mousedown', documentKeydown);
+		document.removeEventListener('keydown', documentKeydown);
 		document.removeEventListener('keyup', documentKeyup);
 		document.removeEventListener('mouseup', documentMouseup);
 		canvas.removeEventListener('mousedown', canvasMousedown);
@@ -142,8 +145,14 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 };
 export const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
-	const { ctx, labels, image, canvasWidth, canvasHeight } = options;
-	const updateLabels = () => {
+	const { canvas, ctx, labels, image, canvasWidth, canvasHeight } = options;
+	const updateLabels = (scaleOffset?: { x: number; y: number; scale: number }) => {
+		if (scaleOffset) {
+			canvas.width = canvasWidth;
+			ctx.save();
+			ctx.translate(scaleOffset.x, scaleOffset.y);
+			ctx.scale(scaleOffset.scale, scaleOffset.scale);
+		}
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
 		for (let i = 0; i < labels.length; i++) {
@@ -190,6 +199,115 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		hitCanvasLabel,
 	};
 };
+
+export class CanvasSceneDragZoom {
+	private canvas: HTMLCanvasElement;
+	private canvasWidth: number;
+	private canvasHeight: number;
+	private ctx: CanvasRenderingContext2D;
+	private scaleFactor: number = 1;
+	private preScaleFactor: number = 1;
+	private offset = { x: 0, y: 0 };
+	private preOffset = { x: 0, y: 0 };
+	private mousePositioin = { x: 0, y: 0 };
+	private maxScale: number = 8;
+	private minScale: number = 0.5;
+	private scaleStep: number = 0.1;
+	private clickX: number = 0;
+	private clickY: number = 0;
+	private observers: ((scale: number, offset: { x: number; y: number }) => void)[] = [];
+	constructor(canvas: HTMLCanvasElement) {
+		this.canvas = canvas;
+		this.canvasWidth = canvas.width;
+		this.canvasHeight = canvas.height;
+		this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+		this.canvasMousedown = this.canvasMousedown.bind(this);
+		this.canvasMousemove = this.canvasMousemove.bind(this);
+		this.canvasMouseup = this.canvasMouseup.bind(this);
+		this.canvas.addEventListener('mousedown', this.canvasMousedown);
+		this.canvas.addEventListener('wheel', this.canvasMousewheel, { passive: false });
+	}
+	private notifyObservers(scale: number, offset: { x: number; y: number }) {
+		this.observers.forEach(listener => {
+			listener(scale, offset);
+		});
+	}
+	public changeZoom(callback: (scale: number, offset: { x: number; y: number }) => void) {
+		this.observers.push(callback);
+	}
+	reset() {
+		this.scaleFactor = 1;
+		this.preScaleFactor = 1;
+		this.offset = { x: 0, y: 0 };
+		this.preOffset = { x: 0, y: 0 };
+		this.mousePositioin = { x: 0, y: 0 };
+		this.zoom();
+	}
+	render() {
+		this.canvas.width = this.canvasWidth;
+		// this.ctx.save();
+		// this.ctx.translate(this.offset.x, this.offset.y);
+		// this.ctx.scale(this.scaleFactor, this.scaleFactor);
+		this.notifyObservers(this.scaleFactor, this.offset);
+		// this.ctx.restore();
+	}
+	zoom() {
+		this.offset.x = this.mousePositioin.x - ((this.mousePositioin.x - this.offset.x) * this.scaleFactor) / this.preScaleFactor;
+		this.offset.y = this.mousePositioin.y - ((this.mousePositioin.y - this.offset.y) * this.scaleFactor) / this.preScaleFactor;
+		this.render();
+		this.preScaleFactor = this.scaleFactor;
+		this.preOffset.x = this.offset.x;
+		this.preOffset.y = this.offset.y;
+	}
+	canvasMousewheel = (event: WheelEvent) => {
+		event.preventDefault();
+		if (event.ctrlKey) {
+			this.mousePositioin.x = event.offsetX;
+			this.mousePositioin.y = event.offsetY;
+			if (event.deltaY > 0) {
+				// 放大
+				this.scaleFactor = parseFloat((this.scaleFactor + this.scaleStep).toFixed(1));
+				if (this.scaleFactor > this.maxScale) {
+					this.scaleFactor = this.maxScale;
+				}
+			} else {
+				// 缩小
+				this.scaleFactor = parseFloat((this.scaleFactor - this.scaleStep).toFixed(1));
+				if (this.scaleFactor < this.minScale) {
+					this.scaleFactor = this.minScale;
+				}
+			}
+			this.zoom();
+		}
+	};
+	canvasMousedown(event: MouseEvent) {
+		event.preventDefault();
+		if (event.button === 0 && event.ctrlKey) {
+			this.clickX = event.offsetX;
+			this.clickY = event.offsetY;
+			this.canvas.addEventListener('mousemove', this.canvasMousemove);
+			this.canvas.addEventListener('mouseup', this.canvasMouseup);
+		}
+	}
+	canvasMousemove(event: MouseEvent) {
+		event.preventDefault();
+		if (event.ctrlKey) {
+			this.offset.x = this.preOffset.x + (event.offsetX - this.clickX);
+			this.offset.y = this.preOffset.y + (event.offsetY - this.clickY);
+			this.render();
+		}
+	}
+	canvasMouseup(event: MouseEvent) {
+		event.preventDefault();
+		if (event.ctrlKey) {
+			this.preOffset.x = this.offset.x;
+			this.preOffset.y = this.offset.y;
+			this.canvas.removeEventListener('mousemove', this.canvasMousemove);
+			this.canvas.removeEventListener('mouseup', this.canvasMouseup);
+		}
+	}
+}
+
 /**
  * 根据比例重新设置标注框位置和大小
  * @param labels
