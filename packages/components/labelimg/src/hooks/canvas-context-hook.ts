@@ -31,6 +31,7 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	image: HTMLImageElement;
 	labels: RectProps[];
 	scaleFactor?: number;
+	scaleOffset?: { x: number; y: number; scale: number };
 }
 
 export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
@@ -64,7 +65,9 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 		callback && callback(rect, { endX, endY });
 	};
 	const documentKeydown = (event: KeyboardEvent) => {
+		if (isWKeyPressed) return;
 		if (event.code === 'KeyW') {
+			event.preventDefault();
 			isWKeyPressed = true;
 			canvas!.style.cursor = 'crosshair';
 			canvas!.style.zIndex = '11';
@@ -106,7 +109,7 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 			drawRect();
 		}
 	};
-	const canvasMouseup = (event: KeyboardEvent) => {
+	const canvasMouseup = (event: MouseEvent) => {
 		event.stopPropagation();
 		if (!isRectDraw) return;
 		isDrawing = false;
@@ -142,8 +145,14 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 };
 export const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
-	const { ctx, labels, image, canvasWidth, canvasHeight } = options;
-	const updateLabels = () => {
+	const { canvas, ctx, labels, image, canvasWidth, canvasHeight } = options;
+	const updateLabels = (scaleOffset?: { x: number; y: number; scale: number }) => {
+		if (scaleOffset) {
+			canvas.width = canvasWidth;
+			ctx.save();
+			ctx.translate(scaleOffset.x, scaleOffset.y);
+			ctx.scale(scaleOffset.scale, scaleOffset.scale);
+		}
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
 		for (let i = 0; i < labels.length; i++) {
@@ -223,7 +232,7 @@ export class CanvasSceneDragZoom {
 			listener(scale, offset);
 		});
 	}
-	public changeZoom(callback: (scale: number) => void) {
+	public changeZoom(callback: (scale: number, offset: { x: number; y: number }) => void) {
 		this.observers.push(callback);
 	}
 	reset() {
@@ -236,11 +245,11 @@ export class CanvasSceneDragZoom {
 	}
 	render() {
 		this.canvas.width = this.canvasWidth;
-		this.ctx.save();
-		this.ctx.translate(this.offset.x, this.offset.y);
-		this.ctx.scale(this.scaleFactor, this.scaleFactor);
+		// this.ctx.save();
+		// this.ctx.translate(this.offset.x, this.offset.y);
+		// this.ctx.scale(this.scaleFactor, this.scaleFactor);
 		this.notifyObservers(this.scaleFactor, this.offset);
-		this.ctx.restore();
+		// this.ctx.restore();
 	}
 	zoom() {
 		this.offset.x = this.mousePositioin.x - ((this.mousePositioin.x - this.offset.x) * this.scaleFactor) / this.preScaleFactor;

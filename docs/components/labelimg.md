@@ -5,19 +5,18 @@ lang: zh-cn
 
 # Labelimg
 
-在线预览图片
-
-:::demo
-
-labelimg/preview
-
-:::
-
 在线标注图片
 
 :::demo
 
 labelimg/basic
+
+:::
+在线预览图片
+
+:::demo
+
+labelimg/preview
 
 :::
 

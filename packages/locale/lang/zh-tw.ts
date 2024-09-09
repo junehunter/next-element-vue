@@ -74,6 +74,7 @@ export default {
 			saveLabel: '保存当前标注',
 			instructions: '使用说明',
 			labelNoUpdate: '暂无标签数据更新',
+			zoomRestore: '还原',
 		},
 		labelme: {
 			saveLabel: '保存',

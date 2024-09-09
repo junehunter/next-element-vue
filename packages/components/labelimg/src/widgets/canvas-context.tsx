@@ -1,4 +1,5 @@
 import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick, onUnmounted } from 'vue';
+import type { PropType } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone, valueExist } from 'packages/hooks/global-hook';
 import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale, colors, CanvasSceneDragZoom } from '../hooks/canvas-context-hook';
@@ -21,8 +22,18 @@ export default defineComponent({
 			type: Object,
 			default: () => ({}),
 		},
+		scaleOffset: {
+			type: Object as PropType<{ x: number; y: number; scale: number }>,
+			default: () => {
+				return {
+					x: 0,
+					y: 0,
+					scale: 1,
+				};
+			},
+		},
 	},
-	emits: ['change'],
+	emits: ['change', 'changeScaleOffset'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const _emit = inject('_emit', null as any);
@@ -146,8 +157,9 @@ export default defineComponent({
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
 					drawBaseCanvas.value!.removeEventAll = removeEventAll;
 					const canvasDragZoom = new CanvasSceneDragZoom(canvasBaseRef.value);
-					canvasDragZoom.changeZoom(() => {
-						drawBaseCanvas.value.updateLabels();
+					canvasDragZoom.changeZoom((scale, offset) => {
+						drawBaseCanvas.value.updateLabels({ scale, ...offset });
+						emit('changeScaleOffset', { scale, ...offset });
 					});
 				};
 				image.onerror = () => {
@@ -181,6 +193,11 @@ export default defineComponent({
 				}
 			});
 		};
+		const onWindowWheel = (e: MouseEvent) => {
+			if (e.ctrlKey) {
+				e.preventDefault();
+			}
+		};
 		onMounted(() => {
 			watch(
 				() => props.rowInfo,
@@ -204,9 +221,11 @@ export default defineComponent({
 					}
 				}
 			);
+			window.addEventListener('wheel', onWindowWheel, { passive: false });
 		});
 		onUnmounted(() => {
 			drawBaseCanvas.value!.removeEventAll();
+			window.removeEventListener('wheel', onWindowWheel);
 		});
 		const contextmenuLabelFixed = ref<any>({
 			show: false,
@@ -231,7 +250,7 @@ export default defineComponent({
 			contextmenuLabelFixed.value.left = 0;
 			contextmenuLabelFixed.value.activateRect = null;
 			activate_add_label.value = null;
-			drawBaseCanvas.value!.updateLabels();
+			drawBaseCanvas.value!.updateLabels(props.scaleOffset);
 			drawBaseCanvas.value!.clearCanvasRect();
 		};
 		const contextmenuLabelRect = computed(() => {
@@ -270,7 +289,7 @@ export default defineComponent({
 		};
 		const onDraggleRectResize = (rect: RectProps) => {
 			draggableRectFixed.value.activateRect = rect;
-			drawBaseCanvas.value.updateLabels();
+			drawBaseCanvas.value.updateLabels(props.scaleOffset);
 			const i = labels.value.findIndex((o: RectProps) => isEqual(o, rect));
 			if (i > -1) {
 				labels.value.splice(i, 1, rect);
@@ -315,7 +334,7 @@ export default defineComponent({
 			labels.value.splice(i, 1);
 			onCloseContentmenuLabel();
 			onCloseDraggableRectFixed();
-			drawBaseCanvas.value.updateLabels();
+			drawBaseCanvas.value.updateLabels(props.scaleOffset);
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
 			emit('change', rects, label_txt);
@@ -344,6 +363,9 @@ export default defineComponent({
 			onSelectedLabel,
 			onDeleteLabel,
 			rerenderImage,
+			restoreScaleOffset: (val: any) => {
+				drawBaseCanvas.value!.updateLabels(val);
+			},
 		});
 		const renderContent = () => {
 			return (
@@ -366,6 +388,7 @@ export default defineComponent({
 								parentEl={canvasMainRef.value}
 								rect={draggableRectFixed.value.activateRect}
 								color={draggableRectFixed.value.color}
+								scaleOffset={props.scaleOffset}
 								onDraggleResize={onDraggleRectResize}
 								onContextmenu={onContextmenuDraggable}
 							></DraggableRect>
