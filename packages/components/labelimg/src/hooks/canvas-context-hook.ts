@@ -175,8 +175,10 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 	updateLabels();
 	const addDrawRect = (rect: RectProps, color = '#f30635') => {
 		const { startX, startY, rectWidth, rectHeight } = rect;
+		ctx.save();
 		ctx.strokeStyle = color;
 		ctx.strokeRect(startX, startY, rectWidth, rectHeight);
+		ctx.restore();
 	};
 	const hitCanvasLabel = (x: number, y: number): any => {
 		let hit_rect = null,
@@ -307,6 +309,39 @@ export class CanvasSceneDragZoom {
 		}
 	}
 }
+
+export const rectToScaleOffset = (rect: RectProps, scaleOffset: { x: number; y: number; scale: number }) => {
+	const { startX, startY, rectWidth, rectHeight } = rect;
+	const { scale, x, y } = scaleOffset;
+	const new_startX = Math.ceil((startX - x) / scale);
+	const new_startY = Math.ceil((startY - y) / scale);
+	const new_rectWidth = Math.ceil(rectWidth / scale);
+	const new_rectHeight = Math.ceil(rectHeight / scale);
+	return {
+		startX: new_startX,
+		startY: new_startY,
+		rectWidth: new_rectWidth,
+		rectHeight: new_rectHeight,
+		canvasWidth: rect.canvasWidth,
+		canvasHeight: rect.canvasHeight,
+	};
+};
+export const rectToRestore = (rect: RectProps, scaleOffset: { x: number; y: number; scale: number }) => {
+	const { startX, startY, rectWidth, rectHeight } = rect;
+	const { scale, x, y } = scaleOffset;
+	const new_startX = Math.ceil(startX * scale + x);
+	const new_startY = Math.ceil(startY * scale + y);
+	const new_rectWidth = Math.ceil(rectWidth * scale);
+	const new_rectHeight = Math.ceil(rectHeight * scale);
+	return {
+		startX: new_startX,
+		startY: new_startY,
+		rectWidth: new_rectWidth,
+		rectHeight: new_rectHeight,
+		canvasWidth: rect.canvasWidth,
+		canvasHeight: rect.canvasHeight,
+	};
+};
 
 /**
  * 根据比例重新设置标注框位置和大小

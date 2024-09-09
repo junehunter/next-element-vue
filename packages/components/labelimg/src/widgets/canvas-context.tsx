@@ -43,6 +43,7 @@ export default defineComponent({
 		const canvasRectRef = ref<HTMLCanvasElement>();
 		const labels = ref<RectProps[]>([]);
 		const drawBaseCanvas = ref<any>({});
+		const canvasDragZoom = ref<any>();
 		const formatLabelsTypeName = (rowInfo: any) => {
 			if (!rowInfo.labels) return [];
 			return rowInfo.labels.map((rect: RectProps) => {
@@ -156,8 +157,8 @@ export default defineComponent({
 					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
 					drawBaseCanvas.value!.removeEventAll = removeEventAll;
-					const canvasDragZoom = new CanvasSceneDragZoom(canvasBaseRef.value);
-					canvasDragZoom.changeZoom((scale, offset) => {
+					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
+					canvasDragZoom.value.changeZoom((scale, offset) => {
 						drawBaseCanvas.value.updateLabels({ scale, ...offset });
 						emit('changeScaleOffset', { scale, ...offset });
 					});
@@ -208,6 +209,13 @@ export default defineComponent({
 				{
 					deep: true,
 					immediate: true,
+				}
+			);
+			watch(
+				() => props.classes,
+				() => {
+					const rowInfo = toRaw(props.rowInfo);
+					renderImageLabel(rowInfo);
 				}
 			);
 			// 当画布主体高度变化重新计算绘制
@@ -289,11 +297,11 @@ export default defineComponent({
 		};
 		const onDraggleRectResize = (rect: RectProps) => {
 			draggableRectFixed.value.activateRect = rect;
-			drawBaseCanvas.value.updateLabels(props.scaleOffset);
 			const i = labels.value.findIndex((o: RectProps) => isEqual(o, rect));
 			if (i > -1) {
 				labels.value.splice(i, 1, rect);
 			}
+			drawBaseCanvas.value.updateLabels(props.scaleOffset);
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
 			emit('change', rects, label_txt);
@@ -364,6 +372,7 @@ export default defineComponent({
 			onDeleteLabel,
 			rerenderImage,
 			restoreScaleOffset: (val: any) => {
+				canvasDragZoom.value.reset();
 				drawBaseCanvas.value!.updateLabels(val);
 			},
 		});

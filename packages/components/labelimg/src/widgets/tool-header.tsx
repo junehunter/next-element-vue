@@ -68,6 +68,10 @@ export default defineComponent({
 						<li>
 							<span>缩放比例</span>
 							<span>{parseInt((props.scaleOffset.scale * 100).toString())}%</span>
+							<span style="padding: 0 10px;">偏移量</span>
+							<span style="min-width: 120px; text-align: left;">
+								X: {Math.ceil(props.scaleOffset.x)}, Y: {Math.ceil(props.scaleOffset.y)}
+							</span>
 						</li>
 						{props.imageLength ? (
 							<li>
@@ -103,11 +107,11 @@ export default defineComponent({
 											</li>
 											<li>
 												<span>Ctrl+鼠标滚轮：</span>
-												<span>Ctrl+鼠标滚轮对图片进行缩放</span>
+												<span>长按Ctrl+鼠标滚轮对图片进行缩放</span>
 											</li>
 											<li>
 												<span>Ctrl+鼠标左键：</span>
-												<span>Ctrl+鼠标左键对图片进行拖拽移动</span>
+												<span>长按Ctrl+鼠标左键对图片进行拖拽移动</span>
 											</li>
 										</ul>
 									),
