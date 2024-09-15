@@ -1,8 +1,7 @@
 import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick, onUnmounted } from 'vue';
-import type { PropType } from 'vue';
 import isEqual from 'lodash-es/isequal';
 import { deepClone, valueExist } from 'packages/hooks/global-hook';
-import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale, colors, CanvasSceneDragZoom } from '../hooks/canvas-context-hook';
+import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale, colors } from '../hooks/canvas-context-hook';
 import type { RectProps } from '../hooks/canvas-context-hook';
 import { NextSpinLoading } from 'packages/components';
 import ContextMenuLabel from './contextmenu-label';
@@ -22,18 +21,8 @@ export default defineComponent({
 			type: Object,
 			default: () => ({}),
 		},
-		scaleOffset: {
-			type: Object as PropType<{ x: number; y: number; scale: number }>,
-			default: () => {
-				return {
-					x: 0,
-					y: 0,
-					scale: 1,
-				};
-			},
-		},
 	},
-	emits: ['change', 'changeScaleOffset'],
+	emits: ['change'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const _emit = inject('_emit', null as any);
@@ -43,13 +32,18 @@ export default defineComponent({
 		const canvasRectRef = ref<HTMLCanvasElement>();
 		const labels = ref<RectProps[]>([]);
 		const drawBaseCanvas = ref<any>({});
-		const canvasDragZoom = ref<any>();
-		const formatLabelsTypeName = (rowInfo: any) => {
+		const formatLabelsTypeName = (rowInfo: any, originWidth: number, originHeight) => {
 			if (!rowInfo.labels) return [];
 			return rowInfo.labels.map((rect: RectProps) => {
 				const typeName = props.classes[rect.type] as string;
 				if (typeName) {
 					rect.typeName = typeName;
+				}
+				if (!rect.originWidth) {
+					rect.originWidth = originWidth;
+				}
+				if (!rect.originHeight) {
+					rect.originHeight = originHeight;
 				}
 				return rect;
 			});
@@ -115,10 +109,11 @@ export default defineComponent({
 				canvasWidth,
 				canvasHeight,
 				scaleFactor,
+				originWidth: image.width,
+				originHeight: image.height,
 			};
 		};
 		const renderImageLabel = (rowInfo: any) => {
-			labels.value = formatLabelsTypeName(rowInfo);
 			const ctx = canvasBaseRef.value?.getContext('2d') as CanvasRenderingContext2D;
 			if (rowInfo?.imageSrc) {
 				const image = new Image();
@@ -126,7 +121,9 @@ export default defineComponent({
 				loadingImage.value = true;
 				image.onload = () => {
 					loadingImage.value = false;
-					const { canvasWidth, canvasHeight, scaleFactor } = getCanvasWidthHeight(image);
+					const { canvasWidth, canvasHeight, scaleFactor, originWidth, originHeight } = getCanvasWidthHeight(image);
+					// 添加图片源宽高
+					labels.value = formatLabelsTypeName(rowInfo, originWidth, originHeight);
 					image.style.width = canvasWidth + 'px';
 					image.style.height = canvasHeight + 'px';
 					setContainerWidthHeight(canvasWidth, canvasHeight);
@@ -145,7 +142,11 @@ export default defineComponent({
 					drawBaseCanvas.value!.addDrawRect = addDrawRect;
 					drawBaseCanvas.value!.hitCanvasLabel = hitCanvasLabel;
 					const { clearCanvas, removeEventAll } = DrawRectCanvas(
-						canvasRectRef.value,
+						{
+							canvas: canvasRectRef.value,
+							originWidth,
+							originHeight,
+						},
 						(rect: RectProps, { endX, endY }: any) => {
 							activate_add_label.value = rect;
 							drawBaseCanvas.value.addDrawRect(rect);
@@ -157,11 +158,6 @@ export default defineComponent({
 					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
 					drawBaseCanvas.value!.removeEventAll = removeEventAll;
-					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
-					canvasDragZoom.value.changeZoom((scale, offset) => {
-						drawBaseCanvas.value.updateLabels({ scale, ...offset });
-						emit('changeScaleOffset', { scale, ...offset });
-					});
 				};
 				image.onerror = () => {
 					loadingImage.value = false;
@@ -232,7 +228,7 @@ export default defineComponent({
 			window.addEventListener('wheel', onWindowWheel, { passive: false });
 		});
 		onUnmounted(() => {
-			drawBaseCanvas.value!.removeEventAll();
+			drawBaseCanvas.value!.removeEventAll?.();
 			window.removeEventListener('wheel', onWindowWheel);
 		});
 		const contextmenuLabelFixed = ref<any>({
@@ -258,7 +254,7 @@ export default defineComponent({
 			contextmenuLabelFixed.value.left = 0;
 			contextmenuLabelFixed.value.activateRect = null;
 			activate_add_label.value = null;
-			drawBaseCanvas.value!.updateLabels(props.scaleOffset);
+			drawBaseCanvas.value!.updateLabels();
 			drawBaseCanvas.value!.clearCanvasRect();
 		};
 		const contextmenuLabelRect = computed(() => {
@@ -301,7 +297,7 @@ export default defineComponent({
 			if (i > -1) {
 				labels.value.splice(i, 1, rect);
 			}
-			drawBaseCanvas.value.updateLabels(props.scaleOffset);
+			drawBaseCanvas.value.updateLabels();
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
 			emit('change', rects, label_txt);
@@ -342,7 +338,7 @@ export default defineComponent({
 			labels.value.splice(i, 1);
 			onCloseContentmenuLabel();
 			onCloseDraggableRectFixed();
-			drawBaseCanvas.value.updateLabels(props.scaleOffset);
+			drawBaseCanvas.value.updateLabels();
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
 			emit('change', rects, label_txt);
@@ -371,10 +367,6 @@ export default defineComponent({
 			onSelectedLabel,
 			onDeleteLabel,
 			rerenderImage,
-			restoreScaleOffset: (val: any) => {
-				canvasDragZoom.value.reset();
-				drawBaseCanvas.value!.updateLabels(val);
-			},
 		});
 		const renderContent = () => {
 			return (
@@ -397,7 +389,6 @@ export default defineComponent({
 								parentEl={canvasMainRef.value}
 								rect={draggableRectFixed.value.activateRect}
 								color={draggableRectFixed.value.color}
-								scaleOffset={props.scaleOffset}
 								onDraggleResize={onDraggleRectResize}
 								onContextmenu={onContextmenuDraggable}
 							></DraggableRect>

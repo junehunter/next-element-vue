@@ -243,14 +243,6 @@ export default defineComponent({
 				});
 			}
 		};
-		const scaleOffset = ref<any>({ x: 0, y: 0, scale: 1 });
-		const onChangeScaleOffset = (val: any) => {
-			scaleOffset.value = val;
-		};
-		const onRestoreScaleOffset = (val: any) => {
-			onChangeScaleOffset(val);
-			canvasContextRef.value.restoreScaleOffset(val);
-		};
 		expose({
 			convertToLabel,
 			canvertToCanvas,
@@ -268,10 +260,8 @@ export default defineComponent({
 										isFullscreen={isFullscreen.value}
 										imageIndex={activateNodeIndex.value}
 										imageLength={labelImages.value.length}
-										scaleOffset={scaleOffset.value}
 										onFullscreen={onSwitchFillscreen}
 										onSave={() => onToolHeaderSave()}
-										onRestoreScaleOffset={onRestoreScaleOffset}
 									></ToolHeader>
 								)}
 							</header>
@@ -284,8 +274,6 @@ export default defineComponent({
 											classes={classes.value}
 											rowInfo={currentNode.value}
 											onChange={onChangeNodeRect}
-											scaleOffset={scaleOffset.value}
-											onChangeScaleOffset={onChangeScaleOffset}
 										></CanvasContext>
 									</div>
 								</ElScrollbar>

@@ -10,6 +10,8 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	image: HTMLImageElement;
 	scaleFactor?: number;
 	paths?: any[];
+	scaleX?: number;
+	scaleY?: number;
 }
 export const printsToPath = (vertexes: [number, number][]): Path2D => {
 	const path = new Path2D();
@@ -401,19 +403,23 @@ export class CreateDrawCanvas {
 	public canvasWidth: number;
 	public canvasHeight: number;
 	private paths: any[];
+	private scaleX: number;
+	private scaleY: number;
 	private editDrawPolygon: EditPolygonPath;
 	private createPolygonVertexes: CreatePolygonVertexes;
 	private editVertexes: [number, number][];
 	private editPolygonObservers: ((vertexes: [number, number][]) => void)[] = [];
 
 	constructor(options: DrawBaseCanvasProps) {
-		const { canvas, ctx, image, canvasWidth, canvasHeight, paths } = options;
+		const { canvas, ctx, image, canvasWidth, canvasHeight, paths, scaleX, scaleY } = options;
 		this.canvas = canvas;
 		this.ctx = ctx;
 		this.image = image;
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
 		this.paths = paths || [];
+		this.scaleX = scaleX || 1;
+		this.scaleY = scaleY || 1;
 		this.editVertexes = [];
 		this.render();
 		this.createPolygonVertexes = new CreatePolygonVertexes(canvas, ctx);
@@ -446,6 +452,7 @@ export class CreateDrawCanvas {
 	}
 	drawPolygons(paths: any[]) {
 		const ctx = this.ctx;
+		ctx.scale(this.scaleX, this.scaleY);
 		for (let i = 0; i < paths.length; i++) {
 			const item = paths[i];
 			const path = item.path;
@@ -455,7 +462,9 @@ export class CreateDrawCanvas {
 			ctx.lineWidth = 2;
 			ctx.strokeStyle = color;
 			ctx.fillStyle = hexToRgba(color, 0.2);
-			ctx.moveTo(path[0][0], path[0][1]);
+			const startX = path[0][0];
+			const startY = path[0][1];
+			ctx.moveTo(startX, startY);
 			for (let i = 1; i < path.length; i++) {
 				const [x, y] = path[i];
 				ctx.lineTo(x, y);
@@ -468,7 +477,9 @@ export class CreateDrawCanvas {
 	initCanvas = () => {
 		this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.ctx.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
+		this.ctx.save();
 		this.drawPolygons(this.paths);
+		this.ctx.restore();
 	};
 	render = () => {
 		this.initCanvas();

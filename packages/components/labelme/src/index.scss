@@ -74,6 +74,7 @@ $block: 'labelme';
             align-items: center;
             justify-content: center;
             height: 100%;
+			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADZJREFUOE9jZKAQMFKon2HUAAYah8HZs2f/MzAw3DY2NlbDFVt4Y4FiA4hJI6PpgNbpgJhYAAB1/AoRxXg31wAAAABJRU5ErkJggg==);
         }
 		.#{bf($block, 'loading')} {
 			width: 100%;

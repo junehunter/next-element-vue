@@ -18,16 +18,6 @@ export default defineComponent({
 			type: String,
 			default: null,
 		},
-		scaleOffset: {
-			type: Object as PropType<{ x: number; y: number; scale: number }>,
-			default: () => {
-				return {
-					x: 0,
-					y: 0,
-					scale: 1,
-				};
-			},
-		},
 	},
 	emits: ['draggle-resize', 'contextmenu'],
 	setup(props, { emit }) {
@@ -48,16 +38,6 @@ export default defineComponent({
 		});
 		let parentRect = {} as DOMRect;
 		const rect = toRef<RectProps>(props.rect);
-		const scaleOffsetRect = (rect: RectProps): RectProps => {
-			const { x, y, scale } = props.scaleOffset;
-			const { startX, startY, rectWidth, rectHeight } = rect;
-			return {
-				startX: startX * scale + x,
-				startY: startY * scale + y,
-				rectWidth: rectWidth * scale,
-				rectHeight: rectHeight * scale,
-			} as RectProps;
-		};
 		const onMousedown = (e: MouseEvent) => {
 			e.preventDefault();
 			isDraggle.value = true;
@@ -182,13 +162,13 @@ export default defineComponent({
 			document.removeEventListener('mousemove', onMousemove);
 			document.removeEventListener('mouseup', onMouseup);
 		});
-		return { onMousedown, onMouseup, onContextmenu, rect, onMousedownDot, scaleOffsetRect };
+		return { onMousedown, onMouseup, onContextmenu, rect, onMousedownDot };
 	},
 	render() {
 		const _ns = inject('ns', {} as any);
 		const props = this.$props;
 		const draggableRectStyle = () => {
-			const { startX, startY, rectWidth, rectHeight } = this.scaleOffsetRect(this.rect);
+			const { startX, startY, rectWidth, rectHeight } = this.rect;
 			const style = {
 				top: startY + 'px',
 				left: startX + 'px',

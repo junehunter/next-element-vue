@@ -20,6 +20,8 @@ export interface RectProps {
 	rectHeight: number;
 	canvasWidth: number;
 	canvasHeight: number;
+	originWidth: number;
+	originHeight: number;
 }
 export interface CreateRectCanvasProps {
 	canvasWidth: number;
@@ -34,7 +36,7 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	scaleOffset?: { x: number; y: number; scale: number };
 }
 
-export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
+export const DrawRectCanvas = ({ canvas, originWidth, originHeight }: { canvas: HTMLCanvasElement; originWidth: number; originHeight: number }, callback?: Function, keyW?: Function) => {
 	const canvasWidth = canvas.width;
 	const canvasHeight = canvas.height;
 	const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
@@ -61,6 +63,8 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 			rectHeight: rectHeight,
 			canvasWidth: canvasWidth,
 			canvasHeight: canvasHeight,
+			originWidth: originWidth,
+			originHeight: originHeight,
 		};
 		callback && callback(rect, { endX, endY });
 	};
@@ -227,7 +231,7 @@ export class CanvasSceneDragZoom {
 		this.canvasMousemove = this.canvasMousemove.bind(this);
 		this.canvasMouseup = this.canvasMouseup.bind(this);
 		this.canvas.addEventListener('mousedown', this.canvasMousedown);
-		this.canvas.addEventListener('wheel', this.canvasMousewheel, { passive: false });
+		// this.canvas.addEventListener('wheel', this.canvasMousewheel, { passive: false });
 	}
 	private notifyObservers(scale: number, offset: { x: number; y: number }) {
 		this.observers.forEach(listener => {
@@ -247,11 +251,7 @@ export class CanvasSceneDragZoom {
 	}
 	render() {
 		this.canvas.width = this.canvasWidth;
-		// this.ctx.save();
-		// this.ctx.translate(this.offset.x, this.offset.y);
-		// this.ctx.scale(this.scaleFactor, this.scaleFactor);
 		this.notifyObservers(this.scaleFactor, this.offset);
-		// this.ctx.restore();
 	}
 	zoom() {
 		this.offset.x = this.mousePositioin.x - ((this.mousePositioin.x - this.offset.x) * this.scaleFactor) / this.preScaleFactor;
@@ -309,39 +309,6 @@ export class CanvasSceneDragZoom {
 		}
 	}
 }
-
-export const rectToScaleOffset = (rect: RectProps, scaleOffset: { x: number; y: number; scale: number }) => {
-	const { startX, startY, rectWidth, rectHeight } = rect;
-	const { scale, x, y } = scaleOffset;
-	const new_startX = Math.ceil((startX - x) / scale);
-	const new_startY = Math.ceil((startY - y) / scale);
-	const new_rectWidth = Math.ceil(rectWidth / scale);
-	const new_rectHeight = Math.ceil(rectHeight / scale);
-	return {
-		startX: new_startX,
-		startY: new_startY,
-		rectWidth: new_rectWidth,
-		rectHeight: new_rectHeight,
-		canvasWidth: rect.canvasWidth,
-		canvasHeight: rect.canvasHeight,
-	};
-};
-export const rectToRestore = (rect: RectProps, scaleOffset: { x: number; y: number; scale: number }) => {
-	const { startX, startY, rectWidth, rectHeight } = rect;
-	const { scale, x, y } = scaleOffset;
-	const new_startX = Math.ceil(startX * scale + x);
-	const new_startY = Math.ceil(startY * scale + y);
-	const new_rectWidth = Math.ceil(rectWidth * scale);
-	const new_rectHeight = Math.ceil(rectHeight * scale);
-	return {
-		startX: new_startX,
-		startY: new_startY,
-		rectWidth: new_rectWidth,
-		rectHeight: new_rectHeight,
-		canvasWidth: rect.canvasWidth,
-		canvasHeight: rect.canvasHeight,
-	};
-};
 
 /**
  * 根据比例重新设置标注框位置和大小
