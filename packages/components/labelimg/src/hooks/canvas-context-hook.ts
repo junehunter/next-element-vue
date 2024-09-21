@@ -1,5 +1,6 @@
 import { isValueExist } from 'packages/hooks/global-hook';
-
+import type { Ref } from 'vue';
+import type { ScaleTranslate } from '../config';
 export interface ResizeCorner {
 	topLeft: boolean;
 	topCenter: boolean;
@@ -20,6 +21,8 @@ export interface RectProps {
 	rectHeight: number;
 	canvasWidth: number;
 	canvasHeight: number;
+	originWidth: number;
+	originHeight: number;
 }
 export interface CreateRectCanvasProps {
 	canvasWidth: number;
@@ -31,10 +34,10 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	image: HTMLImageElement;
 	labels: RectProps[];
 	scaleFactor?: number;
-	scaleOffset?: { x: number; y: number; scale: number };
+	scaleOffset?: Ref<ScaleTranslate>;
 }
 
-export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
+export const DrawRectCanvas = ({ canvas, originWidth, originHeight }: { canvas: HTMLCanvasElement; originWidth: number; originHeight: number }, callback?: Function, keyW?: Function) => {
 	const canvasWidth = canvas.width;
 	const canvasHeight = canvas.height;
 	const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
@@ -61,6 +64,8 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 			rectHeight: rectHeight,
 			canvasWidth: canvasWidth,
 			canvasHeight: canvasHeight,
+			originWidth: originWidth,
+			originHeight: originHeight,
 		};
 		callback && callback(rect, { endX, endY });
 	};
@@ -145,13 +150,13 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 };
 export const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
-	const { canvas, ctx, labels, image, canvasWidth, canvasHeight } = options;
-	const updateLabels = (scaleOffset?: { x: number; y: number; scale: number }) => {
-		if (scaleOffset) {
-			canvas.width = canvasWidth;
+	const { canvas, ctx, labels, image, canvasWidth, canvasHeight, scaleOffset } = options;
+	const updateLabels = () => {
+		canvas.width = canvasWidth;
+		if (scaleOffset.value) {
 			ctx.save();
-			ctx.translate(scaleOffset.x, scaleOffset.y);
-			ctx.scale(scaleOffset.scale, scaleOffset.scale);
+			ctx.translate(scaleOffset.value.x, scaleOffset.value.y);
+			ctx.scale(scaleOffset.value.scale, scaleOffset.value.scale);
 		}
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
@@ -175,8 +180,10 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 	updateLabels();
 	const addDrawRect = (rect: RectProps, color = '#f30635') => {
 		const { startX, startY, rectWidth, rectHeight } = rect;
+		ctx.save();
 		ctx.strokeStyle = color;
 		ctx.strokeRect(startX, startY, rectWidth, rectHeight);
+		ctx.restore();
 	};
 	const hitCanvasLabel = (x: number, y: number): any => {
 		let hit_rect = null,
@@ -199,114 +206,6 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		hitCanvasLabel,
 	};
 };
-
-export class CanvasSceneDragZoom {
-	private canvas: HTMLCanvasElement;
-	private canvasWidth: number;
-	private canvasHeight: number;
-	private ctx: CanvasRenderingContext2D;
-	private scaleFactor: number = 1;
-	private preScaleFactor: number = 1;
-	private offset = { x: 0, y: 0 };
-	private preOffset = { x: 0, y: 0 };
-	private mousePositioin = { x: 0, y: 0 };
-	private maxScale: number = 8;
-	private minScale: number = 0.5;
-	private scaleStep: number = 0.1;
-	private clickX: number = 0;
-	private clickY: number = 0;
-	private observers: ((scale: number, offset: { x: number; y: number }) => void)[] = [];
-	constructor(canvas: HTMLCanvasElement) {
-		this.canvas = canvas;
-		this.canvasWidth = canvas.width;
-		this.canvasHeight = canvas.height;
-		this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-		this.canvasMousedown = this.canvasMousedown.bind(this);
-		this.canvasMousemove = this.canvasMousemove.bind(this);
-		this.canvasMouseup = this.canvasMouseup.bind(this);
-		this.canvas.addEventListener('mousedown', this.canvasMousedown);
-		this.canvas.addEventListener('wheel', this.canvasMousewheel, { passive: false });
-	}
-	private notifyObservers(scale: number, offset: { x: number; y: number }) {
-		this.observers.forEach(listener => {
-			listener(scale, offset);
-		});
-	}
-	public changeZoom(callback: (scale: number, offset: { x: number; y: number }) => void) {
-		this.observers.push(callback);
-	}
-	reset() {
-		this.scaleFactor = 1;
-		this.preScaleFactor = 1;
-		this.offset = { x: 0, y: 0 };
-		this.preOffset = { x: 0, y: 0 };
-		this.mousePositioin = { x: 0, y: 0 };
-		this.zoom();
-	}
-	render() {
-		this.canvas.width = this.canvasWidth;
-		// this.ctx.save();
-		// this.ctx.translate(this.offset.x, this.offset.y);
-		// this.ctx.scale(this.scaleFactor, this.scaleFactor);
-		this.notifyObservers(this.scaleFactor, this.offset);
-		// this.ctx.restore();
-	}
-	zoom() {
-		this.offset.x = this.mousePositioin.x - ((this.mousePositioin.x - this.offset.x) * this.scaleFactor) / this.preScaleFactor;
-		this.offset.y = this.mousePositioin.y - ((this.mousePositioin.y - this.offset.y) * this.scaleFactor) / this.preScaleFactor;
-		this.render();
-		this.preScaleFactor = this.scaleFactor;
-		this.preOffset.x = this.offset.x;
-		this.preOffset.y = this.offset.y;
-	}
-	canvasMousewheel = (event: WheelEvent) => {
-		event.preventDefault();
-		if (event.ctrlKey) {
-			this.mousePositioin.x = event.offsetX;
-			this.mousePositioin.y = event.offsetY;
-			if (event.deltaY > 0) {
-				// 放大
-				this.scaleFactor = parseFloat((this.scaleFactor + this.scaleStep).toFixed(1));
-				if (this.scaleFactor > this.maxScale) {
-					this.scaleFactor = this.maxScale;
-				}
-			} else {
-				// 缩小
-				this.scaleFactor = parseFloat((this.scaleFactor - this.scaleStep).toFixed(1));
-				if (this.scaleFactor < this.minScale) {
-					this.scaleFactor = this.minScale;
-				}
-			}
-			this.zoom();
-		}
-	};
-	canvasMousedown(event: MouseEvent) {
-		event.preventDefault();
-		if (event.button === 0 && event.ctrlKey) {
-			this.clickX = event.offsetX;
-			this.clickY = event.offsetY;
-			this.canvas.addEventListener('mousemove', this.canvasMousemove);
-			this.canvas.addEventListener('mouseup', this.canvasMouseup);
-		}
-	}
-	canvasMousemove(event: MouseEvent) {
-		event.preventDefault();
-		if (event.ctrlKey) {
-			this.offset.x = this.preOffset.x + (event.offsetX - this.clickX);
-			this.offset.y = this.preOffset.y + (event.offsetY - this.clickY);
-			this.render();
-		}
-	}
-	canvasMouseup(event: MouseEvent) {
-		event.preventDefault();
-		if (event.ctrlKey) {
-			this.preOffset.x = this.offset.x;
-			this.preOffset.y = this.offset.y;
-			this.canvas.removeEventListener('mousemove', this.canvasMousemove);
-			this.canvas.removeEventListener('mouseup', this.canvasMouseup);
-		}
-	}
-}
 
 /**
  * 根据比例重新设置标注框位置和大小

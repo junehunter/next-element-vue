@@ -1,6 +1,6 @@
 import { defineComponent, ref, provide, watch, computed, onMounted, onUnmounted, unref, nextTick } from 'vue';
 import type { CSSProperties, PropType } from 'vue';
-import { ElScrollbar, ElIcon, ElImage } from 'element-plus';
+import { ElScrollbar, ElIcon, ElImage, ElMessage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
 import { merge } from 'lodash-unified';
@@ -44,7 +44,6 @@ export default defineComponent({
 		});
 		const options = unref(_options);
 		provide('ns', ns);
-		// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 		const { t } = useLocale();
 		const activateNodeIndex = ref<number>(0);
 		const classes = ref<any>(props.classes);
@@ -137,6 +136,7 @@ export default defineComponent({
 					loading.value = false;
 				}
 			);
+			return true;
 		};
 		const isFullscreen = ref<boolean>(false);
 		const onSwitchFillscreen = (val: boolean) => {
@@ -147,7 +147,17 @@ export default defineComponent({
 			});
 		};
 		const onEditPlygonChange = (plygon: any) => {
+			currentNode.value.labels = plygon;
 			emit('edit-polygon', plygon);
+		};
+		const onToolHeaderSave = () => {
+			const status = onChangeActivateNode(activateNodeIndex.value);
+			if (!status) {
+				ElMessage({
+					type: 'info',
+					message: t('next.labelimg.labelNoUpdate'),
+				});
+			}
 		};
 		const renderContent = () => {
 			return (
@@ -163,6 +173,7 @@ export default defineComponent({
 										imageIndex={activateNodeIndex.value}
 										imageLength={labelImages.value.length}
 										onFullscreen={onSwitchFillscreen}
+										onSave={onToolHeaderSave}
 									></HeaderTool>
 								)}
 							</header>
