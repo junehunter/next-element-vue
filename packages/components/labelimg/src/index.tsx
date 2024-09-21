@@ -13,6 +13,7 @@ import RightLabel from './widgets/right-label';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
 import type { RectProps } from './hooks/canvas-context-hook';
 import defaultConfig from './config';
+import type { ScaleTranslate, ScaleTranslateManager } from './config';
 
 const ns = useNamespace('labelimg');
 export default defineComponent({
@@ -173,6 +174,11 @@ export default defineComponent({
 					labelImages.value[activateNodeIndex.value] = imageItem ? imageItem : node;
 					activateNodeIndex.value = index;
 					loading.value = false;
+					scaleTranslate.value = {
+						scale: 1,
+						x: 0,
+						y: 0,
+					};
 				},
 				() => {
 					loading.value = false;
@@ -243,14 +249,21 @@ export default defineComponent({
 				});
 			}
 		};
-		const scaleOffset = ref<any>({ x: 0, y: 0, scale: 1 });
-		const onChangeScaleOffset = (val: any) => {
-			scaleOffset.value = val;
-		};
-		const onRestoreScaleOffset = (val: any) => {
-			onChangeScaleOffset(val);
-			canvasContextRef.value.restoreScaleOffset(val);
-		};
+		const scaleTranslate = ref<ScaleTranslate>({
+			scale: 1,
+			x: 0,
+			y: 0,
+		});
+		provide('scaleTranslateManager', {
+			scaleTranslate,
+			onChangeScaleTranslate: (val: ScaleTranslate) => {
+				scaleTranslate.value = val;
+			},
+			onResetScaleTranslate: () => {
+				canvasContextRef.value!.resetScaleOffset();
+			},
+		} as ScaleTranslateManager);
+
 		expose({
 			convertToLabel,
 			canvertToCanvas,
@@ -268,10 +281,8 @@ export default defineComponent({
 										isFullscreen={isFullscreen.value}
 										imageIndex={activateNodeIndex.value}
 										imageLength={labelImages.value.length}
-										scaleOffset={scaleOffset.value}
 										onFullscreen={onSwitchFillscreen}
 										onSave={() => onToolHeaderSave()}
-										onRestoreScaleOffset={onRestoreScaleOffset}
 									></ToolHeader>
 								)}
 							</header>
@@ -284,8 +295,6 @@ export default defineComponent({
 											classes={classes.value}
 											rowInfo={currentNode.value}
 											onChange={onChangeNodeRect}
-											scaleOffset={scaleOffset.value}
-											onChangeScaleOffset={onChangeScaleOffset}
 										></CanvasContext>
 									</div>
 								</ElScrollbar>

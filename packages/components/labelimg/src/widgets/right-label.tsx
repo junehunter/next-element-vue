@@ -36,6 +36,12 @@ export default defineComponent({
 			});
 		};
 		watch(
+			() => props.classes,
+			() => {
+				labels.value = formatLabelsTypeName(labels.value);
+			}
+		);
+		watch(
 			() => props.labels,
 			rects => {
 				const _rects = toRaw(rects);
