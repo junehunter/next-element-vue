@@ -6,6 +6,8 @@ import type { RectProps } from '../hooks/canvas-context-hook';
 import { NextSpinLoading } from 'packages/components';
 import ContextMenuLabel from './contextmenu-label';
 import DraggableRect from './draggable-rect';
+import { CanvasSceneDragZoom, rectToScaleOffset } from '../hooks/canvas-drag-zoom';
+import type { ScaleTranslate, ScaleTranslateManager } from '../config';
 export default defineComponent({
 	name: 'NextCanvasContext',
 	props: {
@@ -26,12 +28,14 @@ export default defineComponent({
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const _emit = inject('_emit', null as any);
+		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
 		const mainBasaeRef = ref<any>();
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const canvasRectRef = ref<HTMLCanvasElement>();
 		const labels = ref<RectProps[]>([]);
 		const drawBaseCanvas = ref<any>({});
+		const canvasDragZoom = ref<any>();
 		const formatLabelsTypeName = (rowInfo: any, originWidth: number, originHeight) => {
 			if (!rowInfo.labels) return [];
 			return rowInfo.labels.map((rect: RectProps) => {
@@ -137,6 +141,7 @@ export default defineComponent({
 						canvasHeight,
 						labels: labels.value,
 						scaleFactor: scaleFactor,
+						scaleOffset: scaleTranslateManager.scaleTranslate,
 					});
 					drawBaseCanvas.value!.updateLabels = updateLabels;
 					drawBaseCanvas.value!.addDrawRect = addDrawRect;
@@ -149,8 +154,9 @@ export default defineComponent({
 						},
 						(rect: RectProps, { endX, endY }: any) => {
 							activate_add_label.value = rect;
-							drawBaseCanvas.value.addDrawRect(rect);
-							updateContextmenuLabelFixed(endX, endY, rect);
+							const newRect = rectToScaleOffset(rect, scaleTranslateManager.scaleTranslate.value);
+							drawBaseCanvas.value.addDrawRect(newRect);
+							updateContextmenuLabelFixed(endX, endY, newRect);
 						},
 						() => {
 							onCloseDraggableRectFixed();
@@ -158,6 +164,11 @@ export default defineComponent({
 					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
 					drawBaseCanvas.value!.removeEventAll = removeEventAll;
+					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
+					canvasDragZoom.value.changeZoom((scaleOffset: ScaleTranslate) => {
+						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
+						drawBaseCanvas.value!.updateLabels();
+					});
 				};
 				image.onerror = () => {
 					loadingImage.value = false;
@@ -165,35 +176,36 @@ export default defineComponent({
 			}
 			canvasBaseRef.value.addEventListener('contextmenu', e => {
 				e.preventDefault();
-				const x = e.offsetX,
-					y = e.offsetY;
-				const { hit_rect } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
+				const offsetX = e.offsetX,
+					offsetY = e.offsetY;
+				const { scale, x, y } = scaleTranslateManager.scaleTranslate.value;
+				const new_x = Math.floor((offsetX - x) / scale),
+					new_y = Math.floor((offsetY - y) / scale);
+				const { hit_rect } = drawBaseCanvas.value!.hitCanvasLabel(new_x, new_y);
 				onCloseContentmenuLabel();
 				onCloseDraggableRectFixed();
 				if (hit_rect) {
 					nextTick(() => {
-						updateContextmenuLabelFixed(x, y, hit_rect);
+						updateContextmenuLabelFixed(offsetX, offsetY, hit_rect);
 					});
 				}
 			});
 			canvasBaseRef.value.addEventListener('click', e => {
 				if (e.ctrlKey) return;
-				const x = e.offsetX,
-					y = e.offsetY;
-				const { hit_rect, hit_index, color } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
+				const offsetX = e.offsetX,
+					offsetY = e.offsetY;
+				const { scale, x, y } = scaleTranslateManager.scaleTranslate.value;
+				const new_x = Math.floor((offsetX - x) / scale),
+					new_y = Math.floor((offsetY - y) / scale);
+				const { hit_rect, hit_index, color } = drawBaseCanvas.value!.hitCanvasLabel(new_x, new_y);
 				onCloseDraggableRectFixed();
 				onCloseContentmenuLabel();
 				if (hit_rect) {
 					nextTick(() => {
-						updateDraggableRectFixed(x, y, hit_rect, hit_index, color);
+						updateDraggableRectFixed(offsetX, offsetY, hit_rect, hit_index, color);
 					});
 				}
 			});
-		};
-		const onWindowWheel = (e: MouseEvent) => {
-			if (e.ctrlKey) {
-				e.preventDefault();
-			}
 		};
 		onMounted(() => {
 			watch(
@@ -225,11 +237,10 @@ export default defineComponent({
 					}
 				}
 			);
-			window.addEventListener('wheel', onWindowWheel, { passive: false });
 		});
 		onUnmounted(() => {
 			drawBaseCanvas.value!.removeEventAll?.();
-			window.removeEventListener('wheel', onWindowWheel);
+			canvasDragZoom.value!.destroy();
 		});
 		const contextmenuLabelFixed = ref<any>({
 			show: false,
@@ -367,6 +378,9 @@ export default defineComponent({
 			onSelectedLabel,
 			onDeleteLabel,
 			rerenderImage,
+			resetScaleOffset: () => {
+				canvasDragZoom.value!.reset();
+			},
 		});
 		const renderContent = () => {
 			return (

@@ -1,7 +1,9 @@
 import { defineComponent, inject } from 'vue';
+import type { Ref } from 'vue';
 import { ElIcon, ElTooltip, ElPopover } from 'element-plus';
 import { Warning } from '@element-plus/icons-vue';
 import { useLocale } from 'packages/hooks';
+import type { ScaleTranslate, ScaleTranslateManager } from '../config';
 
 export default defineComponent({
 	props: {
@@ -21,6 +23,8 @@ export default defineComponent({
 	emits: ['fullscreen', 'save'],
 	setup(props, { emit }) {
 		const _ns = inject('ns', {} as any);
+		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
+		const scaleTranslate: Ref<ScaleTranslate> = scaleTranslateManager.scaleTranslate;
 		const { t } = useLocale();
 		const switchFillscreen = (val: boolean) => {
 			emit('fullscreen', val);
@@ -46,6 +50,23 @@ export default defineComponent({
 						</li>
 					</ul>
 					<ul class={[_ns.be('header', 'tool')]}>
+						<li class="hover" onClick={() => scaleTranslateManager.onResetScaleTranslate()}>
+							<svg t="1725840994827" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6051" width="18" height="18">
+								<path
+									d="M322.794667 445.205333a34.133333 34.133333 0 0 1 2.218666 45.824l-2.218666 2.432a34.133333 34.133333 0 0 1-45.824 2.218667l-2.432-2.218667-149.333334-149.333333a34.133333 34.133333 0 0 1-2.218666-45.824l2.218666-2.432 149.333334-149.333333a34.133333 34.133333 0 0 1 50.474666 45.824l-2.218666 2.432-91.050667 91.050666L640 285.866667c160.234667 0 290.133333 129.898667 290.133333 290.133333 0 158.016-126.314667 286.506667-283.477333 290.048L640 866.133333H234.666667a34.133333 34.133333 0 0 1-3.114667-68.117333L234.666667 797.866667h405.333333c122.538667 0 221.866667-99.328 221.866667-221.866667 0-120.533333-96.106667-218.602667-215.850667-221.781333L640 354.133333l-408.256-0.021333 91.050667 91.093333z"
+									p-id="6052"
+								></path>
+							</svg>
+							<span style="padding-left: 3px">{t('next.labelimg.zoomRestore')}</span>
+						</li>
+						<li>
+							<span>缩放比例</span>
+							<span>{parseInt((scaleTranslate.value.scale * 100).toString())}%</span>
+							<span style="padding: 0 10px;">偏移量</span>
+							<span style="min-width: 120px; text-align: left;">
+								X: {scaleTranslate.value.x}, Y: {scaleTranslate.value.y}
+							</span>
+						</li>
 						{props.imageLength ? (
 							<li>
 								<span>第 {props.imageIndex + 1} 张</span>
@@ -77,6 +98,14 @@ export default defineComponent({
 											<li>
 												<span>D：</span>
 												<span>D键进入下一张图片进行标注</span>
+											</li>
+											<li>
+												<span>Ctrl+鼠标滚轮：</span>
+												<span>长按Ctrl+鼠标滚轮对图片进行缩放</span>
+											</li>
+											<li>
+												<span>Ctrl+鼠标左键：</span>
+												<span>长按Ctrl+鼠标左键对图片进行拖拽移动</span>
 											</li>
 										</ul>
 									),

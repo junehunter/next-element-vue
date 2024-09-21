@@ -13,6 +13,7 @@ import RightLabel from './widgets/right-label';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
 import type { RectProps } from './hooks/canvas-context-hook';
 import defaultConfig from './config';
+import type { ScaleTranslate, ScaleTranslateManager } from './config';
 
 const ns = useNamespace('labelimg');
 export default defineComponent({
@@ -173,6 +174,11 @@ export default defineComponent({
 					labelImages.value[activateNodeIndex.value] = imageItem ? imageItem : node;
 					activateNodeIndex.value = index;
 					loading.value = false;
+					scaleTranslate.value = {
+						scale: 1,
+						x: 0,
+						y: 0,
+					};
 				},
 				() => {
 					loading.value = false;
@@ -243,6 +249,21 @@ export default defineComponent({
 				});
 			}
 		};
+		const scaleTranslate = ref<ScaleTranslate>({
+			scale: 1,
+			x: 0,
+			y: 0,
+		});
+		provide('scaleTranslateManager', {
+			scaleTranslate,
+			onChangeScaleTranslate: (val: ScaleTranslate) => {
+				scaleTranslate.value = val;
+			},
+			onResetScaleTranslate: () => {
+				canvasContextRef.value!.resetScaleOffset();
+			},
+		} as ScaleTranslateManager);
+
 		expose({
 			convertToLabel,
 			canvertToCanvas,

@@ -44,7 +44,6 @@ export default defineComponent({
 		});
 		const options = unref(_options);
 		provide('ns', ns);
-		// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 		const { t } = useLocale();
 		const activateNodeIndex = ref<number>(0);
 		const classes = ref<any>(props.classes);
