@@ -1,0 +1,1 @@
+import{o as s,c as i,aT as a}from"./chunks/framework.CgPePHCp.js";const n=a("",6),l=[n],E=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"guide/i18n.md","filePath":"guide/i18n.md","lastUpdated":1695631512000}'),h={name:"guide/i18n.md"},r=Object.assign(h,{setup(t){return(p,k)=>(s(),i("div",null,l))}});export{E as __pageData,r as default};

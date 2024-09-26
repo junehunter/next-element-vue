@@ -1,0 +1,1 @@
+import{o as t,c as e}from"./chunks/framework.CgPePHCp.js";const r=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"components/tabs.md","filePath":"components/tabs.md","lastUpdated":1695464766000}'),a={name:"components/tabs.md"},p=Object.assign(a,{setup(s){return(o,n)=>(t(),e("div"))}});export{r as __pageData,p as default};

@@ -1,0 +1,1 @@
+import{o as t,c as e}from"./chunks/framework.CgPePHCp.js";const r=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"components/dialog.md","filePath":"components/dialog.md","lastUpdated":1695464766000}'),a={name:"components/dialog.md"},d=Object.assign(a,{setup(o){return(n,s)=>(t(),e("div"))}});export{r as __pageData,d as default};
