@@ -1,5 +1,7 @@
+import type { Ref } from 'vue';
 import { useChangeColor } from 'packages/utils/theme';
 import { isValueExist } from 'packages/hooks/global-hook';
+import type { ScaleTranslate, LabelNodeProps, ShapesProps } from '../config';
 export interface CreateRectCanvasProps {
 	canvasWidth: number;
 	canvasHeight: number;
@@ -9,9 +11,10 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	ctx: CanvasRenderingContext2D;
 	image: HTMLImageElement;
 	scaleFactor?: number;
-	paths?: any[];
+	labels?: LabelNodeProps;
 	scaleX?: number;
 	scaleY?: number;
+	scaleOffset?: Ref<ScaleTranslate>;
 }
 export const printsToPath = (vertexes: [number, number][]): Path2D => {
 	const path = new Path2D();
@@ -59,6 +62,19 @@ export const isPointInCircle = (mouseX: number, mouseY: number, circleX: number,
 export const vertexesUnique = (vertexes: [number, number][]) => {
 	return Array.from(new Set(vertexes.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
 };
+export const vertexToScale = (vertex: [number, number], scaleX: number, scaleY: number, isMultiply: boolean = true): [number, number] => {
+	const [x, y] = vertex;
+	if (isMultiply) {
+		return [x * scaleX, y * scaleY];
+	} else {
+		return [x / scaleX, y / scaleY];
+	}
+};
+export const vertexesToScale = (vertexes: [number, number][], scaleX: number, scaleY: number, isMultiply: boolean = true): [number, number][] => {
+	if (!vertexes?.length) return [];
+	return vertexes.map(item => vertexToScale(item, scaleX, scaleY, isMultiply));
+};
+
 const { hexToRgba } = useChangeColor();
 const default_color = '#5470c6';
 export const colors = ['#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
@@ -147,9 +163,9 @@ class CreatePolygonVertexes {
 			this.vertexes = vertexesUnique(this.vertexes);
 		}
 		this.notifyDestryedListerers();
-		this.destroyed();
+		this.destroy();
 	}
-	destroyed() {
+	destroy() {
 		this.isDrawing = false;
 		this.vertexes = [];
 		this.vertexesObservers = [];
@@ -174,6 +190,7 @@ class EditPolygonPath {
 	private edgeCentreRadius: number;
 	private pointRecover: Array<number>;
 	private observers: ((vertexes: [number, number][]) => void)[] = [];
+	private editPolygonObserver?: (vertexes: [number, number][]) => void;
 	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 		this.canvas = canvas;
 		this.ctx = ctx;
@@ -186,6 +203,22 @@ class EditPolygonPath {
 		this.vertexRadius = 8;
 		this.edgeCentreRadius = 5;
 		this.pointRecover = [];
+	}
+	private notifyEditPolygonObserver() {
+		this.editPolygonObserver?.(this.vertexes);
+	}
+	public onEditPolygon(callback: (vertexes: [number, number][]) => void) {
+		this.editPolygonObserver = callback;
+	}
+	getTransformPoint(x: number, y: number): [number, number] {
+		const transformMatrix = this.ctx.getTransform();
+		const scaleX = parseFloat(transformMatrix.a.toFixed(1));
+		const scaleY = parseFloat(transformMatrix.d.toFixed(1));
+		const translateX = Math.ceil(transformMatrix.e);
+		const translateY = Math.ceil(transformMatrix.f);
+		const _x = Math.floor((x - translateX) / scaleX);
+		const _y = Math.floor((y - translateY) / scaleY);
+		return [_x, _y];
 	}
 	drawPolygonPath(vertexes: [number, number][], mouseX?: number, mouseY?: number) {
 		const ctx = this.ctx;
@@ -245,11 +278,12 @@ class EditPolygonPath {
 		}
 	}
 	pointInVertexes(x: number, y: number) {
+		const [_x, _y] = this.getTransformPoint(x, y);
 		const vertexes = this.vertexes;
 		let aimIndex = null;
 		for (let i = 0; i < vertexes.length; i++) {
 			const [vertex_x, vertex_y] = vertexes[i];
-			const isIn = isPointInCircle(x, y, vertex_x, vertex_y, this.vertexRadius);
+			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, this.vertexRadius);
 			if (isIn) {
 				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
@@ -261,6 +295,7 @@ class EditPolygonPath {
 		return aimIndex;
 	}
 	pointInEdgeCentre(x: number, y: number) {
+		const [_x, _y] = this.getTransformPoint(x, y);
 		const vertexes = this.vertexes;
 		let aimIndex = null;
 		for (let i = 0; i < vertexes.length; i++) {
@@ -268,7 +303,7 @@ class EditPolygonPath {
 				end = vertexes[(i + 1) % vertexes.length];
 			const vertex_x = start[0] + (end[0] - start[0]) / 2;
 			const vertex_y = start[1] + (end[1] - start[1]) / 2;
-			const isIn = isPointInCircle(x, y, vertex_x, vertex_y, this.edgeCentreRadius);
+			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, this.edgeCentreRadius);
 			if (isIn) {
 				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
@@ -280,15 +315,16 @@ class EditPolygonPath {
 		return aimIndex;
 	}
 	pointInVertexesOrEdgeCentre(x: number, y: number) {
+		const [_x, _y] = this.getTransformPoint(x, y);
 		const vertexes = this.vertexes;
 		for (let i = 0; i < vertexes.length; i++) {
 			const [vertex_x, vertex_y] = vertexes[i];
-			const isInVertex = isPointInCircle(x, y, vertex_x, vertex_y, this.vertexRadius);
+			const isInVertex = isPointInCircle(_x, _y, vertex_x, vertex_y, this.vertexRadius);
 			const start = vertexes[i % vertexes.length],
 				end = vertexes[(i + 1) % vertexes.length];
 			const edge_center_x = start[0] + (end[0] - start[0]) / 2;
 			const edge_center_y = start[1] + (end[1] - start[1]) / 2;
-			const isInEdgeCenter = isPointInCircle(x, y, edge_center_x, edge_center_y, this.edgeCentreRadius);
+			const isInEdgeCenter = isPointInCircle(_x, _y, edge_center_x, edge_center_y, this.edgeCentreRadius);
 			if (isInVertex || isInEdgeCenter) {
 				this.canvas!.style.cursor = 'pointer';
 				break;
@@ -358,6 +394,7 @@ class EditPolygonPath {
 		this.pointCentreIndex = -1;
 		this.drawPolygon(this.vertexes);
 		this.notifyObservers();
+		this.notifyEditPolygonObserver();
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
@@ -369,6 +406,7 @@ class EditPolygonPath {
 				this.vertexes.splice(i, 1);
 				this.drawPolygon(this.vertexes);
 				this.notifyObservers();
+				this.notifyEditPolygonObserver();
 			}
 		}
 	}
@@ -386,7 +424,7 @@ class EditPolygonPath {
 			this.notifyObservers();
 		}
 	}
-	destroyed() {
+	destroy() {
 		this.vertexes = [];
 		this.observers = [];
 		this.isEditing = false;
@@ -402,22 +440,24 @@ export class CreateDrawCanvas {
 	public image: HTMLImageElement;
 	public canvasWidth: number;
 	public canvasHeight: number;
-	private paths: any[];
+	public scaleOffset: Ref<ScaleTranslate>;
+	private labels: LabelNodeProps;
 	private scaleX: number;
 	private scaleY: number;
 	private editDrawPolygon: EditPolygonPath;
 	private createPolygonVertexes: CreatePolygonVertexes;
 	private editVertexes: [number, number][];
 	private editPolygonObservers: ((vertexes: [number, number][]) => void)[] = [];
-
+	private drawnPolygonObserver?: (vertexes: [number, number][]) => void;
 	constructor(options: DrawBaseCanvasProps) {
-		const { canvas, ctx, image, canvasWidth, canvasHeight, paths, scaleX, scaleY } = options;
+		const { canvas, ctx, image, canvasWidth, canvasHeight, labels, scaleX, scaleY, scaleOffset } = options;
 		this.canvas = canvas;
 		this.ctx = ctx;
 		this.image = image;
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
-		this.paths = paths || [];
+		this.scaleOffset = scaleOffset;
+		this.labels = labels || {};
 		this.scaleX = scaleX || 1;
 		this.scaleY = scaleY || 1;
 		this.editVertexes = [];
@@ -431,6 +471,7 @@ export class CreateDrawCanvas {
 			this.notifyObservers();
 		});
 		this.createPolygonVertexes.onDestroyed(vertexes => {
+			this.editVertexes = vertexes;
 			this.render();
 			this.editDrawPolygon.drawPolygon(vertexes);
 			this.editDrawPolygon.updatePolygon(vertexes => {
@@ -439,6 +480,11 @@ export class CreateDrawCanvas {
 				this.editVertexes = vertexes;
 				this.notifyObservers();
 			});
+			this.editDrawPolygon.onEditPolygon(vertexes => {
+				this.editVertexes = vertexes;
+				this.notifyDrawnPolygonObservers();
+			});
+			this.notifyDrawnPolygonObservers();
 		});
 	}
 
@@ -447,19 +493,29 @@ export class CreateDrawCanvas {
 			listener(this.editVertexes);
 		});
 	}
+	// 新增完成和编辑完成后通知
+	private notifyDrawnPolygonObservers() {
+		this.drawnPolygonObserver?.(this.editVertexes);
+	}
 	public updatePolygon(callback: (vertexes: [number, number][]) => void) {
 		this.editPolygonObservers.push(callback);
 	}
-	drawPolygons(paths: any[]) {
+	public onDrawnPolygon(callback: (vertexes: [number, number][]) => void) {
+		this.drawnPolygonObserver = callback;
+	}
+
+	drawPolygons(shapes: ShapesProps[]) {
 		const ctx = this.ctx;
-		ctx.scale(this.scaleX, this.scaleY);
-		for (let i = 0; i < paths.length; i++) {
-			const item = paths[i];
-			const path = item.path;
+		const { scale } = this.scaleOffset.value;
+		const scaleX = this.scaleX,
+			scaleY = this.scaleY;
+		for (let i = 0; i < shapes.length; i++) {
+			const item = shapes[i];
+			const path = vertexesToScale(item.points, scaleX, scaleY);
 			if (!path.length) return;
 			const color = colors[i % colors.length];
 			ctx.beginPath();
-			ctx.lineWidth = 2;
+			ctx.lineWidth = 2 / scale;
 			ctx.strokeStyle = color;
 			ctx.fillStyle = hexToRgba(color, 0.2);
 			const startX = path[0][0];
@@ -474,19 +530,25 @@ export class CreateDrawCanvas {
 			ctx.fill();
 		}
 	}
-	initCanvas = () => {
+	drawCanvas = () => {
 		this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.ctx.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
 		this.ctx.save();
-		this.drawPolygons(this.paths);
+		const shapes = this.labels.shapes;
+		if (shapes?.length) this.drawPolygons(shapes);
 		this.ctx.restore();
 	};
 	render = () => {
-		this.initCanvas();
+		this.canvas.width = this.canvasWidth;
+		if (this.scaleOffset.value) {
+			this.ctx.translate(this.scaleOffset.value.x, this.scaleOffset.value.y);
+			this.ctx.scale(this.scaleOffset.value.scale, this.scaleOffset.value.scale);
+		}
+		this.drawCanvas();
 	};
-	destroyed() {
-		this.paths = [];
-		this.editDrawPolygon.destroyed();
-		this.createPolygonVertexes.destroyed();
+	destroy() {
+		this.labels = {};
+		this.editDrawPolygon.destroy();
+		this.createPolygonVertexes.destroy();
 	}
 }

@@ -62,6 +62,7 @@ const options = reactive({
 			formSort: 3,
 			formRequired: true,
 			sort: 1,
+			clearable: false,
 		},
 		{
 			prop: 'sex',
@@ -287,6 +288,14 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 			</template>
 			<template #column-name="{ row }">
 				<span>{{ row.name }}</span>
+			</template>
+			<template #operation-column-prefix="{ scoped, btn }">
+				<el-button :size="btn.size" type="primary" :text="btn.text" :plain="btn.plain">
+					<template #icon>
+						<el-icon><RefreshLeft /></el-icon>
+					</template>
+					刷新
+				</el-button>
 			</template>
 		</NextCrudTable>
 	</div>

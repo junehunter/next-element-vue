@@ -160,27 +160,35 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		}
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+		const scale = scaleOffset.value?.scale || 1;
+		const fontSize = 14 / scale;
+		const fontPadding = 6 / scale;
+		const lineWidth = 2 / scale;
 		for (let i = 0; i < labels.length; i++) {
 			const rect = labels[i];
 			const { startX, startY, rectWidth, rectHeight, type } = rect;
 			const color = colors[type % colors.length];
-			ctx.font = 'bold 14px serif';
+			ctx.font = `bold ${fontSize}px serif`;
 			ctx.textBaseline = 'top';
 			ctx.save();
 			ctx.strokeStyle = color;
+			ctx.lineWidth = lineWidth;
 			ctx.strokeRect(startX, startY, rectWidth, rectHeight);
 			if (isValueExist(rect.typeName) || isValueExist(rect.type)) {
 				const text = (rect.typeName || rect.type) as string;
 				ctx.fillStyle = color;
-				ctx.fillText(text, startX + 6, startY + 6);
+				ctx.fillText(text, startX + fontPadding, startY + fontPadding);
 			}
 			ctx.restore();
 		}
 	};
 	updateLabels();
 	const addDrawRect = (rect: RectProps, color = '#f30635') => {
+		const scale = scaleOffset.value?.scale || 1;
 		const { startX, startY, rectWidth, rectHeight } = rect;
 		ctx.save();
+		const lineWidth = 2 / scale;
+		ctx.lineWidth = lineWidth;
 		ctx.strokeStyle = color;
 		ctx.strokeRect(startX, startY, rectWidth, rectHeight);
 		ctx.restore();

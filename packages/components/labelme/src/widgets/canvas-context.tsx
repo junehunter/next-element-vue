@@ -1,7 +1,9 @@
-import { defineComponent, ref, inject, watch, toRaw, onMounted, nextTick } from 'vue';
+import { defineComponent, ref, inject, watch, toRaw, onMounted, nextTick, onUnmounted } from 'vue';
 import { NextSpinLoading } from 'packages/components';
 import { valueExist } from 'packages/hooks/global-hook';
-import { CreateDrawCanvas } from '../hooks/canvas-content';
+import { CreateDrawCanvas, vertexesToScale } from '../hooks/canvas-content-hook';
+import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
+import type { ScaleTranslate, ScaleTranslateManager } from '../config';
 
 export default defineComponent({
 	props: {
@@ -18,13 +20,15 @@ export default defineComponent({
 			default: () => ({}),
 		},
 	},
-	emits: ['editPolygon'],
+	emits: ['editPolygon', 'changePolygon'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
+		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
 		const mainBasaeRef = ref<any>();
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const drawCanvas = ref<CreateDrawCanvas>();
+		const canvasDragZoom = ref<any>();
 
 		const setContainerWidthHeight = (canvasWidth: number, canvasHeight: number) => {
 			canvasMainRef.value!.style.width = canvasWidth + 'px';
@@ -68,13 +72,14 @@ export default defineComponent({
 			scaleFactor = Number((canvasWidth / canvasHeight).toFixed(2));
 			const scaleX = (canvasWidth / image.width).toFixed(8);
 			const scaleY = (canvasHeight / image.height).toFixed(8);
-
 			return {
 				canvasWidth,
 				canvasHeight,
 				scaleFactor,
 				scaleX: Number(scaleX),
 				scaleY: Number(scaleY),
+				originWidth: image.width,
+				originHeight: image.height,
 			};
 		};
 		const renderImageLabel = (rowInfo: any) => {
@@ -85,7 +90,7 @@ export default defineComponent({
 				loadingImage.value = true;
 				image.onload = () => {
 					loadingImage.value = false;
-					const { canvasWidth, canvasHeight, scaleFactor, scaleX, scaleY } = getCanvasWidthHeight(image);
+					const { canvasWidth, canvasHeight, scaleFactor, scaleX, scaleY, originWidth, originHeight } = getCanvasWidthHeight(image);
 					image.style.width = canvasWidth + 'px';
 					image.style.height = canvasHeight + 'px';
 					setContainerWidthHeight(canvasWidth, canvasHeight);
@@ -96,16 +101,30 @@ export default defineComponent({
 						canvasWidth,
 						canvasHeight,
 						scaleFactor: scaleFactor,
-						paths: rowInfo.labels,
+						labels: rowInfo.labels,
 						scaleX,
 						scaleY,
+						scaleOffset: scaleTranslateManager.scaleTranslate,
 					});
 					drawCanvas.value.updatePolygon(vertexes => {
-						emit('editPolygon', {
+						emit('changePolygon', {
 							vertexes,
 							canvasWidth,
 							canvasHeight,
 						});
+					});
+					drawCanvas.value.onDrawnPolygon(vertexes => {
+						const new_vertexes = vertexesToScale(vertexes, scaleX, scaleY, false);
+						emit('editPolygon', {
+							vertexes: new_vertexes,
+							originWidth,
+							originHeight,
+						});
+					});
+					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
+					canvasDragZoom.value.changeZoom((scaleOffset: ScaleTranslate) => {
+						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
+						drawCanvas.value!.render();
 					});
 				};
 				image.onerror = () => {
@@ -137,6 +156,10 @@ export default defineComponent({
 				}
 			);
 		});
+		onUnmounted(() => {
+			drawCanvas.value!.destroy();
+			canvasDragZoom.value!.destroy();
+		});
 		const onCloseContentmenuLabel = () => {};
 		const onCloseDraggableRectFixed = () => {};
 		const rerenderImage = () => {
@@ -159,6 +182,9 @@ export default defineComponent({
 		};
 		expose({
 			rerenderImage,
+			resetScaleOffset: () => {
+				canvasDragZoom.value!.reset();
+			},
 		});
 		return () => <>{renderContent()}</>;
 	},

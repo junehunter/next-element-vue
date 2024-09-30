@@ -9,6 +9,7 @@ import NextSpinLoading from 'packages/components/spin-loading';
 import CanvasContext from './widgets/canvas-context';
 import HeaderTool from './widgets/header-tool';
 import defaultConfig from './config';
+import type { ScaleTranslate, ScaleTranslateManager, LabelNodeProps } from './config';
 
 const ns = useNamespace('labelme');
 export default defineComponent({
@@ -35,7 +36,7 @@ export default defineComponent({
 			default: () => [],
 		},
 	},
-	emits: ['change', 'save', 'edit-polygon', 'prev-click', 'next-click'],
+	emits: ['change', 'save', 'edit-polygon', 'change-polygon', 'prev-click', 'next-click'],
 	setup(props, { emit, slots }) {
 		const _config = deepClone(defaultConfig);
 		const _options = computed(() => {
@@ -146,9 +147,14 @@ export default defineComponent({
 				canvasContextRef.value.rerenderImage();
 			});
 		};
-		const onEditPlygonChange = (plygon: any) => {
-			currentNode.value.labels = plygon;
-			emit('edit-polygon', plygon);
+		const onChangePolygon = (node: LabelNodeProps) => {
+			currentNode.value.labels = node;
+			emit('change-polygon', node);
+		};
+
+		const onEditPlygon = (node: LabelNodeProps) => {
+			currentNode.value.labels = node;
+			emit('edit-polygon', node);
 		};
 		const onToolHeaderSave = () => {
 			const status = onChangeActivateNode(activateNodeIndex.value);
@@ -159,6 +165,20 @@ export default defineComponent({
 				});
 			}
 		};
+		const scaleTranslate = ref<ScaleTranslate>({
+			scale: 1,
+			x: 0,
+			y: 0,
+		});
+		provide('scaleTranslateManager', {
+			scaleTranslate,
+			onChangeScaleTranslate: (val: ScaleTranslate) => {
+				scaleTranslate.value = val;
+			},
+			onResetScaleTranslate: () => {
+				canvasContextRef.value!.resetScaleOffset();
+			},
+		} as ScaleTranslateManager);
 		const renderContent = () => {
 			return (
 				<div ref={layoutLabelRef} class={[ns.b(), props.className, isFullscreen.value ? ns.b('fullscreen') : '']} style={{ ...props.style }}>
@@ -179,7 +199,7 @@ export default defineComponent({
 							</header>
 							<div ref={mainRef} class={[ns.b('main')]}>
 								<div class={[ns.be('main', 'content')]} style={{ height: mainContentHeight.value + 'px' }}>
-									<CanvasContext ref={canvasContextRef} rowInfo={currentNode.value} onEditPolygon={onEditPlygonChange}></CanvasContext>
+									<CanvasContext ref={canvasContextRef} rowInfo={currentNode.value} onEditPolygon={onEditPlygon} onChangePolygon={onChangePolygon}></CanvasContext>
 								</div>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
