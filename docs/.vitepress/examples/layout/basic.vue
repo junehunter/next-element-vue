@@ -107,6 +107,13 @@ const changeOptions = opt => {};
 			</div>
 		</div>
 		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions" @changeLanguage="onChangeLanguage" @changeOptions="changeOptions">
+			<template #header-tools-prefix>
+				<li>666</li>
+			</template>
+			<!-- <template #header-menu>
+				<div>自定义菜单</div>
+			</template> -->
+
 			<template v-if="isTabs" #tabs>
 				<NextTabs :tabs="layoutOptions.tabs"></NextTabs>
 			</template>
