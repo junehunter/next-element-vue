@@ -236,6 +236,45 @@ const options = reactive({
 			type: 'numberRange',
 			sort: 5,
 		},
+		{
+			prop: 'code',
+			label: '区域',
+			type: 'cascader',
+			span: 24,
+			required: true,
+			dicData: [],
+			treeSelectProps: { label: 'name', value: 'code' },
+			loadDicData: (col, done) => {
+				setTimeout(() => {
+					const dicData = [
+						{
+							label: '广东省',
+							value: 'gd',
+							children: [
+								{
+									label: '广州市',
+									value: 'gz',
+									center: [113.234, 23.123],
+									children: [
+										{
+											label: '天河区',
+											value: 'gt',
+											center: [113.234, 23.123],
+										},
+										{
+											label: '越秀区',
+											value: 'yg',
+											center: [113.234, 23.123],
+										},
+									],
+								},
+							],
+						},
+					];
+					done(dicData);
+				}, 3000);
+			},
+		},
 	],
 });
 const tableReactive = reactive({
@@ -245,7 +284,10 @@ const tableReactive = reactive({
 		pageSize: 10,
 		total: 50,
 	},
-	data: [
+	data: [] as any,
+});
+setTimeout(() => {
+	tableReactive.data = [
 		{
 			id: 1,
 			name: '张三',
@@ -257,6 +299,7 @@ const tableReactive = reactive({
 			industry: '1',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
+			code: ['gd', 'gz'],
 			children: [
 				{
 					id: 2,
@@ -305,8 +348,8 @@ const tableReactive = reactive({
 				},
 			],
 		},
-	],
-});
+	];
+}, 1000);
 const onConfirmSearch = searchParams => {
 	console.log(searchParams);
 	tableReactive.loading = true;

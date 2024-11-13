@@ -1,4 +1,5 @@
 import { defineComponent, watch, ref } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 import { ElDialog, ElIcon } from 'element-plus';
 import { FullScreen, Close } from '@element-plus/icons-vue';
 import { useNamespace } from 'packages/hooks/use-namespace/index';
@@ -7,6 +8,14 @@ const ns = useNamespace('dialog');
 export default defineComponent({
 	name: 'NextDialog',
 	props: {
+		className: {
+			type: String,
+			default: '',
+		},
+		style: {
+			type: Object as PropType<CSSProperties>,
+			default: () => ({}),
+		},
 		modelValue: {
 			type: Boolean,
 			default: false,
@@ -78,7 +87,8 @@ export default defineComponent({
 			return (
 				<ElDialog
 					v-model={visible.value}
-					class={ns.b()}
+					class={[ns.b(), props.className]}
+					style={props.style}
 					title={props.title}
 					appendToBody={props.appendToBody}
 					destroy-on-close

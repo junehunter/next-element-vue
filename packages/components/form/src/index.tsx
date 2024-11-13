@@ -30,6 +30,7 @@ import NumberRangePicker from './widgets/number-range-picker';
 import InputTableSelect from './widgets/input-table-select';
 import UploadImage from './widgets/upload-image';
 import NextTreeSelect from './widgets/tree-select';
+import NestTreeCascader from './widgets/tree-cascader';
 
 const ns = useNamespace('form');
 export default defineComponent({
@@ -506,7 +507,25 @@ export default defineComponent({
 					></UploadImage>
 				);
 			} else if (col.type === 'treeSelect') {
-				return <NextTreeSelect v-model={formParams[col.prop]} disabled={valueExist(col.disabled, false)} column={col} formParams={formParams}></NextTreeSelect>;
+				return (
+					<NextTreeSelect
+						v-model={formParams[col.prop]}
+						disabled={valueExist(col.disabled, false)}
+						column={col}
+						formParams={formParams}
+						onChange={(...arg: any) => col.onChange?.(...arg, col, formParams, formColumns)}
+					></NextTreeSelect>
+				);
+			} else if (col.type === 'cascader') {
+				return (
+					<NestTreeCascader
+						v-model={formParams[col.prop]}
+						disabled={valueExist(col.disabled, false)}
+						column={col}
+						formParams={formParams}
+						onChange={(...arg: any) => col.onChange?.(...arg, col, formParams, formColumns)}
+					></NestTreeCascader>
+				);
 			}
 		};
 		const getFormInstance = () => {
