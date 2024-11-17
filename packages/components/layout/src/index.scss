@@ -54,6 +54,7 @@ $block: 'layout';
             display: flex;
             align-items: center;
             color: $layout-font-color;
+            white-space: nowrap;
             .user-photo {
                 $size: 32px;
                 width: $size;

@@ -68,6 +68,7 @@ const logo = new URL('/logo.svg', import.meta.url).href;
 const layoutOptions = ref<any>({
 	logo: logo,
 	profile: logo,
+	userName: '超级管理员',
 	menuTree: menuTree,
 	menuRouter: false,
 	showTabs: isTabs.value,

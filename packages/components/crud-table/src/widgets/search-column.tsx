@@ -3,7 +3,7 @@ import { ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNu
 import type { SearchColumnProps } from '../config';
 import { searchFormSlotName } from '../hook';
 import { useLocale } from 'packages/hooks';
-import { NextTextEllipsis, NextTreeSelect } from 'packages/components';
+import { NextTextEllipsis, NextTreeSelect, NextTreeCascader } from 'packages/components';
 import { valueExist } from 'packages/hooks/global-hook';
 
 export default defineComponent({
@@ -216,6 +216,8 @@ export default defineComponent({
 				);
 			} else if (col.type === 'treeSelect') {
 				return <NextTreeSelect v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeSelect>;
+			} else if (col.type === 'cascader') {
+				return <NextTreeCascader v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeCascader>;
 			}
 		};
 		const renderContent = () => {

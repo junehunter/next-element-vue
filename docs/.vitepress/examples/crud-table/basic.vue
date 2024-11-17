@@ -22,6 +22,41 @@ const options = reactive({
 			label: '时间范围',
 			defaultValue: [startTime, endTime],
 		},
+		{
+			prop: 'region',
+			label: '地区',
+			type: 'cascader',
+			dicData: [
+				{
+					value: '1',
+					label: '广东省',
+					children: [
+						{
+							value: '11',
+							label: '广州市',
+							children: [
+								{
+									value: '111',
+									label: '天河区',
+								},
+								{
+									value: '112',
+									label: '天河区',
+								},
+							],
+						},
+						{
+							value: '12',
+							label: '番禺区',
+						},
+						{
+							value: '13',
+							label: '海珠区',
+						},
+					],
+				},
+			],
+		},
 	],
 	columns: [
 		{
