@@ -2,7 +2,7 @@
 import { ref, inject } from 'vue';
 import { useLanguage, localeContextKey } from '../../../../publish/dist/index.js';
 
-const locale = inject(localeContextKey, ref())!;
+const locale = inject(localeContextKey, ref())! as any;
 const layout = ref<string>('transverse');
 const isTabs = ref<boolean>(true);
 const menuTree = [
@@ -19,6 +19,35 @@ const menuTree = [
 			icon: 'iconfont monitor-shouye-shouye',
 		},
 		children: [],
+	},
+	{
+		id: '11',
+		path: '',
+		name: '',
+		meta: {
+			title: '其它',
+			isLink: '',
+			isHide: false,
+			isKeepAlive: false,
+			isAffix: false,
+			icon: 'iconfont monitor-data-Inquire',
+		},
+		children: [
+			{
+				id: '12',
+				path: '/11/12',
+				name: 'AiboxBoxInfo11',
+				meta: {
+					title: '其它111',
+					isLink: '',
+					isHide: false,
+					isKeepAlive: false,
+					isAffix: false,
+					icon: 'iconfont monitor-shujuchaxun',
+				},
+				children: [],
+			},
+		],
 	},
 	{
 		id: '25',
@@ -75,6 +104,7 @@ const layoutOptions = ref<any>({
 	tabs: [],
 	setting: {
 		themeColor: '#1E90FF',
+		layout: layout.value,
 	},
 });
 const layoutRef = ref<any>();
@@ -101,6 +131,7 @@ const changeOptions = opt => {};
 				<el-radio-button value="columns">分栏布局</el-radio-button>
 				<el-radio-button value="classic">经典布局</el-radio-button>
 				<el-radio-button value="defaults">默认布局</el-radio-button>
+				<el-radio-button value="composite">综合布局</el-radio-button>
 			</el-radio-group>
 			<div>
 				<span style="padding: 0 20px">是否显示导航栏</span>

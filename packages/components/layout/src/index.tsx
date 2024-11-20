@@ -7,6 +7,7 @@ import defaults from './defaults/index';
 import transverse from './transverse/index';
 import columns from './columns/index';
 import classic from './classic/index';
+import composite from './composite/index';
 
 const ns = useNamespace('layout');
 
@@ -16,6 +17,7 @@ const layouts: any = {
 	transverse: markRaw(transverse), // 横向布局
 	columns: markRaw(columns), // 分栏布局
 	classic: markRaw(classic), // 经典布局
+	composite: markRaw(composite), // 综合布局，顶部一级菜单，左侧子菜单
 };
 // 如果是数组对象，则直接返回 srcValue，进行覆盖
 const customizerCoverArray = (objValue, srcValue) => {
