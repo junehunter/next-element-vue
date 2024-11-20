@@ -50,7 +50,7 @@ export default defineComponent({
 		);
 		const renderContent = () => {
 			return (
-				<ElMenu class={[ns.b(), props.className]} style={props.style} defaultActive={activePath.value} router={props.router} mode={props.mode} ellipsis>
+				<ElMenu class={[ns.b(), props.className]} style={props.style} popper-class={ns.b('popper')} defaultActive={activePath.value} router={props.router} mode={props.mode} ellipsis>
 					{/* 必须要先循环遍历一遍，直接调用递归组件NextMenuItem时ellipsis有bug */}
 					<>
 						{props.menuTree.map(item => {

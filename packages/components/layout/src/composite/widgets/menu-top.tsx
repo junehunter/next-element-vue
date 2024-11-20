@@ -55,6 +55,9 @@ export default defineComponent({
 			to => {
 				const parentNode = findParentNode(to.fullPath, props.menuTree);
 				activeMenuId.value = parentNode?.id;
+				if (parentNode?.id) {
+					updateSubmentTree(parentNode.children);
+				}
 			}
 		);
 		const findTreeFirst = (tree: MenuItemInterface[]) => {
@@ -79,7 +82,7 @@ export default defineComponent({
 		};
 		const renderContent = () => {
 			return (
-				<ElMenu class={[ns.b(), props.className]} style={props.style} defaultActive={activeMenuId.value} mode="horizontal" ellipsis>
+				<ElMenu class={[ns.b(), props.className]} style={props.style} popper-class={ns.b('popper')} defaultActive={activeMenuId.value} mode="horizontal" ellipsis>
 					<>
 						{props.menuTree.map(item => {
 							return !valueExist(item.meta?.isHide, false) ? (
