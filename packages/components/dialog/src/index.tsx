@@ -68,6 +68,10 @@ export default defineComponent({
 			type: String,
 			default: '15vh',
 		},
+		nofill: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ['close'],
 	setup(props, { emit, slots }) {
@@ -87,7 +91,7 @@ export default defineComponent({
 			return (
 				<ElDialog
 					v-model={visible.value}
-					class={[ns.b(), props.className]}
+					class={[ns.b(), props.className, props.nofill && ns.b('nofill')]}
 					style={props.style}
 					title={props.title}
 					appendToBody={props.appendToBody}

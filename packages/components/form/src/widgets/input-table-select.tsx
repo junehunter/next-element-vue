@@ -235,6 +235,7 @@ const InputTableSelect = defineComponent({
 						title={tableSelectDialog.title}
 						closeOnClickModal={_options.closeOnClickModal}
 						width={_options.dialogWidth}
+						appendToBody={valueExist(_options.dialogAppendToBody, true)}
 						modal={false}
 						onClose={onCloseTableDialog}
 					>

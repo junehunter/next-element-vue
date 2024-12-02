@@ -71,6 +71,11 @@
         cursor: se-resize;
     }
 }
+.#{bf('dialog', 'nofill')} {
+	.el-dialog__body {
+		padding: 0;
+	}
+}
 .#{bem('dialog')}.is-fullscreen {
 	border-radius: 3px;
 	overflow-y: hidden;
