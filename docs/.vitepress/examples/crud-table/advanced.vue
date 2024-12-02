@@ -130,7 +130,7 @@ const options = reactive({
 				label: 'name',
 			},
 			onTableSelect: (formParams, rows, col) => {
-				console.log(formParams, rows, col);
+				// console.log(formParams, rows, col);
 			},
 			tableSelectDefaultValue: (row, col, done) => {
 				const tags = row.slelectUserTags;
@@ -138,7 +138,8 @@ const options = reactive({
 			},
 			tableSelect: {
 				selectType: 'checkbox',
-				loadData: (searchParams, resolve) => {
+				loadData: (formParams: any, { pageIndex, pageSize }: any, resolve: Function) => {
+					console.log(formParams);
 					setTimeout(() => {
 						const res = {
 							data: [

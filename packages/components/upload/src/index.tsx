@@ -27,7 +27,7 @@ export default defineComponent({
 			default: 'image/*',
 		},
 	},
-	emits: ['change'],
+	emits: ['change', 'remove', 'preview'],
 	setup() {
 		const { appContext } = getCurrentInstance()! as any;
 		const { t } = useLocale();
@@ -39,9 +39,13 @@ export default defineComponent({
 		const emit = this.$emit;
 		const _t = this.t;
 		const uploadfilesPreview = ref<UploadUserFile[]>([]);
-		const _onChange = (uploadfile, uploadfiles) => {
+		const _onChange = (uploadfile: UploadUserFile, uploadfiles: UploadUserFile[]) => {
 			uploadfilesPreview.value = uploadfiles;
 			emit('change', uploadfile, uploadfiles);
+		};
+		const _onRemove = (uploadfile: UploadUserFile, uploadfiles: UploadUserFile[]) => {
+			uploadfilesPreview.value = uploadfiles;
+			emit('remove', uploadfile, uploadfiles);
 		};
 		const body = document.getElementsByTagName('body')[0];
 		let previewImagesContainer: any = null;
@@ -68,6 +72,7 @@ export default defineComponent({
 			});
 			previewImagesContainer.appContext = this.appContext;
 			render(previewComponent, previewImagesContainer);
+			emit('preview', uploadFile);
 		};
 		const renderUploadContent = () => {
 			if (props.listType === 'picture-card') {
@@ -87,7 +92,7 @@ export default defineComponent({
 			);
 		};
 		return (
-			<ElUpload class={[ns.b(), props.className]} style={props.style} list-type={props.listType} auto-upload={false} on-preview={_onPreview} onChange={_onChange}>
+			<ElUpload class={[ns.b(), props.className]} style={props.style} list-type={props.listType} auto-upload={false} on-preview={_onPreview} onChange={_onChange} onRemove={_onRemove}>
 				{{
 					trigger: () => (slots.default ? slots.default() : renderUploadContent()),
 				}}

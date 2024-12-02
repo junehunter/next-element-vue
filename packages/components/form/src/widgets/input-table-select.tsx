@@ -1,5 +1,5 @@
 import { defineComponent, reactive, ref, toRaw, computed, watch } from 'vue';
-import { ElButton, ElTableColumn, ElCheckbox, ElRadioGroup, ElRadio, ElTag, ElTooltip } from 'element-plus';
+import { ElButton, ElTableColumn, ElCheckboxGroup, ElCheckbox, ElRadioGroup, ElRadio, ElTag, ElTooltip } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
 import { useNamespace, useLocale } from 'packages/hooks';
@@ -12,7 +12,7 @@ import type { DicData } from '../config';
 
 const ns = useNamespace('form');
 const InputTableSelect = defineComponent({
-	name: 'InputTableSelect',
+	name: 'NextInputTableSelect',
 	props: {
 		modelValue: {
 			type: [Array, String, Number, Boolean, Object],
@@ -25,6 +25,10 @@ const InputTableSelect = defineComponent({
 			default: () => ({}),
 		},
 		disabled: {
+			type: Boolean,
+			default: false,
+		},
+		closable: {
 			type: Boolean,
 			default: false,
 		},
@@ -41,11 +45,13 @@ const InputTableSelect = defineComponent({
 	setup(props, { emit }) {
 		const { t } = useLocale();
 		const _disabled = props.disabled;
+		const _closable = props.closable;
 		const _column = props.column;
 		const _placeholder = _column.placeholder || t('next.form.select') + _column.label;
 		const _tableDefaultConfig = deepClone(tableDefaultConfig);
 		const _tableSelectConfig = deepClone(tableSelectConfig);
 		const _options = merge(_tableDefaultConfig, _tableSelectConfig, _column.tableSelect);
+		const { value: propsValue, label: propsLabel } = _column.tableSelectProps || { value: 'id', label: 'name' };
 		const tableSelectDialog = reactive({
 			visible: false,
 			title: _column.label + t('next.form.tableSelect'),
@@ -68,34 +74,32 @@ const InputTableSelect = defineComponent({
 		});
 		const onConfirmSearch = (searchParams: any) => {
 			tableReactive.loading = true;
-			_options.loadData?.(searchParams, tableReactive.page, res => {
+			_options.loadData?.(searchParams, tableReactive.page, (res: any) => {
 				tableReactive.data = res.data || [];
 				tableReactive.page.total = res.total || 0;
 				tableReactive.loading = false;
 			});
 		};
 		const multipleSelection = ref<any[]>([]);
+		const sinleSelection = ref<string | number>('');
 		_column.tableSelectDefaultValue?.(props.formParams, _column, (rows: any[]) => {
 			if (rows?.length) {
 				_column.tableSelectRows = rows;
 				multipleSelection.value = rows;
+				sinleSelection.value = rows[0][propsValue];
 			}
 		});
-		const sinleSelection = ref<string | number>('');
 		const _disabledSelect = computed(() => {
 			if (_options.selectType === 'radio') {
 				return !sinleSelection.value;
 			}
 			return multipleSelection.value.length === 0;
 		});
-		const isSelected = row => {
-			return multipleSelection.value.includes(row);
-		};
 		const onchangeCheckBox = (event, row) => {
 			if (event) {
 				multipleSelection.value.push(row);
 			} else {
-				const index = multipleSelection.value.indexOf(row);
+				const index = multipleSelection.value.findIndex(o => o[propsValue] === row[propsValue]);
 				const included = index !== -1;
 				if (included) {
 					multipleSelection.value.splice(index, 1);
@@ -106,7 +110,6 @@ const InputTableSelect = defineComponent({
 			multipleSelection.value = [];
 			sinleSelection.value = '';
 		};
-		const { value: propsValue, label: propsLabel } = _column.tableSelectProps || { value: 'id', label: 'name' };
 		const onConfirmSelect = () => {
 			const rows = toRaw(multipleSelection.value);
 			const _rows = arrayObjNoRepeat(rows, propsValue);
@@ -120,7 +123,7 @@ const InputTableSelect = defineComponent({
 			const rowKey = _options.rowKey;
 			const value = valueExist(row[rowKey], index);
 			if (_options.selectType === 'checkbox') {
-				return <ElCheckbox modelValue={isSelected(toRaw(row))} onChange={event => onchangeCheckBox(event, toRaw(row))}></ElCheckbox>;
+				return <ElCheckbox value={value} onChange={event => onchangeCheckBox(event, toRaw(row))}></ElCheckbox>;
 			}
 			return (
 				<ElRadio
@@ -138,8 +141,8 @@ const InputTableSelect = defineComponent({
 			const _rows = arrayObjNoRepeat(multipleSelection.value, propsValue);
 			const rows = _rows.map(row => {
 				return {
-					value: row[propsValue || 'value'],
-					label: row[propsLabel || 'label'],
+					value: row[propsValue],
+					label: row[propsLabel],
 				};
 			});
 			if (rows.length > 1) {
@@ -153,6 +156,30 @@ const InputTableSelect = defineComponent({
 		watch(
 			() => _column.tableSelectRows,
 			() => {
+				_updateTags();
+			},
+			{
+				deep: true,
+				immediate: true,
+			}
+		);
+		const _multipleSelection = ref<string | number[]>([]);
+		watch(
+			() => [props.formParams[_column.prop], multipleSelection.value],
+			() => {
+				_multipleSelection.value = multipleSelection.value.map(o => o[propsValue]);
+				_updateTags();
+			},
+			{
+				deep: true,
+				immediate: true,
+			}
+		);
+		const _sinleSelection = ref<string | number>(null);
+		watch(
+			() => [props.formParams[_column.prop], sinleSelection.value],
+			() => {
+				_sinleSelection.value = sinleSelection.value;
 				_updateTags();
 			},
 			{
@@ -176,7 +203,7 @@ const InputTableSelect = defineComponent({
 								<span class={ns.em('input-table', 'value')}>
 									{tags.value.map((tag, index) => {
 										return (
-											<ElTag closable={!_disabled} onClose={() => _onCloseTag(tag, index)}>
+											<ElTag closable={!_closable} onClose={() => _onCloseTag(tag, index)}>
 												{tag.label}
 											</ElTag>
 										);
@@ -188,7 +215,7 @@ const InputTableSelect = defineComponent({
 												content: () =>
 													tagsMore.value.map((tag, index) => {
 														return (
-															<ElTag closable={!_disabled} onClose={() => _onCloseTag(tag, index + 1)}>
+															<ElTag closable={!_closable} onClose={() => _onCloseTag(tag, index + 1)}>
 																{tag.label}
 															</ElTag>
 														);
@@ -212,22 +239,41 @@ const InputTableSelect = defineComponent({
 						onClose={onCloseTableDialog}
 					>
 						<div class={ns.em('input-table', 'content')}>
-							<ElRadioGroup modelValue={sinleSelection.value}>
-								<NextCrudTable
-									options={_options}
-									loading={tableReactive.loading}
-									data={tableReactive.data}
-									page={tableReactive.page}
-									onConfirm-search={onConfirmSearch}
-									onClick-add-edit={onClickAddEdit}
-								>
-									<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
-										{{
-											default: ({ row, $index }) => renderSelectTypeContent(row, $index),
-										}}
-									</ElTableColumn>
-								</NextCrudTable>
-							</ElRadioGroup>
+							{_options.selectType === 'checkbox' ? (
+								<ElCheckboxGroup modelValue={_multipleSelection.value}>
+									<NextCrudTable
+										options={_options}
+										loading={tableReactive.loading}
+										data={tableReactive.data}
+										page={tableReactive.page}
+										onConfirm-search={onConfirmSearch}
+										onClick-add-edit={onClickAddEdit}
+									>
+										<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
+											{{
+												default: ({ row, $index }) => renderSelectTypeContent(row, $index),
+											}}
+										</ElTableColumn>
+									</NextCrudTable>
+								</ElCheckboxGroup>
+							) : (
+								<ElRadioGroup modelValue={_sinleSelection.value}>
+									<NextCrudTable
+										options={_options}
+										loading={tableReactive.loading}
+										data={tableReactive.data}
+										page={tableReactive.page}
+										onConfirm-search={onConfirmSearch}
+										onClick-add-edit={onClickAddEdit}
+									>
+										<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
+											{{
+												default: ({ row, $index }) => renderSelectTypeContent(row, $index),
+											}}
+										</ElTableColumn>
+									</NextCrudTable>
+								</ElRadioGroup>
+							)}
 						</div>
 						<div class={ns.em('input-table', 'footer')}>
 							<ElButton onClick={onResetTableSelect}>{t('next.form.reset')}</ElButton>

@@ -359,6 +359,7 @@ export default defineComponent({
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
 						multiple={valueExist(col.multiple, false)}
+						filterable={valueExist(col.filterable, false)}
 						collapse-tags-tooltip
 						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns)}
 					>
