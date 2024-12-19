@@ -8,7 +8,7 @@ const list = ref<any>([
 		labels: [
 			{
 				type: 3,
-				startX: 182.5,
+				startX: 182,
 				startY: 28,
 				rectWidth: 418,
 				rectHeight: 288,
@@ -17,7 +17,7 @@ const list = ref<any>([
 			},
 			{
 				type: 1,
-				startX: 216.5,
+				startX: 216,
 				startY: 163,
 				rectWidth: 344,
 				rectHeight: 302,
@@ -27,11 +27,16 @@ const list = ref<any>([
 		],
 	},
 	{
+		id: 21,
+		imageSrc: new URL('./assets/001.jpg', import.meta.url).href,
+		labels: [],
+	},
+	{
 		id: 2,
 		imageSrc: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
 		labels: [
 			{
-				startX: 264.5,
+				startX: 264,
 				startY: 172,
 				rectWidth: 207,
 				rectHeight: 221,

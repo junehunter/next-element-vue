@@ -1,7 +1,9 @@
 import { defineComponent, inject, onMounted, onUnmounted, ref, toRef } from 'vue';
-import type { PropType, CSSProperties } from 'vue';
+import type { PropType, CSSProperties, Ref } from 'vue';
 import type { RectProps, ResizeCorner } from '../hooks/canvas-context-hook';
 import { useChangeColor } from 'packages/utils/theme';
+import type { ScaleTranslate, ScaleTranslateManager } from '../config';
+import { rectToRestore } from '../hooks/canvas-drag-zoom';
 
 const { hexToRgb } = useChangeColor();
 export default defineComponent({
@@ -21,6 +23,8 @@ export default defineComponent({
 	},
 	emits: ['draggle-resize', 'contextmenu'],
 	setup(props, { emit }) {
+		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
+		const scaleTranslate: Ref<ScaleTranslate> = scaleTranslateManager.scaleTranslate;
 		const isDraggle = ref<boolean>(false);
 		const isResizeCorner = ref<ResizeCorner>({
 			topLeft: false,
@@ -68,22 +72,28 @@ export default defineComponent({
 			e.stopPropagation();
 			isResizeCorner.value[corner] = true;
 		};
-		const min_size = 30;
 		const onMousemove = (e: MouseEvent) => {
+			const { scale, x, y } = scaleTranslate.value;
+			const min_size = 30 / scale;
+			// 相对完整画布屏幕坐标
+			const startX = Math.ceil(rect.value.startX * scale + x);
+			const startY = Math.ceil(rect.value.startY * scale + y);
 			if (isDraggle.value) {
 				const newLeft = e.clientX - parentRect.left - draggleOffset.value.diff_x;
 				const newTop = e.clientY - parentRect.top - draggleOffset.value.diff_y;
-				rect.value.startX = Math.max(0, Math.min(newLeft, parentRect.width - rect.value.rectWidth));
-				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
+				const offsetX = Math.ceil((newLeft - x) / scale);
+				const offsetY = Math.ceil((newTop - y) / scale);
+				rect.value.startX = Math.max(0, Math.min(offsetX, parentRect.width - rect.value.rectWidth));
+				rect.value.startY = Math.max(0, Math.min(offsetY, parentRect.height - rect.value.rectHeight));
 			}
 			if (isResizeCorner.value.bottomCenter) {
-				let newHeight = e.clientY - parentRect.top - rect.value.startY;
+				let newHeight = Math.floor((e.clientY - parentRect.top - startY) / scale);
 				if (newHeight < min_size) newHeight = min_size;
 				if (newHeight + rect.value.startY > parentRect.height) newHeight = parentRect.height - rect.value.startY;
 				rect.value.rectHeight = newHeight;
 			}
 			if (isResizeCorner.value.topCenter) {
-				let newTop = e.clientY - parentRect.top;
+				let newTop = Math.floor((e.clientY - parentRect.top - y) / scale);
 				let newHeight = rect.value.startY - newTop + rect.value.rectHeight;
 				if (newTop < 0) return;
 				if (newHeight < min_size) return;
@@ -91,7 +101,7 @@ export default defineComponent({
 				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
 			}
 			if (isResizeCorner.value.leftCenter) {
-				let newLeft = e.clientX - parentRect.left;
+				let newLeft = Math.floor((e.clientX - parentRect.left - x) / scale);
 				let newWidth = rect.value.startX - newLeft + rect.value.rectWidth;
 				if (newLeft < 0) return;
 				if (newWidth < min_size) return;
@@ -99,14 +109,14 @@ export default defineComponent({
 				rect.value.rectWidth = newWidth;
 			}
 			if (isResizeCorner.value.rightCenter) {
-				let newWidth = e.clientX - parentRect.left - rect.value.startX;
+				let newWidth = Math.floor((e.clientX - parentRect.left - startX) / scale);
 				if (newWidth < min_size) newWidth = min_size;
 				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
 				rect.value.rectWidth = newWidth;
 			}
 			if (isResizeCorner.value.bottomRight) {
-				let newWidth = e.clientX - parentRect.left - rect.value.startX;
-				let newHeight = e.clientY - parentRect.top - rect.value.startY;
+				let newWidth = Math.floor((e.clientX - parentRect.left - startX) / scale);
+				let newHeight = Math.floor((e.clientY - parentRect.top - startY) / scale);
 				if (newWidth < min_size) newWidth = min_size;
 				if (newHeight < min_size) newHeight = min_size;
 				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
@@ -115,9 +125,9 @@ export default defineComponent({
 				rect.value.rectHeight = newHeight;
 			}
 			if (isResizeCorner.value.bottomLeft) {
-				let newLeft = e.clientX - parentRect.left;
+				let newLeft = Math.floor((e.clientX - parentRect.left - x) / scale);
 				let newWidth = rect.value.startX - newLeft + rect.value.rectWidth;
-				let newHeight = e.clientY - parentRect.top - rect.value.startY;
+				let newHeight = Math.floor((e.clientY - parentRect.top - startY) / scale);
 				if (newLeft < 0) return;
 				if (newWidth < min_size) return;
 				if (newHeight < min_size) newHeight = min_size;
@@ -127,13 +137,13 @@ export default defineComponent({
 				rect.value.rectHeight = newHeight;
 			}
 			if (isResizeCorner.value.topLeft) {
-				let newTop = e.clientY - parentRect.top;
+				let newTop = Math.floor((e.clientY - parentRect.top - y) / scale);
 				let newHeight = rect.value.startY - newTop + rect.value.rectHeight;
 				if (newTop < 0) return;
 				if (newHeight < min_size) return;
 				rect.value.rectHeight = newHeight;
 				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
-				let newLeft = e.clientX - parentRect.left;
+				let newLeft = Math.floor((e.clientX - parentRect.left - x) / scale);
 				let newWidth = rect.value.startX - newLeft + rect.value.rectWidth;
 				if (newLeft < 0) return;
 				if (newWidth < min_size) return;
@@ -141,13 +151,13 @@ export default defineComponent({
 				rect.value.rectWidth = newWidth;
 			}
 			if (isResizeCorner.value.topRight) {
-				let newTop = e.clientY - parentRect.top;
+				let newTop = Math.floor((e.clientY - parentRect.top - y) / scale);
 				let newHeight = rect.value.startY - newTop + rect.value.rectHeight;
 				if (newTop < 0) return;
 				if (newHeight < min_size) return;
 				rect.value.rectHeight = newHeight;
 				rect.value.startY = Math.max(0, Math.min(newTop, parentRect.height - rect.value.rectHeight));
-				let newWidth = e.clientX - parentRect.left - rect.value.startX;
+				let newWidth = Math.floor((e.clientX - parentRect.left - startX) / scale);
 				if (newWidth < min_size) newWidth = min_size;
 				if (newWidth + rect.value.startX > parentRect.width) newWidth = parentRect.width - rect.value.startX;
 				rect.value.rectWidth = newWidth;
@@ -166,9 +176,11 @@ export default defineComponent({
 	},
 	render() {
 		const _ns = inject('ns', {} as any);
+		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
+		const scaleTranslate: Ref<ScaleTranslate> = scaleTranslateManager.scaleTranslate;
 		const props = this.$props;
 		const draggableRectStyle = () => {
-			const { startX, startY, rectWidth, rectHeight } = this.rect;
+			const { startX, startY, rectWidth, rectHeight } = rectToRestore(this.rect, scaleTranslate.value);
 			const style = {
 				top: startY + 'px',
 				left: startX + 'px',

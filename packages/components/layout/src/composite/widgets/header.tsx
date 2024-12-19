@@ -1,8 +1,8 @@
 import { defineComponent, inject, computed } from 'vue';
-import { slots_config } from '../../config';
 import LogoView from '../../widgets/logo';
+import { slots_config } from '../../config';
 import HeaderTools from '../../widgets/header-tools';
-import NextMenu from 'packages/components/menu';
+import MenuTop from './menu-top';
 import { useChangeColor } from 'packages/utils/theme';
 
 const { getLightColor } = useChangeColor();
@@ -28,9 +28,7 @@ export default defineComponent({
 			return (
 				<header class={_ns.b('header')} style={headerStyle.value}>
 					<LogoView></LogoView>
-					<div class={_ns.bf('header', 'menu')}>
-						{slots[slots_config.headerMenu] ? slots[slots_config.headerMenu]() : <NextMenu menuTree={_config.menuTree} router={_config.menuRouter} mode={_config.menuMode}></NextMenu>}
-					</div>
+					<div class={_ns.bf('header', 'menu')}>{slots[slots_config.headerMenu] ? slots[slots_config.headerMenu]() : <MenuTop menuTree={_config.menuTree}></MenuTop>}</div>
 					<div class={_ns.bf('header', 'right')}>
 						<HeaderTools>{__slots_header_tools}</HeaderTools>
 					</div>

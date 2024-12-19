@@ -26,11 +26,23 @@ const TableColumnDynamic = defineComponent({
 		const _options = inject('options', {} as any);
 		const options = isRef(_options) ? unref(_options) : _options;
 		const columnOption = props.columnOption;
+		// 自定义字典数据字段
 		const _dicKey = valueExist(columnOption.dicKey, 'value');
+		const _dicLabel = valueExist(columnOption.dicLabel, columnOption.treeSelectProps?.label, 'label');
+		// 树级选择器 分隔符
+		const _separator = valueExist(columnOption.treeSelectProps?.separator, ',');
 		const _formatterColumnValue = (value: any, dicData: DictData[]) => {
+			// 树级选择器 格式化显示
+			if (Array.isArray(value)) {
+				const temp = [];
+				value.forEach(val => {
+					temp.push(_formatterColumnValue(val, dicData));
+				});
+				return temp.join(_separator);
+			}
 			const item = dicData.find(o => o[_dicKey] == value);
 			if (item) {
-				return item.label;
+				return item[_dicLabel];
 			} else {
 				return value;
 			}

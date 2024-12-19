@@ -40,6 +40,7 @@ export default defineConfig({
 		},
 	},
 	server: {
+		host: true,
 		strictPort: true,
 		port: 3006, // 设置 VitePress 的启动端口
 	},

@@ -1,4 +1,4 @@
-import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch, unref } from 'vue';
+import { defineComponent, provide, ref, computed, onMounted, onUnmounted, nextTick, watch, unref, toRaw } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar, ElIcon, ElImage, ElMessage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
@@ -13,6 +13,7 @@ import RightLabel from './widgets/right-label';
 import { convertToLabel, canvertToCanvas } from './hooks/canvas-context-hook';
 import type { RectProps } from './hooks/canvas-context-hook';
 import defaultConfig from './config';
+import type { ScaleTranslate, ScaleTranslateManager } from './config';
 
 const ns = useNamespace('labelimg');
 export default defineComponent({
@@ -109,7 +110,9 @@ export default defineComponent({
 		};
 		const isChangeNodeLabels = () => {
 			const node = labelImages.value[activateNodeIndex.value];
-			return isEqual(node.labels, currentNode.value.labels);
+			const original_node = toRaw(node.labels).map((rect: RectProps) => convertToLabel(rect));
+			const current_node = currentNode.value.labels.map((rect: RectProps) => convertToLabel(rect));
+			return isEqual(original_node, current_node);
 		};
 		const switchKeydownAD = (e: KeyboardEvent) => {
 			const imageLength = labelImages.value.length;
@@ -171,6 +174,11 @@ export default defineComponent({
 					labelImages.value[activateNodeIndex.value] = imageItem ? imageItem : node;
 					activateNodeIndex.value = index;
 					loading.value = false;
+					scaleTranslate.value = {
+						scale: 1,
+						x: 0,
+						y: 0,
+					};
 				},
 				() => {
 					loading.value = false;
@@ -241,6 +249,21 @@ export default defineComponent({
 				});
 			}
 		};
+		const scaleTranslate = ref<ScaleTranslate>({
+			scale: 1,
+			x: 0,
+			y: 0,
+		});
+		provide('scaleTranslateManager', {
+			scaleTranslate,
+			onChangeScaleTranslate: (val: ScaleTranslate) => {
+				scaleTranslate.value = val;
+			},
+			onResetScaleTranslate: () => {
+				canvasContextRef.value!.resetScaleOffset();
+			},
+		} as ScaleTranslateManager);
+
 		expose({
 			convertToLabel,
 			canvertToCanvas,

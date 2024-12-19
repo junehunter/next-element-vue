@@ -3,7 +3,6 @@
 
 .#{bem('dialog')} {
 	border-radius: 6px;
-    transition: all 0.3s ease-out;
     padding: unset;
 	.el-dialog__header {
 		margin-right: unset;
@@ -71,6 +70,11 @@
         right: -10px;
         cursor: se-resize;
     }
+}
+.#{bf('dialog', 'nofill')} {
+	.el-dialog__body {
+		padding: 0;
+	}
 }
 .#{bem('dialog')}.is-fullscreen {
 	border-radius: 3px;

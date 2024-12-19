@@ -148,7 +148,7 @@ export default defineConfig({
 		sidebar: createdSidebar(),
 		footer: {
 			message: 'Released under the MIT License.',
-			copyright: 'Copyright © 2023 huangteng',
+			copyright: 'Copyright © 2024 huangteng',
 		},
 	},
 	markdown: {

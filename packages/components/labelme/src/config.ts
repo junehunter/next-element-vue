@@ -11,6 +11,18 @@ export interface ScaleTranslateManager {
 	onResetScaleTranslate: () => void;
 }
 
+export interface ShapesProps {
+	label?: string;
+	points: [number, number][];
+	shape_type?: string;
+}
+
+export interface LabelNodeProps {
+	imageWidth?: number;
+	imageHeight?: number;
+	shapes?: ShapesProps[];
+}
+
 export default {
 	minContentHeight: 500,
 };

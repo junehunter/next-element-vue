@@ -1,5 +1,6 @@
 import { isValueExist } from 'packages/hooks/global-hook';
-
+import type { Ref } from 'vue';
+import type { ScaleTranslate } from '../config';
 export interface ResizeCorner {
 	topLeft: boolean;
 	topCenter: boolean;
@@ -20,6 +21,8 @@ export interface RectProps {
 	rectHeight: number;
 	canvasWidth: number;
 	canvasHeight: number;
+	originWidth: number;
+	originHeight: number;
 }
 export interface CreateRectCanvasProps {
 	canvasWidth: number;
@@ -31,9 +34,10 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	image: HTMLImageElement;
 	labels: RectProps[];
 	scaleFactor?: number;
+	scaleOffset?: Ref<ScaleTranslate>;
 }
 
-export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, keyW?: Function) => {
+export const DrawRectCanvas = ({ canvas, originWidth, originHeight }: { canvas: HTMLCanvasElement; originWidth: number; originHeight: number }, callback?: Function, keyW?: Function) => {
 	const canvasWidth = canvas.width;
 	const canvasHeight = canvas.height;
 	const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
@@ -60,18 +64,22 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 			rectHeight: rectHeight,
 			canvasWidth: canvasWidth,
 			canvasHeight: canvasHeight,
+			originWidth: originWidth,
+			originHeight: originHeight,
 		};
 		callback && callback(rect, { endX, endY });
 	};
-	const documentKeydown = event => {
+	const documentKeydown = (event: KeyboardEvent) => {
+		if (isWKeyPressed) return;
 		if (event.code === 'KeyW') {
+			event.preventDefault();
 			isWKeyPressed = true;
 			canvas!.style.cursor = 'crosshair';
 			canvas!.style.zIndex = '11';
 			keyW && keyW();
 		}
 	};
-	const documentKeyup = event => {
+	const documentKeyup = (event: KeyboardEvent) => {
 		if (isDrawing) return;
 		if (event.code === 'KeyW') {
 			isWKeyPressed = false;
@@ -91,23 +99,23 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 	document.addEventListener('keydown', documentKeydown);
 	document.addEventListener('keyup', documentKeyup);
 	document.addEventListener('mouseup', documentMouseup);
-	const canvasMousedown = e => {
+	const canvasMousedown = (event: MouseEvent) => {
 		if (isWKeyPressed) {
 			isDrawing = true;
-			startX = e.offsetX;
-			startY = e.offsetY;
+			startX = event.offsetX;
+			startY = event.offsetY;
 		}
 	};
-	const canvasMousemove = e => {
+	const canvasMousemove = (event: MouseEvent) => {
 		if (isDrawing && isWKeyPressed) {
 			isRectDraw = true;
-			endX = e.offsetX;
-			endY = e.offsetY;
+			endX = event.offsetX;
+			endY = event.offsetY;
 			drawRect();
 		}
 	};
-	const canvasMouseup = e => {
-		e.stopPropagation();
+	const canvasMouseup = (event: MouseEvent) => {
+		event.stopPropagation();
 		if (!isRectDraw) return;
 		isDrawing = false;
 		isWKeyPressed = false;
@@ -120,7 +128,7 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 	canvas.addEventListener('mousemove', canvasMousemove);
 	canvas.addEventListener('mouseup', canvasMouseup);
 	const removeEventAll = () => {
-		document.removeEventListener('mousedown', documentKeydown);
+		document.removeEventListener('keydown', documentKeydown);
 		document.removeEventListener('keyup', documentKeyup);
 		document.removeEventListener('mouseup', documentMouseup);
 		canvas.removeEventListener('mousedown', canvasMousedown);
@@ -142,32 +150,48 @@ export const DrawRectCanvas = (canvas: HTMLCanvasElement, callback?: Function, k
 };
 export const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
-	const { ctx, labels, image, canvasWidth, canvasHeight } = options;
+	const { canvas, ctx, labels, image, canvasWidth, canvasHeight, scaleOffset } = options;
 	const updateLabels = () => {
+		canvas.width = canvasWidth;
+		if (scaleOffset.value) {
+			ctx.save();
+			ctx.translate(scaleOffset.value.x, scaleOffset.value.y);
+			ctx.scale(scaleOffset.value.scale, scaleOffset.value.scale);
+		}
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+		const scale = scaleOffset.value?.scale || 1;
+		const fontSize = 14 / scale;
+		const fontPadding = 6 / scale;
+		const lineWidth = 2 / scale;
 		for (let i = 0; i < labels.length; i++) {
 			const rect = labels[i];
 			const { startX, startY, rectWidth, rectHeight, type } = rect;
 			const color = colors[type % colors.length];
-			ctx.font = 'bold 14px serif';
+			ctx.font = `bold ${fontSize}px serif`;
 			ctx.textBaseline = 'top';
 			ctx.save();
 			ctx.strokeStyle = color;
+			ctx.lineWidth = lineWidth;
 			ctx.strokeRect(startX, startY, rectWidth, rectHeight);
 			if (isValueExist(rect.typeName) || isValueExist(rect.type)) {
 				const text = (rect.typeName || rect.type) as string;
 				ctx.fillStyle = color;
-				ctx.fillText(text, startX + 6, startY + 6);
+				ctx.fillText(text, startX + fontPadding, startY + fontPadding);
 			}
 			ctx.restore();
 		}
 	};
 	updateLabels();
 	const addDrawRect = (rect: RectProps, color = '#f30635') => {
+		const scale = scaleOffset.value?.scale || 1;
 		const { startX, startY, rectWidth, rectHeight } = rect;
+		ctx.save();
+		const lineWidth = 2 / scale;
+		ctx.lineWidth = lineWidth;
 		ctx.strokeStyle = color;
 		ctx.strokeRect(startX, startY, rectWidth, rectHeight);
+		ctx.restore();
 	};
 	const hitCanvasLabel = (x: number, y: number): any => {
 		let hit_rect = null,
@@ -190,6 +214,7 @@ export const DrawBaseCanvas = (options: DrawBaseCanvasProps) => {
 		hitCanvasLabel,
 	};
 };
+
 /**
  * 根据比例重新设置标注框位置和大小
  * @param labels

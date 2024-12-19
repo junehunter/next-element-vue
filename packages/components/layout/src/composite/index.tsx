@@ -1,17 +1,24 @@
-import { defineComponent, provide, ref, inject } from 'vue';
+import { defineComponent, provide, ref, inject, nextTick } from 'vue';
 import { useNamespace } from 'packages/hooks';
 import Header from './widgets/header';
 import Sidebar from './widgets/sidebar';
 import { NextTabs } from 'packages/components';
 import { slots_config } from '../config';
 
-const ns = useNamespace('layout-classic');
+const ns = useNamespace('layout-composite');
 export default defineComponent({
 	props: {},
 	setup() {
 		provide('ns', ns);
-
-		return { ns };
+		const submenuTree = ref([]);
+		provide('submenuTree', submenuTree);
+		provide('updateSubmentTree', (val: any) => {
+			submenuTree.value = [];
+			nextTick(() => {
+				submenuTree.value = val;
+			});
+		});
+		return { ns, submenuTree };
 	},
 	render() {
 		const slots = this.$slots;

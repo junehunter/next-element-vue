@@ -1,8 +1,109 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue';
+const classes = ref<any>(['动物-马', '动物-鹿', '动物-狼', '动物-狐狸']);
+const list = ref<any>([
+	{
+		id: 3,
+		imageSrc: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+		labels: [
+			{
+				path: [
+					[66, 272],
+					[85, 275],
+					[104, 260],
+					[130, 272],
+					[151, 280],
+					[168, 298],
+					[164, 340],
+					[154, 376],
+					[154, 399],
+					[143, 372],
+					[150, 346],
+					[135, 346],
+					[138, 394],
+					[130, 401],
+					[127, 373],
+					[117, 380],
+					[122, 404],
+					[99, 399],
+					[96, 360],
+					[92, 333],
+					[78, 345],
+					[64, 338],
+					[69, 308],
+				],
+			},
+			{
+				path: [
+					[560, 344],
+					[564, 331],
+					[582, 344],
+					[597, 353],
+					[627, 358],
+					[645, 359],
+					[654, 380],
+					[644, 386],
+					[637, 372],
+					[631, 379],
+					[637, 394],
+					[628, 395],
+					[618, 379],
+					[587, 379],
+					[588, 398],
+					[581, 394],
+					[580, 377],
+					[575, 357],
+					[567, 353],
+					[558, 363],
+					[551, 350],
+				],
+			},
+			{
+				path: [
+					[161, 282],
+					[198, 264],
+					[217, 271],
+					[251, 265],
+					[274, 281],
+					[300, 320],
+					[292, 320],
+					[273, 300],
+					[267, 316],
+					[258, 361],
+					[240, 359],
+					[243, 317],
+					[210, 322],
+					[223, 364],
+					[203, 364],
+					[195, 323],
+					[175, 312],
+					[174, 348],
+					[161, 345],
+					[161, 299],
+				],
+			},
+		],
+	},
+	{
+		id: 4,
+		imageSrc: 'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
+		labels: {},
+	},
+]);
+const onEditPolygon = (arg: any) => {
+	// console.log(arg);
+};
+const onSave = (node, done) => {
+	console.log(node);
+	setTimeout(() => {
+		done();
+	}, 500);
+};
+</script>
 
 <template>
 	<div class="container">
-		<NextLabelme></NextLabelme>
+		<NextLabelme :classes="classes" :data="list" @edit-polygon="onEditPolygon"  @save="onSave"></NextLabelme>
 	</div>
 </template>
 

@@ -3,7 +3,7 @@ import { ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNu
 import type { SearchColumnProps } from '../config';
 import { searchFormSlotName } from '../hook';
 import { useLocale } from 'packages/hooks';
-import { NextTextEllipsis, NextTreeSelect } from 'packages/components';
+import { NextTextEllipsis, NextTreeSelect, NextTreeCascader } from 'packages/components';
 import { valueExist } from 'packages/hooks/global-hook';
 
 export default defineComponent({
@@ -90,7 +90,7 @@ export default defineComponent({
 		];
 		const _onInputInteger = (val: any, key: string) => {
 			const value = val.replace(/\D/g, '');
-			formParams.value[key] = value;
+			formParams[key] = value;
 		};
 		const _onInputNumber = (val: any, key: string) => {
 			let value = val;
@@ -101,10 +101,10 @@ export default defineComponent({
 			value = value.replace('.', 'DUMMY');
 			value = value.replace(/\./g, '');
 			value = value.replace('DUMMY', '.');
-			formParams.value[key] = value;
+			formParams[key] = value;
 		};
 		const _onChangeNumberRange = (value: any, key: string) => {
-			formParams.value[key] = value;
+			formParams[key] = value;
 		};
 		const renderColItemContent = (col: SearchColumnProps) => {
 			const _disabled = valueExist(col.searchDisabled, col.disabled, false);
@@ -148,6 +148,10 @@ export default defineComponent({
 				);
 			} else if (col.type === 'select') {
 				const placeholder = t('next.form.select') + (col.searchPlaceholder || col.searchLabel || col.label);
+				// 当为多选且值为空字符会默认显示一个空标签，所以设置为空数组
+				if (!formParams[col.prop] && col.multiple) {
+					formParams[col.prop] = [];
+				}
 				return (
 					<ElSelect v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} multiple={col.multiple || false} collapse-tags collapse-tags-tooltip>
 						{col.dicData &&
@@ -212,6 +216,8 @@ export default defineComponent({
 				);
 			} else if (col.type === 'treeSelect') {
 				return <NextTreeSelect v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeSelect>;
+			} else if (col.type === 'cascader') {
+				return <NextTreeCascader v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeCascader>;
 			}
 		};
 		const renderContent = () => {

@@ -43,6 +43,7 @@ export default defineComponent({
 			const btnText = options.operationsBtnText;
 			const btnPlain = options.operationsBtnPlain;
 			const btnSize = options.operationsBtnSize;
+			const btnCfg = { text: btnText, plain: btnPlain, size: btnSize };
 			return (
 				<ElTableColumn
 					fixed="right"
@@ -52,9 +53,9 @@ export default defineComponent({
 					align={valueExist(options.operationsColumnAlign, options.cellAlign)}
 				>
 					{{
-						default: scoped => (
+						default: (scoped: any) => (
 							<>
-								{slots['operation-column-prefix']?.(scoped, { text: btnText, plain: btnPlain, size: btnSize })}
+								{slots['operation-column-prefix']?.({ scoped, btn: btnCfg })}
 								{options.editBtn ? (
 									<ElTooltip enterable={false} effect="dark" content={t('next.table.edit')} placement="top" disabled={operationsShowText.value}>
 										<ElButton
@@ -118,7 +119,7 @@ export default defineComponent({
 										</ElButton>
 									</ElTooltip>
 								) : null}
-								{slots['operation-column-suffix']?.(scoped, { text: btnText, plain: btnPlain, size: btnSize })}
+								{slots['operation-column-suffix']?.({ scoped, btn: btnCfg })}
 							</>
 						),
 					}}

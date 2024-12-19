@@ -19,16 +19,16 @@ export default defineComponent({
 				return '';
 			}
 		});
+		const __slots_header_tools: any = {};
+		if (slots[slots_config.headerToolsPrefix]) __slots_header_tools[slots_config.headerToolsPrefix] = () => slots[slots_config.headerToolsPrefix]();
+		if (slots[slots_config.headerToolsSuffix]) __slots_header_tools[slots_config.headerToolsSuffix] = () => slots[slots_config.headerToolsSuffix]();
 		const renderContent = () => {
 			return (
 				<header class={_ns.b('header')} style={headerStyle.value}>
 					<LogoView></LogoView>
 					<div class={_ns.bf('header', 'menu')}></div>
 					<div class={_ns.bf('header', 'right')}>
-						<HeaderTools>
-							{slots[slots_config.headerToolsPrefix]?.()}
-							{slots[slots_config.headerToolsSuffix]?.()}
-						</HeaderTools>
+						<HeaderTools>{__slots_header_tools}</HeaderTools>
 					</div>
 				</header>
 			);

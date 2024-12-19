@@ -6,6 +6,8 @@ import type { RectProps } from '../hooks/canvas-context-hook';
 import { NextSpinLoading } from 'packages/components';
 import ContextMenuLabel from './contextmenu-label';
 import DraggableRect from './draggable-rect';
+import { CanvasSceneDragZoom, rectToScaleOffset } from '../hooks/canvas-drag-zoom';
+import type { ScaleTranslate, ScaleTranslateManager } from '../config';
 export default defineComponent({
 	name: 'NextCanvasContext',
 	props: {
@@ -26,17 +28,26 @@ export default defineComponent({
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const _emit = inject('_emit', null as any);
+		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
+		const mainBasaeRef = ref<any>();
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const canvasRectRef = ref<HTMLCanvasElement>();
 		const labels = ref<RectProps[]>([]);
 		const drawBaseCanvas = ref<any>({});
-		const formatLabelsTypeName = (rowInfo: any) => {
+		const canvasDragZoom = ref<any>();
+		const formatLabelsTypeName = (rowInfo: any, originWidth: number, originHeight) => {
 			if (!rowInfo.labels) return [];
 			return rowInfo.labels.map((rect: RectProps) => {
 				const typeName = props.classes[rect.type] as string;
 				if (typeName) {
 					rect.typeName = typeName;
+				}
+				if (!rect.originWidth) {
+					rect.originWidth = originWidth;
+				}
+				if (!rect.originHeight) {
+					rect.originHeight = originHeight;
 				}
 				return rect;
 			});
@@ -68,9 +79,45 @@ export default defineComponent({
 			canvasRectRef.value!.style.height = canvasHeight + 'px';
 		};
 		const loadingImage = ref<boolean>(false);
+		const getCanvasWidthHeight = (image: HTMLImageElement) => {
+			const clientWidth = mainBasaeRef.value?.elementInstance.clientWidth as number;
+			const clientHeight = mainBasaeRef.value?.elementInstance.clientHeight as number;
+			let { width, height } = image;
+			let scaleFactor: number = 1;
+			// 当图片宽高都小于容器，放大
+			const scale = width / height;
+			if (scale > 1) {
+				// 宽度大于高度，宽度固定
+				width = clientWidth;
+				height = clientWidth / scale;
+			} else {
+				// 高度大于宽度，高度固定
+				width = clientHeight * scale;
+				height = clientHeight;
+			}
+			if (height > clientHeight) {
+				// 当图片高度大于容器高度，缩放
+				const scale = height / clientHeight;
+				height = clientHeight;
+				width = width / scale;
+			} else if (width > clientWidth) {
+				// 当图片宽度大于容器高度，缩放
+				const scale = width / clientWidth;
+				width = clientWidth;
+				height = height / scale;
+			}
+			const canvasWidth = parseInt(width.toString());
+			const canvasHeight = parseInt(height.toString());
+			scaleFactor = Number((canvasWidth / canvasHeight).toFixed(2));
+			return {
+				canvasWidth,
+				canvasHeight,
+				scaleFactor,
+				originWidth: image.width,
+				originHeight: image.height,
+			};
+		};
 		const renderImageLabel = (rowInfo: any) => {
-			labels.value = formatLabelsTypeName(rowInfo);
-			const clientHeight = canvasMainRef.value?.clientHeight as number;
 			const ctx = canvasBaseRef.value?.getContext('2d') as CanvasRenderingContext2D;
 			if (rowInfo?.imageSrc) {
 				const image = new Image();
@@ -78,18 +125,11 @@ export default defineComponent({
 				loadingImage.value = true;
 				image.onload = () => {
 					loadingImage.value = false;
-					let { width, height } = image;
-					// 当图片高度大于容器高度，缩放
-					if (height > clientHeight) {
-						// 缩放比例
-						const scale = height / clientHeight;
-						height = clientHeight;
-						image.style.height = height + 'px';
-						width = width / scale;
-					}
-					const canvasHeight = height;
-					const scaleFactor = parseFloat((canvasHeight / height).toFixed(3));
-					const canvasWidth = Math.ceil(width * scaleFactor);
+					const { canvasWidth, canvasHeight, scaleFactor, originWidth, originHeight } = getCanvasWidthHeight(image);
+					// 添加图片源宽高
+					labels.value = formatLabelsTypeName(rowInfo, originWidth, originHeight);
+					image.style.width = canvasWidth + 'px';
+					image.style.height = canvasHeight + 'px';
 					setContainerWidthHeight(canvasWidth, canvasHeight);
 					// 当跟上一次画布宽高不一直时，根据当前预览的比例重新设置标注框位置和大小
 					labels.value = formatCanvasLabelScale(labels.value, canvasHeight);
@@ -101,16 +141,22 @@ export default defineComponent({
 						canvasHeight,
 						labels: labels.value,
 						scaleFactor: scaleFactor,
+						scaleOffset: scaleTranslateManager.scaleTranslate,
 					});
 					drawBaseCanvas.value!.updateLabels = updateLabels;
 					drawBaseCanvas.value!.addDrawRect = addDrawRect;
 					drawBaseCanvas.value!.hitCanvasLabel = hitCanvasLabel;
 					const { clearCanvas, removeEventAll } = DrawRectCanvas(
-						canvasRectRef.value,
+						{
+							canvas: canvasRectRef.value,
+							originWidth,
+							originHeight,
+						},
 						(rect: RectProps, { endX, endY }: any) => {
 							activate_add_label.value = rect;
-							drawBaseCanvas.value.addDrawRect(rect);
-							updateContextmenuLabelFixed(endX, endY, rect);
+							const newRect = rectToScaleOffset(rect, scaleTranslateManager.scaleTranslate.value);
+							drawBaseCanvas.value.addDrawRect(newRect);
+							updateContextmenuLabelFixed(endX, endY, newRect);
 						},
 						() => {
 							onCloseDraggableRectFixed();
@@ -118,6 +164,11 @@ export default defineComponent({
 					);
 					drawBaseCanvas.value!.clearCanvasRect = clearCanvas;
 					drawBaseCanvas.value!.removeEventAll = removeEventAll;
+					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
+					canvasDragZoom.value.changeZoom((scaleOffset: ScaleTranslate) => {
+						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
+						drawBaseCanvas.value!.updateLabels();
+					});
 				};
 				image.onerror = () => {
 					loadingImage.value = false;
@@ -125,26 +176,33 @@ export default defineComponent({
 			}
 			canvasBaseRef.value.addEventListener('contextmenu', e => {
 				e.preventDefault();
-				const x = e.offsetX,
-					y = e.offsetY;
-				const { hit_rect } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
+				const offsetX = e.offsetX,
+					offsetY = e.offsetY;
+				const { scale, x, y } = scaleTranslateManager.scaleTranslate.value;
+				const new_x = Math.floor((offsetX - x) / scale),
+					new_y = Math.floor((offsetY - y) / scale);
+				const { hit_rect } = drawBaseCanvas.value!.hitCanvasLabel(new_x, new_y);
 				onCloseContentmenuLabel();
 				onCloseDraggableRectFixed();
 				if (hit_rect) {
 					nextTick(() => {
-						updateContextmenuLabelFixed(x, y, hit_rect);
+						updateContextmenuLabelFixed(offsetX, offsetY, hit_rect);
 					});
 				}
 			});
 			canvasBaseRef.value.addEventListener('click', e => {
-				const x = e.offsetX,
-					y = e.offsetY;
-				const { hit_rect, hit_index, color } = drawBaseCanvas.value!.hitCanvasLabel(x, y);
+				if (e.ctrlKey) return;
+				const offsetX = e.offsetX,
+					offsetY = e.offsetY;
+				const { scale, x, y } = scaleTranslateManager.scaleTranslate.value;
+				const new_x = Math.floor((offsetX - x) / scale),
+					new_y = Math.floor((offsetY - y) / scale);
+				const { hit_rect, hit_index, color } = drawBaseCanvas.value!.hitCanvasLabel(new_x, new_y);
 				onCloseDraggableRectFixed();
 				onCloseContentmenuLabel();
 				if (hit_rect) {
 					nextTick(() => {
-						updateDraggableRectFixed(x, y, hit_rect, hit_index, color);
+						updateDraggableRectFixed(offsetX, offsetY, hit_rect, hit_index, color);
 					});
 				}
 			});
@@ -161,6 +219,13 @@ export default defineComponent({
 					immediate: true,
 				}
 			);
+			watch(
+				() => props.classes,
+				() => {
+					const rowInfo = toRaw(props.rowInfo);
+					renderImageLabel(rowInfo);
+				}
+			);
 			// 当画布主体高度变化重新计算绘制
 			watch(
 				() => props.contextClientHeight,
@@ -174,7 +239,8 @@ export default defineComponent({
 			);
 		});
 		onUnmounted(() => {
-			drawBaseCanvas.value!.removeEventAll();
+			drawBaseCanvas.value!.removeEventAll?.();
+			canvasDragZoom.value!.destroy();
 		});
 		const contextmenuLabelFixed = ref<any>({
 			show: false,
@@ -238,11 +304,11 @@ export default defineComponent({
 		};
 		const onDraggleRectResize = (rect: RectProps) => {
 			draggableRectFixed.value.activateRect = rect;
-			drawBaseCanvas.value.updateLabels();
 			const i = labels.value.findIndex((o: RectProps) => isEqual(o, rect));
 			if (i > -1) {
 				labels.value.splice(i, 1, rect);
 			}
+			drawBaseCanvas.value.updateLabels();
 			const { rects, label_txt } = formatLabelsType();
 			_emit('change', rects, label_txt);
 			emit('change', rects, label_txt);
@@ -312,10 +378,13 @@ export default defineComponent({
 			onSelectedLabel,
 			onDeleteLabel,
 			rerenderImage,
+			resetScaleOffset: () => {
+				canvasDragZoom.value!.reset();
+			},
 		});
 		const renderContent = () => {
 			return (
-				<NextSpinLoading loading={loadingImage.value} class={[ns.b('loading')]}>
+				<NextSpinLoading ref={mainBasaeRef} loading={loadingImage.value} class={[ns.b('loading')]}>
 					<div ref={canvasMainRef} class={[ns.b('canvas')]}>
 						<canvas ref={canvasBaseRef} class={[ns.be('canvas', 'context')]}></canvas>
 						<canvas ref={canvasRectRef} class={[ns.be('canvas', 'rect')]}></canvas>

@@ -142,7 +142,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			append: valueExist(col.formAppend, col.append, null),
 			hide: valueExist(col.formHide, col.hide, false),
 			disabled: valueExist(col.formDisabled, col.disabled, false),
-			clearable: valueExist(col.formClearable, col.clearable, false),
+			clearable: valueExist(col.formClearable, col.clearable, true),
 			readonly: valueExist(col.formReadonly, col.readonly, false),
 			tip: valueExist(col.formTip, col.tip, null),
 			rules: valueExist(col.formRules, col.rules, null),

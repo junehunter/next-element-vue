@@ -4,6 +4,7 @@ import { useNamespace } from 'packages/hooks';
 import Header from './widgets/header';
 import Sidebar from './widgets/sidebar';
 import { NextTabs } from 'packages/components';
+import { slots_config } from '../config';
 
 const ns = useNamespace('layout-defaults');
 export default defineComponent({
@@ -19,6 +20,9 @@ export default defineComponent({
 		const _emit = inject('__emit__', {} as any);
 		const __slots_header: any = {};
 		if (slots.menu) __slots_header.menu = () => slots.menu();
+		const __slots_header_tools: any = {};
+		if (slots[slots_config.headerToolsPrefix]) __slots_header_tools[slots_config.headerToolsPrefix] = () => slots[slots_config.headerToolsPrefix]();
+		if (slots[slots_config.headerToolsSuffix]) __slots_header_tools[slots_config.headerToolsSuffix] = () => slots[slots_config.headerToolsSuffix]();
 		const isTabs = ref<boolean>(!!slots.tabs);
 		if (slots.tabs === undefined && _config.showTabs) {
 			isTabs.value = true;
@@ -27,7 +31,7 @@ export default defineComponent({
 			<ElContainer class={ns.b()}>
 				<Sidebar></Sidebar>
 				<div class={[ns.b('content')]}>
-					<Header></Header>
+					<Header>{__slots_header_tools}</Header>
 					{_config.showTabs ? (
 						slots.tabs ? (
 							slots.tabs?.()

@@ -74,6 +74,13 @@ export default {
 			saveLabel: 'save label',
 			instructions: 'instructions',
 			labelNoUpdate: 'No label data update',
+			zoomRestore: 'restore zoom',
+		},
+		labelme: {
+			saveLabel: 'saving...',
+			createPolygon: 'create polygon',
+			editPolygon: 'edit polygon',
+			deletePolyton: 'delete polygon',
 		},
 	},
 };

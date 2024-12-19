@@ -66,6 +66,10 @@ export default defineComponent({
 				type: 'columns',
 				text: '分栏',
 			},
+			{
+				type: 'composite',
+				text: '综合',
+			},
 		];
 		const _onChangeLayout = (event: MouseEvent, layout: LayoutItem) => {
 			event.stopPropagation();

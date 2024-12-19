@@ -5,6 +5,7 @@
 @import './columns/index.scss';
 @import './classic/index.scss';
 @import './defaults/index.scss';
+@import './composite/index.scss';
 
 $block: 'layout'; 
 .#{bf($block)} {
@@ -54,6 +55,7 @@ $block: 'layout';
             display: flex;
             align-items: center;
             color: $layout-font-color;
+            white-space: nowrap;
             .user-photo {
                 $size: 32px;
                 width: $size;
@@ -173,6 +175,7 @@ $block: 'layout';
                     }
                 }
             }
+            $bar-bg-color: #273352;
             &__transverse {
                 &::before {
                     content: '';
@@ -181,7 +184,7 @@ $block: 'layout';
                     right: 0px;
                     top: 0px;
                     height: 10px;
-                    background-color: #273352;
+                    background-color: $bar-bg-color;
                     z-index: 11;
                 }
             }
@@ -193,7 +196,7 @@ $block: 'layout';
                     right: 0px;
                     top: 0px;
                     height: 10px;
-                    background-color: rgba(#273352, 0.6);
+                    background-color: rgba($bar-bg-color, 0.1);
                     z-index: 11;
                 }
                 &::after {
@@ -203,7 +206,7 @@ $block: 'layout';
                     top: 0px;
                     bottom: 0px;
                     width: 10px;
-                    background-color: #273352;
+                    background-color: $bar-bg-color;
                 }
                 aside {
                     position: absolute;
@@ -211,7 +214,7 @@ $block: 'layout';
                     top: 0px;
                     bottom: 0px;
                     width: 15px;
-                    background-color: rgba(#273352, 0.3);
+                    background-color: rgba($bar-bg-color, 0.3);
                 }
             }
             &__classic {
@@ -222,17 +225,17 @@ $block: 'layout';
                     right: 0px;
                     top: 0px;
                     height: 10px;
-                    background-color: #273352;
+                    background-color: rgba($bar-bg-color, 0.3);
                     z-index: 11;
                 }
                 &::after {
                     content: '';
                     position: absolute;
                     left: 0px;
-                    top: 0px;
+                    top: 10px;
                     bottom: 0px;
                     width: 20px;
-                    background-color: rgba(#273352, 0.6);
+                    background-color: rgba($bar-bg-color, 0.8);
                 }
             }
             &__defaults {
@@ -243,7 +246,7 @@ $block: 'layout';
                     right: 0px;
                     top: 0px;
                     height: 10px;
-                    background-color: #273352;
+                    background-color: rgba($bar-bg-color, 0.1);
                     z-index: 11;
                 }
                 &::after {
@@ -253,7 +256,28 @@ $block: 'layout';
                     top: 0px;
                     bottom: 0px;
                     width: 20px;
-                    background-color: rgba(#273352, 0.6);
+                    background-color: rgba($bar-bg-color, 0.8);
+                }
+            }
+            &__composite {
+                &::before {
+                    content: '';
+                    position: absolute;
+                    left: 0px;
+                    right: 0px;
+                    top: 0px;
+                    height: 10px;
+                    background-color: $bar-bg-color;
+                    z-index: 11;
+                }
+                &::after {
+                    content: '';
+                    position: absolute;
+                    left: 0px;
+                    top: 10px;
+                    bottom: 0px;
+                    width: 20px;
+                    background-color: rgba($bar-bg-color, 0.6);
                 }
             }
             >li.is-active {
