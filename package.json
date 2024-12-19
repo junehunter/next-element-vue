@@ -1,6 +1,6 @@
 {
 	"name": "next-element-vue",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
@@ -97,7 +97,7 @@
 		"rollup-plugin-vue": "6.0.0",
 		"sass": "^1.68.0",
 		"simple-git-hooks": "^2.9.0",
-		"typescript": "^5.2.2",
+		"typescript": "^5.7.2",
 		"unplugin-vue-macros": "^2.5.1",
 		"video.js": "^8.6.0",
 		"vitest": "^0.34.5",

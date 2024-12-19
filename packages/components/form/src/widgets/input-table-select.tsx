@@ -236,7 +236,7 @@ const InputTableSelect = defineComponent({
 						closeOnClickModal={_options.closeOnClickModal}
 						width={_options.dialogWidth}
 						appendToBody={valueExist(_options.dialogAppendToBody, true)}
-						modal={false}
+						modal={valueExist(_options.dialogModal, false)}
 						onClose={onCloseTableDialog}
 					>
 						<div class={ns.em('input-table', 'content')}>
