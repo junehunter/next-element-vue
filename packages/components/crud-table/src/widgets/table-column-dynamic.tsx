@@ -58,7 +58,7 @@ const TableColumnDynamic = defineComponent({
 				);
 			} else if (slots[columnSlotName(columnOption.prop)]) {
 				// 如果有传入slot，根据 #column-XXX 自定义显示内容
-				return slots[columnSlotName(columnOption.prop)]({ row: row, index: $index });
+				return slots[columnSlotName(columnOption.prop)]({ row: row, index: $index, column: columnOption });
 			} else if (columnOption.dicData?.length > 0) {
 				const loopDicData = (list: any[]) => {
 					const temp = [];
@@ -82,6 +82,9 @@ const TableColumnDynamic = defineComponent({
 						<em class="cell-unit">{columnOption.cellUnit}</em>
 					</>
 				);
+			} else if (columnOption.renderColumnCell) {
+				// 通过配置项自定义单元项内容，主要用于处理嵌套表单crud-table组件时自定义内容
+				return columnOption.renderColumnCell({ row: row, index: $index, column: columnOption });
 			}
 			return null;
 		};

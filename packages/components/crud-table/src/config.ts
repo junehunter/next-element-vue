@@ -88,6 +88,7 @@ export interface FormColunmProps extends Column {
 	formTip?: string;
 	formLabel?: string;
 	formMutiple?: boolean;
+	formDisabledDate?: Function;
 	formDivider?: any;
 	formRemark?: string;
 	formRules?: any[];
@@ -125,6 +126,7 @@ export interface TableColumnProps extends SearchColumnProps, FormColunmProps {
 	sortable?: boolean;
 	cellUnit?: string;
 	children?: TableColumnProps[];
+	renderColumnCell?: Function;
 }
 
 export const header_menu_slots_key = ['menu-left-prefix', 'menu-left-suffix', 'menu-right-prefix', 'menu-right-suffix'];

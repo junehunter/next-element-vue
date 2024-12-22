@@ -97,9 +97,13 @@ export default defineComponent({
 				}
 				formRules[col.prop] = rules;
 				if (!col.dicData?.length && col.loadDicData) {
-					col.loadDicData(col, data => {
-						if (data?.length) col.dicData = data;
-					});
+					col.loadDicData(
+						col,
+						data => {
+							if (data?.length) col.dicData = data;
+						},
+						formParams
+					);
 				}
 				// 当默认设置了disabled时不操作，只有当默认没有设置或者为false时才跟随isEditing
 				if (typeof col.disabled !== 'boolean' || !col.disabled) {

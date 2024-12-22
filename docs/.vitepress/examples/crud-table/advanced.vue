@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { h, reactive } from 'vue';
 import { useDateFormat, useFullscreen } from '@vueuse/core';
+import { ElLink } from 'element-plus';
 
 const { toggle, isFullscreen } = useFullscreen();
 const nowTimestamp = new Date().getTime();
@@ -184,6 +185,20 @@ const options = reactive({
 						prop: 'name',
 						label: '用户名称',
 						searchType: 'input',
+						renderColumnCell: ({ row }) => {
+							return h(
+								ElLink,
+								{
+									type: 'primary',
+									onClick: () => {
+										console.log(row);
+									},
+								},
+								{
+									default: () => row.name + '的链接',
+								}
+							);
+						},
 					},
 					{
 						prop: 'type',
