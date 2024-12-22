@@ -18,6 +18,38 @@ const columns = [
 		required: true,
 	},
 	{
+		prop: 'code',
+		label: '区域',
+		type: 'cascader',
+		span: 24,
+		required: true,
+		dicData: [
+			{
+				label: '广东省',
+				value: 'gd',
+				children: [
+					{
+						label: '广州市',
+						value: 'gz',
+						center: [113.234, 23.123],
+						children: [
+							{
+								label: '天河区',
+								value: 'gt',
+								center: [113.234, 23.123],
+							},
+							{
+								label: '越秀区',
+								value: 'yg',
+								center: [113.234, 23.123],
+							},
+						],
+					},
+				],
+			},
+		],
+	},
+	{
 		prop: 'url',
 		label: '地址',
 		type: 'input',
@@ -27,6 +59,7 @@ const columns = [
 ];
 
 const onSubmitForm = (formParams: any, done: Function, error: Function) => {
+	console.log(formParams);
 	done();
 };
 const onReset = () => {};

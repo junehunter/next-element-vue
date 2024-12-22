@@ -144,6 +144,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			disabled: valueExist(col.formDisabled, col.disabled, false),
 			clearable: valueExist(col.formClearable, col.clearable, true),
 			readonly: valueExist(col.formReadonly, col.readonly, false),
+			disabledDate: valueExist(col.formDisabledDate, col.disabledDate, false),
 			tip: valueExist(col.formTip, col.tip, null),
 			rules: valueExist(col.formRules, col.rules, null),
 			span: valueExist(col.formSpan, col.span, null),

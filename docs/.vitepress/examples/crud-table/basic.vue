@@ -22,6 +22,41 @@ const options = reactive({
 			label: '时间范围',
 			defaultValue: [startTime, endTime],
 		},
+		{
+			prop: 'region',
+			label: '地区',
+			type: 'cascader',
+			dicData: [
+				{
+					value: '1',
+					label: '广东省',
+					children: [
+						{
+							value: '11',
+							label: '广州市',
+							children: [
+								{
+									value: '111',
+									label: '天河区',
+								},
+								{
+									value: '112',
+									label: '天河区',
+								},
+							],
+						},
+						{
+							value: '12',
+							label: '番禺区',
+						},
+						{
+							value: '13',
+							label: '海珠区',
+						},
+					],
+				},
+			],
+		},
 	],
 	columns: [
 		{
@@ -62,6 +97,7 @@ const options = reactive({
 			formSort: 3,
 			formRequired: true,
 			sort: 1,
+			clearable: false,
 		},
 		{
 			prop: 'sex',
@@ -287,6 +323,14 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 			</template>
 			<template #column-name="{ row }">
 				<span>{{ row.name }}</span>
+			</template>
+			<template #operation-column-prefix="{ scoped, btn }">
+				<el-button :size="btn.size" type="primary" :text="btn.text" :plain="btn.plain">
+					<template #icon>
+						<el-icon><RefreshLeft /></el-icon>
+					</template>
+					刷新
+				</el-button>
 			</template>
 		</NextCrudTable>
 	</div>

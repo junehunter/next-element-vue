@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-const classes = ref<any>(['动物-马', '动物-鹿', '动物-狼', '动物-狐狸']);
+const classes = ref<any>([]);
+setTimeout(() => {
+	classes.value = ['动物-马', '动物-鹿', '动物-狼', '动物-狐狸'];
+}, 1000);
 const list = ref<any>([
 	{
 		id: 1,

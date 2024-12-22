@@ -2,7 +2,7 @@
 import { ref, inject } from 'vue';
 import { useLanguage, localeContextKey } from '../../../../publish/dist/index.js';
 
-const locale = inject(localeContextKey, ref())!;
+const locale = inject(localeContextKey, ref())! as any;
 const layout = ref<string>('transverse');
 const isTabs = ref<boolean>(true);
 const menuTree = [
@@ -19,6 +19,35 @@ const menuTree = [
 			icon: 'iconfont monitor-shouye-shouye',
 		},
 		children: [],
+	},
+	{
+		id: '11',
+		path: '',
+		name: '',
+		meta: {
+			title: '其它',
+			isLink: '',
+			isHide: false,
+			isKeepAlive: false,
+			isAffix: false,
+			icon: 'iconfont monitor-data-Inquire',
+		},
+		children: [
+			{
+				id: '12',
+				path: '/11/12',
+				name: 'AiboxBoxInfo11',
+				meta: {
+					title: '其它111',
+					isLink: '',
+					isHide: false,
+					isKeepAlive: false,
+					isAffix: false,
+					icon: 'iconfont monitor-shujuchaxun',
+				},
+				children: [],
+			},
+		],
 	},
 	{
 		id: '25',
@@ -68,12 +97,14 @@ const logo = new URL('/logo.svg', import.meta.url).href;
 const layoutOptions = ref<any>({
 	logo: logo,
 	profile: logo,
+	userName: '超级管理员',
 	menuTree: menuTree,
 	menuRouter: false,
 	showTabs: isTabs.value,
 	tabs: [],
 	setting: {
 		themeColor: '#1E90FF',
+		layout: layout.value,
 	},
 });
 const layoutRef = ref<any>();
@@ -100,6 +131,7 @@ const changeOptions = opt => {};
 				<el-radio-button value="columns">分栏布局</el-radio-button>
 				<el-radio-button value="classic">经典布局</el-radio-button>
 				<el-radio-button value="defaults">默认布局</el-radio-button>
+				<el-radio-button value="composite">综合布局</el-radio-button>
 			</el-radio-group>
 			<div>
 				<span style="padding: 0 20px">是否显示导航栏</span>
@@ -107,6 +139,13 @@ const changeOptions = opt => {};
 			</div>
 		</div>
 		<NextLayout ref="layoutRef" style="margin-top: 10px; height: 600px" :options="layoutOptions" @changeLanguage="onChangeLanguage" @changeOptions="changeOptions">
+			<template #header-tools-prefix>
+				<li>666</li>
+			</template>
+			<!-- <template #header-menu>
+				<div>自定义菜单</div>
+			</template> -->
+
 			<template v-if="isTabs" #tabs>
 				<NextTabs :tabs="layoutOptions.tabs"></NextTabs>
 			</template>

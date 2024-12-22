@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { h, reactive } from 'vue';
 import { useDateFormat, useFullscreen } from '@vueuse/core';
+import { ElLink } from 'element-plus';
 
 const { toggle, isFullscreen } = useFullscreen();
 const nowTimestamp = new Date().getTime();
@@ -130,7 +131,7 @@ const options = reactive({
 				label: 'name',
 			},
 			onTableSelect: (formParams, rows, col) => {
-				console.log(formParams, rows, col);
+				// console.log(formParams, rows, col);
 			},
 			tableSelectDefaultValue: (row, col, done) => {
 				const tags = row.slelectUserTags;
@@ -138,7 +139,8 @@ const options = reactive({
 			},
 			tableSelect: {
 				selectType: 'checkbox',
-				loadData: (searchParams, resolve) => {
+				loadData: (formParams: any, { pageIndex, pageSize }: any, resolve: Function) => {
+					console.log(formParams);
 					setTimeout(() => {
 						const res = {
 							data: [
@@ -183,6 +185,20 @@ const options = reactive({
 						prop: 'name',
 						label: '用户名称',
 						searchType: 'input',
+						renderColumnCell: ({ row }) => {
+							return h(
+								ElLink,
+								{
+									type: 'primary',
+									onClick: () => {
+										console.log(row);
+									},
+								},
+								{
+									default: () => row.name + '的链接',
+								}
+							);
+						},
 					},
 					{
 						prop: 'type',
@@ -236,6 +252,45 @@ const options = reactive({
 			type: 'numberRange',
 			sort: 5,
 		},
+		{
+			prop: 'code',
+			label: '区域',
+			type: 'cascader',
+			span: 24,
+			required: true,
+			dicData: [],
+			treeSelectProps: { label: 'name', value: 'code' },
+			loadDicData: (col, done) => {
+				setTimeout(() => {
+					const dicData = [
+						{
+							label: '广东省',
+							value: 'gd',
+							children: [
+								{
+									label: '广州市',
+									value: 'gz',
+									center: [113.234, 23.123],
+									children: [
+										{
+											label: '天河区',
+											value: 'gt',
+											center: [113.234, 23.123],
+										},
+										{
+											label: '越秀区',
+											value: 'yg',
+											center: [113.234, 23.123],
+										},
+									],
+								},
+							],
+						},
+					];
+					done(dicData);
+				}, 3000);
+			},
+		},
 	],
 });
 const tableReactive = reactive({
@@ -245,7 +300,10 @@ const tableReactive = reactive({
 		pageSize: 10,
 		total: 50,
 	},
-	data: [
+	data: [] as any,
+});
+setTimeout(() => {
+	tableReactive.data = [
 		{
 			id: 1,
 			name: '张三',
@@ -257,6 +315,7 @@ const tableReactive = reactive({
 			industry: '1',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
+			code: ['gd', 'gz'],
 			children: [
 				{
 					id: 2,
@@ -305,8 +364,8 @@ const tableReactive = reactive({
 				},
 			],
 		},
-	],
-});
+	];
+}, 1000);
 const onConfirmSearch = searchParams => {
 	console.log(searchParams);
 	tableReactive.loading = true;
