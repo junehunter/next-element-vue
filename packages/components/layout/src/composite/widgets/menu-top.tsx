@@ -55,7 +55,8 @@ export default defineComponent({
 			to => {
 				const parentNode = findParentNode(to.fullPath, props.menuTree);
 				activeMenuId.value = parentNode?.id;
-				if (parentNode?.id) {
+				// 必须是一级菜单菜更新左侧子菜单
+				if (parentNode?.id && parentNode.meta?.level === 1) {
 					updateSubmentTree(parentNode.children);
 				}
 			}

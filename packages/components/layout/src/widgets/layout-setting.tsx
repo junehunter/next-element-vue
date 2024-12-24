@@ -151,7 +151,7 @@ export default defineComponent({
 						<ElSwitch v-model={_config.showTabs} />
 					</div>
 				</div>
-				{_slots.setting?.()}
+				{_slots.setting?.({ config: settingConfig })}
 			</ElScrollbar>
 		);
 	},
