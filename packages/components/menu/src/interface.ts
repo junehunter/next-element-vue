@@ -6,6 +6,7 @@ export interface MenuItemMetaInterface {
 	isHide?: boolean;
 	isIframe?: string;
 	isLink?: string;
+	level?: number;
 }
 
 export interface MenuItemInterface {

@@ -17,6 +17,7 @@ const menuTree = [
 			isKeepAlive: false,
 			isAffix: false,
 			icon: 'iconfont monitor-shouye-shouye',
+			level: 1,
 		},
 		children: [],
 	},
@@ -31,6 +32,7 @@ const menuTree = [
 			isKeepAlive: false,
 			isAffix: false,
 			icon: 'iconfont monitor-data-Inquire',
+			level: 1,
 		},
 		children: [
 			{
@@ -44,6 +46,7 @@ const menuTree = [
 					isKeepAlive: false,
 					isAffix: false,
 					icon: 'iconfont monitor-shujuchaxun',
+					level: 2,
 				},
 				children: [],
 			},
@@ -60,6 +63,7 @@ const menuTree = [
 			isKeepAlive: false,
 			isAffix: false,
 			icon: 'iconfont monitor-data-Inquire',
+			level: 1,
 		},
 		children: [
 			{
@@ -73,6 +77,7 @@ const menuTree = [
 					isKeepAlive: false,
 					isAffix: false,
 					icon: 'iconfont monitor-shujuchaxun',
+					level: 2,
 				},
 				children: [],
 			},
@@ -87,6 +92,7 @@ const menuTree = [
 					isKeepAlive: false,
 					isAffix: false,
 					icon: 'iconfont monitor-jiankongzhongxin',
+					level: 2,
 				},
 				children: [],
 			},
