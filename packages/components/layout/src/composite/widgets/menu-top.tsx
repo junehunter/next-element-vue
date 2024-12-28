@@ -15,8 +15,8 @@ const findGrandfatherNode = (path: string, tree: MenuItemInterface[]): MenuItemI
 				parentNode = currentParent;
 				return true;
 			}
-			if (node.children && loopNodes(node.children, node)) {
-				return true; // 子树找到目标节点，终止遍历
+			if (node.children && loopNodes(node.children, currentParent ?? node)) {
+				return true;
 			}
 		}
 		return false;
