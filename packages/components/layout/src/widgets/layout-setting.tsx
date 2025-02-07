@@ -85,6 +85,7 @@ export default defineComponent({
 						<ElColorPicker
 							v-model={settingConfig.themeColor}
 							predefine={['#409eff', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
+							show-alpha
 							onChange={_onChangeThemeColor}
 						></ElColorPicker>
 					</div>
@@ -110,6 +111,7 @@ export default defineComponent({
 						<ElColorPicker
 							v-model={settingConfig.headerBarColor}
 							predefine={['#282c34', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
+							show-alpha
 							onChange={color => _onChangeColor(color, 'headerBarColor', '--next-layout-bg-color')}
 						></ElColorPicker>
 					</div>
@@ -120,6 +122,7 @@ export default defineComponent({
 						<ElColorPicker
 							v-model={settingConfig.headerBarFontColor}
 							predefine={['#282c34', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
+							show-alpha
 							onChange={color => _onChangeColor(color, 'headerBarFontColor', '--next-layout-font-color')}
 						></ElColorPicker>
 					</div>
@@ -151,7 +154,7 @@ export default defineComponent({
 						<ElSwitch v-model={_config.showTabs} />
 					</div>
 				</div>
-				{_slots.setting?.()}
+				{_slots.setting?.({ config: settingConfig })}
 			</ElScrollbar>
 		);
 	},

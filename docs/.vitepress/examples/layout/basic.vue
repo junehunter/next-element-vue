@@ -17,6 +17,7 @@ const menuTree = [
 			isKeepAlive: false,
 			isAffix: false,
 			icon: 'iconfont monitor-shouye-shouye',
+			level: 1,
 		},
 		children: [],
 	},
@@ -31,6 +32,7 @@ const menuTree = [
 			isKeepAlive: false,
 			isAffix: false,
 			icon: 'iconfont monitor-data-Inquire',
+			level: 1,
 		},
 		children: [
 			{
@@ -44,6 +46,7 @@ const menuTree = [
 					isKeepAlive: false,
 					isAffix: false,
 					icon: 'iconfont monitor-shujuchaxun',
+					level: 2,
 				},
 				children: [],
 			},
@@ -60,6 +63,7 @@ const menuTree = [
 			isKeepAlive: false,
 			isAffix: false,
 			icon: 'iconfont monitor-data-Inquire',
+			level: 1,
 		},
 		children: [
 			{
@@ -73,6 +77,7 @@ const menuTree = [
 					isKeepAlive: false,
 					isAffix: false,
 					icon: 'iconfont monitor-shujuchaxun',
+					level: 2,
 				},
 				children: [],
 			},
@@ -87,6 +92,7 @@ const menuTree = [
 					isKeepAlive: false,
 					isAffix: false,
 					icon: 'iconfont monitor-jiankongzhongxin',
+					level: 2,
 				},
 				children: [],
 			},
@@ -121,6 +127,9 @@ const onChangeLanguage = (langue: string) => {
 	layoutOptions.value.menuTree = menuTree.slice(0, 1);
 };
 const changeOptions = opt => {};
+const onSaveSetting = config => {
+	console.log('config', config);
+};
 </script>
 
 <template>
@@ -150,6 +159,16 @@ const changeOptions = opt => {};
 				<NextTabs :tabs="layoutOptions.tabs"></NextTabs>
 			</template>
 			<NextContainer className="main"> </NextContainer>
+			<template #setting="{ config }">
+				<footer style="padding: 20px 0; text-align: center">
+					<el-button type="primary" @click="onSaveSetting(config)">
+						<template #icon>
+							<el-icon><Promotion /></el-icon>
+						</template>
+						<span>保存配置</span>
+					</el-button>
+				</footer>
+			</template>
 		</NextLayout>
 	</div>
 </template>

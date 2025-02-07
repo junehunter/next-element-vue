@@ -157,14 +157,14 @@ export default {
 		'@vueuse/core',
 		'vue-router',
 		'element-plus',
-		'@element-plus/icons-vue',
 		'video.js',
 		'video.js/dist/video-js.css',
 		'video.js/dist/lang/zh-CN.json',
 		'video.js/dist/lang/en.json',
 		'video.js/dist/lang/zh-TW.json',
 		'@tensorflow/tfjs',
-		// '@assets/plugins/mpegts/mpegts.js',
+		'mpegts.js',
+		'flv.js',
 	],
 	onwarn: (warning, warn) => {
 		if (warning.code === 'UNUSED_EXTERNAL_IMPORT' && warning.exporter === 'vue') {

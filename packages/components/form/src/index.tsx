@@ -443,7 +443,7 @@ export default defineComponent({
 						valueFormat={col.format || 'YYYY-MM-DD'}
 						format={col.format || 'YYYY-MM-DD'}
 						clearable={valueExist(col.clearable, true)}
-						disabledDate={col.disabledDate || _defaultDisabledDate}
+						disabledDate={(time: Date) => (col.disabledDate ? col.disabledDate(time, formParams) : _defaultDisabledDate(time))}
 						editable={valueExist(col.editable, false)}
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
@@ -460,10 +460,31 @@ export default defineComponent({
 						valueFormat={col.format || 'YYYY-MM-DD HH:mm:ss'}
 						format={col.format || 'YYYY-MM-DD HH:mm:ss'}
 						clearable={valueExist(col.clearable, true)}
-						disabledDate={col.disabledDate || _defaultDisabledDate}
+						disabledDate={(time: Date) => (col.disabledDate ? col.disabledDate(time, formParams) : _defaultDisabledDate(time))}
 						editable={valueExist(col.editable, false)}
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
+						onUpdate:modelValue={(event: Event) => col.onChange?.(event, col, formParams, formColumns)}
+					></ElDatePicker>
+				);
+			} else if (col.type === 'daterange') {
+				const placeholder = col.placeholder || t('next.form.select') + col.label;
+				return (
+					<ElDatePicker
+						v-model={formParams[col.prop]}
+						placeholder={placeholder}
+						type="daterange"
+						valueFormat={col.format || 'YYYY-MM-DD '}
+						format={col.format || 'YYYY-MM-DD'}
+						range-separator={t('next.date.rangeSeparator')}
+						start-placeholder={t('next.date.startPlaceholder')}
+						end-placeholder={t('next.date.endPlaceholder')}
+						disabledDate={(time: Date) => (col.disabledDate ? col.disabledDate(time, formParams) : _defaultDisabledDate(time))}
+						clearable={valueExist(col.clearable, true)}
+						editable={valueExist(col.editable, false)}
+						disabled={valueExist(col.disabled, false)}
+						readonly={valueExist(col.readonly, false)}
+						shortcuts={col.shortcuts || _defaultShortcuts}
 						onUpdate:modelValue={(event: Event) => col.onChange?.(event, col, formParams, formColumns)}
 					></ElDatePicker>
 				);
@@ -479,7 +500,7 @@ export default defineComponent({
 						range-separator={t('next.date.rangeSeparator')}
 						start-placeholder={t('next.date.startPlaceholder')}
 						end-placeholder={t('next.date.endPlaceholder')}
-						disabledDate={col.disabledDate || _defaultDisabledDate}
+						disabledDate={(time: Date) => (col.disabledDate ? col.disabledDate(time, formParams) : _defaultDisabledDate(time))}
 						clearable={valueExist(col.clearable, true)}
 						editable={valueExist(col.editable, false)}
 						disabled={valueExist(col.disabled, false)}

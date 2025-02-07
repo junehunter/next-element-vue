@@ -1,10 +1,11 @@
 @use './mixins/index' as *;
-
+[class='dark'],
 [data-theme='dark'] {
     --next-main-bg-color: #141414;
     --el-bg-color: var(--next-main-bg-color);
     --el-fill-color-blank: var(--next-main-bg-color);
     --el-fill-color-light: var(--next-main-bg-color);
+    --el-fill-color-lighter: var(--next-main-bg-color);
     --el-bg-color-overlay: var(--next-main-bg-color);
     --el-bg-color-page: var(--next-main-bg-color);
 	--el-mask-color: rgba(0, 0, 0, 0.6);
@@ -30,5 +31,13 @@
     }
     .el-picker__popper {
         border: 1px solid #ffffff !important;
+    }
+    .el-table {
+        .el-table__row.hover-row{
+            background-color: var(--next-main-bg-color);
+            td.el-table__cell {
+                background-color: var(--next-main-bg-color) !important;
+            }
+        }
     }
 }

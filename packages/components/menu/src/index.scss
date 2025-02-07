@@ -18,6 +18,9 @@ $block: 'menu';
 	background-color: transparent;
 	border-bottom: none;
 	user-select: none;
+	.el-menu {
+		background-color: transparent;
+	}
 	.el-menu-item,
 	.el-sub-menu,
 	.el-sub-menu__title {

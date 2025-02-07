@@ -7,19 +7,22 @@ import { useNamespace } from 'packages/hooks';
 import type { Router } from 'vue-router';
 import { valueExist } from 'packages/hooks/global-hook';
 
-const findParentNode = (path: string, tree: MenuItemInterface[]) => {
-	for (const node of tree) {
-		if (node.children?.some(child => child.path === path)) {
-			return node;
-		}
-		if (node.children) {
-			const parent = findParentNode(path, node.children);
-			if (parent) {
-				return parent;
+const findGrandfatherNode = (path: string, tree: MenuItemInterface[]): MenuItemInterface | null => {
+	let parentNode: MenuItemInterface | null = null;
+	const loopNodes = (nodes: MenuItemInterface[], currentParent: MenuItemInterface | null) => {
+		for (const node of nodes) {
+			if (node.path === path) {
+				parentNode = currentParent;
+				return true;
+			}
+			if (node.children && loopNodes(node.children, currentParent ?? node)) {
+				return true;
 			}
 		}
-	}
-	return null;
+		return false;
+	};
+	loopNodes(tree, null);
+	return parentNode;
 };
 const ns = useNamespace('menu');
 export default defineComponent({
@@ -45,17 +48,21 @@ export default defineComponent({
 		const instance = getCurrentInstance()!;
 		const router = instance.appContext.config.globalProperties.$router as Router;
 		const currentPath = router.currentRoute?.value.fullPath;
-		const parentNode = findParentNode(currentPath, props.menuTree);
+		const parentNode = findGrandfatherNode(currentPath, props.menuTree);
 		const activeMenuId = ref(parentNode?.id);
-		if (parentNode?.id) {
+		if (parentNode?.id && parentNode.meta?.level === 1) {
 			updateSubmentTree(parentNode.children);
 		}
 		watch(
 			() => router.currentRoute?.value,
 			to => {
-				const parentNode = findParentNode(to.fullPath, props.menuTree);
+				const parentNode = findGrandfatherNode(to.fullPath, props.menuTree);
 				activeMenuId.value = parentNode?.id;
-				if (parentNode?.id) {
+				if (!parentNode) {
+					return updateSubmentTree([]);
+				}
+				// 必须是一级菜单菜更新左侧子菜单
+				if (parentNode?.id && parentNode.meta?.level === 1) {
 					updateSubmentTree(parentNode.children);
 				}
 			}

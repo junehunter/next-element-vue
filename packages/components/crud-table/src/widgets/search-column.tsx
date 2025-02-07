@@ -175,6 +175,23 @@ export default defineComponent({
 						editable={col.searchEditable || false}
 					></ElDatePicker>
 				);
+			} else if (col.type === 'daterange') {
+				return (
+					<ElDatePicker
+						v-model={formParams[col.prop]}
+						type="daterange"
+						value-format={col.searchFormat || 'YYYY-MM-DD'}
+						format={col.searchFormat || 'YYYY-MM-DD'}
+						clearable
+						range-separator={t('next.date.rangeSeparator')}
+						start-placeholder={t('next.date.startPlaceholder')}
+						end-placeholder={t('next.date.endPlaceholder')}
+						disabled-date={col.searchDisabledDate || _defaultDisabledDate}
+						disabled={_disabled}
+						editable={col.searchEditable || false}
+						shortcuts={col.searchShortcuts || _defaultShortcuts}
+					></ElDatePicker>
+				);
 			} else if (col.type === 'datetimerange') {
 				return (
 					<ElDatePicker

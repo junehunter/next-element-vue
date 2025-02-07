@@ -89,6 +89,7 @@ export interface FormColunmProps extends Column {
 	formLabel?: string;
 	formMutiple?: boolean;
 	formDisabledDate?: Function;
+	formShortcuts?: any[];
 	formDivider?: any;
 	formRemark?: string;
 	formRules?: any[];
