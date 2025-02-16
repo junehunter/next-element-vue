@@ -7,6 +7,10 @@ const ns = useNamespace('text-ellipsis');
 export default defineComponent({
 	name: 'NextTextEllipsis',
 	props: {
+		className: {
+			type: String,
+			default: '',
+		},
 		content: {
 			type: String,
 			default: '',
@@ -26,10 +30,6 @@ export default defineComponent({
 		textAlign: {
 			type: String,
 			default: 'left',
-		},
-		class: {
-			type: String,
-			default: '',
 		},
 	},
 	setup(props, { slots }) {
@@ -63,7 +63,7 @@ export default defineComponent({
 		};
 		const renderContent = () => {
 			return (
-				<div class={[ns.b(), props.class]} style={setWidth.value} onMouseenter={onMouseenter}>
+				<div class={[ns.b(), props.className]} style={setWidth.value} onMouseenter={onMouseenter}>
 					{isTip.value ? (
 						<ElTooltip effect="dark" content={props.content} placement={props.placement as any} disabled={props.disabled}>
 							<span class={ns.e('text')} ref={ellipsisRef}>
