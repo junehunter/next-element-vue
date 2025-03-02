@@ -63,3 +63,9 @@ execSync('rimraf ./.vitepress/dist', { stdio: 'inherit' });
  * $ git config --global --unset http.proxy
  * $ git config --global --unset https.proxy
  */
+
+/**
+ * 如果报错：
+ * 进入项目目录，执行
+ * $ git push -f https://github.com/junehunter/next-element-vue master:gh-pages
+ */

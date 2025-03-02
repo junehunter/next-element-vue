@@ -11,5 +11,6 @@ export * from './components/spin-loading';
 export * from './components/upload';
 export * from './components/video-player';
 export * from './components/drag-resize';
+export * from './components/carousel';
 export * from './components/labelimg';
 export * from './components/labelme';

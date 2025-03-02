@@ -223,6 +223,7 @@ export const updateFormColumns = (options: any, cb: Function) => {
 			treeSelecNodeExpand: valueExist(col.treeSelecNodeExpandSearch, col.treeSelecNodeExpand, null),
 			treeSelecNodeCollapse: valueExist(col.treeSelecNodeCollapseSearch, col.treeSelecNodeCollapse, null),
 			treeSelecCurrentChange: valueExist(col.treeSelecCurrentChangeSearch, col.treeSelecCurrentChange, null),
+			onChange: valueExist(col.onChangeSearch, col.onChange, null),
 		};
 		// 对应属性指向原数据，search和form共享数据和方法
 		// return Object.assign(col, item);

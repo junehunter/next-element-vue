@@ -232,9 +232,25 @@ export default defineComponent({
 					</div>
 				);
 			} else if (col.type === 'treeSelect') {
-				return <NextTreeSelect v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeSelect>;
+				return (
+					<NextTreeSelect
+						v-model={formParams[col.prop]}
+						disabled={col.disabled}
+						column={col}
+						formParams={formParams}
+						onChange={(...arg: any) => col.onChange?.(...arg, col, formParams)}
+					></NextTreeSelect>
+				);
 			} else if (col.type === 'cascader') {
-				return <NextTreeCascader v-model={formParams[col.prop]} disabled={col.disabled} column={col} formParams={formParams}></NextTreeCascader>;
+				return (
+					<NextTreeCascader
+						v-model={formParams[col.prop]}
+						disabled={col.disabled}
+						column={col}
+						formParams={formParams}
+						onChange={(...arg: any) => col.onChange?.(...arg, col, formParams)}
+					></NextTreeCascader>
+				);
 			}
 		};
 		const renderContent = () => {

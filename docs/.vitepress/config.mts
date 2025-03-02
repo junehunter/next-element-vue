@@ -112,6 +112,10 @@ const createdSidebar = () => {
 					link: 'video-player',
 				},
 				{
+					text: 'NextCarousel 轮播图',
+					link: 'carousel',
+				},
+				{
 					text: 'NextLabelimg 图片标注',
 					link: 'labelimg',
 				},
