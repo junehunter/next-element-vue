@@ -343,6 +343,16 @@ export default defineComponent({
 										empty: () => <ElEmpty imageSize={tableContentHeight.value > 220 ? 100 : 50} description={t('next.table.notData')}></ElEmpty>,
 									}}
 								>
+									{options.selection ? (
+										<ElTableColumn
+											type="selection"
+											fixed="left"
+											label={t('next.table.selectionAll')}
+											width={55}
+											headerAlign={options.headerAlign}
+											align={options.cellAlign}
+										></ElTableColumn>
+									) : null}
 									{options.index ? (
 										<ElTableColumn
 											type="index"
@@ -350,16 +360,6 @@ export default defineComponent({
 											width={_sortNumberMinWidth.value}
 											index={_customRowIndex}
 											fixed="left"
-											headerAlign={options.headerAlign}
-											align={options.cellAlign}
-										></ElTableColumn>
-									) : null}
-									{options.selection ? (
-										<ElTableColumn
-											type="selection"
-											fixed="left"
-											label={t('next.table.selectionAll')}
-											width={55}
 											headerAlign={options.headerAlign}
 											align={options.cellAlign}
 										></ElTableColumn>
