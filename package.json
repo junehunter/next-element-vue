@@ -1,24 +1,17 @@
 {
 	"name": "next-element-vue",
-	"version": "0.5.3",
+	"version": "0.5.4",
 	"author": {
 		"name": "huangteng",
 		"email": "htengweb@163.com"
 	},
 	"description": "Component library based on element-plus secondary encapsulation",
-	"keywords": [
-		"next",
-		"element",
-		"vue3",
-		"next-element-vue"
-	],
+	"keywords": ["next", "element", "vue3", "next-element-vue"],
 	"main": "dist/index.min.js",
 	"module": "dist/index.js",
 	"unpkg": "dist/index.umd.min.js",
 	"jsdelivr": "dist/index.umd.min.js",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
 	"repository": {
 		"type": "git",
@@ -57,7 +50,7 @@
 		"video.js": "^8.6.0",
 		"vue": "^3.5.13",
 		"vue-i18n": "^9.4.1",
-		"vue-router": "^4.2.5"
+		"vue-router": "^4.5.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.22.20",
@@ -111,21 +104,18 @@
 		"vue": "^3.5.13",
 		"vue-eslint-parser": "^9.3.1",
 		"vue-i18n": "^9.4.1",
-		"vue-router": "^4.2.5"
+		"vue-router": "^4.5.0"
 	},
 	"simple-git-hooks": {
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*.{vue,js,jsx,json}": [
-			"eslint --fix"
-		],
-		"*.ts?(x)": [
-			"eslint --fix"
-		]
+		"*.{vue,js,jsx,json}": ["eslint --fix"],
+		"*.ts?(x)": ["eslint --fix"]
 	},
 	"engines": {
 		"node": ">=16"
 	},
 	"license": "MIT"
 }
+

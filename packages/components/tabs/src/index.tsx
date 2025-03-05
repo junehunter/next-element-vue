@@ -3,7 +3,7 @@ import type { PropType } from 'vue';
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElScrollbar } from 'element-plus';
 import { Close, Back, Right } from '@element-plus/icons-vue';
 import { useNamespace, useLocale } from 'packages/hooks';
-import type { Router } from 'vue-router';
+import type { RouteLocationRaw, Router } from 'vue-router';
 import type { TabInterface } from './interface';
 
 const ns = useNamespace('tabs');
@@ -76,11 +76,16 @@ export default defineComponent({
 		const onClickTabItem = (event: MouseEvent, tab: TabInterface, index: number) => {
 			event?.stopPropagation();
 			activeIndex.value = index;
-			let to = {
+			let to: RouteLocationRaw = {
 				path: tab.path,
-				query: tab.query,
-				params: tab.params,
+				query: tab.query || {},
 			};
+			if (tab.name) {
+				to = {
+					name: tab.name,
+					params: tab.params || {},
+				};
+			}
 			router.push(to);
 			emit('select', tab, index);
 		};
@@ -89,11 +94,17 @@ export default defineComponent({
 			const active = _activeTab.value;
 			if (active === tab.path) {
 				const prevTag = tabsView.value[index - 1] as TabInterface;
-				router.push({
-					path: prevTag.path,
-					query: prevTag.query || {},
-					params: prevTag.params || {},
-				});
+				let to: RouteLocationRaw = {
+					path: tab.path,
+					query: tab.query || {},
+				};
+				if (tab.name) {
+					to = {
+						name: tab.name,
+						params: tab.params || {},
+					};
+				}
+				router.push(to);
 				emit('close', prevTag, tabsView.value);
 			}
 			tabsView.value.splice(index, 1);
