@@ -95,13 +95,13 @@ export default defineComponent({
 			if (active === tab.path) {
 				const prevTag = tabsView.value[index - 1] as TabInterface;
 				let to: RouteLocationRaw = {
-					path: tab.path,
-					query: tab.query || {},
+					path: prevTag.path,
+					query: prevTag.query || {},
 				};
-				if (tab.name) {
+				if (prevTag.name) {
 					to = {
-						name: tab.name,
-						params: tab.params || {},
+						name: prevTag.name,
+						params: prevTag.params || {},
 					};
 				}
 				router.push(to);
