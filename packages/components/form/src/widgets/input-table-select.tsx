@@ -119,9 +119,9 @@ const InputTableSelect = defineComponent({
 		const onClickAddEdit = (row, tableFormParams) => {
 			_column.addEditData?.(row, tableFormParams);
 		};
-		const renderSelectTypeContent = (row, index) => {
+		const renderSelectTypeContent = row => {
 			const rowKey = _options.rowKey;
-			const value = valueExist(row[rowKey], index);
+			const value = valueExist(row[rowKey], null);
 			if (_options.selectType === 'checkbox') {
 				return <ElCheckbox value={value} onChange={event => onchangeCheckBox(event, toRaw(row))}></ElCheckbox>;
 			}
@@ -191,6 +191,10 @@ const InputTableSelect = defineComponent({
 			const rows = toRaw(multipleSelection.value);
 			rows.splice(i, 1);
 			multipleSelection.value = rows;
+			// 当是单选时，直接清空单选值
+			if (_options.selectType === 'radio') {
+				sinleSelection.value = null;
+			}
 			_updateTags();
 			emit('select', rows);
 		};
@@ -252,7 +256,7 @@ const InputTableSelect = defineComponent({
 									>
 										<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
 											{{
-												default: ({ row, $index }) => renderSelectTypeContent(row, $index),
+												default: ({ row }) => renderSelectTypeContent(row),
 											}}
 										</ElTableColumn>
 									</NextCrudTable>
@@ -269,7 +273,7 @@ const InputTableSelect = defineComponent({
 									>
 										<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
 											{{
-												default: ({ row, $index }) => renderSelectTypeContent(row, $index),
+												default: ({ row }) => renderSelectTypeContent(row),
 											}}
 										</ElTableColumn>
 									</NextCrudTable>
