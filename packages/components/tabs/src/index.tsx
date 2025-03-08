@@ -26,7 +26,8 @@ export default defineComponent({
 		const { t } = useLocale();
 		const instance = getCurrentInstance()!;
 		const router = instance.appContext.config.globalProperties.$router as Router;
-		const _activeTab = computed(() => router.currentRoute.value.fullPath);
+		// 只取path，不取fullPath，因为fullPath会带参数
+		const _activeTab = computed(() => router.currentRoute.value.path);
 		const _tabs = computed(() => props.tabs);
 		const defaultIndex = _tabs.value?.findIndex((v: any) => v.path === _activeTab.value);
 		if (defaultIndex < 0) {
@@ -80,7 +81,7 @@ export default defineComponent({
 				path: tab.path,
 				query: tab.query || {},
 			};
-			if (tab.name) {
+			if (!tab.path && tab.name) {
 				to = {
 					name: tab.name,
 					params: tab.params || {},
@@ -98,7 +99,7 @@ export default defineComponent({
 					path: prevTag.path,
 					query: prevTag.query || {},
 				};
-				if (prevTag.name) {
+				if (!prevTag.path && prevTag.name) {
 					to = {
 						name: prevTag.name,
 						params: prevTag.params || {},
