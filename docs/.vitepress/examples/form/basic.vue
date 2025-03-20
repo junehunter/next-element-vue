@@ -23,6 +23,7 @@ const columns = [
 		type: 'inputNumber',
 		span: 24,
 		required: true,
+		tip: '请输入浮点数',
 	},
 	{
 		prop: 'code',
@@ -73,7 +74,7 @@ const onReset = () => {};
 </script>
 
 <template>
-	<NextForm ref="nextFormRef" :options="{ labelWidth: '8em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm" @reset="onReset"> </NextForm>
+	<NextForm ref="nextFormRef" :options="{ labelWidth: '2em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm" @reset="onReset"> </NextForm>
 </template>
 
 <style lang="scss" scoped></style>
