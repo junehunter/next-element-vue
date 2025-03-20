@@ -18,6 +18,13 @@ const columns = [
 		required: true,
 	},
 	{
+		prop: 'number',
+		label: '浮点数',
+		type: 'inputNumber',
+		span: 24,
+		required: true,
+	},
+	{
 		prop: 'code',
 		label: '区域',
 		type: 'cascader',

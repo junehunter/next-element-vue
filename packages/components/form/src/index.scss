@@ -9,6 +9,7 @@ $block: 'form';
             width: var(--form-label-width);
             text-align: right;
             align-items: center;
+            padding-left: 20px;
             .#{bem($block, 'item-label')} {
                 width: auto;
                 max-width: 100%;

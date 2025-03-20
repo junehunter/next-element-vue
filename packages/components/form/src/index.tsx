@@ -180,15 +180,14 @@ export default defineComponent({
 			formParams[key] = value ? Number(value) : '';
 		};
 		const _onInputNumber = (val: any, key: string) => {
-			let value = val;
-			value = value.replace(/[^0-9\.]/g, '');
-			// 如果有多个小数点，则只保留第一个
-			value = value.replace(/^\./, '0.');
-			value = value.replace(/\.{2,}/g, '.');
-			value = value.replace('.', 'DUMMY');
-			value = value.replace(/\./g, '');
-			value = value.replace('DUMMY', '.');
-			formParams[key] = Number(value);
+			let value = val.toString();
+			// 只保留数字和小数点
+			value = value.replace(/[^0-9.]/g, '');
+			// 确保第一个字符是数字
+			if (value.startsWith('.')) value = '0' + value;
+			// 只保留一个小数点
+			value = value.replace(/^(\d*\.\d*)\./g, '$1');
+			formParams[key] = value;
 		};
 		const _onChangeNumberRange = (value: any, key: string) => {
 			if (!Array.isArray(formParams[key])) formParams[key] = [];
