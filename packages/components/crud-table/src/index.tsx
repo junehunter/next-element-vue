@@ -177,7 +177,7 @@ export default defineComponent({
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.add');
 			addEditDialog.rowInfo = row;
-			emit('click-add-edit', row);
+			emit('click-add-edit', row, options);
 			nextTick(() => {
 				addEditDialog.visible = true;
 			});
@@ -197,7 +197,7 @@ export default defineComponent({
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.edit');
 			addEditDialog.rowInfo = scoped.row;
-			emit('click-add-edit', scoped.row);
+			emit('click-add-edit', scoped.row, options);
 			// 将编辑弹框中的表单数据传出去
 			nextTick(() => {
 				addEditDialog.visible = true;

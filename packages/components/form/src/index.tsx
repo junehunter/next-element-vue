@@ -99,7 +99,7 @@ export default defineComponent({
 				if (!col.dicData?.length && col.loadDicData) {
 					col.loadDicData(
 						col,
-						data => {
+						(data: any[]) => {
 							if (data?.length) col.dicData = data;
 						},
 						formParams
