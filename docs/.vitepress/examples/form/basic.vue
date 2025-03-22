@@ -27,7 +27,7 @@ const columns = [
 	},
 	{
 		prop: 'code',
-		label: '区域',
+		label: '行政区域code',
 		type: 'cascader',
 		span: 24,
 		required: true,
@@ -74,7 +74,7 @@ const onReset = () => {};
 </script>
 
 <template>
-	<NextForm ref="nextFormRef" :options="{ labelWidth: '2em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm" @reset="onReset"> </NextForm>
+	<NextForm ref="nextFormRef" :options="{ labelWidth: '3em' }" :formDatum="config" :columns="columns" @submit="onSubmitForm" @reset="onReset"> </NextForm>
 </template>
 
 <style lang="scss" scoped></style>

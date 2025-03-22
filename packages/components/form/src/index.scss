@@ -9,11 +9,14 @@ $block: 'form';
             width: var(--form-label-width);
             text-align: right;
             align-items: center;
-            padding-left: 20px;
+            margin-left: 20px;
             box-sizing: content-box;
             .#{bem($block, 'item-label')} {
                 width: auto;
                 max-width: 100%;
+            }
+            .#{bem($block, 'item-tip')} {
+                margin-left: 5px;
             }
         }
         .el-form-item__content > {

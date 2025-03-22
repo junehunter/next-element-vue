@@ -587,7 +587,7 @@ export default defineComponent({
 															<NextTextEllipsis content={t(column.label)} className={ns.e('item-label')}></NextTextEllipsis>
 															{column.tip ? (
 																<ElTooltip effect="dark" content={column.tip} placement="top">
-																	<ElIcon style={{ 'margin-left': '5px' }} color="#f3d19e">
+																	<ElIcon class={ns.e('item-tip')} color="#f3d19e">
 																		<InfoFilled />
 																	</ElIcon>
 																</ElTooltip>
