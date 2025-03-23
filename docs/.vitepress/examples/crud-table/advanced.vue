@@ -126,6 +126,7 @@ const options = reactive({
 			label: '绑定用户',
 			type: 'inputTableSelect',
 			sort: 8,
+			required: true,
 			tableSelectProps: {
 				value: 'id',
 				label: 'name',

@@ -198,6 +198,7 @@ export default defineComponent({
 			const { value } = col.tableSelectProps || {};
 			formParams[col.prop] = rows.map(row => row[value || 'value']);
 			col.onTableSelect?.(formParams, rows, col);
+			ruleFormRef.value?.validateField(col.prop);
 		};
 		const _defaultDisabledDate = (time: Date) => {
 			return time.getTime() > Date.now();
