@@ -181,6 +181,7 @@ const options = reactive({
 						resolve(res);
 					}, 1000);
 				},
+				addBtn: true,
 				columns: [
 					{
 						prop: 'name',
@@ -421,6 +422,9 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 				</el-button>
 			</template>
 			<template #form-name="{ formParams }">
+				<div>自定义表单{{ formParams.name }}列</div>
+			</template>
+			<template #form-slelectUser-name="{ formParams }">
 				<div>自定义表单{{ formParams.name }}列</div>
 			</template>
 			<template #column-name="{ row }">

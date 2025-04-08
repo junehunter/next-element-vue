@@ -48,6 +48,9 @@ const TableColumnDynamic = defineComponent({
 			}
 		};
 		const renderCustomItem = (row, $index) => {
+			const prop = columnOption.prop;
+			// 处理slot名称, 多层属性时 替换 . 为 -
+			const _prop = prop?.replace(/\./g, '-');
 			if (columnOption.children?.length > 0) {
 				return (
 					<>
@@ -56,9 +59,9 @@ const TableColumnDynamic = defineComponent({
 						})}
 					</>
 				);
-			} else if (slots[columnSlotName(columnOption.prop)]) {
-				// 如果有传入slot，根据 #column-XXX 自定义显示内容
-				return slots[columnSlotName(columnOption.prop)]({ row: row, index: $index, column: columnOption });
+			} else if (slots[columnSlotName(_prop)]) {
+				// 如果有传入slot，根据 #column-XXX-XXX 自定义显示内容
+				return slots[columnSlotName(_prop)]({ row: row, index: $index, column: columnOption });
 			} else if (columnOption.dicData?.length > 0) {
 				const loopDicData = (list: any[]) => {
 					const temp = [];
@@ -74,11 +77,11 @@ const TableColumnDynamic = defineComponent({
 					return temp;
 				};
 				const mergeDicData = loopDicData(columnOption.dicData);
-				return <span>{_formatterColumnValue(row[columnOption.prop], mergeDicData)}</span>;
+				return <span>{_formatterColumnValue(row[prop], mergeDicData)}</span>;
 			} else if (columnOption.cellUnit) {
 				return (
 					<>
-						<span>{row[columnOption.prop]}</span>
+						<span>{row[prop]}</span>
 						<em class="cell-unit">{columnOption.cellUnit}</em>
 					</>
 				);
