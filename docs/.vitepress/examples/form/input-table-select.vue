@@ -9,6 +9,7 @@ const options = {
 	},
 	tableSelect: {
 		selectType: 'radio',
+		addBtn: true,
 		columns: [
 			{
 				prop: 'name',

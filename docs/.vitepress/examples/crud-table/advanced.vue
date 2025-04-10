@@ -182,6 +182,27 @@ const options = reactive({
 					}, 1000);
 				},
 				addBtn: true,
+				editBtn: true,
+				delBtn: true,
+				viewBtn: true,
+				batchDelBtn: true,
+				operations: true,
+				slots: {
+					'column-type': (...arg) => {
+						return h(
+							ElLink,
+							{
+								type: 'primary',
+								onClick: () => {
+									console.log('添加');
+								},
+							},
+							{
+								default: () => '添加用户',
+							}
+						);
+					},
+				},
 				columns: [
 					{
 						prop: 'name',

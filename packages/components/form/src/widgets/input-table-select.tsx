@@ -42,7 +42,7 @@ const InputTableSelect = defineComponent({
 		},
 	},
 	emits: ['select'],
-	setup(props, { emit }) {
+	setup(props, { emit, slots }) {
 		const { t } = useLocale();
 		const _disabled = props.disabled;
 		const _closable = props.closable;
@@ -253,6 +253,7 @@ const InputTableSelect = defineComponent({
 										page={tableReactive.page}
 										onConfirm-search={onConfirmSearch}
 										onClick-add-edit={onClickAddEdit}
+										v-slots={slots}
 									>
 										<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
 											{{
@@ -270,6 +271,7 @@ const InputTableSelect = defineComponent({
 										page={tableReactive.page}
 										onConfirm-search={onConfirmSearch}
 										onClick-add-edit={onClickAddEdit}
+										v-slots={slots}
 									>
 										<ElTableColumn fixed="left" label={t('next.table.selection')} width={55} headerAlign={_options.headerAlign} align={_options.cellAlign}>
 											{{

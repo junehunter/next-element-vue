@@ -512,17 +512,11 @@ export default defineComponent({
 			} else if (col.type === 'numberRange') {
 				return <NumberRangePicker v-model={formParams[col.prop]} disabled={col.disabled} onChange={(event: Event) => _onChangeNumberRange(event, col.prop)}></NumberRangePicker>;
 			} else if (col.type === 'inputTableSelect') {
-				const prop = col.prop || '';
-				const slotKey = formSlotName(prop);
-				// 正则匹配：form-prop-xxx 的slot
-				const regex = new RegExp(`^${slotKey}(?:-.+)?$`);
+				// tableSelect 组件 slots
 				const _slots = {};
-				for (const key in slots) {
-					if (regex.test(key)) {
-						_slots[key] = slots[key];
-					}
+				for (const key in col.tableSelect.slots) {
+					_slots[key] = () => col.tableSelect.slots[key]?.({ column: col, formParams });
 				}
-				// 未完成：InputTableSelect未定义slot
 				return (
 					<InputTableSelect
 						v-model={formParams[col.prop]}
