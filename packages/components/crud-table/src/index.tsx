@@ -290,6 +290,9 @@ export default defineComponent({
 				_updateColumnsAll(ops);
 			},
 			getSearchFormParams: getSearchFormParams,
+			reloadData: () => {
+				onClickRefresh();
+			},
 		});
 		const renderContent = () => {
 			return (
