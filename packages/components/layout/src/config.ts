@@ -57,6 +57,8 @@ export default {
 		headerBarColor: '#282c34',
 		// 头部栏字体颜色
 		headerBarFontColor: '#FFFFFF',
+		// 头部栏字体激活颜色
+		headerBarFontActiveColor: '#c71585',
 		// 头部栏背景颜色是否渐变
 		isHeaderBarColorGradual: false,
 		// 左侧侧边栏背景颜色

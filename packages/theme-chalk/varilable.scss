@@ -2,6 +2,7 @@ $theme-color: var(--el-color-primary);
 
 $layout-bg-color: var(--next-layout-bg-color);
 $layout-font-color: var(--next-layout-font-color);
+$layout-active-color: var(--next-layout-active-color, $theme-color);
 
 // layout transverse
 $layout-header-height: var(--next-layout-header-height, 64px);

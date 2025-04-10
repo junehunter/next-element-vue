@@ -3,12 +3,20 @@
 
 $block: 'menu';
 .active-menu-item {
-	color: $theme-color;
+	color: $layout-active-color;
 	.icon {
-		fill: $theme-color;
+		fill: $layout-active-color;
 	}
 	i.iconfont {
-		color: $theme-color;
+		color: $layout-active-color;
+	}
+}
+@mixin active-menu-icon {
+	.el-icon.el-sub-menu__icon-arrow,
+	.el-icon.el-sub-menu__icon-more {
+		path {
+			fill: $layout-active-color;
+		}	
 	}
 }
 // 纵向菜单
@@ -38,6 +46,7 @@ $block: 'menu';
 					@extend .active-menu-item;
 				}
 			}
+			@include active-menu-icon;
 		}
     }
 	.el-menu-item.is-active,
@@ -56,6 +65,7 @@ $block: 'menu';
                 }
             }
 		}
+		@include active-menu-icon;
 	}
 }
 // 横向菜单
@@ -83,6 +93,7 @@ $block: 'menu';
 					@extend .active-menu-item;
 				}
 			}
+			@include active-menu-icon;
 		}
 		&:focus {
 			background-color: unset !important;
@@ -114,6 +125,7 @@ $block: 'menu';
                 }
             }
 		}
+		@include active-menu-icon;
 		&::after {
 			content: '';
 			position: absolute;
@@ -121,7 +133,7 @@ $block: 'menu';
 			right: var(--el-menu-base-level-padding);
 			bottom: 5px;
 			height: 2px;
-			background-color: $theme-color;
+			background-color: $layout-active-color;
 		}
 	}
 }
@@ -145,17 +157,19 @@ $popper: bf($block, 'popper');
                         @extend .active-menu-item;
                     }
                 }
+				@include active-menu-icon;
 			}
 		}
 		.el-menu-item.is-active,
 		.el-sub-menu.is-active,
 		.el-sub-menu__title.is-active {
-            >.#{bf($block, 'item')} {
+            .#{bf($block, 'item')} {
                 &__icon,
                 &__title {
                     @extend .active-menu-item;
                 }
             }
+			@include active-menu-icon;
 		}
 	}
 }

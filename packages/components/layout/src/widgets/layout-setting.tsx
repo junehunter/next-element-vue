@@ -128,6 +128,17 @@ export default defineComponent({
 					</div>
 				</div>
 				<div class={_ns.b('config-bar-item')}>
+					<span class={_ns.be('config-bar-item', 'label')}>顶栏激活字体颜色</span>
+					<div class={_ns.be('config-bar-item', 'value')}>
+						<ElColorPicker
+							v-model={settingConfig.headerBarFontActiveColor}
+							predefine={['#282c34', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
+							show-alpha
+							onChange={color => _onChangeColor(color, 'headerBarFontActiveColor', '--next-layout-active-color')}
+						></ElColorPicker>
+					</div>
+				</div>
+				<div class={_ns.b('config-bar-item')}>
 					<span class={_ns.be('config-bar-item', 'label')}>顶栏背景渐变</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<el-switch v-model={settingConfig.isHeaderBarColorGradual} onChange={_changeUpdateOptions} />

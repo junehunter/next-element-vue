@@ -110,6 +110,7 @@ const layoutOptions = ref<any>({
 	tabs: [],
 	setting: {
 		themeColor: '#1E90FF',
+		headerBarFontActiveColor: '#1E90FF',
 		layout: layout.value,
 	},
 });
