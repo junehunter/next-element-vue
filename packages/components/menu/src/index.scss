@@ -148,9 +148,9 @@ $popper: bf($block, 'popper');
 		.el-menu-item,
 		.el-sub-menu__title {
             color: $layout-font-color;
-			background-color: $layout-bg-color;
+			background-color: transparent;
 			&:hover {
-				background-color: rgba(#000000, 0.3);
+				background-color: rgba(#000000, 0.2);
                 >.#{bf($block, 'item')} {
                     &__icon,
                     &__title {

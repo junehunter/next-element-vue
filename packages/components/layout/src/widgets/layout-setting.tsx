@@ -13,6 +13,7 @@ export default defineComponent({
 		const settingConfig = reactive({
 			..._config.setting,
 		});
+		if (!settingConfig.headerBarFontActiveColor) settingConfig.headerBarFontActiveColor = settingConfig.themeColor;
 		const _changeUpdateOptions = () => {
 			const options = {
 				..._config,
