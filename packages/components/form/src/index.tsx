@@ -515,7 +515,7 @@ export default defineComponent({
 				// tableSelect 组件 slots
 				const _slots = {};
 				for (const key in col.tableSelect.slots) {
-					_slots[key] = () => col.tableSelect.slots[key]?.({ column: col, formParams });
+					_slots[key] = (...arg: any) => col.tableSelect.slots[key]?.({ column: col, formParams }, ...arg);
 				}
 				return (
 					<InputTableSelect
