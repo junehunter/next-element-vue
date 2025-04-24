@@ -60,8 +60,12 @@ const TableColumnDynamic = defineComponent({
 					</>
 				);
 			} else if (slots[columnSlotName(_prop)]) {
+				const btnText = options.operationsBtnText;
+				const btnPlain = options.operationsBtnPlain;
+				const btnSize = options.operationsBtnSize;
+				const btnCfg = { text: btnText, plain: btnPlain, size: btnSize };
 				// 如果有传入slot，根据 #column-XXX-XXX 自定义显示内容
-				return slots[columnSlotName(_prop)]({ row: row, index: $index, column: columnOption });
+				return slots[columnSlotName(_prop)]({ row: row, index: $index, column: columnOption, btn: btnCfg });
 			} else if (columnOption.dicData?.length > 0) {
 				const loopDicData = (list: any[]) => {
 					const temp = [];

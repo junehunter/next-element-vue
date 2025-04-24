@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { NextSpinLoading } from 'next-element-vue';
+</script>
 
 <template>
 	<div class="layout-container">
