@@ -5,6 +5,9 @@
 		<NextContainer>
 			<div class="main"></div>
 		</NextContainer>
+		<NextContainer scrollbar padding="0">
+			<div class="main"></div>
+		</NextContainer>
 	</div>
 </template>
 

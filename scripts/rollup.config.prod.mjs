@@ -206,7 +206,12 @@ export default {
 			name: 'afterBuild',
 			// 打包文件输出之前执行
 			// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-			generateBundle: (options, bundle) => {},
+			generateBundle: (options, bundle) => {
+				// 动态生成index.d.ts文件
+				const content = `export * from './packages/index';`;
+				const outputPath = path.resolve(outputDir, 'index.d.ts');
+				fs.writeFileSync(outputPath, content, 'utf-8');
+			},
 			// 在打包完成后的钩子中监听输出文件的更改
 			// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 			writeBundle: (options, bundle) => {

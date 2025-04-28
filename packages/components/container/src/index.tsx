@@ -53,8 +53,11 @@ export default defineComponent({
 		});
 		const renderContent = () => {
 			if (props.scrollbar) {
+				const scrollStyle = {
+					'--next-container-padding': styles.value.padding,
+				};
 				return (
-					<ElScrollbar class={[ns.b(), props.className]} style={props.style}>
+					<ElScrollbar class={[ns.b(), props.className]} style={{ ...scrollStyle, ...props.style }}>
 						{slots.default?.()}
 					</ElScrollbar>
 				);
