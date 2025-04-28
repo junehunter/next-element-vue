@@ -2,18 +2,24 @@ import { defineComponent, inject, reactive } from 'vue';
 import { ElColorPicker, ElDivider, ElScrollbar, ElMessage, ElSwitch } from 'element-plus';
 import { MoonNight, Sunny } from '@element-plus/icons-vue';
 import { nextUseCssTheme, nextUseCssVar } from 'packages/hooks';
+import { isValueExist } from 'packages/hooks/global-hook';
 
 export default defineComponent({
-	setup() {},
+	setup() {
+		const config = inject('options', {} as any);
+		if (!isValueExist(config.setting.headerBarFontActiveColor)) {
+			config.setting.headerBarFontActiveColor = config.setting.themeColor;
+		}
+		return { config };
+	},
 	render() {
 		const _slots = inject('__slots__', {} as any);
 		const _ns = inject('__ns__', {} as any);
-		const _config = inject('options', {} as any);
+		const _config = this.config;
 		const _updateOptions = inject('updateOptions', null as any);
 		const settingConfig = reactive({
 			..._config.setting,
 		});
-		if (!settingConfig.headerBarFontActiveColor) settingConfig.headerBarFontActiveColor = settingConfig.themeColor;
 		const _changeUpdateOptions = () => {
 			const options = {
 				..._config,
