@@ -48,10 +48,11 @@ export default defineComponent({
 		const onClickSetting = () => {
 			drawerSettingRef.value!.visible = true;
 		};
+		const slotProps = { size: options.size, refresh: onClickRefresh };
 		return (
 			<div class={ns.b('header-menu')}>
 				<div class={ns.b('header-menu-left')}>
-					{this.$slots['menu-left-prefix']?.({ size: options.size })}
+					{this.$slots['menu-left-prefix']?.(slotProps)}
 					{options.addBtn && (
 						<ElButton type="primary" size={options.size} onClick={onClickAdd}>
 							{{
@@ -76,10 +77,10 @@ export default defineComponent({
 							}}
 						</ElButton>
 					)}
-					{this.$slots['menu-left-suffix']?.({ size: options.size })}
+					{this.$slots['menu-left-suffix']?.(slotProps)}
 				</div>
 				<div class={ns.b('header-menu-right')}>
-					{this.$slots['menu-right-prefix']?.({ size: options.size })}
+					{this.$slots['menu-right-prefix']?.(slotProps)}
 					{options.refreshBtn && (
 						<ElButton circle size={options.size} onClick={onClickRefresh}>
 							{{
@@ -102,7 +103,7 @@ export default defineComponent({
 							}}
 						</ElButton>
 					)}
-					{this.$slots['menu-right-suffix']?.({ size: options.size })}
+					{this.$slots['menu-right-suffix']?.(slotProps)}
 				</div>
 				<DrawerSetting ref={drawerSettingRef}></DrawerSetting>
 			</div>
