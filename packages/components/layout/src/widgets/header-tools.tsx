@@ -14,7 +14,13 @@ export default defineComponent({
 		const { toggle, isFullscreen } = useFullscreen();
 		const language = ref<string>(computed(() => config.language).value);
 		const settingDrawer = ref<boolean>(false);
-		return { locale, config, t, toggle, isFullscreen, language, settingDrawer };
+		const openSettingDrawer = () => {
+			settingDrawer.value = true;
+		};
+		const closeSettingDrawer = () => {
+			settingDrawer.value = false;
+		};
+		return { locale, config, t, toggle, isFullscreen, language, settingDrawer, openSettingDrawer, closeSettingDrawer };
 	},
 	render() {
 		const _ns = inject('__ns__', {} as any);
@@ -38,12 +44,6 @@ export default defineComponent({
 			if (_config.onChangeUserDropdown) {
 				_config.onChangeUserDropdown(command);
 			}
-		};
-		const _openSettingDrawer = () => {
-			this.settingDrawer = true;
-		};
-		const _closeSettingDrawer = () => {
-			this.settingDrawer = false;
 		};
 		return (
 			<>
@@ -137,7 +137,7 @@ export default defineComponent({
 						</ElDropdown>
 					</li>
 					<li>
-						<span style={{ display: 'inline-block', lineHeight: 1 }} onClick={_openSettingDrawer}>
+						<span style={{ display: 'inline-block', lineHeight: 1 }} onClick={this.openSettingDrawer}>
 							<ElIcon size={16}>
 								<Setting />
 							</ElIcon>
@@ -152,7 +152,7 @@ export default defineComponent({
 						size="380px"
 						class={_ns.be('drawer', 'setting')}
 						destroy-on-close
-						beforeClose={_closeSettingDrawer}
+						beforeClose={this.closeSettingDrawer}
 					>
 						<LayoutSetting></LayoutSetting>
 					</ElDrawer>

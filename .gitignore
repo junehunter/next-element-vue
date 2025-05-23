@@ -3,3 +3,4 @@ node_modules
 /docs/.vitepress/dist
 .VSCodeCounter
 /publish
+/.eslintcache
