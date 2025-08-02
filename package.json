@@ -6,20 +6,13 @@
 		"email": "htengweb@163.com"
 	},
 	"description": "Component library based on element-plus secondary encapsulation",
-	"keywords": [
-		"next",
-		"element",
-		"vue3",
-		"next-element-vue"
-	],
+	"keywords": ["next", "element", "vue3", "next-element-vue"],
 	"main": "dist/index.min.js",
 	"module": "dist/index.js",
 	"unpkg": "dist/index.umd.min.js",
 	"jsdelivr": "dist/index.umd.min.js",
 	"types": "dist/index.d.ts",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
 	"repository": {
 		"type": "git",
@@ -58,7 +51,7 @@
 		"mpegts.js": "~1.7.3",
 		"video.js": "^8.6.0",
 		"vue": "^3.5.13",
-		"vue-i18n": "^9.4.1",
+		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
 	},
 	"devDependencies": {
@@ -94,9 +87,8 @@
 		"eslint-plugin-vue": "^9.17.0",
 		"flv.js": "^1.6.2",
 		"jsdom": "^26.1.0",
-		"lint-staged": "^14.0.1",
+		"lint-staged": "^16.1.2",
 		"lodash-es": "^4.17.21",
-		"mockjs": "^1.1.0",
 		"mpegts.js": "~1.7.3",
 		"postcss-import": "^15.1.0",
 		"postcss-scss": "^4.0.8",
@@ -116,22 +108,25 @@
 		"vitest": "^3.1.4",
 		"vue": "^3.5.13",
 		"vue-eslint-parser": "^9.3.1",
-		"vue-i18n": "^9.4.1",
+		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
 	},
 	"simple-git-hooks": {
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*.{vue,js,jsx,json}": [
-			"eslint --fix"
-		],
-		"*.ts?(x)": [
-			"eslint --fix"
-		]
+		"*.{vue,js,jsx,json}": ["eslint --fix"],
+		"*.ts?(x)": ["eslint --fix"]
 	},
 	"engines": {
 		"node": ">=16"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"pnpm": {
+		"overrides": {
+			"form-data": "^4.0.4",
+			"esbuild": "^0.25.8"
+		}
+	}
 }
+
