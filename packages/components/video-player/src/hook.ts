@@ -1,6 +1,5 @@
 import { useDateFormat, useNow } from '@vueuse/core';
 import { randomColor16 } from 'packages/utils/theme';
-import * as tf from '@tensorflow/tfjs';
 
 /**
  * 识别视频帧
@@ -246,7 +245,7 @@ interface DetectVideoOptions {
 	classNames: ClassInterfacce[];
 	classInput: ClassInputInterface[];
 }
-export const useDetectVideo = () => {
+export const useDetectVideo = (tf: any) => {
 	const detectVideoFrameImage = ({ container, video, modelUrl, classNames, classInput = [] }: DetectVideoOptions, success?: Function, error?: Function) => {
 		if (!modelUrl) {
 			error && error('模型文件地址不能为空');

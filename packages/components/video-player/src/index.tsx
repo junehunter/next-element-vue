@@ -9,9 +9,7 @@ import 'video.js/dist/video-js.css';
 import zhCN from 'video.js/dist/lang/zh-CN.json';
 import En from 'video.js/dist/lang/en.json';
 import zhTW from 'video.js/dist/lang/zh-TW.json';
-// import Mpegts from 'mpegts.js';
 import { useNamespace, useLocale } from 'packages/hooks';
-import * as tf from '@tensorflow/tfjs';
 import { screenshotVideoDetectFrame, detectVideoFrame } from './hook';
 import { ElIcon } from 'element-plus';
 import { Camera } from '@element-plus/icons-vue';
@@ -46,6 +44,10 @@ export default defineComponent({
 			type: Boolean,
 			default: true,
 		},
+		tf: {
+			type: Object,
+			default: null,
+		},
 		tensorflow: {
 			type: Object,
 			// default: () => {
@@ -58,6 +60,7 @@ export default defineComponent({
 	},
 	emits: ['loaded', 'play', 'error', 'detector'],
 	setup(props, { emit, expose }) {
+		const _tf = props.tf || (window as any).tf;
 		const { lang } = useLocale();
 		const localeLang = {
 			'zh-cn': zhCN,
@@ -291,6 +294,9 @@ export default defineComponent({
 		};
 		const _loadModelDetectFrame = (container: HTMLElement, video: HTMLVideoElement) => {
 			if (!props.tensorflow) return;
+			if (!_tf) {
+				throw new Error('请先引入 @tensorflow/tfjs 模块！');
+			}
 			const { modelUrl, classNames } = props.tensorflow;
 			if (!modelUrl) {
 				throw new Error('模型文件地址不能未空！');
@@ -299,7 +305,7 @@ export default defineComponent({
 				throw new Error('模型类别不能未空！');
 			}
 			container.innerHTML = '';
-			tf.loadGraphModel(modelUrl).then(model => {
+			_tf?.loadGraphModel(modelUrl).then(model => {
 				const canvas = document.createElement('canvas') as HTMLCanvasElement;
 				canvas.className = ns.b('recongition');
 				container.appendChild(canvas);
@@ -312,7 +318,7 @@ export default defineComponent({
 					canvas.height = videoHeight;
 					canvas.style.top = offsetTop + 'px';
 					canvas.style.left = offsetLeft + 'px';
-					detectVideoFrame(video, model, ctx, tf, classNames, [], detect_ctx);
+					detectVideoFrame(video, model, ctx, _tf, classNames, [], detect_ctx);
 				};
 				modelRef.value = model;
 				detectFrameCanvas.value = canvas;
@@ -320,7 +326,7 @@ export default defineComponent({
 		};
 		const _destroyPlayer = () => {
 			if (modelRef.value) {
-				tf.dispose();
+				_tf?.dispose();
 				modelRef.value.dispose();
 				modelRef.value = null;
 			}

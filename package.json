@@ -50,7 +50,6 @@
 		"lodash-unified": "^1.0.3"
 	},
 	"peerDependencies": {
-		"@tensorflow/tfjs": "^4.11.0",
 		"@types/lodash-es": "^4.17.9",
 		"@vueuse/core": "^12.8.2",
 		"element-plus": "^2.9.9",
@@ -75,7 +74,6 @@
 		"@rollup/plugin-replace": "^5.0.5",
 		"@rollup/plugin-terser": "^0.4.4",
 		"@rollup/plugin-url": "^8.0.2",
-		"@tensorflow/tfjs": "^4.11.0",
 		"@testing-library/vue": "^8.1.0",
 		"@types/lodash-es": "^4.17.9",
 		"@types/node": "^20.6.3",

@@ -54,9 +54,6 @@ importers:
       '@rollup/plugin-url':
         specifier: ^8.0.2
         version: 8.0.2(rollup@4.41.0)
-      '@tensorflow/tfjs':
-        specifier: ^4.11.0
-        version: 4.22.0(seedrandom@3.0.5)
       '@testing-library/vue':
         specifier: ^8.1.0
         version: 8.1.0(@vue/compiler-sfc@3.5.14)(vue@3.5.14(typescript@5.8.3))
@@ -192,6 +189,9 @@ importers:
 
   docs:
     dependencies:
+      '@tensorflow/tfjs':
+        specifier: ^4.22.0
+        version: 4.22.0(seedrandom@3.0.5)
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0

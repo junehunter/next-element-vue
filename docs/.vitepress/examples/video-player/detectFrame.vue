@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import * as tf from '@tensorflow/tfjs';
 import { useDetectVideo } from '../../../../publish/dist/index.js';
 const base_url = window.location.origin + window.location.pathname;
 
@@ -57,7 +58,7 @@ const modelCfg = {
 	],
 };
 const mp4_url = new URL('./assets/video/demo02.mp4', import.meta.url).href;
-const { detectVideoFrameImage } = useDetectVideo();
+const { detectVideoFrameImage } = useDetectVideo(tf);
 const videoPlayer = ref<any>();
 let timer: any = null;
 const imgSrc = ref<string>();
