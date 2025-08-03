@@ -37,6 +37,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			packages: pathResolve('../packages'), // 引用组件源码，设置路径别名
+			'next-element-vue': pathResolve('../packages'),
 		},
 	},
 	server: {
