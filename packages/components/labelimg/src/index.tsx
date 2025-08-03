@@ -3,7 +3,7 @@ import type { PropType, CSSProperties } from 'vue';
 import { ElScrollbar, ElIcon, ElImage, ElMessage } from 'element-plus';
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { merge } from 'lodash-unified';
-import isEqual from 'lodash-es/isequal';
+import isEqual from 'lodash-es/isEqual';
 import { useNamespace, useLocale } from 'packages/hooks';
 import { deepClone, elementResize } from 'packages/hooks/global-hook';
 import NextSpinLoading from 'packages/components/spin-loading/src';

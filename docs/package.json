@@ -9,9 +9,9 @@
 		"deploy": "node deploy-config.js"
 	},
 	"dependencies": {
+		"@tensorflow/tfjs": "^4.22.0",
 		"markdown-it": "^14.1.0",
-		"markdown-it-container": "^3.0.0",
-		"next-element-vue": "npm:next-element-vue@latest"
+		"markdown-it-container": "^3.0.0"
 	},
 	"devDependencies": {
 		"@types/markdown-it": "^14.1.2",
@@ -29,3 +29,4 @@
 		"vitepress": "1.6.3"
 	}
 }
+

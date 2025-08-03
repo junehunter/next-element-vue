@@ -207,7 +207,7 @@ const InputTableSelect = defineComponent({
 								<span class={ns.em('input-table', 'value')}>
 									{tags.value.map((tag, index) => {
 										return (
-											<ElTag closable={!_closable} onClose={() => _onCloseTag(tag, index)}>
+											<ElTag closable={_closable} onClose={() => _onCloseTag(tag, index)}>
 												{tag.label}
 											</ElTag>
 										);
@@ -219,7 +219,7 @@ const InputTableSelect = defineComponent({
 												content: () =>
 													tagsMore.value.map((tag, index) => {
 														return (
-															<ElTag closable={!_closable} onClose={() => _onCloseTag(tag, index + 1)}>
+															<ElTag closable={_closable} onClose={() => _onCloseTag(tag, index + 1)}>
 																{tag.label}
 															</ElTag>
 														);

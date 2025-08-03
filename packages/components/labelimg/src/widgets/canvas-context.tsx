@@ -1,5 +1,5 @@
 import { defineComponent, inject, ref, onMounted, toRaw, computed, watch, nextTick, onUnmounted } from 'vue';
-import isEqual from 'lodash-es/isequal';
+import isEqual from 'lodash-es/isEqual';
 import { deepClone, valueExist } from 'packages/hooks/global-hook';
 import { DrawBaseCanvas, DrawRectCanvas, convertToLabel, formatCanvasLabelScale, colors } from '../hooks/canvas-context-hook';
 import type { RectProps } from '../hooks/canvas-context-hook';

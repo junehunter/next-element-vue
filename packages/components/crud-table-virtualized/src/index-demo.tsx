@@ -4,7 +4,7 @@ import { ElAutoResizer, ElTableV2, ElTableColumn } from 'element-plus';
 import { deepClone, elementResize, isValueExist } from 'packages/hooks/global-hook';
 import { useNamespace, useLocale } from 'packages/hooks';
 import { merge } from 'lodash-unified';
-import isEqual from 'lodash-es/isequal';
+import isEqual from 'lodash-es/isEqual';
 import propsConfig from './props-config';
 import defaultConfig from './default-config';
 import type { TableColumnProps, SearchColumnProps, FormColunmProps } from 'packages/components/crud-table/src/config';

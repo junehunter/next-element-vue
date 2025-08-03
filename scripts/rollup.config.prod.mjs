@@ -40,7 +40,6 @@ const globals_cfg = {
 	'video.js/dist/lang/zh-CN.json': 'zhCN',
 	'video.js/dist/lang/en.json': 'En',
 	'video.js/dist/lang/zh-TW.json': 'zhTW',
-	'@tensorflow/tfjs': 'tf',
 	'mpegts.js': 'mpegts',
 	'flv.js': 'flvjs',
 };
@@ -253,7 +252,6 @@ export default {
 		'video.js/dist/lang/zh-CN.json',
 		'video.js/dist/lang/en.json',
 		'video.js/dist/lang/zh-TW.json',
-		'@tensorflow/tfjs',
 		'mpegts.js',
 		'flv.js',
 	],

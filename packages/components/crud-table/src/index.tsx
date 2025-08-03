@@ -2,7 +2,7 @@ import { ref, unref, defineComponent, reactive, provide, watch, onMounted, onUnm
 import { useNamespace, useLocale } from 'packages/hooks';
 import { ElTable, ElEmpty, ElTableColumn } from 'element-plus';
 import { merge } from 'lodash-unified';
-import isEqual from 'lodash-es/isequal';
+import isEqual from 'lodash-es/isEqual';
 import { deepClone, elementResize, isValueExist } from 'packages/hooks/global-hook';
 import defaultPropsConfig from './props';
 import defaultConfig, { header_menu_slots_key, operation_column_slots_key } from './config';

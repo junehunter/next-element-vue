@@ -162,7 +162,6 @@ export default {
 		'video.js/dist/lang/zh-CN.json',
 		'video.js/dist/lang/en.json',
 		'video.js/dist/lang/zh-TW.json',
-		'@tensorflow/tfjs',
 		'mpegts.js',
 		'flv.js',
 	],

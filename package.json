@@ -50,8 +50,7 @@
 		"lodash-unified": "^1.0.3"
 	},
 	"peerDependencies": {
-		"@tensorflow/tfjs": "^4.11.0",
-		"@types/lodash-es": "^4.17.9",
+		"@types/lodash-es": "^4.17.12",
 		"@vueuse/core": "^12.8.2",
 		"element-plus": "^2.9.9",
 		"flv.js": "^1.6.2",
@@ -59,7 +58,7 @@
 		"mpegts.js": "~1.7.3",
 		"video.js": "^8.6.0",
 		"vue": "^3.5.13",
-		"vue-i18n": "^9.4.1",
+		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
 	},
 	"devDependencies": {
@@ -75,9 +74,8 @@
 		"@rollup/plugin-replace": "^5.0.5",
 		"@rollup/plugin-terser": "^0.4.4",
 		"@rollup/plugin-url": "^8.0.2",
-		"@tensorflow/tfjs": "^4.11.0",
 		"@testing-library/vue": "^8.1.0",
-		"@types/lodash-es": "^4.17.9",
+		"@types/lodash-es": "^4.17.12",
 		"@types/node": "^20.6.3",
 		"@typescript-eslint/eslint-plugin": "^6.7.2",
 		"@typescript-eslint/parser": "^6.7.2",
@@ -96,9 +94,8 @@
 		"eslint-plugin-vue": "^9.17.0",
 		"flv.js": "^1.6.2",
 		"jsdom": "^26.1.0",
-		"lint-staged": "^14.0.1",
+		"lint-staged": "^16.1.2",
 		"lodash-es": "^4.17.21",
-		"mockjs": "^1.1.0",
 		"mpegts.js": "~1.7.3",
 		"postcss-import": "^15.1.0",
 		"postcss-scss": "^4.0.8",
@@ -118,7 +115,7 @@
 		"vitest": "^3.1.4",
 		"vue": "^3.5.13",
 		"vue-eslint-parser": "^9.3.1",
-		"vue-i18n": "^9.4.1",
+		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
 	},
 	"simple-git-hooks": {
@@ -135,5 +132,11 @@
 	"engines": {
 		"node": ">=16"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"pnpm": {
+		"overrides": {
+			"form-data": "^4.0.4",
+			"esbuild": "^0.25.8"
+		}
+	}
 }
