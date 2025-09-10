@@ -94,7 +94,7 @@ export default defineComponent({
 							})}
 						</ul>
 					) : (
-						<ElEmpty image-size={120} description={t('next.labelimg.emptyLabelText')}></ElEmpty>
+						<ElEmpty image-size={100} description={t('next.labelimg.emptyLabelText')}></ElEmpty>
 					)}
 				</div>
 			);

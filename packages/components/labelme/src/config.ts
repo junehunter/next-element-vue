@@ -1,4 +1,10 @@
 import type { Ref } from 'vue';
+
+export enum ShapeType {
+	Polygon = 'polygon',
+	Rectangle = 'rectangle',
+	Circle = 'circle',
+}
 export interface ScaleTranslate {
 	scale: number;
 	x: number;
@@ -14,7 +20,8 @@ export interface ScaleTranslateManager {
 export interface ShapesProps {
 	label?: string;
 	points: [number, number][];
-	shape_type?: string;
+	group_id?: string;
+	shape_type?: ShapeType;
 }
 
 export interface LabelNodeProps {

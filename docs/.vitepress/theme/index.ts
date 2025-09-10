@@ -8,8 +8,8 @@ import { globals } from '../vitepress';
 import '../vitepress/styles/index.scss';
 // 引用组件源码，提升编译速度（使用vite直接编译比rollup编译速度快很多）
 // import NextElement from 'packages/index';
-// import NextElement from '../../../dist/index.js';
-// import '../../../dist/index.css';
+// import NextElement from '../../../publish/dist/index.js';
+// import '../../../publish/dist/index.css';
 
 export default {
 	...DefaultTheme,

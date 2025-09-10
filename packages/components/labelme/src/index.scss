@@ -35,7 +35,7 @@ $block: 'labelme';
 		align-items: center;
 		padding: 10px 12px;
 		font-size: 12px;
-		box-shadow: 0 0 4px 0 rgba(0, 0, 0, .15);
+		box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
 		&__tool {
 			display: flex;
 			align-items: center;
@@ -53,7 +53,7 @@ $block: 'labelme';
 				}
 			}
 			>li.tool-item {
-				flex-direction: column;
+				// flex-direction: column;
 				&:hover {
 					color: $theme-color;
 					svg {
@@ -64,10 +64,75 @@ $block: 'labelme';
 		}
 	}
 	&-main {
-		// width: 100%;
+		width: 100%;
 		display: flex;
-		align-items: center;
+		align-items: stretch;
         justify-content: space-between;
+		&__left-tools {
+			flex: 0 0 100px;
+			padding: 10px 0 !important;
+			box-shadow: 10px 0px 20px 0 rgba(0, 0, 0, 0.1);
+			>li {
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 6px 0;
+				text-align: center;
+				>.label-text {
+					margin: 0;
+					padding: 5px 8px;
+					line-height: normal;
+					font-size: 12px;
+				}
+			}
+			>li.tool-item {
+				flex-direction: column;
+				&:hover {
+					color: $theme-color;
+					svg {
+						fill: $theme-color;
+					}
+				}
+			}
+		}
+		&__right-label {
+			flex: 0 0 200px;
+			padding: 10px;
+			box-shadow: -10px 0px 20px 0 rgba(0, 0, 0, 0.1);
+			
+			> ul {
+				padding: 10px;
+				box-sizing: border-box;
+				border-radius: 5px;
+				height: 100%;
+				li {
+					margin: 5px 0;
+					padding: 3px 6px;
+					font-size: 12px;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					line-height: 20px;
+					border: 1px solid #ddd;
+					border-radius: 3px;
+					.el-icon {
+						cursor: pointer;
+					}
+					&:hover {
+						border: 1px solid $theme-color;
+					}
+					.label-line {
+						display: inline-block;
+						width: 3px;
+						height: 10px;
+						margin-right: 6px;
+						border-radius: 3px;
+						background-color: #eeeeee;
+					}
+				}
+			}
+		}
         &__content {
             flex: 1 1 100%;
             display: flex;

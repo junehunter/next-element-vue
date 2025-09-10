@@ -78,9 +78,13 @@ export default {
 		},
 		labelme: {
 			saveLabel: 'saving...',
+			confirmDeleteLabel: 'Are you sure you want to delete this annotation?',
+			emptyLabelText: 'No label data',
 			createPolygon: 'create polygon',
 			editPolygon: 'edit polygon',
-			deletePolyton: 'delete polygon',
+			deletePolygon: 'delete polygon',
+			createRectangle: 'create rectangle',
+			createCircle: 'create circle',
 		},
 	},
 };

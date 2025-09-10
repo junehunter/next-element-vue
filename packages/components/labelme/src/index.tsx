@@ -8,6 +8,8 @@ import { deepClone, elementResize } from 'packages/hooks/global-hook';
 import NextSpinLoading from 'packages/components/spin-loading';
 import CanvasContext from './widgets/canvas-context';
 import HeaderTool from './widgets/header-tool';
+import LeftTools from './widgets/left-tools';
+import RightLabel from './widgets/right-label';
 import defaultConfig from './config';
 import type { ScaleTranslate, ScaleTranslateManager, LabelNodeProps } from './config';
 
@@ -48,6 +50,7 @@ export default defineComponent({
 		const { t } = useLocale();
 		const activateNodeIndex = ref<number>(0);
 		const classes = ref<any>(props.classes);
+		provide('classes', classes);
 		const labelImages = ref<any>(deepClone(props.data));
 		watch(
 			() => props.data,
@@ -62,15 +65,6 @@ export default defineComponent({
 			() => props.data.length,
 			() => {
 				activateNodeIndex.value = 0;
-			}
-		);
-		watch(
-			() => props.classes,
-			val => {
-				classes.value = val;
-			},
-			{
-				deep: true,
 			}
 		);
 		const currentNode = computed(() => {
@@ -198,9 +192,11 @@ export default defineComponent({
 								)}
 							</header>
 							<div ref={mainRef} class={[ns.b('main')]}>
+								<LeftTools></LeftTools>
 								<div class={[ns.be('main', 'content')]} style={{ height: mainContentHeight.value + 'px' }}>
 									<CanvasContext ref={canvasContextRef} rowInfo={currentNode.value} onEditPolygon={onEditPlygon} onChangePolygon={onChangePolygon}></CanvasContext>
 								</div>
+								<RightLabel shapes={currentNode.value.labels?.shapes}></RightLabel>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>
