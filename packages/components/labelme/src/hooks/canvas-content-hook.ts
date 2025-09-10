@@ -76,7 +76,7 @@ export const vertexesToScale = (vertexes: [number, number][], scaleX: number, sc
 };
 
 const { hexToRgba } = useChangeColor();
-const default_color = '#5470c6';
+export const defaultColor = '#5470c6';
 export const colors = ['#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 /**
  * 创建多边形顶点
@@ -223,7 +223,7 @@ class EditPolygonPath {
 	drawPolygonPath(vertexes: [number, number][], mouseX?: number, mouseY?: number) {
 		const ctx = this.ctx;
 		if (!vertexes.length) return;
-		const color = default_color;
+		const color = defaultColor;
 		ctx.beginPath();
 		ctx.lineWidth = 3;
 		ctx.strokeStyle = color;
@@ -242,7 +242,7 @@ class EditPolygonPath {
 	}
 	drawPolygonEdgeCentre(vertexes: [number, number][]) {
 		const ctx = this.ctx;
-		const color = default_color;
+		const color = defaultColor;
 		for (let i = 0; i < vertexes.length; i++) {
 			const [x, y] = vertexes[i];
 			ctx.beginPath();

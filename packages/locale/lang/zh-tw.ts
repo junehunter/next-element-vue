@@ -78,6 +78,13 @@ export default {
 		},
 		labelme: {
 			saveLabel: '保存',
+			confirmDeleteLabel: '确定要删除该标注吗？',
+			emptyLabelText: '暂无标签数据',
+			createPolygon: '创建多边形',
+			editPolygon: '编辑多边形',
+			deletePolygon: '删除多边形',
+			createRectangle: '创建矩形',
+			createCircle: '创建圆形',
 		},
 	},
 };
