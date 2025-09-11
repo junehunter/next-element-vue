@@ -5,6 +5,12 @@ export enum ShapeType {
 	Rectangle = 'rectangle',
 	Circle = 'circle',
 }
+export enum ToolsHandleType {
+	CreatePolygon = 'createPolygon',
+	EditPolygon = 'editPolygon',
+	CreateRectangle = 'createRectangle',
+	CreateCircle = 'createCircle',
+}
 export interface ScaleTranslate {
 	scale: number;
 	x: number;

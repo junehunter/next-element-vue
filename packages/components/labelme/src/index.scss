@@ -88,10 +88,25 @@ $block: 'labelme';
 			}
 			>li.tool-item {
 				flex-direction: column;
+				cursor: pointer;
 				&:hover {
 					color: $theme-color;
 					svg {
 						fill: $theme-color;
+					}
+				}
+			}
+			>li.active-tool {
+				color: $theme-color;
+				cursor: not-allowed;
+				color: var(--el-text-color-placeholder);
+				svg {
+					fill: var(--el-text-color-placeholder);
+				}
+				&:hover {
+					color: var(--el-text-color-placeholder);
+					svg {
+						fill: var(--el-text-color-placeholder);
 					}
 				}
 			}

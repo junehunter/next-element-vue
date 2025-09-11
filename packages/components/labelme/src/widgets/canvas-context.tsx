@@ -1,9 +1,11 @@
 import { defineComponent, ref, inject, watch, toRaw, onMounted, nextTick, onUnmounted } from 'vue';
+import type { Ref } from 'vue';
 import { NextSpinLoading } from 'packages/components';
 import { valueExist } from 'packages/hooks/global-hook';
 import { CreateDrawCanvas, vertexesToScale } from '../hooks/canvas-content-hook';
 import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
 import type { ScaleTranslate, ScaleTranslateManager } from '../config';
+import { ToolsHandleType } from '../config';
 
 export default defineComponent({
 	props: {
@@ -23,6 +25,8 @@ export default defineComponent({
 	emits: ['editPolygon', 'changePolygon'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+		const toolsActive = inject('toolsActive', {} as Ref<string>);
 		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
 		const mainBasaeRef = ref<any>();
 		const canvasMainRef = ref<HTMLElement>();
@@ -126,6 +130,16 @@ export default defineComponent({
 						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
 						drawCanvas.value!.render();
 					});
+
+					watch(
+						() => toolsActive.value,
+						() => {
+							if (toolsActive.value === ToolsHandleType.CreatePolygon) {
+								drawCanvas.value!.createEventListeners();
+							}
+						},
+						{ immediate: true }
+					);
 				};
 				image.onerror = () => {
 					loadingImage.value = false;

@@ -95,9 +95,6 @@ class CreatePolygonVertexes {
 		this.isDrawing = false;
 		this.vertexes = [];
 		this.mouseOffset = { x: 0, y: 0 };
-		canvas.addEventListener('click', this.canvasMouseClick.bind(this));
-		canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
-		canvas.addEventListener('dblclick', this.canvasMouseDblclick.bind(this));
 		this.vertexes = new Proxy(this.vertexes, {
 			set: (target, property, value) => {
 				target[property] = value;
@@ -126,6 +123,12 @@ class CreatePolygonVertexes {
 	}
 	public onDestroyed(callback: (vertexes: [number, number][]) => void) {
 		this.destroyedObservers = callback;
+	}
+	public createEventListeners() {
+		this.isDrawing = true;
+		this.canvas.addEventListener('click', this.canvasMouseClick.bind(this));
+		this.canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
+		this.canvas.addEventListener('dblclick', this.canvasMouseDblclick.bind(this));
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
@@ -164,6 +167,34 @@ class CreatePolygonVertexes {
 		}
 		this.notifyDestryedListerers();
 		this.destroy();
+	}
+	drawPolygon(vertexes: [number, number][]) {
+		const ctx = this.ctx;
+		if (!vertexes.length) return;
+		const path = new Path2D();
+		path.moveTo(vertexes[0][0], vertexes[0][1]);
+		for (let i = 1; i < vertexes.length; i++) {
+			path.lineTo(vertexes[i][0], vertexes[i][1]);
+		}
+		const { x, y } = this.mouseOffset;
+		path.lineTo(x, y);
+		path.closePath();
+		const color = defaultColor;
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+		ctx.setLineDash([5, 5]);
+		ctx.strokeStyle = color;
+		ctx.fillStyle = hexToRgba(color, 0.2);
+		ctx.stroke(path);
+		ctx.fill(path);
+		ctx.fillStyle = color;
+		for (let i = 0; i < vertexes.length; i++) {
+			const [x, y] = vertexes[i];
+			ctx.beginPath();
+			ctx.arc(x, y, 5, 0, 2 * Math.PI);
+			ctx.fill();
+		}
+		ctx.restore();
 	}
 	destroy() {
 		this.isDrawing = false;
@@ -444,8 +475,8 @@ export class CreateDrawCanvas {
 	private labels: LabelNodeProps;
 	private scaleX: number;
 	private scaleY: number;
-	private editDrawPolygon: EditPolygonPath;
 	private createPolygonVertexes: CreatePolygonVertexes;
+	private editDrawPolygon: EditPolygonPath;
 	private editVertexes: [number, number][];
 	private editPolygonObservers: ((vertexes: [number, number][]) => void)[] = [];
 	private drawnPolygonObserver?: (vertexes: [number, number][]) => void;
@@ -464,9 +495,9 @@ export class CreateDrawCanvas {
 		this.render();
 		this.createPolygonVertexes = new CreatePolygonVertexes(canvas, ctx);
 		this.editDrawPolygon = new EditPolygonPath(canvas, ctx);
-		this.createPolygonVertexes.vertexesChangeEventListener((vertexes, mouseOffset) => {
+		this.createPolygonVertexes.vertexesChangeEventListener(vertexes => {
 			this.render();
-			this.editDrawPolygon.drawPolygon(vertexes, mouseOffset);
+			this.createPolygonVertexes.drawPolygon(vertexes);
 			this.editVertexes = vertexes;
 			this.notifyObservers();
 		});
@@ -502,6 +533,12 @@ export class CreateDrawCanvas {
 	}
 	public onDrawnPolygon(callback: (vertexes: [number, number][]) => void) {
 		this.drawnPolygonObserver = callback;
+	}
+	public createEventListeners() {
+		this.createPolygonVertexes.createEventListeners();
+	}
+	public destroyCreate() {
+		this.createPolygonVertexes.destroy();
 	}
 
 	drawPolygons(shapes: ShapesProps[]) {
