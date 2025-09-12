@@ -12,7 +12,6 @@ import LeftTools from './widgets/left-tools';
 import RightLabel from './widgets/right-label';
 import defaultConfig from './config';
 import type { ScaleTranslate, ScaleTranslateManager, LabelNodeProps } from './config';
-import { ToolsHandleType } from './config';
 
 const ns = useNamespace('labelme');
 export default defineComponent({
@@ -52,7 +51,7 @@ export default defineComponent({
 		const activateNodeIndex = ref<number>(0);
 		const classes = ref<any>(props.classes);
 		provide('classes', classes);
-		const toolsActive = ref<string>(ToolsHandleType.CreatePolygon);
+		const toolsActive = ref<string>('');
 		provide('toolsActive', toolsActive);
 		provide('changeToolsActive', (val: string) => {
 			toolsActive.value = val;

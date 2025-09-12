@@ -36,6 +36,9 @@ export interface LabelNodeProps {
 	shapes?: ShapesProps[];
 }
 
+export const defaultColor = '#5470c6';
+export const colors = ['#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
+
 export default {
 	minContentHeight: 500,
 };

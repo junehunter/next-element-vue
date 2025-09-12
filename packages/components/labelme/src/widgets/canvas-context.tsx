@@ -25,14 +25,13 @@ export default defineComponent({
 	emits: ['editPolygon', 'changePolygon'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 		const toolsActive = inject('toolsActive', {} as Ref<string>);
 		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
 		const mainBasaeRef = ref<any>();
 		const canvasMainRef = ref<HTMLElement>();
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const drawCanvas = ref<CreateDrawCanvas>();
-		const canvasDragZoom = ref<any>();
+		const canvasDragZoom = ref<CanvasSceneDragZoom>();
 
 		const setContainerWidthHeight = (canvasWidth: number, canvasHeight: number) => {
 			canvasMainRef.value!.style.width = canvasWidth + 'px';

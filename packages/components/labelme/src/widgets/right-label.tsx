@@ -4,7 +4,7 @@ import { ElIcon, ElPopconfirm, ElEmpty } from 'element-plus';
 import { Delete } from '@element-plus/icons-vue';
 import { useLocale } from 'packages/hooks';
 import type { ShapesProps } from '../config';
-import { colors, defaultColor } from '../hooks/canvas-content-hook';
+import { colors, defaultColor } from '../config';
 
 export default defineComponent({
 	props: {

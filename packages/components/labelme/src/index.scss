@@ -99,15 +99,8 @@ $block: 'labelme';
 			>li.active-tool {
 				color: $theme-color;
 				cursor: not-allowed;
-				color: var(--el-text-color-placeholder);
 				svg {
-					fill: var(--el-text-color-placeholder);
-				}
-				&:hover {
-					color: var(--el-text-color-placeholder);
-					svg {
-						fill: var(--el-text-color-placeholder);
-					}
+					fill: $theme-color;
 				}
 			}
 		}

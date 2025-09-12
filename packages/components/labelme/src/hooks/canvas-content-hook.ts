@@ -1,7 +1,10 @@
 import type { Ref } from 'vue';
 import { useChangeColor } from 'packages/utils/theme';
 import { isValueExist } from 'packages/hooks/global-hook';
+import { defaultColor, colors } from '../config';
 import type { ScaleTranslate, LabelNodeProps, ShapesProps } from '../config';
+const { hexToRgba } = useChangeColor();
+
 export interface CreateRectCanvasProps {
 	canvasWidth: number;
 	canvasHeight: number;
@@ -16,19 +19,31 @@ export interface DrawBaseCanvasProps extends CreateRectCanvasProps {
 	scaleY?: number;
 	scaleOffset?: Ref<ScaleTranslate>;
 }
+/**
+ * 点位数据转换为路径
+ * @param vertexes 点位数据
+ * @returns
+ */
 export const printsToPath = (vertexes: [number, number][]): Path2D => {
 	const path = new Path2D();
 	if (vertexes.length) {
 		path.moveTo(vertexes[0][0], vertexes[0][1]);
 		for (let i = 1; i < vertexes.length; i++) {
-			const x = vertexes[i][0],
-				y = vertexes[i][1];
+			const [x, y] = vertexes[i];
 			path.lineTo(x, y);
 		}
 		path.closePath();
 	}
 	return path;
 };
+/**
+ * 点是否在折线内
+ * @param px 鼠标x坐标
+ * @param py 鼠标y坐标
+ * @param vertexes 点位数据
+ * @param ctx 上下文
+ * @returns
+ */
 export const isPointOnLineSegment = (px: number, py: number, vertexes: [number, number][], ctx: CanvasRenderingContext2D): number => {
 	let index = -1;
 	for (let i = 0; i < vertexes.length; i++) {
@@ -46,6 +61,15 @@ export const isPointOnLineSegment = (px: number, py: number, vertexes: [number, 
 	}
 	return index;
 };
+/**
+ * 点是否在圆内
+ * @param mouseX 鼠标x坐标
+ * @param mouseY 鼠标y坐标
+ * @param circleX 圆x坐标
+ * @param circleY 圆y坐标
+ * @param radius 圆半径
+ * @returns
+ */
 export const isPointInCircle = (mouseX: number, mouseY: number, circleX: number, circleY: number, radius: number) => {
 	const distance = Math.sqrt(Math.pow(mouseX - circleX, 2) + Math.pow(mouseY - circleY, 2));
 	if (distance < radius) {
@@ -62,6 +86,37 @@ export const isPointInCircle = (mouseX: number, mouseY: number, circleX: number,
 export const vertexesUnique = (vertexes: [number, number][]) => {
 	return Array.from(new Set(vertexes.map(item => JSON.stringify(item)))).map(item => JSON.parse(item));
 };
+/**
+ * 获取画布转换平移和缩放比例
+ * @param ctx 上下文
+ * @returns
+ */
+export const getTranslateAndScale = (ctx: CanvasRenderingContext2D) => {
+	/**
+	 * 转换矩阵
+	 * [a,c,e]
+	 * [b,d,f]
+	 * [0,0,1]
+	 * a: 水平缩放比例 scaleX
+	 * b: 垂直倾斜角度 skewY
+	 * c: 水平倾斜角度 skewX
+	 * d: 垂直缩放比例 scaleY
+	 * e: 水平平移距离 translateX
+	 * f: 垂直平移距离 translateY
+	 */
+	const transformMatrix = ctx.getTransform();
+	const { a: scaleX, b: skewY, e: translateX, f: translateY } = transformMatrix;
+	const scale = Math.hypot(scaleX, skewY);
+	return { scale, translateX, translateY };
+};
+/**
+ * 点位数据缩放
+ * @param vertex 点位
+ * @param scaleX 缩放比例
+ * @param scaleY 缩放比例
+ * @param isMultiply 是否相乘
+ * @returns
+ */
 export const vertexToScale = (vertex: [number, number], scaleX: number, scaleY: number, isMultiply: boolean = true): [number, number] => {
 	const [x, y] = vertex;
 	if (isMultiply) {
@@ -70,14 +125,40 @@ export const vertexToScale = (vertex: [number, number], scaleX: number, scaleY: 
 		return [x / scaleX, y / scaleY];
 	}
 };
+/**
+ * 点位集合数据缩放
+ * @param vertexes 点位数据
+ * @param scaleX 缩放比例
+ * @param scaleY 缩放比例
+ * @param isMultiply 是否相乘
+ * @returns
+ */
 export const vertexesToScale = (vertexes: [number, number][], scaleX: number, scaleY: number, isMultiply: boolean = true): [number, number][] => {
 	if (!vertexes?.length) return [];
 	return vertexes.map(item => vertexToScale(item, scaleX, scaleY, isMultiply));
 };
+/**
+ * 点位数据转换
+ * @param vertex 点位
+ * @param scaleOffset 缩放偏移
+ * @returns
+ */
+export const vertexeTransform = (vertex: [number, number], scaleOffset: ScaleTranslate): [number, number] => {
+	const { scale, x: offsetX, y: offsetY } = scaleOffset;
+	const [x, y] = vertex;
+	return [(x - offsetX) / scale, (y - offsetY) / scale];
+};
+/**
+ * 点位集合数据转换
+ * @param vertexes 点位数据
+ * @param scaleOffset 缩放偏移
+ * @returns
+ */
+export const vertexesTransform = (vertexes: [number, number][], scaleOffset: ScaleTranslate): [number, number][] => {
+	if (!vertexes?.length) return [];
+	return vertexes.map(item => vertexeTransform(item, scaleOffset));
+};
 
-const { hexToRgba } = useChangeColor();
-export const defaultColor = '#5470c6';
-export const colors = ['#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 /**
  * 创建多边形顶点
  */
@@ -130,12 +211,16 @@ class CreatePolygonVertexes {
 		this.canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
 		this.canvas.addEventListener('dblclick', this.canvasMouseDblclick.bind(this));
 	}
+	private transformMousePoint(e: MouseEvent): [number, number] {
+		const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
+		return vertexeTransform([e.offsetX, e.offsetY], { scale: scale, x: translateX, y: translateY });
+	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
 		this.isDrawing = true;
-		this.mouseOffset.x = e.offsetX;
-		this.mouseOffset.y = e.offsetY;
-		const [x, y] = [e.offsetX, e.offsetY];
+		const [x, y] = this.transformMousePoint(e);
+		this.mouseOffset.x = x;
+		this.mouseOffset.y = y;
 		let is_add = true;
 		for (let i = 0; i < this.vertexes.length; i++) {
 			const p = this.vertexes[i];
@@ -151,8 +236,9 @@ class CreatePolygonVertexes {
 	canvasMousemove(e: MouseEvent) {
 		e.stopPropagation();
 		if (this.isDrawing) {
-			this.mouseOffset.x = e.offsetX;
-			this.mouseOffset.y = e.offsetY;
+			const [x, y] = this.transformMousePoint(e);
+			this.mouseOffset.x = x;
+			this.mouseOffset.y = y;
 			this.canvas!.style.cursor = 'crosshair';
 		}
 	}
@@ -160,9 +246,10 @@ class CreatePolygonVertexes {
 		e.stopPropagation();
 		if (this.isDrawing) {
 			this.canvas!.style.cursor = 'unset';
-			this.mouseOffset.x = e.offsetX;
-			this.mouseOffset.y = e.offsetY;
-			this.vertexes.push([e.offsetX, e.offsetY]);
+			const [x, y] = this.transformMousePoint(e);
+			this.mouseOffset.x = x;
+			this.mouseOffset.y = y;
+			this.vertexes.push([x, y]);
 			this.vertexes = vertexesUnique(this.vertexes);
 		}
 		this.notifyDestryedListerers();
@@ -171,17 +258,13 @@ class CreatePolygonVertexes {
 	drawPolygon(vertexes: [number, number][]) {
 		const ctx = this.ctx;
 		if (!vertexes.length) return;
-		const path = new Path2D();
-		path.moveTo(vertexes[0][0], vertexes[0][1]);
-		for (let i = 1; i < vertexes.length; i++) {
-			path.lineTo(vertexes[i][0], vertexes[i][1]);
-		}
+		const { scale } = getTranslateAndScale(this.ctx);
+		ctx.save();
 		const { x, y } = this.mouseOffset;
-		path.lineTo(x, y);
-		path.closePath();
+		const path = printsToPath([...vertexes, [x, y]]);
 		const color = defaultColor;
 		ctx.beginPath();
-		ctx.lineWidth = 1;
+		ctx.lineWidth = 2 / scale;
 		ctx.setLineDash([5, 5]);
 		ctx.strokeStyle = color;
 		ctx.fillStyle = hexToRgba(color, 0.2);
@@ -191,7 +274,7 @@ class CreatePolygonVertexes {
 		for (let i = 0; i < vertexes.length; i++) {
 			const [x, y] = vertexes[i];
 			ctx.beginPath();
-			ctx.arc(x, y, 5, 0, 2 * Math.PI);
+			ctx.arc(x, y, 5 / scale, 0, 2 * Math.PI);
 			ctx.fill();
 		}
 		ctx.restore();
@@ -241,22 +324,18 @@ class EditPolygonPath {
 	public onEditPolygon(callback: (vertexes: [number, number][]) => void) {
 		this.editPolygonObserver = callback;
 	}
-	getTransformPoint(x: number, y: number): [number, number] {
-		const transformMatrix = this.ctx.getTransform();
-		const scaleX = parseFloat(transformMatrix.a.toFixed(1));
-		const scaleY = parseFloat(transformMatrix.d.toFixed(1));
-		const translateX = Math.ceil(transformMatrix.e);
-		const translateY = Math.ceil(transformMatrix.f);
-		const _x = Math.floor((x - translateX) / scaleX);
-		const _y = Math.floor((y - translateY) / scaleY);
-		return [_x, _y];
+	private getTransformPoint(x: number, y: number): [number, number] {
+		const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
+		return vertexeTransform([x, y], { scale: scale, x: translateX, y: translateY });
 	}
 	drawPolygonPath(vertexes: [number, number][], mouseX?: number, mouseY?: number) {
 		const ctx = this.ctx;
 		if (!vertexes.length) return;
+		const { scale } = getTranslateAndScale(this.ctx);
 		const color = defaultColor;
+		ctx.save();
 		ctx.beginPath();
-		ctx.lineWidth = 3;
+		ctx.lineWidth = 2 / scale;
 		ctx.strokeStyle = color;
 		ctx.fillStyle = hexToRgba(color, 0.2);
 		ctx.moveTo(vertexes[0][0], vertexes[0][1]);
@@ -270,20 +349,26 @@ class EditPolygonPath {
 		ctx.closePath();
 		ctx.stroke();
 		ctx.fill();
+		ctx.restore();
 	}
 	drawPolygonEdgeCentre(vertexes: [number, number][]) {
 		const ctx = this.ctx;
+		const { scale } = getTranslateAndScale(this.ctx);
+		const _vertexRadius = this.vertexRadius / scale;
+		const _edgeCentreRadius = this.edgeCentreRadius / scale;
+		const _vertexCentreRadius = Math.max(1, _vertexRadius - _edgeCentreRadius);
 		const color = defaultColor;
+		ctx.save();
 		for (let i = 0; i < vertexes.length; i++) {
 			const [x, y] = vertexes[i];
 			ctx.beginPath();
 			ctx.fillStyle = color;
-			ctx.arc(x, y, this.vertexRadius, 0, Math.PI * 2);
+			ctx.arc(x, y, _vertexRadius, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
 			ctx.beginPath();
 			ctx.fillStyle = '#FFFFFF';
-			ctx.arc(x, y, this.vertexRadius - 3, 0, Math.PI * 2);
+			ctx.arc(x, y, _vertexCentreRadius, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
 		}
@@ -294,10 +379,15 @@ class EditPolygonPath {
 			const y = start[1] + (end[1] - start[1]) / 2;
 			ctx.beginPath();
 			ctx.fillStyle = color;
-			ctx.arc(x, y, this.edgeCentreRadius, 0, Math.PI * 2);
+			ctx.arc(x, y, _edgeCentreRadius, 0, Math.PI * 2);
 			ctx.closePath();
 			ctx.fill();
 		}
+		ctx.restore();
+	}
+	render() {
+		this.drawPolygonPath(this.vertexes);
+		this.drawPolygonEdgeCentre(this.vertexes);
 	}
 	drawPolygon(vertexes: [number, number][], mouseOffset?: { x: number; y: number }) {
 		this.vertexes = vertexes;
@@ -310,11 +400,13 @@ class EditPolygonPath {
 	}
 	pointInVertexes(x: number, y: number) {
 		const [_x, _y] = this.getTransformPoint(x, y);
+		const { scale } = getTranslateAndScale(this.ctx);
+		const _vertexRadius = this.vertexRadius / scale;
 		const vertexes = this.vertexes;
 		let aimIndex = null;
 		for (let i = 0; i < vertexes.length; i++) {
 			const [vertex_x, vertex_y] = vertexes[i];
-			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, this.vertexRadius);
+			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, _vertexRadius);
 			if (isIn) {
 				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
@@ -327,6 +419,8 @@ class EditPolygonPath {
 	}
 	pointInEdgeCentre(x: number, y: number) {
 		const [_x, _y] = this.getTransformPoint(x, y);
+		const { scale } = getTranslateAndScale(this.ctx);
+		const _edgeCentreRadius = this.edgeCentreRadius / scale;
 		const vertexes = this.vertexes;
 		let aimIndex = null;
 		for (let i = 0; i < vertexes.length; i++) {
@@ -334,7 +428,7 @@ class EditPolygonPath {
 				end = vertexes[(i + 1) % vertexes.length];
 			const vertex_x = start[0] + (end[0] - start[0]) / 2;
 			const vertex_y = start[1] + (end[1] - start[1]) / 2;
-			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, this.edgeCentreRadius);
+			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, _edgeCentreRadius);
 			if (isIn) {
 				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
@@ -347,15 +441,18 @@ class EditPolygonPath {
 	}
 	pointInVertexesOrEdgeCentre(x: number, y: number) {
 		const [_x, _y] = this.getTransformPoint(x, y);
+		const { scale } = getTranslateAndScale(this.ctx);
+		const _vertexRadius = this.vertexRadius / scale;
+		const _edgeCentreRadius = this.edgeCentreRadius / scale;
 		const vertexes = this.vertexes;
 		for (let i = 0; i < vertexes.length; i++) {
 			const [vertex_x, vertex_y] = vertexes[i];
-			const isInVertex = isPointInCircle(_x, _y, vertex_x, vertex_y, this.vertexRadius);
+			const isInVertex = isPointInCircle(_x, _y, vertex_x, vertex_y, _vertexRadius);
 			const start = vertexes[i % vertexes.length],
 				end = vertexes[(i + 1) % vertexes.length];
 			const edge_center_x = start[0] + (end[0] - start[0]) / 2;
 			const edge_center_y = start[1] + (end[1] - start[1]) / 2;
-			const isInEdgeCenter = isPointInCircle(_x, _y, edge_center_x, edge_center_y, this.edgeCentreRadius);
+			const isInEdgeCenter = isPointInCircle(_x, _y, edge_center_x, edge_center_y, _edgeCentreRadius);
 			if (isInVertex || isInEdgeCenter) {
 				this.canvas!.style.cursor = 'pointer';
 				break;
@@ -402,7 +499,8 @@ class EditPolygonPath {
 	canvasMouseup(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
-		let { offsetX: x, offsetY: y } = e;
+		let { offsetX, offsetY } = e;
+		let [x, y] = this.getTransformPoint(offsetX, offsetY);
 		this.vertexes = vertexesUnique(this.vertexes);
 		for (let i = 0; i < this.vertexes.length; i++) {
 			const p = this.vertexes[i];
@@ -443,8 +541,9 @@ class EditPolygonPath {
 	}
 	canvasMousemove(e: MouseEvent) {
 		e.stopPropagation();
-		const { offsetX: x, offsetY: y } = e;
-		this.pointInVertexesOrEdgeCentre(x, y);
+		const { offsetX, offsetY } = e;
+		this.pointInVertexesOrEdgeCentre(offsetX, offsetY);
+		const [x, y] = this.getTransformPoint(offsetX, offsetY);
 		if (this.isMoveEditing) {
 			if (this.pointVertexIndex > -1) {
 				this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
@@ -492,7 +591,6 @@ export class CreateDrawCanvas {
 		this.scaleX = scaleX || 1;
 		this.scaleY = scaleY || 1;
 		this.editVertexes = [];
-		this.render();
 		this.createPolygonVertexes = new CreatePolygonVertexes(canvas, ctx);
 		this.editDrawPolygon = new EditPolygonPath(canvas, ctx);
 		this.createPolygonVertexes.vertexesChangeEventListener(vertexes => {
@@ -517,6 +615,7 @@ export class CreateDrawCanvas {
 			});
 			this.notifyDrawnPolygonObservers();
 		});
+		this.render();
 	}
 
 	private notifyObservers() {
@@ -567,21 +666,21 @@ export class CreateDrawCanvas {
 			ctx.fill();
 		}
 	}
-	drawCanvas = () => {
+	render = () => {
+		this.canvas.width = this.canvasWidth;
+		if (this.scaleOffset.value) {
+			const { scale, x, y } = this.scaleOffset.value;
+			this.ctx.translate(x, y);
+			this.ctx.scale(scale, scale);
+		}
 		this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.ctx.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
 		this.ctx.save();
 		const shapes = this.labels.shapes;
 		if (shapes?.length) this.drawPolygons(shapes);
+		// 移动缩放时绘制编辑中的多边形
+		this.editDrawPolygon.render();
 		this.ctx.restore();
-	};
-	render = () => {
-		this.canvas.width = this.canvasWidth;
-		if (this.scaleOffset.value) {
-			this.ctx.translate(this.scaleOffset.value.x, this.scaleOffset.value.y);
-			this.ctx.scale(this.scaleOffset.value.scale, this.scaleOffset.value.scale);
-		}
-		this.drawCanvas();
 	};
 	destroy() {
 		this.labels = {};

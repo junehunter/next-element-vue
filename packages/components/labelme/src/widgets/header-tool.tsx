@@ -117,6 +117,10 @@ export default defineComponent({
 												<span>D：</span>
 												<span>D键进入下一张图片进行标注</span>
 											</li>
+											<li>
+												<span>Ctrl+鼠标：</span>
+												<span>按住Ctrl键+鼠标滚动可以缩放图片，按住Ctrl+左键拖动可以移动图片</span>
+											</li>
 										</ul>
 									),
 								}}
