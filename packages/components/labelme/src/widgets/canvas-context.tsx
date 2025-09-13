@@ -2,10 +2,11 @@ import { defineComponent, ref, inject, watch, toRaw, onMounted, nextTick, onUnmo
 import type { Ref } from 'vue';
 import { NextSpinLoading } from 'packages/components';
 import { valueExist } from 'packages/hooks/global-hook';
-import { CreateDrawCanvas, vertexesToScale } from '../hooks/canvas-content-hook';
+import { CreateDrawCanvas } from '../hooks/canvas-content-hook';
 import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
 import type { ScaleTranslate, ScaleTranslateManager } from '../config';
 import { ToolsHandleType } from '../config';
+import { vertexesToImageScale } from '../core/utils';
 
 export default defineComponent({
 	props: {
@@ -93,7 +94,7 @@ export default defineComponent({
 				loadingImage.value = true;
 				image.onload = () => {
 					loadingImage.value = false;
-					const { canvasWidth, canvasHeight, scaleFactor, scaleX, scaleY, originWidth, originHeight } = getCanvasWidthHeight(image);
+					const { canvasWidth, canvasHeight, scaleX, scaleY, originWidth, originHeight } = getCanvasWidthHeight(image);
 					image.style.width = canvasWidth + 'px';
 					image.style.height = canvasHeight + 'px';
 					setContainerWidthHeight(canvasWidth, canvasHeight);
@@ -103,11 +104,9 @@ export default defineComponent({
 						image: image,
 						canvasWidth,
 						canvasHeight,
-						scaleFactor: scaleFactor,
 						labels: rowInfo.labels,
-						scaleX,
-						scaleY,
-						scaleOffset: scaleTranslateManager.scaleTranslate,
+						imageScaleX: scaleX,
+						imageScaleY: scaleY,
 					});
 					drawCanvas.value.updatePolygon(vertexes => {
 						emit('changePolygon', {
@@ -117,7 +116,7 @@ export default defineComponent({
 						});
 					});
 					drawCanvas.value.onDrawnPolygon(vertexes => {
-						const new_vertexes = vertexesToScale(vertexes, scaleX, scaleY, false);
+						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
 						emit('editPolygon', {
 							vertexes: new_vertexes,
 							originWidth,
@@ -127,6 +126,7 @@ export default defineComponent({
 					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
 					canvasDragZoom.value.changeZoom((scaleOffset: ScaleTranslate) => {
 						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
+						drawCanvas.value!.updateTransform(scaleOffset);
 						drawCanvas.value!.render();
 					});
 
