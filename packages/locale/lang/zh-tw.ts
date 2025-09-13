@@ -85,6 +85,9 @@ export default {
 			deletePolygon: '删除多边形',
 			createRectangle: '创建矩形',
 			createCircle: '创建圆形',
+			selectClasses: '选择标签类',
+			emptyClassesText: '暂无标签类',
+			deleteClasses: '删除标签类',
 		},
 	},
 };

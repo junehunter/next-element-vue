@@ -1,19 +1,16 @@
-import { defineComponent, ref, inject, watch, toRaw, onMounted, nextTick, onUnmounted } from 'vue';
+import { defineComponent, ref, inject, watch, toRaw, onMounted, nextTick, onUnmounted, computed } from 'vue';
 import type { Ref } from 'vue';
 import { NextSpinLoading } from 'packages/components';
-import { valueExist } from 'packages/hooks/global-hook';
+import ContextMenuLabel from '../widgets/contextmenu-label';
+import { timeUniqueId, valueExist } from 'packages/hooks/global-hook';
 import { CreateDrawCanvas } from '../hooks/canvas-content-hook';
 import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
-import type { ScaleTranslate, ScaleTranslateManager } from '../config';
+import type { ScaleTranslate, ScaleTranslateManager, ShapesProps } from '../config';
 import { ToolsHandleType } from '../config';
 import { vertexesToImageScale } from '../core/utils';
 
 export default defineComponent({
 	props: {
-		classes: {
-			type: Array,
-			default: () => [],
-		},
 		contextClientHeight: {
 			type: Number,
 			default: null,
@@ -26,6 +23,7 @@ export default defineComponent({
 	emits: ['editPolygon', 'changePolygon'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
+		const classes = inject<Ref<any>>('classes', ref([]));
 		const toolsActive = inject('toolsActive', {} as Ref<string>);
 		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
 		const mainBasaeRef = ref<any>();
@@ -108,14 +106,22 @@ export default defineComponent({
 						imageScaleX: scaleX,
 						imageScaleY: scaleY,
 					});
-					drawCanvas.value.updatePolygon(vertexes => {
-						emit('changePolygon', {
-							vertexes,
-							canvasWidth,
-							canvasHeight,
-						});
+					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
+					canvasDragZoom.value.changeZoom((scaleOffset: ScaleTranslate) => {
+						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
+						drawCanvas.value!.updateTransform(scaleOffset);
+						drawCanvas.value!.render();
 					});
-					drawCanvas.value.onDrawnPolygon(vertexes => {
+					drawCanvas.value.subscribeCreateComplete((vertexes, mouseOffset) => {
+						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
+						const shape = {
+							id: timeUniqueId(),
+							type: 'polygon',
+							points: new_vertexes,
+						};
+						updateContextmenuLabelFixed(mouseOffset.x, mouseOffset.y, shape);
+					});
+					drawCanvas.value.subscribeEditing(vertexes => {
 						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
 						emit('editPolygon', {
 							vertexes: new_vertexes,
@@ -123,18 +129,13 @@ export default defineComponent({
 							originHeight,
 						});
 					});
-					canvasDragZoom.value = new CanvasSceneDragZoom(canvasBaseRef.value);
-					canvasDragZoom.value.changeZoom((scaleOffset: ScaleTranslate) => {
-						scaleTranslateManager.onChangeScaleTranslate(scaleOffset);
-						drawCanvas.value!.updateTransform(scaleOffset);
-						drawCanvas.value!.render();
-					});
 
 					watch(
 						() => toolsActive.value,
 						() => {
+							drawCanvas.value!.destroyAllInstance();
 							if (toolsActive.value === ToolsHandleType.CreatePolygon) {
-								drawCanvas.value!.createEventListeners();
+								drawCanvas.value!.createPolygonEventListener();
 							}
 						},
 						{ immediate: true }
@@ -173,22 +174,62 @@ export default defineComponent({
 			drawCanvas.value!.destroy();
 			canvasDragZoom.value!.destroy();
 		});
-		const onCloseContentmenuLabel = () => {};
-		const onCloseDraggableRectFixed = () => {};
 		const rerenderImage = () => {
-			setContainerWidthHeight(0, 0);
 			onCloseContentmenuLabel();
-			onCloseDraggableRectFixed();
 			nextTick(() => {
 				const rowInfo = toRaw(props.rowInfo);
 				renderImageLabel(rowInfo);
 			});
+		};
+		const contextmenuLabelFixed = ref<any>({
+			show: false,
+			top: 0,
+			left: 0,
+			activateShape: null,
+		});
+		const onCloseContentmenuLabel = () => {
+			contextmenuLabelFixed.value.show = false;
+			contextmenuLabelFixed.value.top = 0;
+			contextmenuLabelFixed.value.left = 0;
+			contextmenuLabelFixed.value.activateShape = null;
+		};
+		const updateContextmenuLabelFixed = (x: number, y: number, shape: ShapesProps) => {
+			// 根据绘制区域在窗口位置设置标注菜单栏位置
+			const contextRect = canvasBaseRef.value.getBoundingClientRect();
+			contextmenuLabelFixed.value.show = true;
+			contextmenuLabelFixed.value.left = x + contextRect.x;
+			contextmenuLabelFixed.value.top = y + contextRect.y;
+			contextmenuLabelFixed.value.canvasWidth = canvasBaseRef.value!.width;
+			contextmenuLabelFixed.value.canvasHeight = canvasBaseRef.value!.height;
+			contextmenuLabelFixed.value.activateShape = shape;
+		};
+		const contextmenuLabelRect = computed(() => {
+			const { top, left, canvasWidth, canvasHeight } = contextmenuLabelFixed.value;
+			return { top, left, canvasWidth, canvasHeight };
+		});
+		const onSelectLabel = () => {
+			const { activateShape } = contextmenuLabelFixed.value;
+			drawCanvas.value!.addShape(activateShape);
+			onCloseContentmenuLabel();
+		};
+		const onDeleteLabel = () => {
+			onCloseContentmenuLabel();
 		};
 		const renderContent = () => {
 			return (
 				<NextSpinLoading ref={mainBasaeRef} loading={loadingImage.value} class={[ns.b('loading')]} style={{ height: '100%' }}>
 					<div ref={canvasMainRef} class={[ns.b('canvas')]}>
 						<canvas ref={canvasBaseRef} class={[ns.be('canvas', 'context')]}></canvas>
+						{contextmenuLabelFixed.value.show ? (
+							<ContextMenuLabel
+								fixed={contextmenuLabelRect.value}
+								classes={classes.value}
+								activateShape={contextmenuLabelFixed.value.activateShape}
+								onClose={onCloseContentmenuLabel}
+								onSelect={onSelectLabel}
+								onDelete={onDeleteLabel}
+							></ContextMenuLabel>
+						) : null}
 					</div>
 				</NextSpinLoading>
 			);

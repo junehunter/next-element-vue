@@ -10,7 +10,7 @@ export default class CreatePolygon {
 	private isDrawing: boolean;
 	private mouseOffset: { x: number; y: number };
 	private vertexesObservers: ((vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void)[] = [];
-	private destroyedObservers?: (vertexes: [number, number][]) => void;
+	private destroyedObservers: ((vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void)[] = [];
 	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 		this.canvas = canvas;
 		this.ctx = ctx;
@@ -31,6 +31,9 @@ export default class CreatePolygon {
 				return true;
 			},
 		});
+		this.canvasMouseClick = this.canvasMouseClick.bind(this);
+		this.canvasMouseDblclick = this.canvasMouseDblclick.bind(this);
+		this.canvasMousemove = this.canvasMousemove.bind(this);
 	}
 	private notifyVertexChangeListeners() {
 		this.vertexesObservers.forEach(listener => {
@@ -40,21 +43,23 @@ export default class CreatePolygon {
 	public vertexesChangeEventListener(listener: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
 		this.vertexesObservers.push(listener);
 	}
-	private notifyDestryedListerers() {
-		this.destroyedObservers(this.vertexes);
+	private notifyAddCompletedListener() {
+		this.destroyedObservers.forEach(listener => {
+			listener(this.vertexes, this.mouseOffset);
+		});
 	}
-	public onDestroyed(callback: (vertexes: [number, number][]) => void) {
-		this.destroyedObservers = callback;
-	}
-	public createEventListeners() {
-		this.isDrawing = true;
-		this.canvas.addEventListener('click', this.canvasMouseClick.bind(this));
-		this.canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
-		this.canvas.addEventListener('dblclick', this.canvasMouseDblclick.bind(this));
+	public addCompleted(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
+		this.destroyedObservers.push(callback);
 	}
 	private transformMousePoint(e: MouseEvent): [number, number] {
 		const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
 		return vertexeTransform([e.offsetX, e.offsetY], { scale: scale, x: translateX, y: translateY });
+	}
+	public createEventListener() {
+		this.isDrawing = true;
+		this.canvas.addEventListener('click', this.canvasMouseClick);
+		this.canvas.addEventListener('mousemove', this.canvasMousemove);
+		this.canvas.addEventListener('dblclick', this.canvasMouseDblclick);
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
@@ -93,8 +98,8 @@ export default class CreatePolygon {
 			this.vertexes.push([x, y]);
 			this.vertexes = vertexesUnique(this.vertexes);
 		}
-		this.notifyDestryedListerers();
-		this.destroy();
+		this.notifyAddCompletedListener();
+		this.isDrawing = false;
 	}
 	drawPolygon(vertexes: [number, number][]) {
 		const ctx = this.ctx;
@@ -121,11 +126,19 @@ export default class CreatePolygon {
 		}
 		ctx.restore();
 	}
+	reset() {
+		this.isDrawing = true;
+		this.vertexes.length = 0;
+		this.mouseOffset.x = 0;
+		this.mouseOffset.y = 0;
+	}
 	destroy() {
 		this.isDrawing = false;
-		this.vertexes = [];
-		this.vertexesObservers = [];
-		this.destroyedObservers = () => void this.canvas.removeEventListener('click', this.canvasMouseClick);
+		this.vertexes.length = 0;
+		this.mouseOffset.x = 0;
+		this.mouseOffset.y = 0;
+		this.canvas!.style.cursor = 'unset';
+		this.canvas.removeEventListener('click', this.canvasMouseClick);
 		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
 		this.canvas.removeEventListener('dblclick', this.canvasMouseDblclick);
 	}

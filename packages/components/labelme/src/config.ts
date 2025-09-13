@@ -24,6 +24,7 @@ export interface ScaleTranslateManager {
 }
 
 export interface ShapesProps {
+	id: string;
 	label?: string;
 	points: [number, number][];
 	group_id?: string;

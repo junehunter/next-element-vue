@@ -30,9 +30,10 @@ export class CreateDrawCanvas {
 	private labels: LabelNodeProps;
 	private createPolygon: CreatePolygon;
 	private editDrawPolygon: EditPolygon;
-	private editVertexes: [number, number][];
-	private editPolygonObservers: ((vertexes: [number, number][]) => void)[] = [];
-	private drawnPolygonObserver?: (vertexes: [number, number][]) => void;
+	private addVertexes: [number, number][] = [];
+	private createCompleteSubscribers = new Set<(vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void>();
+	private editVertexes: [number, number][] = [];
+	private editingSubscribers = new Set<(vertexes: [number, number][]) => void>();
 	constructor(options: DrawBaseCanvasProps) {
 		const { canvas, ctx, image, canvasWidth, canvasHeight, imageScaleX, imageScaleY, labels } = options;
 		this.canvas = canvas;
@@ -43,53 +44,60 @@ export class CreateDrawCanvas {
 		this.imageScaleX = imageScaleX;
 		this.imageScaleY = imageScaleY;
 		this.labels = labels || {};
-		this.editVertexes = [];
 		this.createPolygon = new CreatePolygon(canvas, ctx);
 		this.editDrawPolygon = new EditPolygon(canvas, ctx);
 		this.createPolygon.vertexesChangeEventListener(vertexes => {
 			this.render();
 			this.createPolygon.drawPolygon(vertexes);
-			this.editVertexes = vertexes;
-			this.notifyObservers();
+			this.addVertexes = vertexes;
 		});
-		this.createPolygon.onDestroyed(vertexes => {
+		// 新增完成后通知
+		this.createPolygon.addCompleted((vertexes, mouseOffset) => {
+			this.addVertexes = vertexes;
+			// this.render();
+			this.notifyCreateComplete(mouseOffset);
+		});
+		// 编辑多边形通知
+		this.editDrawPolygon.onEditPolygon(vertexes => {
 			this.editVertexes = vertexes;
-			this.render();
-			this.editDrawPolygon.drawPolygon(vertexes);
-			this.editDrawPolygon.updatePolygon(vertexes => {
-				this.render();
-				this.editDrawPolygon.drawPolygon(vertexes);
-				this.editVertexes = vertexes;
-				this.notifyObservers();
-			});
-			this.editDrawPolygon.onEditPolygon(vertexes => {
-				this.editVertexes = vertexes;
-				this.notifyDrawnPolygonObservers();
-			});
-			this.notifyDrawnPolygonObservers();
+			this.notifyEditing();
 		});
 		this.render();
 	}
-
-	private notifyObservers() {
-		this.editPolygonObservers.forEach(listener => {
+	// 订阅新增完成
+	public subscribeCreateComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
+		this.createCompleteSubscribers.add(callback);
+	}
+	// 取消订阅新增完成
+	public unsubscribeCreateComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
+		this.createCompleteSubscribers.delete(callback);
+	}
+	// 新增完成后通知
+	private notifyCreateComplete(mouseOffset: { x: number; y: number }) {
+		this.createCompleteSubscribers.forEach(listener => {
+			listener(this.addVertexes, mouseOffset);
+		});
+	}
+	// 允许创建多边形
+	public createPolygonEventListener() {
+		this.createPolygon.createEventListener();
+	}
+	// 订阅编辑中
+	public subscribeEditing(callback: (vertexes: [number, number][]) => void) {
+		this.editingSubscribers.add(callback);
+	}
+	// 取消订阅编辑中
+	public unsubscribeEditing(callback: (vertexes: [number, number][]) => void) {
+		this.editingSubscribers.delete(callback);
+	}
+	// 通知编辑
+	private notifyEditing() {
+		this.editingSubscribers.forEach(listener => {
 			listener(this.editVertexes);
 		});
 	}
-	// 新增完成和编辑完成后通知
-	private notifyDrawnPolygonObservers() {
-		this.drawnPolygonObserver?.(this.editVertexes);
-	}
-	public updatePolygon(callback: (vertexes: [number, number][]) => void) {
-		this.editPolygonObservers.push(callback);
-	}
-	public onDrawnPolygon(callback: (vertexes: [number, number][]) => void) {
-		this.drawnPolygonObserver = callback;
-	}
-	public createEventListeners() {
-		this.createPolygon.createEventListeners();
-	}
-	public destroyCreate() {
+
+	public destroyAllInstance() {
 		this.createPolygon.destroy();
 	}
 
@@ -116,6 +124,17 @@ export class CreateDrawCanvas {
 		const { scale, x, y } = scaleOffseet;
 		ctx.translate(x, y);
 		ctx.scale(scale, scale);
+	}
+	addShape(shape: ShapesProps) {
+		this.labels.shapes.push(shape);
+		this.render();
+		this.createPolygon.reset();
+	}
+	deleteShape(shape: ShapesProps) {
+		const index = this.labels.shapes.findIndex(item => item.id === shape.id);
+		if (index !== -1) {
+			this.labels.shapes.splice(index, 1);
+		}
 	}
 	render = () => {
 		const ctx = this.ctx;
