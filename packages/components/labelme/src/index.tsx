@@ -170,8 +170,8 @@ export default defineComponent({
 			emit('change-polygon', node);
 		};
 
-		const onEditPlygon = (node: LabelNodeProps) => {
-			currentNode.value.labels = node;
+		const onEditPolygon = (node: LabelNodeProps) => {
+			// currentNode.value.labels = node;
 			emit('edit-polygon', node);
 		};
 		const onToolHeaderSave = () => {
@@ -221,7 +221,7 @@ export default defineComponent({
 									<CanvasContext
 										ref={canvasContextRef}
 										labelInfo={currentNode.value}
-										onEditPolygon={onEditPlygon}
+										onEditPolygon={onEditPolygon}
 										onChangePolygon={onChangePolygon}
 										onUpdateLabelInfo={onUpdateLabelInfo}
 									></CanvasContext>

@@ -6,10 +6,10 @@ export enum ShapeType {
 	Circle = 'circle',
 }
 export enum ToolsHandleType {
-	CreatePolygon = 'createPolygon',
-	EditPolygon = 'editPolygon',
-	CreateRectangle = 'createRectangle',
-	CreateCircle = 'createCircle',
+	CREATE_POLYGON = 'createPolygon',
+	EDIT_SHAPE = 'editShape',
+	CREATE_RECTANGLE = 'createRectangle',
+	CREATE_CIRCLE = 'createCircle',
 }
 export interface ScaleTranslate {
 	scale: number;

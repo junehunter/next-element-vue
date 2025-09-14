@@ -17,6 +17,19 @@ export const printsToPath = (vertexes: [number, number][]): Path2D => {
 	return path;
 };
 /**
+ * 点是否在路径内
+ * @param px 鼠标x坐标
+ * @param py 鼠标y坐标
+ * @param vertexes 点位数据
+ * @param ctx 上下文
+ * @returns
+ */
+export const isPointInPath = (px: number, py: number, vertexes: [number, number][], ctx: CanvasRenderingContext2D) => {
+	const path = printsToPath(vertexes);
+	path.closePath();
+	return ctx.isPointInPath(path, px, py);
+};
+/**
  * 点是否在折线内
  * @param px 鼠标x坐标
  * @param py 鼠标y坐标

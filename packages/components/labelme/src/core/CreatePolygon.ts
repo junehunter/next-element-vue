@@ -55,7 +55,7 @@ export default class CreatePolygon {
 		const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
 		return vertexeTransform([e.offsetX, e.offsetY], { scale: scale, x: translateX, y: translateY });
 	}
-	public createEventListener() {
+	public triggerCreatePolygon() {
 		this.isDrawing = true;
 		this.canvas.addEventListener('click', this.canvasMouseClick);
 		this.canvas.addEventListener('mousemove', this.canvasMousemove);
@@ -63,6 +63,7 @@ export default class CreatePolygon {
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
+		e.preventDefault();
 		if (e.ctrlKey) return;
 		this.isDrawing = true;
 		const [x, y] = this.transformMousePoint(e);
@@ -82,6 +83,7 @@ export default class CreatePolygon {
 	}
 	canvasMousemove(e: MouseEvent) {
 		e.stopPropagation();
+		e.preventDefault();
 		if (e.ctrlKey) return;
 		if (this.isDrawing) {
 			const [x, y] = this.transformMousePoint(e);
@@ -92,6 +94,7 @@ export default class CreatePolygon {
 	}
 	canvasMouseDblclick(e: MouseEvent) {
 		e.stopPropagation();
+		e.preventDefault();
 		if (e.ctrlKey) return;
 		if (this.isDrawing) {
 			this.canvas!.style.cursor = 'unset';

@@ -34,7 +34,7 @@ execSync(`git commit -m "文档自动部署 ${time}"`, { stdio: 'inherit' });
 // 强制推送到指定的 GitHub Pages 分支
 execSync(`git push -f ${githubConfig.repositoryUrl} master:${githubConfig.branchName}`, { stdio: 'inherit' });
 // 强制推送到指定的 gitee doc 分支
-execSync(`git push -f ${giteeConfig.repositoryUrl} master:${giteeConfig.branchName}`, { stdio: 'inherit' });
+// execSync(`git push -f ${giteeConfig.repositoryUrl} master:${giteeConfig.branchName}`, { stdio: 'inherit' });
 
 // 切换回原始目录
 process.chdir('../..');

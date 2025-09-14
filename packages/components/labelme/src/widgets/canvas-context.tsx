@@ -6,7 +6,7 @@ import { timeUniqueId, valueExist } from 'packages/hooks/global-hook';
 import { CreateDrawCanvas } from '../hooks/canvas-content-hook';
 import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
 import type { ScaleTranslate, ScaleTranslateManager, ShapesProps } from '../config';
-import { ToolsHandleType } from '../config';
+import { ShapeType, ToolsHandleType } from '../config';
 import { vertexesToImageScale } from '../core/utils';
 
 export default defineComponent({
@@ -31,7 +31,7 @@ export default defineComponent({
 		const canvasBaseRef = ref<HTMLCanvasElement>();
 		const drawCanvas = ref<CreateDrawCanvas>();
 		const canvasDragZoom = ref<CanvasSceneDragZoom>();
-
+		const _labelInfo = ref(props.labelInfo);
 		const setContainerWidthHeight = (canvasWidth: number, canvasHeight: number) => {
 			canvasMainRef.value!.style.width = canvasWidth + 'px';
 			canvasMainRef.value!.style.height = canvasHeight + 'px';
@@ -116,26 +116,33 @@ export default defineComponent({
 						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
 						const shape = {
 							id: timeUniqueId(),
-							type: 'polygon',
+							shape_type: ShapeType.Polygon,
 							points: new_vertexes,
 						};
 						updateContextmenuLabelFixed(mouseOffset.x, mouseOffset.y, shape);
 					});
-					drawCanvas.value.subscribeEditing(vertexes => {
+					drawCanvas.value.subscribeEditing((vertexes, shape) => {
 						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
-						emit('editPolygon', {
-							vertexes: new_vertexes,
-							originWidth,
-							originHeight,
-						});
+						const index = _labelInfo.value.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+						if (index !== -1) {
+							_labelInfo.value.labels.shapes[index] = {
+								...shape,
+								points: new_vertexes,
+							};
+						}
+						_labelInfo.value.labels.imageWidth = originWidth;
+						_labelInfo.value.labels.imageHeight = originHeight;
+						emit('editPolygon', _labelInfo.value);
 					});
 
 					watch(
 						() => toolsActive.value,
 						() => {
-							drawCanvas.value!.destroyAllInstance();
-							if (toolsActive.value === ToolsHandleType.CreatePolygon) {
+							drawCanvas.value!.resetAllInstance();
+							if (toolsActive.value === ToolsHandleType.CREATE_POLYGON) {
 								drawCanvas.value!.createPolygonEventListener();
+							} else if (toolsActive.value === ToolsHandleType.EDIT_SHAPE) {
+								drawCanvas.value!.onEditorStart();
 							}
 						},
 						{ immediate: true }
@@ -147,25 +154,14 @@ export default defineComponent({
 			}
 		};
 		onMounted(() => {
-			watch(
-				() => props.labelInfo,
-				info => {
-					const labelInfo = toRaw(info);
-					renderImageLabel(labelInfo);
-				},
-				{
-					deep: true,
-					immediate: true,
-				}
-			);
+			renderImageLabel(_labelInfo.value);
 			// 当画布主体高度变化重新计算绘制
 			watch(
 				() => props.contextClientHeight,
 				height => {
 					if (valueExist(height)) {
 						canvasMainRef.value!.style.height = height + 'px';
-						const labelInfo = toRaw(props.labelInfo);
-						renderImageLabel(labelInfo);
+						renderImageLabel(_labelInfo.value);
 					}
 				}
 			);
@@ -177,8 +173,7 @@ export default defineComponent({
 		const rerenderImage = () => {
 			onCloseContentmenuLabel();
 			nextTick(() => {
-				const labelInfo = toRaw(props.labelInfo);
-				renderImageLabel(labelInfo);
+				renderImageLabel(_labelInfo.value);
 			});
 		};
 		const contextmenuLabelFixed = ref<any>({
@@ -209,24 +204,24 @@ export default defineComponent({
 			return { top, left, canvasWidth, canvasHeight };
 		});
 		const onSelectLabel = (label: string, shape: ShapesProps) => {
-			const labelInfo = toRaw(props.labelInfo);
-			const index = labelInfo.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+			const index = _labelInfo.value.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
 			if (index === -1) {
-				labelInfo.labels.shapes.push(toRaw(shape));
+				_labelInfo.value.labels.shapes.push(toRaw(shape));
 			} else {
-				labelInfo.labels.shapes[index] = toRaw(shape);
+				_labelInfo.value.labels.shapes[index] = toRaw(shape);
 			}
-			emit('updateLabelInfo', labelInfo);
+			emit('updateLabelInfo', _labelInfo.value);
 			onCloseContentmenuLabel();
+			drawCanvas.value!.updateLabelInfo(_labelInfo.value.labels);
 		};
 		const onDeleteLabel = (shape: ShapesProps) => {
-			const labelInfo = toRaw(props.labelInfo);
-			const index = labelInfo.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+			const index = _labelInfo.value.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
 			if (index !== -1) {
-				labelInfo.labels.shapes.splice(index, 1);
+				_labelInfo.value.labels.shapes.splice(index, 1);
 			}
-			emit('updateLabelInfo', labelInfo);
+			emit('updateLabelInfo', _labelInfo.value);
 			onCloseContentmenuLabel();
+			drawCanvas.value!.updateLabelInfo(_labelInfo.value.labels);
 		};
 		const renderContent = () => {
 			return (

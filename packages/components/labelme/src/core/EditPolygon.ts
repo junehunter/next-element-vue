@@ -30,6 +30,10 @@ export default class EditPolygon {
 		this.vertexRadius = 8;
 		this.edgeCentreRadius = 5;
 		this.pointRecover = [];
+		this.canvasMousedown = this.canvasMousedown.bind(this);
+		this.canvasMouseup = this.canvasMouseup.bind(this);
+		this.canvasMousemove = this.canvasMousemove.bind(this);
+		this.canvasMouseClick = this.canvasMouseClick.bind(this);
 	}
 	private notifyEditPolygonObserver() {
 		this.editPolygonObserver?.(this.vertexes);
@@ -181,15 +185,16 @@ export default class EditPolygon {
 	}
 	public updatePolygon(callback: (vertexes: [number, number][]) => void) {
 		this.isEditing = true;
-		this.canvas.addEventListener('mousedown', this.canvasMousedown.bind(this));
-		this.canvas.addEventListener('mouseup', this.canvasMouseup.bind(this));
-		this.canvas.addEventListener('click', this.canvasMouseClick.bind(this));
-		this.canvas.addEventListener('mousemove', this.canvasMousemove.bind(this));
+		this.canvas.addEventListener('mousedown', this.canvasMousedown);
+		this.canvas.addEventListener('mouseup', this.canvasMouseup);
+		this.canvas.addEventListener('mousemove', this.canvasMousemove);
+		this.canvas.addEventListener('click', this.canvasMouseClick);
 		this.observers.push(callback);
 	}
 	canvasMousedown(e: MouseEvent) {
-		e.stopPropagation();
-		e.preventDefault();
+		e.stopPropagation(); // 阻止事件冒泡
+		e.preventDefault(); // 阻止默认事件
+		if (e.ctrlKey) return;
 		this.canClickEvent = true;
 		const { offsetX: x, offsetY: y } = e;
 		this.pointRecover = [x, y];
@@ -212,6 +217,7 @@ export default class EditPolygon {
 	canvasMouseup(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
+		if (e.ctrlKey) return;
 		let { offsetX, offsetY } = e;
 		let [x, y] = this.getTransformPoint(offsetX, offsetY);
 		this.vertexes = vertexesUnique(this.vertexes);
@@ -240,6 +246,8 @@ export default class EditPolygon {
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
+		e.preventDefault();
+		if (e.ctrlKey) return;
 		const { offsetX: x, offsetY: y } = e;
 		if (this.canClickEvent) {
 			const i = this.pointInVertexes(x, y);
@@ -254,6 +262,8 @@ export default class EditPolygon {
 	}
 	canvasMousemove(e: MouseEvent) {
 		e.stopPropagation();
+		e.preventDefault();
+		if (e.ctrlKey) return;
 		const { offsetX, offsetY } = e;
 		this.pointInVertexesOrEdgeCentre(offsetX, offsetY);
 		const [x, y] = this.getTransformPoint(offsetX, offsetY);
@@ -273,7 +283,7 @@ export default class EditPolygon {
 		this.isEditing = false;
 		this.canvas.removeEventListener('mousedown', this.canvasMousedown);
 		this.canvas.removeEventListener('mouseup', this.canvasMouseup);
-		this.canvas.removeEventListener('click', this.canvasMouseClick);
 		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
+		this.canvas.removeEventListener('click', this.canvasMouseClick);
 	}
 }
