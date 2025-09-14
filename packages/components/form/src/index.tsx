@@ -576,12 +576,12 @@ export default defineComponent({
 		});
 		const renderContent = () => {
 			return (
-				<ElForm ref={ruleFormRef} class={ns.b()} inline={false} model={formParams} size={options.size}>
+				<ElForm ref={ruleFormRef} class={ns.b()} inline={false} model={formParams} size={options.size} label-position={valueExist(options.labelPosition, 'left')}>
 					<ElRow gutter={20}>
 						{formColumns.map(column => {
 							return (
 								!column.hide && (
-									<ElCol span={valueExist(column.span, colSpan.value)}>
+									<ElCol span={valueExist(options.colSpanFixed, column.span, colSpan.value)}>
 										<ElFormItem
 											prop={column.prop}
 											required={column.required}

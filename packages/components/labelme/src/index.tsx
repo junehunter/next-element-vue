@@ -11,7 +11,7 @@ import HeaderTool from './widgets/header-tool';
 import LeftTools from './widgets/left-tools';
 import RightLabel from './widgets/right-label';
 import defaultConfig from './config';
-import type { ScaleTranslate, ScaleTranslateManager, LabelNodeProps } from './config';
+import type { ScaleTranslate, ScaleTranslateManager, LabelNodeProps, ShapesProps } from './config';
 
 const ns = useNamespace('labelme');
 export default defineComponent({
@@ -77,6 +77,25 @@ export default defineComponent({
 			const node = labelImages.value[activateNodeIndex.value] || {};
 			return deepClone(node);
 		});
+		const onUpdateLabelInfo = (val: LabelNodeProps) => {
+			labelImages.value[activateNodeIndex.value] = val;
+		};
+		const onDeleteLabelShape = (shape: ShapesProps) => {
+			const node = currentNode.value;
+			const index = node.labels?.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+			if (index !== -1) {
+				node.labels.shapes.splice(index, 1);
+			}
+			labelImages.value[activateNodeIndex.value] = node;
+		};
+		const onUpdateLabelShape = (shape: ShapesProps) => {
+			const node = currentNode.value;
+			const index = node.labels?.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+			if (index !== -1) {
+				node.labels.shapes[index] = shape;
+			}
+			labelImages.value[activateNodeIndex.value] = node;
+		};
 		const loading = ref<boolean>(false);
 		const mainContentHeight = ref(options.minContentHeight);
 		const canvasContextRef = ref<any>();
@@ -199,9 +218,15 @@ export default defineComponent({
 							<div ref={mainRef} class={[ns.b('main')]}>
 								<LeftTools></LeftTools>
 								<div class={[ns.be('main', 'content')]} style={{ height: mainContentHeight.value + 'px' }}>
-									<CanvasContext ref={canvasContextRef} rowInfo={currentNode.value} onEditPolygon={onEditPlygon} onChangePolygon={onChangePolygon}></CanvasContext>
+									<CanvasContext
+										ref={canvasContextRef}
+										labelInfo={currentNode.value}
+										onEditPolygon={onEditPlygon}
+										onChangePolygon={onChangePolygon}
+										onUpdateLabelInfo={onUpdateLabelInfo}
+									></CanvasContext>
 								</div>
-								<RightLabel shapes={currentNode.value.labels?.shapes}></RightLabel>
+								<RightLabel shapes={currentNode.value.labels?.shapes} onUpdate={onUpdateLabelShape} onDelete={onDeleteLabelShape}></RightLabel>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>

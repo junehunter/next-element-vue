@@ -1,6 +1,6 @@
-import { defineComponent, inject, onMounted, ref, computed, watch } from 'vue';
+import { defineComponent, inject, onMounted, ref, computed, watch, Teleport } from 'vue';
 import type { PropType } from 'vue';
-import { ElIcon, ElButton, ElEmpty } from 'element-plus';
+import { ElIcon, ElButton, ElEmpty, ElInput } from 'element-plus';
 import { Close, Delete } from '@element-plus/icons-vue';
 import { isValueExist } from 'packages/hooks/global-hook';
 import { useLocale } from 'packages/hooks';
@@ -26,6 +26,8 @@ export default defineComponent({
 	setup(props, { emit }) {
 		const { t } = useLocale();
 		const ns = inject('ns', {} as any);
+		const groupId = ref<string>(props.activateShape.group_id || '');
+		const description = ref<string>(props.activateShape.description || '');
 		const onClose = () => {
 			emit('close');
 		};
@@ -35,7 +37,13 @@ export default defineComponent({
 		const activateIndex = ref<string>();
 		const onSelectLabelItem = (label: string) => {
 			activateIndex.value = label;
-			emit('select', label);
+			const shape = {
+				...props.activateShape,
+				label: label,
+				description: description.value,
+				group_id: groupId.value,
+			};
+			emit('select', label, shape);
 		};
 		watch(
 			() => props.activateShape,
@@ -74,35 +82,41 @@ export default defineComponent({
 		});
 		const renderContent = () => {
 			return (
-				<div ref={labelMenuRef} class={[ns.b('contextmenu-label')]} style={labelStyleFixed.value}>
-					<div class="label-head">
-						<span style="padding-right: 30px">{t('next.labelme.selectClasses')}</span>
-						<ElIcon size={16} onClick={onClose}>
-							<Close />
-						</ElIcon>
-					</div>
-					{props.classes.length ? (
-						<ul class="label-main">
-							{props.classes.map((name, index) => {
-								return (
-									<li key={index} onClick={() => onSelectLabelItem(name)} class={{ 'activate-label': activateIndex.value === name }}>
-										<span style={{ 'background-color': colors[index % colors.length] }} class="label-line"></span>
-										<span>{name}</span>
-									</li>
-								);
-							})}
-						</ul>
-					) : (
-						<ElEmpty image-size={50} description={t('next.labelme.emptyClassesText')} style={{ padding: 0 }}></ElEmpty>
-					)}
-					{isValueExist(activateIndex.value) ? (
-						<div style="margin: 10px auto 0">
-							<ElButton icon={Delete} plain size="small" type="danger" onClick={onDelete}>
-								{t('next.labelme.deleteClasses')}
-							</ElButton>
+				<Teleport to="body">
+					<div ref={labelMenuRef} class={[ns.b('contextmenu-label')]} style={labelStyleFixed.value}>
+						<div class="label-head">
+							<span style="padding-right: 30px">{t('next.labelme.selectClasses')}</span>
+							<ElIcon size={16} onClick={onClose}>
+								<Close />
+							</ElIcon>
 						</div>
-					) : null}
-				</div>
+						{props.classes.length ? (
+							<>
+								<ElInput v-model={groupId.value} placeholder={t('next.labelme.labelGroupId')} size="small" maxLength={30} />
+								<ul class="label-main">
+									{props.classes.map((name, index) => {
+										return (
+											<li key={index} onClick={() => onSelectLabelItem(name)} class={{ 'activate-label': activateIndex.value === name }}>
+												<span style={{ 'background-color': colors[index % colors.length] }} class="label-line"></span>
+												<span>{name}</span>
+											</li>
+										);
+									})}
+								</ul>
+								<ElInput v-model={description.value} placeholder={t('next.labelme.labelDescription')} size="small" type="textarea" rows={2} resize="none" maxLength={100} />
+							</>
+						) : (
+							<ElEmpty image-size={50} description={t('next.labelme.emptyClassesText')} style={{ padding: 0 }}></ElEmpty>
+						)}
+						{isValueExist(activateIndex.value) ? (
+							<div style="margin: 10px auto 0">
+								<ElButton icon={Delete} plain size="small" type="danger" onClick={onDelete}>
+									{t('next.labelme.deleteClasses')}
+								</ElButton>
+							</div>
+						) : null}
+					</div>
+				</Teleport>
 			);
 		};
 		return () => <>{renderContent()}</>;

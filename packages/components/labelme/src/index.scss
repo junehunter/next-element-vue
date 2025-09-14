@@ -114,7 +114,7 @@ $block: 'labelme';
 				box-sizing: border-box;
 				border-radius: 5px;
 				height: 100%;
-				li {
+				li.#{be($block,'right-label', 'label-item')} {
 					margin: 5px 0;
 					padding: 3px 6px;
 					font-size: 12px;
@@ -124,6 +124,16 @@ $block: 'labelme';
 					line-height: 20px;
 					border: 1px solid #ddd;
 					border-radius: 3px;
+					.#{be($block,'right-label', 'label-content')} {
+						flex: 1 1 auto;
+						min-width: 80px;
+					}
+					.#{be($block,'right-label', 'label-btns')} {
+						flex-grow: 0;
+						flex-shrink: 0;
+						display: flex;
+						align-items: center;
+					}
 					.el-icon {
 						cursor: pointer;
 					}
@@ -226,49 +236,56 @@ $block: 'labelme';
             }
         }
 	}
-	.#{bf($block, 'contextmenu-label')} {
-		position: fixed;
-		z-index: 9999;
-		background-color: #ffffff;
-		padding: 10px 15px;
-		border-radius: 8px;
-		white-space: nowrap;
-		box-shadow: 0 0 50px 3px #cccccc;
-		transition: all 0.3s;
-		>.label-head {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			font-size: 14px;
-			padding-bottom: 10px;
-			.el-icon {
-				transition: all 0.3s;
-				&:hover {
-					cursor: pointer;
-					transform: rotate(90deg);
-				}
+	
+}
+.#{bf($block, 'contextmenu-label')} {
+	position: fixed;
+	z-index: 9999;
+	background-color: #ffffff;
+	box-sizing: border-box;
+	padding: 10px 15px;
+	border-radius: 8px;
+	white-space: nowrap;
+	box-shadow: 0 0 50px 3px #cccccc;
+	transition: all 0.3s;
+	>.label-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 14px;
+		padding-bottom: 10px;
+		.el-icon {
+			transition: all 0.3s;
+			&:hover {
+				cursor: pointer;
+				transform: rotate(90deg);
 			}
 		}
-		>.label-main {
-            max-height: 300px;
-            overflow-y: auto;
-            @include setScrollBar();
-			> li {
-				padding: 3px 0;
-				font-size: 12px;
-				display: flex;
-				align-items: center;
-				.label-line {
-					display: inline-block;
-					width: 3px;
-					height: 10px;
-					margin-right: 6px;
-					border-radius: 3px;
-				}
-			}
-			>li.activate-label {
+	}
+	>.label-main {
+		max-height: 300px;
+		overflow-y: auto;
+		@include setScrollBar();
+		padding: 6px 0;
+		> li {
+			padding: 3px 0;
+			font-size: 12px;
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+			&:hover {
 				color: $theme-color;
 			}
+			.label-line {
+				display: inline-block;
+				width: 3px;
+				height: 10px;
+				margin-right: 6px;
+				border-radius: 3px;
+			}
+		}
+		>li.activate-label {
+			color: $theme-color;
 		}
 	}
 }

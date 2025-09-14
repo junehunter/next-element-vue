@@ -1,5 +1,16 @@
 @use './config.scss';
 
+@function be($block, $blockSuffix, $element: '') {
+	$name: config.$namespace + config.$common-separator + $block;
+	@if $blockSuffix != '' {
+		$name: $name + config.$common-separator + $blockSuffix;
+	}
+	@if $element != '' {
+		$name: $name + config.$element-separator + $element;
+	}
+	@return $name;
+}
+
 @function bem($block, $element: '', $modifier: '') {
 	$name: config.$namespace + config.$common-separator + $block;
 

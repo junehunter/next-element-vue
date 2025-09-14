@@ -3,7 +3,7 @@ import { colors } from '../config';
 import CreatePolygon from '../core/CreatePolygon';
 import EditPolygon from '../core/EditPolygon';
 import { useChangeColor } from 'packages/utils/theme';
-import { getTranslateAndScale, printsToPath, vertexesToImageScale } from '../core/utils';
+import { getTranslateAndScale, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
 const { hexToRgba } = useChangeColor();
 
 export interface CreateRectCanvasProps {
@@ -54,8 +54,9 @@ export class CreateDrawCanvas {
 		// 新增完成后通知
 		this.createPolygon.addCompleted((vertexes, mouseOffset) => {
 			this.addVertexes = vertexes;
-			// this.render();
-			this.notifyCreateComplete(mouseOffset);
+			const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
+			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
+			this.notifyCreateComplete({ x, y });
 		});
 		// 编辑多边形通知
 		this.editDrawPolygon.onEditPolygon(vertexes => {
@@ -99,6 +100,10 @@ export class CreateDrawCanvas {
 
 	public destroyAllInstance() {
 		this.createPolygon.destroy();
+	}
+
+	public closeCreateOrEditor() {
+		this.createPolygon.reset();
 	}
 
 	drawShapes(shapes: ShapesProps[]) {

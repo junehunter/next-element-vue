@@ -63,6 +63,7 @@ export default class CreatePolygon {
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
+		if (e.ctrlKey) return;
 		this.isDrawing = true;
 		const [x, y] = this.transformMousePoint(e);
 		this.mouseOffset.x = x;
@@ -81,6 +82,7 @@ export default class CreatePolygon {
 	}
 	canvasMousemove(e: MouseEvent) {
 		e.stopPropagation();
+		if (e.ctrlKey) return;
 		if (this.isDrawing) {
 			const [x, y] = this.transformMousePoint(e);
 			this.mouseOffset.x = x;
@@ -90,6 +92,7 @@ export default class CreatePolygon {
 	}
 	canvasMouseDblclick(e: MouseEvent) {
 		e.stopPropagation();
+		if (e.ctrlKey) return;
 		if (this.isDrawing) {
 			this.canvas!.style.cursor = 'unset';
 			const [x, y] = this.transformMousePoint(e);

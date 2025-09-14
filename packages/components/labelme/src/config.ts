@@ -28,6 +28,7 @@ export interface ShapesProps {
 	label?: string;
 	points: [number, number][];
 	group_id?: string;
+	description?: string;
 	shape_type?: ShapeType;
 }
 

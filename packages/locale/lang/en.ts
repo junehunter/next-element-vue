@@ -88,6 +88,8 @@ export default {
 			selectClasses: 'select classes',
 			emptyClassesText: 'No label classes',
 			deleteClasses: 'delete classes',
+			labelGroupId: 'Group ID',
+			labelDescription: 'label description',
 		},
 	},
 };

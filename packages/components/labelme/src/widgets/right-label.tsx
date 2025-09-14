@@ -1,8 +1,10 @@
-import { defineComponent, inject, ref, unref } from 'vue';
+import { defineComponent, inject, reactive, ref, toRef, unref } from 'vue';
 import type { PropType } from 'vue';
 import { ElIcon, ElPopconfirm, ElEmpty } from 'element-plus';
-import { Delete } from '@element-plus/icons-vue';
+import { Delete, Edit } from '@element-plus/icons-vue';
+import { NextDialog, NextForm } from 'packages/components';
 import { useLocale } from 'packages/hooks';
+import { deepClone } from 'packages/hooks/global-hook';
 import type { ShapesProps } from '../config';
 import { colors, defaultColor } from '../config';
 
@@ -13,7 +15,7 @@ export default defineComponent({
 			default: () => [],
 		},
 	},
-	emits: [],
+	emits: ['delete', 'update'],
 	setup(props, { emit }) {
 		const { t } = useLocale();
 		const _ns = inject('ns', {} as any);
@@ -24,44 +26,89 @@ export default defineComponent({
 			if (index === -1) return defaultColor;
 			return colors[index];
 		};
-		const shapes = props.shapes;
-		const onDeleteLabelNode = (item: any) => {
-			emit('delete', item);
+		const shapes = toRef(props, 'shapes');
+		const onDeleteLabelNode = (shape: ShapesProps) => {
+			emit('delete', shape);
+		};
+		const formColumns = [
+			{
+				prop: 'group_id',
+				label: t('next.labelme.labelGroupId'),
+				type: 'input',
+			},
+			{
+				prop: 'description',
+				label: t('next.labelme.labelDescription'),
+				type: 'textarea',
+			},
+		];
+		const shapeEditDialog = reactive({
+			visible: false,
+			title: '',
+			shapeInfo: {},
+		});
+		const onCloseShapeEditDialog = () => {
+			shapeEditDialog.visible = false;
+			shapeEditDialog.title = '';
+			shapeEditDialog.shapeInfo = {};
+		};
+		const onOpenShapeEditDialog = (shape: ShapesProps) => {
+			shapeEditDialog.visible = true;
+			shapeEditDialog.title = shape.label;
+			shapeEditDialog.shapeInfo = shape;
+		};
+		const onSubmitShapeChange = (shape: ShapesProps, done: Function) => {
+			emit('update', deepClone(shape));
+			done();
+			onCloseShapeEditDialog();
 		};
 		const renderContent = () => {
 			return (
 				<div class={[_ns.be('main', 'right-label')]}>
-					{shapes.length ? (
+					{shapes.value.length ? (
 						<ul>
-							{shapes.map((item, index) => {
+							{shapes.value.map((shape, index) => {
 								return (
-									<li class="label-item" key={index}>
-										<div>
-											<span class="label-line" style={{ backgroundColor: formatlabelColor(item.label) }}></span>
+									<li class={[_ns.be('right-label', 'label-item')]} key={index}>
+										<div class={[_ns.be('right-label', 'label-content')]}>
+											<span class="label-line" style={{ backgroundColor: formatlabelColor(shape.label) }}></span>
 											<span>
-												{item.label}
-												{item.group_id ? ` ( ${item.group_id} )` : null}
+												{shape.label}
+												{shape.group_id ? ` ( ${shape.group_id} )` : null}
 											</span>
 										</div>
-										<ElPopconfirm
-											title={t('next.labelme.confirmDeleteLabel')}
-											width={200}
-											v-slots={{
-												reference: () => (
-													<ElIcon
-														size={16}
-														color="#ff0000"
-														onClick={(event: Event) => {
-															event.preventDefault();
-															event.stopPropagation();
-														}}
-													>
-														<Delete />
-													</ElIcon>
-												),
-											}}
-											onConfirm={() => onDeleteLabelNode(item)}
-										></ElPopconfirm>
+										<div class={[_ns.be('right-label', 'label-btns')]}>
+											<ElIcon
+												size={16}
+												style={{ marginRight: '6px' }}
+												onClick={(event: Event) => {
+													event.preventDefault();
+													event.stopPropagation();
+													onOpenShapeEditDialog(shape);
+												}}
+											>
+												<Edit />
+											</ElIcon>
+											<ElPopconfirm
+												title={t('next.labelme.confirmDeleteLabel')}
+												width={200}
+												v-slots={{
+													reference: () => (
+														<ElIcon
+															size={16}
+															color="#ff0000"
+															onClick={(event: Event) => {
+																event.preventDefault();
+																event.stopPropagation();
+															}}
+														>
+															<Delete />
+														</ElIcon>
+													),
+												}}
+												onConfirm={() => onDeleteLabelNode(shape)}
+											></ElPopconfirm>
+										</div>
 									</li>
 								);
 							})}
@@ -69,6 +116,17 @@ export default defineComponent({
 					) : (
 						<ElEmpty image-size={100} description={t('next.labelme.emptyLabelText')}></ElEmpty>
 					)}
+					<NextDialog
+						v-model={shapeEditDialog.visible}
+						title={shapeEditDialog.title}
+						width={350}
+						fullscreen={false}
+						fullscreenBtn={false}
+						closeOnClickModal={true}
+						onClose={onCloseShapeEditDialog}
+					>
+						<NextForm options={{ labelPosition: 'top', colSpanFixed: 24 }} columns={formColumns} formDatum={shapeEditDialog.shapeInfo} onSubmit={onSubmitShapeChange}></NextForm>
+					</NextDialog>
 				</div>
 			);
 		};

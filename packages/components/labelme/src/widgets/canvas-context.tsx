@@ -15,12 +15,12 @@ export default defineComponent({
 			type: Number,
 			default: null,
 		},
-		rowInfo: {
+		labelInfo: {
 			type: Object,
 			default: () => ({}),
 		},
 	},
-	emits: ['editPolygon', 'changePolygon'],
+	emits: ['editPolygon', 'changePolygon', 'updateLabelInfo'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const classes = inject<Ref<any>>('classes', ref([]));
@@ -148,10 +148,10 @@ export default defineComponent({
 		};
 		onMounted(() => {
 			watch(
-				() => props.rowInfo,
+				() => props.labelInfo,
 				info => {
-					const rowInfo = toRaw(info);
-					renderImageLabel(rowInfo);
+					const labelInfo = toRaw(info);
+					renderImageLabel(labelInfo);
 				},
 				{
 					deep: true,
@@ -164,8 +164,8 @@ export default defineComponent({
 				height => {
 					if (valueExist(height)) {
 						canvasMainRef.value!.style.height = height + 'px';
-						const rowInfo = toRaw(props.rowInfo);
-						renderImageLabel(rowInfo);
+						const labelInfo = toRaw(props.labelInfo);
+						renderImageLabel(labelInfo);
 					}
 				}
 			);
@@ -177,8 +177,8 @@ export default defineComponent({
 		const rerenderImage = () => {
 			onCloseContentmenuLabel();
 			nextTick(() => {
-				const rowInfo = toRaw(props.rowInfo);
-				renderImageLabel(rowInfo);
+				const labelInfo = toRaw(props.labelInfo);
+				renderImageLabel(labelInfo);
 			});
 		};
 		const contextmenuLabelFixed = ref<any>({
@@ -192,6 +192,7 @@ export default defineComponent({
 			contextmenuLabelFixed.value.top = 0;
 			contextmenuLabelFixed.value.left = 0;
 			contextmenuLabelFixed.value.activateShape = null;
+			drawCanvas.value!.closeCreateOrEditor();
 		};
 		const updateContextmenuLabelFixed = (x: number, y: number, shape: ShapesProps) => {
 			// 根据绘制区域在窗口位置设置标注菜单栏位置
@@ -207,12 +208,24 @@ export default defineComponent({
 			const { top, left, canvasWidth, canvasHeight } = contextmenuLabelFixed.value;
 			return { top, left, canvasWidth, canvasHeight };
 		});
-		const onSelectLabel = () => {
-			const { activateShape } = contextmenuLabelFixed.value;
-			drawCanvas.value!.addShape(activateShape);
+		const onSelectLabel = (label: string, shape: ShapesProps) => {
+			const labelInfo = toRaw(props.labelInfo);
+			const index = labelInfo.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+			if (index === -1) {
+				labelInfo.labels.shapes.push(toRaw(shape));
+			} else {
+				labelInfo.labels.shapes[index] = toRaw(shape);
+			}
+			emit('updateLabelInfo', labelInfo);
 			onCloseContentmenuLabel();
 		};
-		const onDeleteLabel = () => {
+		const onDeleteLabel = (shape: ShapesProps) => {
+			const labelInfo = toRaw(props.labelInfo);
+			const index = labelInfo.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
+			if (index !== -1) {
+				labelInfo.labels.shapes.splice(index, 1);
+			}
+			emit('updateLabelInfo', labelInfo);
 			onCloseContentmenuLabel();
 		};
 		const renderContent = () => {

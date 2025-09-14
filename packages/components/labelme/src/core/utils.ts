@@ -138,3 +138,14 @@ export const vertexesTransform = (vertexes: [number, number][], scaleOffset: Sca
 	if (!vertexes?.length) return [];
 	return vertexes.map(item => vertexeTransform(item, scaleOffset));
 };
+/**
+ * 点位数据还原为屏幕坐标
+ * @param vertex 点位
+ * @param scaleOffset 缩放偏移
+ * @returns 屏幕坐标
+ */
+export const vertexToPixel = (vertex: [number, number], scaleOffset: ScaleTranslate): [number, number] => {
+	const { scale, x: offsetX, y: offsetY } = scaleOffset;
+	const [x, y] = vertex;
+	return [x * scale + offsetX, y * scale + offsetY];
+};

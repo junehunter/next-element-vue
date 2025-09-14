@@ -8,6 +8,7 @@ const list = ref<any>([
 		labels: {
 			shapes: [
 				{
+					id: 1,
 					label: '动物-马',
 					group_id: '1',
 					shape_type: 'polygon',
@@ -33,6 +34,7 @@ const list = ref<any>([
 					],
 				},
 				{
+					id: 2,
 					label: '动物-鹿',
 					group_id: null,
 					shape_type: 'polygon',
