@@ -25,6 +25,7 @@ export const printsToPath = (vertexes: [number, number][]): Path2D => {
  * @returns
  */
 export const isPointInPath = (px: number, py: number, vertexes: [number, number][], ctx: CanvasRenderingContext2D) => {
+	if (!px || !py || !vertexes || !ctx) return false;
 	const path = printsToPath(vertexes);
 	path.closePath();
 	return ctx.isPointInPath(path, px, py);

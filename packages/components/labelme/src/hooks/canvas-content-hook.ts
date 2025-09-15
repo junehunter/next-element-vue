@@ -46,7 +46,7 @@ export class CreateDrawCanvas {
 		this.imageScaleY = imageScaleY;
 		this.labels = labels || {};
 		this.createPolygon = new CreatePolygon(canvas, ctx);
-		this.editDrawPolygon = new EditPolygon(canvas, ctx);
+		this.editDrawPolygon = new EditPolygon(canvas, ctx, imageScaleX, imageScaleY);
 		this.createPolygon.vertexesChangeEventListener(vertexes => {
 			this.render();
 			this.createPolygon.drawPolygon(vertexes);
@@ -151,7 +151,10 @@ export class CreateDrawCanvas {
 	}
 	render = () => {
 		const ctx = this.ctx;
-		ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+		ctx.save(); // 保存当前的变换矩阵
+		ctx.setTransform(1, 0, 0, 1, 0, 0); // 重置变换矩阵
+		ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight); // 清空画布
+		ctx.restore(); // 恢复之前的缩放/平移
 		ctx.drawImage(this.image, 0, 0, this.canvasWidth, this.canvasHeight);
 		ctx.save();
 		const shapes = this.labels.shapes;
@@ -182,21 +185,20 @@ export class CreateDrawCanvas {
 		return hitShape;
 	}
 	public triggerShapeEdit(shape: ShapesProps) {
-		this.render();
-		this.editDrawPolygon.destroy();
 		this.editingShape = shape;
-		// 编辑多边形通知
-		this.render();
 		const points = vertexesToImageScale(shape.points, this.imageScaleX, this.imageScaleY);
 		this.editDrawPolygon.drawPolygon(points);
+		// 编辑多边形通知
 		this.editDrawPolygon.updatePolygon(vertexes => {
 			this.editVertexes = vertexes;
 			this.render();
 		});
 		this.editDrawPolygon.onEditPolygon(vertexes => {
+			this.render();
 			this.editVertexes = vertexes;
 			this.notifyEditing();
 		});
+		this.render();
 	}
 	private onMouseDoubleClick(e: MouseEvent) {
 		e.stopPropagation();
@@ -229,21 +231,19 @@ export class CreateDrawCanvas {
 	private onMouseDown(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
-		this.mouseHitShape(e);
 		if (e.ctrlKey) return;
+		if (this.editingShape) return;
+		this.mouseHitShape(e);
 	}
 	private onMouseMove(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
-		if (this.editingShape) return;
-		this.mouseHitShape(e);
 	}
 	private onMouseUp(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
-		this.mouseHitShape(e);
 	}
 	onEditorStart() {
 		this.canvas.addEventListener('mousedown', this.onMouseDown);

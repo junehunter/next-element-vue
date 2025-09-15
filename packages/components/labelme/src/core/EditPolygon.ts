@@ -1,13 +1,16 @@
 import { isValueExist } from 'packages/hooks/global-hook';
 import { defaultColor } from '../config';
-import { getTranslateAndScale, isPointInCircle, vertexesUnique, vertexeTransform } from './utils';
+import { getTranslateAndScale, isPointInCircle, isPointInPath, vertexesUnique, vertexeTransform } from './utils';
 import { useChangeColor } from 'packages/utils/theme';
 const { hexToRgba } = useChangeColor();
 
 export default class EditPolygon {
 	public canvas: HTMLCanvasElement;
 	public ctx: CanvasRenderingContext2D;
+	private imageScaleX: number = 1;
+	private imageScaleY: number = 1;
 	private vertexes: [number, number][];
+	private mouseMoveOffset: [number, number];
 	private isEditing: boolean;
 	private isMoveEditing: boolean;
 	private canClickEvent: boolean;
@@ -18,9 +21,11 @@ export default class EditPolygon {
 	private pointRecover: Array<number>;
 	private observers: ((vertexes: [number, number][]) => void)[] = [];
 	private editPolygonObserver?: (vertexes: [number, number][]) => void;
-	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, imageScaleX: number, imageScaleY: number) {
 		this.canvas = canvas;
 		this.ctx = ctx;
+		this.imageScaleX = imageScaleX;
+		this.imageScaleY = imageScaleY;
 		this.vertexes = [];
 		this.isEditing = false;
 		this.canClickEvent = true;
@@ -162,6 +167,7 @@ export default class EditPolygon {
 		const _vertexRadius = this.vertexRadius / scale;
 		const _edgeCentreRadius = this.edgeCentreRadius / scale;
 		const vertexes = this.vertexes;
+		let aimIndex = null;
 		for (let i = 0; i < vertexes.length; i++) {
 			const [vertex_x, vertex_y] = vertexes[i];
 			const isInVertex = isPointInCircle(_x, _y, vertex_x, vertex_y, _vertexRadius);
@@ -172,11 +178,13 @@ export default class EditPolygon {
 			const isInEdgeCenter = isPointInCircle(_x, _y, edge_center_x, edge_center_y, _edgeCentreRadius);
 			if (isInVertex || isInEdgeCenter) {
 				this.canvas!.style.cursor = 'pointer';
+				aimIndex = i;
 				break;
 			} else {
 				this.canvas!.style.cursor = 'unset';
 			}
 		}
+		return aimIndex;
 	}
 	private notifyObservers() {
 		this.observers.forEach(listener => {
@@ -184,6 +192,7 @@ export default class EditPolygon {
 		});
 	}
 	public updatePolygon(callback: (vertexes: [number, number][]) => void) {
+		if (this.isEditing) return;
 		this.isEditing = true;
 		this.canvas.addEventListener('mousedown', this.canvasMousedown);
 		this.canvas.addEventListener('mouseup', this.canvasMouseup);
@@ -213,6 +222,10 @@ export default class EditPolygon {
 		setTimeout(() => {
 			this.canClickEvent = false;
 		}, 200);
+		const isIn = isPointInPath(x, y, this.vertexes, this.ctx);
+		if (isIn) {
+			this.mouseMoveOffset = [x, y];
+		}
 	}
 	canvasMouseup(e: MouseEvent) {
 		e.stopPropagation();
@@ -238,11 +251,46 @@ export default class EditPolygon {
 			this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
 		}
 		this.isMoveEditing = false;
+		this.mouseMoveOffset = null;
 		this.pointVertexIndex = -1;
 		this.pointCentreIndex = -1;
 		this.drawPolygon(this.vertexes);
-		this.notifyObservers();
 		this.notifyEditPolygonObserver();
+	}
+	canvasMousemove(e: MouseEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+		if (e.ctrlKey) return;
+		const { offsetX, offsetY } = e;
+		const aimIndex = this.pointInVertexesOrEdgeCentre(offsetX, offsetY);
+		const [x, y] = this.getTransformPoint(offsetX, offsetY);
+		if (this.isMoveEditing) {
+			if (this.pointVertexIndex > -1) {
+				this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
+			}
+			if (this.pointCentreIndex > -1) {
+				this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
+			}
+			this.notifyObservers();
+			return;
+		}
+		// 优先点位编辑：如果选中编辑点，不要整体移动
+		if (isValueExist(aimIndex)) {
+			return;
+		}
+		const isIn = isPointInPath(offsetX, offsetY, this.vertexes, this.ctx);
+		if (isIn) {
+			this.canvas!.style.cursor = 'move';
+		}
+		if (this.mouseMoveOffset) {
+			const dx = offsetX - this.mouseMoveOffset![0];
+			const dy = offsetY - this.mouseMoveOffset![1];
+			this.vertexes = this.vertexes.map((vertex: [number, number]) => {
+				return [vertex[0] + dx, vertex[1] + dy];
+			});
+			this.notifyObservers();
+			this.mouseMoveOffset = [offsetX, offsetY];
+		}
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();
@@ -260,27 +308,11 @@ export default class EditPolygon {
 			}
 		}
 	}
-	canvasMousemove(e: MouseEvent) {
-		e.stopPropagation();
-		e.preventDefault();
-		if (e.ctrlKey) return;
-		const { offsetX, offsetY } = e;
-		this.pointInVertexesOrEdgeCentre(offsetX, offsetY);
-		const [x, y] = this.getTransformPoint(offsetX, offsetY);
-		if (this.isMoveEditing) {
-			if (this.pointVertexIndex > -1) {
-				this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
-			}
-			if (this.pointCentreIndex > -1) {
-				this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
-			}
-			this.notifyObservers();
-		}
-	}
 	destroy() {
 		this.vertexes = [];
 		this.observers = [];
 		this.isEditing = false;
+		this.canClickEvent = false;
 		this.canvas.removeEventListener('mousedown', this.canvasMousedown);
 		this.canvas.removeEventListener('mouseup', this.canvasMouseup);
 		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
