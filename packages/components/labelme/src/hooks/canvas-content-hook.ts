@@ -239,6 +239,7 @@ export class CreateDrawCanvas {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
+		this.mouseHitShape(e);
 	}
 	private onMouseUp(e: MouseEvent) {
 		e.stopPropagation();
