@@ -2,6 +2,7 @@ import type { LabelNodeProps, ScaleTranslate, ShapesProps } from '../config';
 import { colors, ShapeType } from '../config';
 import CreatePolygon from '../core/CreatePolygon';
 import EditPolygon from '../core/EditPolygon';
+import CreateRectangle from '../core/CreateRectangle';
 import { useChangeColor } from 'packages/utils/theme';
 import { getTranslateAndScale, isPointInPath, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
 const { hexToRgba } = useChangeColor();
@@ -30,8 +31,9 @@ export class CreateDrawCanvas {
 	private labels: LabelNodeProps;
 	private createPolygon: CreatePolygon;
 	private editDrawPolygon: EditPolygon;
+	private createRectangle: CreateRectangle;
 	private addVertexes: [number, number][] = [];
-	private createCompleteSubscribers = new Set<(vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void>();
+	private createCompleteSubscribers = new Set<(vertexes: [number, number][], mouseOffset: { x: number; y: number }, shapeType?: ShapeType) => void>();
 	private editingShape: ShapesProps;
 	private editVertexes: [number, number][] = [];
 	private editingSubscribers = new Set<(vertexes: [number, number][], shape: ShapesProps) => void>();
@@ -47,6 +49,7 @@ export class CreateDrawCanvas {
 		this.labels = labels || {};
 		this.createPolygon = new CreatePolygon(canvas, ctx);
 		this.editDrawPolygon = new EditPolygon(canvas, ctx, imageScaleX, imageScaleY);
+		this.createRectangle = new CreateRectangle(canvas, ctx);
 		this.createPolygon.vertexesChangeEventListener(vertexes => {
 			this.render();
 			this.createPolygon.drawPolygon(vertexes);
@@ -57,7 +60,17 @@ export class CreateDrawCanvas {
 			this.addVertexes = vertexes;
 			const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
 			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
-			this.notifyCreateComplete({ x, y });
+			this.notifyCreateComplete({ x, y }, ShapeType.Polygon);
+		});
+		this.createRectangle.subscribeVertexesChange(vertexes => {
+			this.render();
+			this.createRectangle.drawRectangle(vertexes);
+		});
+		this.createRectangle.subscribeDrawComplete((vertexes, mouseOffset) => {
+			const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
+			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
+			this.addVertexes = vertexes;
+			this.notifyCreateComplete({ x, y }, ShapeType.Rectangle);
 		});
 		this.render();
 		this.onMouseDown = this.onMouseDown.bind(this);
@@ -67,21 +80,21 @@ export class CreateDrawCanvas {
 		this.onMouseDoubleClick = this.onMouseDoubleClick.bind(this);
 	}
 	// 订阅新增完成
-	public subscribeCreateComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
+	public subscribeCreateComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }, shapeType?: ShapeType) => void) {
 		this.createCompleteSubscribers.add(callback);
 	}
 	// 取消订阅新增完成
-	public unsubscribeCreateComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
+	public unsubscribeCreateComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }, shapeType?: ShapeType) => void) {
 		this.createCompleteSubscribers.delete(callback);
 	}
 	// 新增完成后通知
-	private notifyCreateComplete(mouseOffset: { x: number; y: number }) {
+	private notifyCreateComplete(mouseOffset: { x: number; y: number }, shapeType?: ShapeType) {
 		this.createCompleteSubscribers.forEach(listener => {
-			listener(this.addVertexes, mouseOffset);
+			listener(this.addVertexes, mouseOffset, shapeType ?? ShapeType.Polygon);
 		});
 	}
 	// 允许创建多边形
-	public createPolygonEventListener() {
+	public onStartCreatePolygon() {
 		this.createPolygon.triggerCreatePolygon();
 	}
 	// 订阅编辑中
@@ -99,14 +112,20 @@ export class CreateDrawCanvas {
 		});
 	}
 
+	public onStartCreateRectangle() {
+		this.createRectangle.start();
+	}
+
 	public resetAllInstance() {
 		this.createPolygon.destroy();
 		this.editDrawPolygon.destroy();
+		this.createRectangle.destroy();
 		this.onEditorEnd();
 	}
 
 	public closeCreateOrEditor() {
 		this.createPolygon.reset();
+		this.createRectangle.reset();
 	}
 
 	drawShapes(shapes: ShapesProps[]) {
@@ -117,15 +136,26 @@ export class CreateDrawCanvas {
 			if (shape.id === this.editingShape?.id) continue;
 			const points = vertexesToImageScale(shape.points, this.imageScaleX, this.imageScaleY);
 			if (!points.length) continue;
-			const path = printsToPath(points);
-			const color = colors[i % colors.length];
-			path.closePath();
-			ctx.beginPath();
-			ctx.lineWidth = 2 / scale;
-			ctx.strokeStyle = color;
-			ctx.fillStyle = hexToRgba(color, 0.2);
-			ctx.stroke(path);
-			ctx.fill(path);
+			if (shape.shape_type === ShapeType.Polygon) {
+				const path = printsToPath(points);
+				const color = colors[i % colors.length];
+				path.closePath();
+				ctx.beginPath();
+				ctx.lineWidth = 2 / scale;
+				ctx.strokeStyle = color;
+				ctx.fillStyle = hexToRgba(color, 0.2);
+				ctx.stroke(path);
+				ctx.fill(path);
+			} else if (shape.shape_type === ShapeType.Rectangle) {
+				const [[start_x, start_y], [end_x, end_y]] = points;
+				const color = colors[i % colors.length];
+				ctx.beginPath();
+				ctx.lineWidth = 2 / scale;
+				ctx.strokeStyle = color;
+				ctx.fillStyle = hexToRgba(color, 0.2);
+				ctx.strokeRect(start_x, start_y, end_x - start_x, end_y - start_y);
+				ctx.fillRect(start_x, start_y, end_x - start_x, end_y - start_y);
+			}
 		}
 	}
 	updateTransform(scaleOffseet: ScaleTranslate) {

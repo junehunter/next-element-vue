@@ -6,7 +6,7 @@ import { timeUniqueId, valueExist } from 'packages/hooks/global-hook';
 import { CreateDrawCanvas } from '../hooks/canvas-content-hook';
 import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
 import type { ScaleTranslate, ScaleTranslateManager, ShapesProps } from '../config';
-import { ShapeType, ToolsHandleType } from '../config';
+import { ToolsHandleType } from '../config';
 import { vertexesToImageScale } from '../core/utils';
 
 export default defineComponent({
@@ -112,11 +112,11 @@ export default defineComponent({
 						drawCanvas.value!.updateTransform(scaleOffset);
 						drawCanvas.value!.render();
 					});
-					drawCanvas.value.subscribeCreateComplete((vertexes, mouseOffset) => {
+					drawCanvas.value.subscribeCreateComplete((vertexes, mouseOffset, shapeType) => {
 						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
 						const shape = {
 							id: timeUniqueId(),
-							shape_type: ShapeType.Polygon,
+							shape_type: shapeType,
 							points: new_vertexes,
 						};
 						updateContextmenuLabelFixed(mouseOffset.x, mouseOffset.y, shape);
@@ -140,9 +140,11 @@ export default defineComponent({
 						() => {
 							drawCanvas.value!.resetAllInstance();
 							if (toolsActive.value === ToolsHandleType.CREATE_POLYGON) {
-								drawCanvas.value!.createPolygonEventListener();
+								drawCanvas.value!.onStartCreatePolygon();
 							} else if (toolsActive.value === ToolsHandleType.EDIT_SHAPE) {
 								drawCanvas.value!.onEditorStart();
+							} else if (toolsActive.value === ToolsHandleType.CREATE_RECTANGLE) {
+								drawCanvas.value!.onStartCreateRectangle();
 							}
 						},
 						{ immediate: true }

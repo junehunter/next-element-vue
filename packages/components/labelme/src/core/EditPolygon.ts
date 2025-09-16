@@ -120,6 +120,13 @@ export default class EditPolygon {
 			this.drawPolygonEdgeCentre(vertexes);
 		}
 	}
+	private updateCanvasCursor(hit: boolean) {
+		if (hit) {
+			this.canvas!.style.cursor = 'pointer';
+		} else {
+			if (this.canvas!.style.cursor !== 'pointer') this.canvas!.style.cursor = 'unset';
+		}
+	}
 	pointInVertexes(x: number, y: number) {
 		const [_x, _y] = this.getTransformPoint(x, y);
 		const { scale } = getTranslateAndScale(this.ctx);
@@ -130,13 +137,11 @@ export default class EditPolygon {
 			const [vertex_x, vertex_y] = vertexes[i];
 			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, _vertexRadius);
 			if (isIn) {
-				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
 				break;
-			} else {
-				this.canvas!.style.cursor = 'unset';
 			}
 		}
+		this.updateCanvasCursor(aimIndex !== null);
 		return aimIndex;
 	}
 	pointInEdgeCentre(x: number, y: number) {
@@ -152,13 +157,11 @@ export default class EditPolygon {
 			const vertex_y = start[1] + (end[1] - start[1]) / 2;
 			const isIn = isPointInCircle(_x, _y, vertex_x, vertex_y, _edgeCentreRadius);
 			if (isIn) {
-				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
 				break;
-			} else {
-				this.canvas!.style.cursor = 'unset';
 			}
 		}
+		this.updateCanvasCursor(aimIndex !== null);
 		return aimIndex;
 	}
 	pointInVertexesOrEdgeCentre(x: number, y: number) {
@@ -177,13 +180,11 @@ export default class EditPolygon {
 			const edge_center_y = start[1] + (end[1] - start[1]) / 2;
 			const isInEdgeCenter = isPointInCircle(_x, _y, edge_center_x, edge_center_y, _edgeCentreRadius);
 			if (isInVertex || isInEdgeCenter) {
-				this.canvas!.style.cursor = 'pointer';
 				aimIndex = i;
 				break;
-			} else {
-				this.canvas!.style.cursor = 'unset';
 			}
 		}
+		this.updateCanvasCursor(aimIndex !== null);
 		return aimIndex;
 	}
 	private notifyObservers() {
@@ -283,10 +284,8 @@ export default class EditPolygon {
 			this.canvas!.style.cursor = 'move';
 		}
 		if (this.mouseMoveOffset) {
-			const [_offsetX, _offsetY] = this.getTransformPoint(offsetX, offsetY);
-			const [_offsetX_pre, _offsetY_pre] = this.getTransformPoint(this.mouseMoveOffset![0], this.mouseMoveOffset![1]);
-			const dx = _offsetX - _offsetX_pre;
-			const dy = _offsetY - _offsetY_pre;
+			const dx = offsetX - this.mouseMoveOffset![0];
+			const dy = offsetY - this.mouseMoveOffset![1];
 			this.vertexes = this.vertexes.map((vertex: [number, number]) => {
 				return [vertex[0] + dx, vertex[1] + dy];
 			});
