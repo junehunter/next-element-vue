@@ -7,7 +7,10 @@
 <p align="center">🚀基于Element Plus封装的高级组件库，快速、灵活配置搭建你的应用</p>
 <p align="center">
     <a href="https://www.npmjs.com/package/next-element-vue">
-        <img src="https://img.shields.io/npm/v/next-element-vue?color=42b883&label=pnpm" alt="npm version">
+        <img src="https://img.shields.io/npm/v/next-element-vue?color=42b883&label=pnpm" alt="pnpm version">
+    </a>
+    <a href="https://www.npmjs.com/package/next-element-vue">
+        <img src="https://img.shields.io/npm/v/next-element-vue?color=42b883&label=npm" alt="npm version">
     </a>
     <a href="https://www.npmjs.com/package/next-element-vue">
         <img src="https://img.shields.io/npm/dm/next-element-vue.svg?style=flat" alt="downloads">
