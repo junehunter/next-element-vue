@@ -6,16 +6,16 @@
 </h1>
 <p align="center">🚀基于Element Plus封装的高级组件库，快速、灵活配置搭建你的应用</p>
 <p align="center">
-    <a href="https://www.npmjs.com/package/next-element-vue">
+    <a href="https://npmmirror.com/package/next-element-vue" target="_blank">
         <img src="https://img.shields.io/npm/v/next-element-vue?color=42b883&label=pnpm" alt="pnpm version">
     </a>
-    <a href="https://www.npmjs.com/package/next-element-vue">
+    <a href="https://www.npmjs.com/package/next-element-vue" target="_blank">
         <img src="https://img.shields.io/npm/v/next-element-vue?color=42b883&label=npm" alt="npm version">
     </a>
-    <a href="https://www.npmjs.com/package/next-element-vue">
+    <a href="https://www.npmjs.com/package/next-element-vue" target="_blank">
         <img src="https://img.shields.io/npm/dm/next-element-vue.svg?style=flat" alt="downloads">
     </a>
-    <a href="https://github.com/junehunter/next-element-vue/blob/main/LICENSE">
+    <a href="https://github.com/junehunter/next-element-vue/blob/main/LICENSE" target="_blank">
         <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="license">
     </a>
 </p>
