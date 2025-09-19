@@ -1,5 +1,5 @@
 import { defaultColor } from '../config';
-import { getTranslateAndScale, vertexeTransform } from './utils';
+import { getTranslateAndScale, vertexesUnique, vertexeTransform } from './utils';
 import { useChangeColor } from 'packages/utils/theme';
 const { hexToRgba } = useChangeColor();
 
@@ -96,7 +96,9 @@ export default class CreateRectangle {
 			this.canvas!.style.cursor = 'unset';
 			const [x, y] = this.transformMousePoint(e);
 			this.vertexes.push([x, y]);
-			this.notifyDrawComplete();
+			if (vertexesUnique(this.vertexes).length === 2) {
+				this.notifyDrawComplete();
+			}
 		}
 		this.isDrawing = false;
 	}

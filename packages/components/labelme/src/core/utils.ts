@@ -31,6 +31,22 @@ export const isPointInPath = (px: number, py: number, vertexes: [number, number]
 	return ctx.isPointInPath(path, px, py);
 };
 /**
+ * 点是否在矩形内
+ * @param px 鼠标x坐标
+ * @param py 鼠标y坐标
+ * @param vertexes 点位数据
+ * @param ctx 上下文
+ * @returns
+ */
+export const isPointInRectangle = (px: number, py: number, vertexes: [number, number][], ctx: CanvasRenderingContext2D): boolean => {
+	if (!px || !py || !vertexes || !ctx) return false;
+	const transform = ctx.getTransform();
+	const inverse = transform.inverse();
+	const { x, y } = new DOMPoint(px, py).matrixTransform(inverse);
+	const [[start_x, start_y], [end_x, end_y]] = vertexes;
+	return x >= start_x && x <= end_x && y >= start_y && y <= end_y;
+};
+/**
  * 点是否在折线内
  * @param px 鼠标x坐标
  * @param py 鼠标y坐标

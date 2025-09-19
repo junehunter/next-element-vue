@@ -284,8 +284,10 @@ export default class EditPolygon {
 			this.canvas!.style.cursor = 'move';
 		}
 		if (this.mouseMoveOffset) {
-			const dx = offsetX - this.mouseMoveOffset![0];
-			const dy = offsetY - this.mouseMoveOffset![1];
+			const [_offsetX, _offsetY] = this.getTransformPoint(offsetX, offsetY);
+			const [_offsetX_pre, _offsetY_pre] = this.getTransformPoint(this.mouseMoveOffset![0], this.mouseMoveOffset![1]);
+			const dx = _offsetX - _offsetX_pre;
+			const dy = _offsetY - _offsetY_pre;
 			this.vertexes = this.vertexes.map((vertex: [number, number]) => {
 				return [vertex[0] + dx, vertex[1] + dy];
 			});

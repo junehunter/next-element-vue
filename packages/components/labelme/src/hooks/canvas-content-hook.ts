@@ -3,8 +3,9 @@ import { colors, ShapeType } from '../config';
 import CreatePolygon from '../core/CreatePolygon';
 import EditPolygon from '../core/EditPolygon';
 import CreateRectangle from '../core/CreateRectangle';
+import EditRectangle from '../core/EditRectangle';
 import { useChangeColor } from 'packages/utils/theme';
-import { getTranslateAndScale, isPointInPath, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
+import { getTranslateAndScale, isPointInPath, isPointInRectangle, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
 const { hexToRgba } = useChangeColor();
 
 export interface CreateRectCanvasProps {
@@ -32,6 +33,7 @@ export class CreateDrawCanvas {
 	private createPolygon: CreatePolygon;
 	private editDrawPolygon: EditPolygon;
 	private createRectangle: CreateRectangle;
+	private editDrawRectangle: EditRectangle;
 	private addVertexes: [number, number][] = [];
 	private createCompleteSubscribers = new Set<(vertexes: [number, number][], mouseOffset: { x: number; y: number }, shapeType?: ShapeType) => void>();
 	private editingShape: ShapesProps;
@@ -50,6 +52,7 @@ export class CreateDrawCanvas {
 		this.createPolygon = new CreatePolygon(canvas, ctx);
 		this.editDrawPolygon = new EditPolygon(canvas, ctx, imageScaleX, imageScaleY);
 		this.createRectangle = new CreateRectangle(canvas, ctx);
+		this.editDrawRectangle = new EditRectangle(canvas, ctx);
 		this.createPolygon.vertexesChangeEventListener(vertexes => {
 			this.render();
 			this.createPolygon.drawPolygon(vertexes);
@@ -120,6 +123,7 @@ export class CreateDrawCanvas {
 		this.createPolygon.destroy();
 		this.editDrawPolygon.destroy();
 		this.createRectangle.destroy();
+		this.editDrawRectangle.destroy();
 		this.onEditorEnd();
 	}
 
@@ -191,6 +195,7 @@ export class CreateDrawCanvas {
 		if (shapes?.length) this.drawShapes(shapes);
 		// 移动缩放时绘制编辑中的多边形
 		this.editDrawPolygon.render();
+		this.editDrawRectangle.render();
 		ctx.restore();
 	};
 	private mouseHitShape(event: MouseEvent): ShapesProps {
@@ -209,6 +214,13 @@ export class CreateDrawCanvas {
 					hitShape = shape;
 					break;
 				}
+			} else if (shape.shape_type === ShapeType.Rectangle) {
+				const isIn = isPointInRectangle(x, y, points, this.ctx);
+				if (isIn) {
+					hit = true;
+					hitShape = shape;
+					break;
+				}
 			}
 		}
 		this.canvas.style.cursor = hit ? 'pointer' : 'default';
@@ -217,17 +229,38 @@ export class CreateDrawCanvas {
 	public triggerShapeEdit(shape: ShapesProps) {
 		this.editingShape = shape;
 		const points = vertexesToImageScale(shape.points, this.imageScaleX, this.imageScaleY);
-		this.editDrawPolygon.drawPolygon(points);
-		// 编辑多边形通知
-		this.editDrawPolygon.updatePolygon(vertexes => {
-			this.editVertexes = vertexes;
-			this.render();
-		});
-		this.editDrawPolygon.onEditPolygon(vertexes => {
-			this.render();
-			this.editVertexes = vertexes;
-			this.notifyEditing();
-		});
+		if (shape.shape_type === ShapeType.Polygon) {
+			this.editDrawPolygon.drawPolygon(points);
+			// 编辑多边形通知
+			this.editDrawPolygon.updatePolygon(vertexes => {
+				this.editVertexes = vertexes;
+				this.render();
+			});
+			this.editDrawPolygon.onEditPolygon(vertexes => {
+				this.render();
+				this.editVertexes = vertexes;
+				this.notifyEditing();
+			});
+		} else if (shape.shape_type === ShapeType.Rectangle) {
+			this.editDrawRectangle.drawRectangle(points);
+			// 编辑矩形通知
+			this.editDrawRectangle.onEditing(vertexes => {
+				this.editVertexes = vertexes;
+				this.render();
+			});
+			this.editDrawRectangle.onEditCompleted(vertexes => {
+				this.render();
+				this.editVertexes = vertexes;
+				this.notifyEditing();
+			});
+		}
+		this.render();
+	}
+	private onResetHitShape() {
+		this.editingShape = null;
+		this.editVertexes = [];
+		this.editDrawPolygon.destroy();
+		this.editDrawRectangle.destroy();
 		this.render();
 	}
 	private onMouseDoubleClick(e: MouseEvent) {
@@ -235,16 +268,14 @@ export class CreateDrawCanvas {
 		e.preventDefault();
 		const hitShape = this.mouseHitShape(e);
 		if (!hitShape) {
-			this.editingShape = null;
-			this.editVertexes = [];
-			this.editDrawPolygon.destroy();
-			this.render();
+			this.onResetHitShape();
 		}
 	}
 	private onMouseClick(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
+		this.onResetHitShape();
 		const hitShape = this.mouseHitShape(e);
 		if (this.editVertexes.length && !hitShape) {
 			return;
@@ -252,10 +283,7 @@ export class CreateDrawCanvas {
 		if (hitShape) {
 			this.triggerShapeEdit(hitShape);
 		} else {
-			this.editingShape = null;
-			this.editVertexes = [];
-			this.editDrawPolygon.destroy();
-			this.render();
+			this.onResetHitShape();
 		}
 	}
 	private onMouseDown(e: MouseEvent) {
@@ -297,6 +325,8 @@ export class CreateDrawCanvas {
 		this.labels = {};
 		this.editDrawPolygon.destroy();
 		this.createPolygon.destroy();
+		this.createRectangle.destroy();
+		this.editDrawRectangle.destroy();
 		this.onEditorEnd();
 	}
 }
