@@ -180,7 +180,7 @@ export const isValueExist = (value: any): boolean => {
  * @param arg
  * @returns
  */
-export const valueExist = (...arg) => {
+export const valueExist = (...arg: any[]): any => {
 	let exist = null;
 	for (let i = 0; i < arg.length; i++) {
 		const val = arg[i];

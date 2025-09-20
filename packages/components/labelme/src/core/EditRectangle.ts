@@ -219,5 +219,6 @@ export default class EditRectangle {
 		this.canvas.removeEventListener('mousedown', this.canvasMouseDown);
 		this.canvas.removeEventListener('mousemove', this.canvasMouseMove);
 		this.canvas.removeEventListener('mouseup', this.canvasMouseUp);
+		this.canvas.removeEventListener('click', this.canvasMouseClick);
 	}
 }

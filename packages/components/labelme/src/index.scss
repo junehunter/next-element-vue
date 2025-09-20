@@ -149,6 +149,10 @@ $block: 'labelme';
 						background-color: #eeeeee;
 					}
 				}
+				li.#{be($block,'label-item', 'active')} {
+					border: 1px solid $theme-color;
+					color: $theme-color;
+				}
 			}
 		}
         &__content {

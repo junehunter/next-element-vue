@@ -20,7 +20,7 @@ export default defineComponent({
 			default: () => ({}),
 		},
 	},
-	emits: ['editPolygon', 'changePolygon', 'updateLabelInfo'],
+	emits: ['editPolygon', 'changePolygon', 'updateLabelInfo', 'selectShape'],
 	setup(props, { emit, expose }) {
 		const ns = inject('ns', {} as any);
 		const classes = inject<Ref<any>>('classes', ref([]));
@@ -133,6 +133,9 @@ export default defineComponent({
 						_labelInfo.value.labels.imageWidth = originWidth;
 						_labelInfo.value.labels.imageHeight = originHeight;
 						emit('editPolygon', _labelInfo.value);
+					});
+					drawCanvas.value.subscribeActiveShape(shape => {
+						emit('selectShape', shape);
 					});
 
 					watch(
@@ -248,6 +251,11 @@ export default defineComponent({
 			rerenderImage,
 			resetScaleOffset: () => {
 				canvasDragZoom.value!.reset();
+			},
+			onSelectShape: (shape: ShapesProps) => {
+				if (toolsActive.value === ToolsHandleType.EDIT_SHAPE) {
+					drawCanvas.value?.onSelectShape(shape);
+				}
 			},
 		});
 		return () => <>{renderContent()}</>;

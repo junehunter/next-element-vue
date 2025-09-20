@@ -56,6 +56,8 @@ export default defineComponent({
 		provide('changeToolsActive', (val: string) => {
 			toolsActive.value = val;
 		});
+		const activeShape = ref<ShapesProps | null>(null);
+		provide('activeShape', activeShape);
 		const labelImages = ref<any>(deepClone(props.data));
 		watch(
 			() => props.data,
@@ -87,6 +89,8 @@ export default defineComponent({
 				node.labels.shapes.splice(index, 1);
 			}
 			labelImages.value[activateNodeIndex.value] = node;
+			canvasContextRef.value.rerenderImage();
+			activeShape.value = null;
 		};
 		const onUpdateLabelShape = (shape: ShapesProps) => {
 			const node = currentNode.value;
@@ -95,6 +99,10 @@ export default defineComponent({
 				node.labels.shapes[index] = shape;
 			}
 			labelImages.value[activateNodeIndex.value] = node;
+		};
+		const onSelectLabeShape = (shape: ShapesProps) => {
+			canvasContextRef.value.onSelectShape(shape);
+			activeShape.value = shape;
 		};
 		const loading = ref<boolean>(false);
 		const mainContentHeight = ref(options.minContentHeight);
@@ -224,9 +232,10 @@ export default defineComponent({
 										onEditPolygon={onEditPolygon}
 										onChangePolygon={onChangePolygon}
 										onUpdateLabelInfo={onUpdateLabelInfo}
+										onSelectShape={onSelectLabeShape}
 									></CanvasContext>
 								</div>
-								<RightLabel shapes={currentNode.value.labels?.shapes} onUpdate={onUpdateLabelShape} onDelete={onDeleteLabelShape}></RightLabel>
+								<RightLabel shapes={currentNode.value.labels?.shapes} onUpdate={onUpdateLabelShape} onDelete={onDeleteLabelShape} onSelect={onSelectLabeShape}></RightLabel>
 							</div>
 							<footer ref={footerRef} class={[ns.b('footer')]}>
 								<div class={[ns.be('footer', 'left')]}>

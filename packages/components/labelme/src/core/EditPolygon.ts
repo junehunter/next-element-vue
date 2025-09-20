@@ -228,36 +228,6 @@ export default class EditPolygon {
 			this.mouseMoveOffset = [x, y];
 		}
 	}
-	canvasMouseup(e: MouseEvent) {
-		e.stopPropagation();
-		e.preventDefault();
-		if (e.ctrlKey) return;
-		let { offsetX, offsetY } = e;
-		let [x, y] = this.getTransformPoint(offsetX, offsetY);
-		this.vertexes = vertexesUnique(this.vertexes);
-		for (let i = 0; i < this.vertexes.length; i++) {
-			const p = this.vertexes[i];
-			const radius = Math.sqrt((x - p[0]) ** 2 + (y - p[1]) ** 2);
-			if (radius < 8 && radius > 0 && this.pointRecover.length) {
-				x = this.pointRecover[0];
-				y = this.pointRecover[1];
-				this.pointRecover = [];
-				break;
-			}
-		}
-		if (this.pointVertexIndex > -1) {
-			this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
-		}
-		if (this.pointCentreIndex > -1) {
-			this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
-		}
-		this.isMoveEditing = false;
-		this.mouseMoveOffset = null;
-		this.pointVertexIndex = -1;
-		this.pointCentreIndex = -1;
-		this.drawPolygon(this.vertexes);
-		this.notifyEditPolygonObserver();
-	}
 	canvasMousemove(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -294,6 +264,35 @@ export default class EditPolygon {
 			this.notifyObservers();
 			this.mouseMoveOffset = [offsetX, offsetY];
 		}
+	}
+	canvasMouseup(e: MouseEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+		if (e.ctrlKey) return;
+		let { offsetX, offsetY } = e;
+		let [x, y] = this.getTransformPoint(offsetX, offsetY);
+		this.vertexes = vertexesUnique(this.vertexes);
+		for (let i = 0; i < this.vertexes.length; i++) {
+			const p = this.vertexes[i];
+			const radius = Math.sqrt((x - p[0]) ** 2 + (y - p[1]) ** 2);
+			if (radius < 8 && radius > 0 && this.pointRecover.length) {
+				x = this.pointRecover[0];
+				y = this.pointRecover[1];
+				this.pointRecover = [];
+				break;
+			}
+		}
+		if (this.pointVertexIndex > -1) {
+			this.vertexes.splice(this.pointVertexIndex, 1, [x, y]);
+		}
+		if (this.pointCentreIndex > -1) {
+			this.vertexes.splice(this.pointCentreIndex, 1, [x, y]);
+		}
+		this.isMoveEditing = false;
+		this.mouseMoveOffset = null;
+		this.pointVertexIndex = -1;
+		this.pointCentreIndex = -1;
+		this.notifyEditPolygonObserver();
 	}
 	canvasMouseClick(e: MouseEvent) {
 		e.stopPropagation();

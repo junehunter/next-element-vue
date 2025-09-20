@@ -39,6 +39,7 @@ export class CreateDrawCanvas {
 	private editingShape: ShapesProps;
 	private editVertexes: [number, number][] = [];
 	private editingSubscribers = new Set<(vertexes: [number, number][], shape: ShapesProps) => void>();
+	private activeShapeObserver: (shape: ShapesProps | null) => void;
 	constructor(options: DrawBaseCanvasProps) {
 		const { canvas, ctx, image, canvasWidth, canvasHeight, imageScaleX, imageScaleY, labels } = options;
 		this.canvas = canvas;
@@ -113,6 +114,19 @@ export class CreateDrawCanvas {
 		this.editingSubscribers.forEach(listener => {
 			listener(this.editVertexes, this.editingShape);
 		});
+	}
+
+	// 订阅选中某个图形
+	public subscribeActiveShape(callback: (shape: ShapesProps | null) => void) {
+		this.activeShapeObserver = callback;
+	}
+	// 取消订阅选中某个图形
+	public unsubscribeActiveShape() {
+		this.activeShapeObserver = null;
+	}
+	// 通知选中某个图形
+	private notifyActiveShape(shape: ShapesProps | null) {
+		this.activeShapeObserver?.(shape);
 	}
 
 	public onStartCreateRectangle() {
@@ -228,6 +242,7 @@ export class CreateDrawCanvas {
 	}
 	public triggerShapeEdit(shape: ShapesProps) {
 		this.editingShape = shape;
+		this.notifyActiveShape(shape);
 		const points = vertexesToImageScale(shape.points, this.imageScaleX, this.imageScaleY);
 		if (shape.shape_type === ShapeType.Polygon) {
 			this.editDrawPolygon.drawPolygon(points);
@@ -256,6 +271,16 @@ export class CreateDrawCanvas {
 		}
 		this.render();
 	}
+	public onSelectShape(shape: ShapesProps) {
+		// 点击当前编辑中的多边形，消除重新选择图形，不用重新创建编辑事件
+		if (this.editingShape?.id && this.editingShape.id === shape?.id) {
+			return;
+		}
+		this.onResetHitShape();
+		if (shape) {
+			this.triggerShapeEdit(shape);
+		}
+	}
 	private onResetHitShape() {
 		this.editingShape = null;
 		this.editVertexes = [];
@@ -275,34 +300,31 @@ export class CreateDrawCanvas {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
-		this.onResetHitShape();
 		const hitShape = this.mouseHitShape(e);
 		if (this.editVertexes.length && !hitShape) {
 			return;
 		}
-		if (hitShape) {
-			this.triggerShapeEdit(hitShape);
-		} else {
-			this.onResetHitShape();
-		}
+		this.onSelectShape(hitShape);
 	}
 	private onMouseDown(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
 		if (this.editingShape) return;
-		this.mouseHitShape(e);
+		// this.mouseHitShape(e);
 	}
 	private onMouseMove(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
-		this.mouseHitShape(e);
+		if (this.editingShape) return;
+		// this.mouseHitShape(e);
 	}
 	private onMouseUp(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
+		if (this.editingShape) return;
 	}
 	onEditorStart() {
 		this.canvas.addEventListener('mousedown', this.onMouseDown);
