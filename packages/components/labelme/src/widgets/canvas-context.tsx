@@ -5,7 +5,7 @@ import ContextMenuLabel from '../widgets/contextmenu-label';
 import { timeUniqueId, valueExist } from 'packages/hooks/global-hook';
 import { CreateDrawCanvas } from '../hooks/canvas-content-hook';
 import { CanvasSceneDragZoom } from 'packages/components/labelimg/src/hooks/canvas-drag-zoom';
-import type { ScaleTranslate, ScaleTranslateManager, ShapesProps } from '../config';
+import type { LabelNodeProps, ScaleTranslate, ScaleTranslateManager, ShapesProps } from '../config';
 import { ToolsHandleType } from '../config';
 import { vertexesToImageScale } from '../core/utils';
 
@@ -137,7 +137,6 @@ export default defineComponent({
 					drawCanvas.value.subscribeActiveShape(shape => {
 						emit('selectShape', shape);
 					});
-
 					watch(
 						() => toolsActive.value,
 						() => {
@@ -148,6 +147,8 @@ export default defineComponent({
 								drawCanvas.value!.onEditorStart();
 							} else if (toolsActive.value === ToolsHandleType.CREATE_RECTANGLE) {
 								drawCanvas.value!.onStartCreateRectangle();
+							} else if (toolsActive.value === ToolsHandleType.CREATE_CIRCLE) {
+								drawCanvas.value!.onStartCreateCircle();
 							}
 						},
 						{ immediate: true }
@@ -248,7 +249,12 @@ export default defineComponent({
 			);
 		};
 		expose({
-			rerenderImage,
+			rerenderImage: (labelInfo: LabelNodeProps) => {
+				if (labelInfo) _labelInfo.value = labelInfo;
+				nextTick(() => {
+					rerenderImage();
+				});
+			},
 			resetScaleOffset: () => {
 				canvasDragZoom.value!.reset();
 			},

@@ -89,7 +89,7 @@ export default defineComponent({
 				node.labels.shapes.splice(index, 1);
 			}
 			labelImages.value[activateNodeIndex.value] = node;
-			canvasContextRef.value.rerenderImage();
+			canvasContextRef.value.rerenderImage(node);
 			activeShape.value = null;
 		};
 		const onUpdateLabelShape = (shape: ShapesProps) => {
@@ -170,7 +170,7 @@ export default defineComponent({
 			isFullscreen.value = val;
 			updateMainContentHeight();
 			nextTick(() => {
-				canvasContextRef.value.rerenderImage();
+				canvasContextRef.value.rerenderImage(currentNode.value);
 			});
 		};
 		const onChangePolygon = (node: LabelNodeProps) => {

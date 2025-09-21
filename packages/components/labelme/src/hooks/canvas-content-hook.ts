@@ -4,8 +4,10 @@ import CreatePolygon from '../core/CreatePolygon';
 import EditPolygon from '../core/EditPolygon';
 import CreateRectangle from '../core/CreateRectangle';
 import EditRectangle from '../core/EditRectangle';
+import CreateCircle from '../core/CreateCircle';
+import EditCircle from '../core/EditCircle';
 import { useChangeColor } from 'packages/utils/theme';
-import { getTranslateAndScale, isPointInPath, isPointInRectangle, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
+import { getTranslateAndScale, isPointInCircleShape, isPointInPath, isPointInRectangle, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
 const { hexToRgba } = useChangeColor();
 
 export interface CreateRectCanvasProps {
@@ -34,6 +36,8 @@ export class CreateDrawCanvas {
 	private editDrawPolygon: EditPolygon;
 	private createRectangle: CreateRectangle;
 	private editDrawRectangle: EditRectangle;
+	private createCircle: CreateCircle;
+	private editDrawCircle: EditCircle;
 	private addVertexes: [number, number][] = [];
 	private createCompleteSubscribers = new Set<(vertexes: [number, number][], mouseOffset: { x: number; y: number }, shapeType?: ShapeType) => void>();
 	private editingShape: ShapesProps;
@@ -54,6 +58,8 @@ export class CreateDrawCanvas {
 		this.editDrawPolygon = new EditPolygon(canvas, ctx, imageScaleX, imageScaleY);
 		this.createRectangle = new CreateRectangle(canvas, ctx);
 		this.editDrawRectangle = new EditRectangle(canvas, ctx);
+		this.createCircle = new CreateCircle(canvas, ctx);
+		this.editDrawCircle = new EditCircle(canvas, ctx);
 		this.createPolygon.vertexesChangeEventListener(vertexes => {
 			this.render();
 			this.createPolygon.drawPolygon(vertexes);
@@ -66,6 +72,7 @@ export class CreateDrawCanvas {
 			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
 			this.notifyCreateComplete({ x, y }, ShapeType.Polygon);
 		});
+		// 新增矩形
 		this.createRectangle.subscribeVertexesChange(vertexes => {
 			this.render();
 			this.createRectangle.drawRectangle(vertexes);
@@ -75,6 +82,17 @@ export class CreateDrawCanvas {
 			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
 			this.addVertexes = vertexes;
 			this.notifyCreateComplete({ x, y }, ShapeType.Rectangle);
+		});
+		// 新增圆
+		this.createCircle.subscribeVertexesChange(vertexes => {
+			this.render();
+			this.createCircle.drawCircle(vertexes);
+		});
+		this.createCircle.subscribeDrawComplete((vertexes, mouseOffset) => {
+			const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
+			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
+			this.addVertexes = vertexes;
+			this.notifyCreateComplete({ x, y }, ShapeType.Circle);
 		});
 		this.render();
 		this.onMouseDown = this.onMouseDown.bind(this);
@@ -128,22 +146,25 @@ export class CreateDrawCanvas {
 	private notifyActiveShape(shape: ShapesProps | null) {
 		this.activeShapeObserver?.(shape);
 	}
-
+	// 允许创建矩形
 	public onStartCreateRectangle() {
 		this.createRectangle.start();
 	}
+	// 允许创建圆
+	public onStartCreateCircle() {
+		this.createCircle.start();
+	}
 
 	public resetAllInstance() {
-		this.createPolygon.destroy();
-		this.editDrawPolygon.destroy();
-		this.createRectangle.destroy();
-		this.editDrawRectangle.destroy();
+		this.onCreateEnd();
 		this.onEditorEnd();
+		this.render();
 	}
 
 	public closeCreateOrEditor() {
 		this.createPolygon.reset();
 		this.createRectangle.reset();
+		this.createCircle.reset();
 	}
 
 	drawShapes(shapes: ShapesProps[]) {
@@ -173,6 +194,16 @@ export class CreateDrawCanvas {
 				ctx.fillStyle = hexToRgba(color, 0.2);
 				ctx.strokeRect(start_x, start_y, end_x - start_x, end_y - start_y);
 				ctx.fillRect(start_x, start_y, end_x - start_x, end_y - start_y);
+			} else if (shape.shape_type === ShapeType.Circle) {
+				const [[start_x, start_y], [end_x, end_y]] = points;
+				const color = colors[i % colors.length];
+				ctx.beginPath();
+				ctx.lineWidth = 2 / scale;
+				ctx.strokeStyle = color;
+				ctx.fillStyle = hexToRgba(color, 0.2);
+				ctx.arc(start_x, start_y, Math.sqrt(Math.pow(end_x - start_x, 2) + Math.pow(end_y - start_y, 2)), 0, 2 * Math.PI);
+				ctx.stroke();
+				ctx.fill();
 			}
 		}
 	}
@@ -210,6 +241,7 @@ export class CreateDrawCanvas {
 		// 移动缩放时绘制编辑中的多边形
 		this.editDrawPolygon.render();
 		this.editDrawRectangle.render();
+		this.editDrawCircle.render();
 		ctx.restore();
 	};
 	private mouseHitShape(event: MouseEvent): ShapesProps {
@@ -230,6 +262,13 @@ export class CreateDrawCanvas {
 				}
 			} else if (shape.shape_type === ShapeType.Rectangle) {
 				const isIn = isPointInRectangle(x, y, points, this.ctx);
+				if (isIn) {
+					hit = true;
+					hitShape = shape;
+					break;
+				}
+			} else if (shape.shape_type === ShapeType.Circle) {
+				const isIn = isPointInCircleShape(x, y, points, this.ctx);
 				if (isIn) {
 					hit = true;
 					hitShape = shape;
@@ -268,6 +307,17 @@ export class CreateDrawCanvas {
 				this.editVertexes = vertexes;
 				this.notifyEditing();
 			});
+		} else if (shape.shape_type === ShapeType.Circle) {
+			this.editDrawCircle.drawCircle(points);
+			this.editDrawCircle.onEditing(vertexes => {
+				this.editVertexes = vertexes;
+				this.render();
+			});
+			this.editDrawCircle.onEditCompleted(vertexes => {
+				this.render();
+				this.editVertexes = vertexes;
+				this.notifyEditing();
+			});
 		}
 		this.render();
 	}
@@ -286,6 +336,7 @@ export class CreateDrawCanvas {
 		this.editVertexes = [];
 		this.editDrawPolygon.destroy();
 		this.editDrawRectangle.destroy();
+		this.editDrawCircle.destroy();
 		this.render();
 	}
 	private onMouseDoubleClick(e: MouseEvent) {
@@ -318,7 +369,7 @@ export class CreateDrawCanvas {
 		e.preventDefault();
 		if (e.ctrlKey) return;
 		if (this.editingShape) return;
-		// this.mouseHitShape(e);
+		this.mouseHitShape(e);
 	}
 	private onMouseUp(e: MouseEvent) {
 		e.stopPropagation();
@@ -337,18 +388,22 @@ export class CreateDrawCanvas {
 		this.editVertexes = [];
 		this.editingShape = null;
 		this.editDrawPolygon.destroy();
+		this.editDrawRectangle.destroy();
+		this.editDrawCircle.destroy();
 		this.canvas.removeEventListener('mousedown', this.onMouseDown);
 		this.canvas.removeEventListener('mousemove', this.onMouseMove);
 		this.canvas.removeEventListener('mouseup', this.onMouseUp);
 		this.canvas.removeEventListener('click', this.onMouseClick);
 		this.canvas.removeEventListener('dblclick', this.onMouseDoubleClick);
 	}
+	onCreateEnd() {
+		this.createCircle.destroy();
+		this.createRectangle.destroy();
+		this.createPolygon.destroy();
+	}
 	destroy() {
 		this.labels = {};
-		this.editDrawPolygon.destroy();
-		this.createPolygon.destroy();
-		this.createRectangle.destroy();
-		this.editDrawRectangle.destroy();
+		this.onCreateEnd();
 		this.onEditorEnd();
 	}
 }

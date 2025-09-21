@@ -47,6 +47,23 @@ export const isPointInRectangle = (px: number, py: number, vertexes: [number, nu
 	return x >= start_x && x <= end_x && y >= start_y && y <= end_y;
 };
 /**
+ * 点是否在图形圆内
+ * @param px 鼠标x坐标
+ * @param py 鼠标y坐标
+ * @param vertexes 点位数据
+ * @param ctx 上下文
+ * @returns
+ */
+export const isPointInCircleShape = (px: number, py: number, vertexes: [number, number][], ctx: CanvasRenderingContext2D): boolean => {
+	if (!px || !py || !vertexes || !ctx) return false;
+	const transform = ctx.getTransform();
+	const inverse = transform.inverse();
+	const { x, y } = new DOMPoint(px, py).matrixTransform(inverse);
+	const [[center_x, center_y], [edge_x, edge_y]] = vertexes;
+	const radius = Math.sqrt(Math.pow(edge_x - center_x, 2) + Math.pow(edge_y - center_y, 2));
+	return isPointInCircle(x, y, center_x, center_y, radius);
+};
+/**
  * 点是否在折线内
  * @param px 鼠标x坐标
  * @param py 鼠标y坐标
