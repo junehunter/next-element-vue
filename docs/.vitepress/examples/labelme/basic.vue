@@ -79,9 +79,9 @@ const list = ref<any>([
 	},
 ]);
 const onEditPolygon = (arg: any) => {
-	console.log(arg);
+	console.log('标注内容-->', arg);
 };
-const onSave = (node, done) => {
+const onSave = (node: any, done: Function) => {
 	console.log(node);
 	setTimeout(() => {
 		done();

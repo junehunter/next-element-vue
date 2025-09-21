@@ -25,6 +25,7 @@ export default defineComponent({
 		const ns = inject('ns', {} as any);
 		const classes = inject<Ref<any>>('classes', ref([]));
 		const toolsActive = inject('toolsActive', {} as Ref<string>);
+		const changeToolsActive = inject<(val: string) => void>('changeToolsActive');
 		const scaleTranslateManager = inject('scaleTranslateManager', {} as ScaleTranslateManager);
 		const mainBasaeRef = ref<any>();
 		const canvasMainRef = ref<HTMLElement>();
@@ -141,6 +142,7 @@ export default defineComponent({
 						() => toolsActive.value,
 						() => {
 							drawCanvas.value!.resetAllInstance();
+							onCloseContentmenuLabel();
 							if (toolsActive.value === ToolsHandleType.CREATE_POLYGON) {
 								drawCanvas.value!.onStartCreatePolygon();
 							} else if (toolsActive.value === ToolsHandleType.EDIT_SHAPE) {
@@ -167,7 +169,10 @@ export default defineComponent({
 				height => {
 					if (valueExist(height)) {
 						canvasMainRef.value!.style.height = height + 'px';
-						renderImageLabel(_labelInfo.value);
+						nextTick(() => {
+							changeToolsActive('');
+							renderImageLabel(_labelInfo.value);
+						});
 					}
 				}
 			);
@@ -251,7 +256,9 @@ export default defineComponent({
 		expose({
 			rerenderImage: (labelInfo: LabelNodeProps) => {
 				if (labelInfo) _labelInfo.value = labelInfo;
+				(_labelInfo.value.labels ??= { shapes: [] }).shapes ??= [];
 				nextTick(() => {
+					changeToolsActive('');
 					rerenderImage();
 				});
 			},

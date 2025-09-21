@@ -39,7 +39,7 @@ export default defineComponent({
 		},
 	},
 	emits: ['change', 'save', 'edit-polygon', 'change-polygon', 'prev-click', 'next-click'],
-	setup(props, { emit, slots }) {
+	setup(props, { emit, slots, expose }) {
 		const _config = deepClone(defaultConfig);
 		const _options = computed(() => {
 			const cfg = unref(props.options);
@@ -55,6 +55,7 @@ export default defineComponent({
 		provide('toolsActive', toolsActive);
 		provide('changeToolsActive', (val: string) => {
 			toolsActive.value = val;
+			activeShape.value = null;
 		});
 		const activeShape = ref<ShapesProps | null>(null);
 		provide('activeShape', activeShape);
@@ -158,6 +159,7 @@ export default defineComponent({
 					labelImages.value[activateNodeIndex.value] = imageItem ? imageItem : node;
 					activateNodeIndex.value = index;
 					loading.value = false;
+					canvasContextRef.value.rerenderImage(currentNode.value);
 				},
 				() => {
 					loading.value = false;
@@ -205,6 +207,11 @@ export default defineComponent({
 				canvasContextRef.value!.resetScaleOffset();
 			},
 		} as ScaleTranslateManager);
+		expose({
+			getCurrentInstance: () => {
+				return this;
+			},
+		});
 		const renderContent = () => {
 			return (
 				<div ref={layoutLabelRef} class={[ns.b(), props.className, isFullscreen.value ? ns.b('fullscreen') : '']} style={{ ...props.style }}>
@@ -229,6 +236,7 @@ export default defineComponent({
 									<CanvasContext
 										ref={canvasContextRef}
 										labelInfo={currentNode.value}
+										contextClientHeight={mainContentHeight.value}
 										onEditPolygon={onEditPolygon}
 										onChangePolygon={onChangePolygon}
 										onUpdateLabelInfo={onUpdateLabelInfo}
