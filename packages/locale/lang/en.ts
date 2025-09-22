@@ -85,6 +85,7 @@ export default {
 			deletePolygon: 'delete polygon',
 			createRectangle: 'create rectangle',
 			createCircle: 'create circle',
+			createKeypoint: 'create keypoint',
 			selectClasses: 'select classes',
 			emptyClassesText: 'No label classes',
 			deleteClasses: 'delete classes',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 const classes = ref<any>(['动物-马', '动物-鹿', '动物-狼', '动物-狐狸']);
 const list = ref<any>([
 	{
@@ -67,6 +67,28 @@ const list = ref<any>([
 						[71.59763313609469, 314.13313609467457],
 					],
 				},
+				{
+					id: '20250922222503788741',
+					shape_type: 'rectangle',
+					points: [
+						[590.5429071803853, 352.7618425972731],
+						[702.6269702276708, 425.69868480426396],
+					],
+					label: '动物-马',
+					description: '',
+					group_id: '2',
+				},
+				{
+					id: '20250922222515775779',
+					shape_type: 'circle',
+					points: [
+						[153.41506129597198, 471.9855269740851],
+						[191.2434325744308, 492.3236848971883],
+					],
+					label: '动物-狐狸',
+					description: '',
+					group_id: '3',
+				},
 			],
 			imageHeight: 533,
 			imageWidth: 800,
@@ -87,11 +109,18 @@ const onSave = (node: any, done: Function) => {
 		done();
 	}, 500);
 };
+const labelmeRef = ref<any>(null);
+const onSaveClick = () => {
+	labelmeRef.value.onSave();
+	const currentNode = labelmeRef.value.getCurrentNode();
+	console.log(currentNode);
+};
 </script>
 
 <template>
 	<div class="container">
-		<NextLabelme :classes="classes" :data="list" @edit-polygon="onEditPolygon" @save="onSave"></NextLabelme>
+		<el-button @click="onSaveClick" type="primary" style="margin-bottom: 10px">保存</el-button>
+		<NextLabelme ref="labelmeRef" :classes="classes" :data="list" @edit-polygon="onEditPolygon" @save="onSave"></NextLabelme>
 	</div>
 </template>
 

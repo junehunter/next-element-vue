@@ -50,6 +50,15 @@ export default defineComponent({
 						</svg>
 						<p class="label-text">{t('next.labelme.createRectangle')}</p>
 					</li>
+					<li class={['tool-item', { 'active-tool': toolsActive.value === ToolsHandleType.CREATE_KEYPOINT }]} onClick={() => onClickToolsActive(ToolsHandleType.CREATE_KEYPOINT)}>
+						<svg t="1758547108531" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9598" width="18" height="18">
+							<path
+								d="M205.6 554.6h-58.3c-16.7 0-31.3-14.6-31.3-31.3 0-16.7 14.6-31.3 31.3-31.3h56.3c6.2-75 35.4-145.9 87.5-195.9s122.9-81.3 200.1-85.4v-62.5c0-16.7 14.6-31.3 31.3-31.3 16.7 0 31.3 14.6 31.3 31.3v62.5c66.7 8.3 129.2 37.5 175 83.4 50 50 81.3 120.9 87.5 195.9h60.4c16.7 0 31.3 14.6 31.3 31.3 0 16.7-14.6 33.3-31.3 33.3h-62.5c-8.3 68.8-37.5 131.3-85.4 177.1-45.8 45.8-104.2 75-175.1 83.4v60.4c0 16.7-14.6 31.3-31.3 31.3-16.7 0-31.3-12.5-31.3-29.2v-58.4H489c-77.1-4.2-148-35.4-200.1-85.4-45.8-47.9-75-106.2-83.3-179.2zM612 406.7c25 25 41.7 60.4 41.7 102.1 0 41.7-14.6 77.1-41.7 102.1-25 25-60.4 41.7-102.1 41.7-41.7 0-77.1-14.6-102.1-41.7C378.6 588 362 552.5 362 515c0-39.6 14.6-77.1 41.7-102.1 31.3-25 66.7-45.8 106.3-45.8 41.5 0 77 14.6 102 39.6zM509.9 271.2c-66.7 0-127.1 25-173 70.9C295.2 387.9 266 448.3 266 515s25 127.1 70.9 173c45.8 45.9 102.1 70.9 173 70.9 64.6 0 127.1-25 173-70.9 45.8-45.8 70.9-106.3 70.9-173s-31.3-127.1-70.9-173c-45.9-41.6-106.3-70.8-173-70.8z m0 0"
+								p-id="9599"
+							></path>
+						</svg>
+						<p class="label-text">{t('next.labelme.createKeypoint')}</p>
+					</li>
 					<li class={['tool-item', { 'active-tool': toolsActive.value === ToolsHandleType.CREATE_CIRCLE }]} onClick={() => onClickToolsActive(ToolsHandleType.CREATE_CIRCLE)}>
 						<svg t="1757514108844" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8822" width="18" height="18">
 							<path

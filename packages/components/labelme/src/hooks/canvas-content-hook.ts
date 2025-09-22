@@ -44,6 +44,7 @@ export class CreateDrawCanvas {
 	private editVertexes: [number, number][] = [];
 	private editingSubscribers = new Set<(vertexes: [number, number][], shape: ShapesProps) => void>();
 	private activeShapeObserver: (shape: ShapesProps | null) => void;
+	private contextmenuShapeObserver: (e: MouseEvent, shape: ShapesProps | null) => void;
 	constructor(options: DrawBaseCanvasProps) {
 		const { canvas, ctx, image, canvasWidth, canvasHeight, imageScaleX, imageScaleY, labels } = options;
 		this.canvas = canvas;
@@ -146,6 +147,14 @@ export class CreateDrawCanvas {
 	private notifyActiveShape(shape: ShapesProps | null) {
 		this.activeShapeObserver?.(shape);
 	}
+	// 订阅选中图形上下文菜单
+	public subscribeContextmenuShape(callback: (e: MouseEvent, shape: ShapesProps | null) => void) {
+		this.contextmenuShapeObserver = callback;
+	}
+	// 通知选中图形上下文菜单
+	private notifyContextmenuShape(e: MouseEvent, shape: ShapesProps | null) {
+		this.contextmenuShapeObserver?.(e, shape);
+	}
 	// 允许创建矩形
 	public onStartCreateRectangle() {
 		this.createRectangle.start();
@@ -170,14 +179,22 @@ export class CreateDrawCanvas {
 	drawShapes(shapes: ShapesProps[]) {
 		const ctx = this.ctx;
 		const { scale } = getTranslateAndScale(ctx);
+		const fontSize = 12 / scale;
+		const fontPadding = 6 / scale;
+		ctx.font = `bold ${fontSize}px serif`;
+		ctx.textBaseline = 'top';
 		for (let i = 0; i < shapes.length; i++) {
 			const shape = shapes[i];
-			if (shape.id === this.editingShape?.id) continue;
+			if (shape.id === this.editingShape?.id) {
+				// 当编辑的是当前选中的图形时，不绘制，并且更新当前选中的图形数据
+				this.editingShape = shape;
+				continue;
+			}
 			const points = vertexesToImageScale(shape.points, this.imageScaleX, this.imageScaleY);
 			if (!points.length) continue;
+			const color = colors[i % colors.length];
 			if (shape.shape_type === ShapeType.Polygon) {
 				const path = printsToPath(points);
-				const color = colors[i % colors.length];
 				path.closePath();
 				ctx.beginPath();
 				ctx.lineWidth = 2 / scale;
@@ -185,18 +202,20 @@ export class CreateDrawCanvas {
 				ctx.fillStyle = hexToRgba(color, 0.2);
 				ctx.stroke(path);
 				ctx.fill(path);
+				ctx.fillStyle = color;
+				ctx.fillText(shape.label, points[0][0] + fontPadding, points[0][1] + fontPadding);
 			} else if (shape.shape_type === ShapeType.Rectangle) {
 				const [[start_x, start_y], [end_x, end_y]] = points;
-				const color = colors[i % colors.length];
 				ctx.beginPath();
 				ctx.lineWidth = 2 / scale;
 				ctx.strokeStyle = color;
 				ctx.fillStyle = hexToRgba(color, 0.2);
 				ctx.strokeRect(start_x, start_y, end_x - start_x, end_y - start_y);
 				ctx.fillRect(start_x, start_y, end_x - start_x, end_y - start_y);
+				ctx.fillStyle = color;
+				ctx.fillText(shape.label, points[0][0] + fontPadding, points[0][1] + fontPadding);
 			} else if (shape.shape_type === ShapeType.Circle) {
 				const [[start_x, start_y], [end_x, end_y]] = points;
-				const color = colors[i % colors.length];
 				ctx.beginPath();
 				ctx.lineWidth = 2 / scale;
 				ctx.strokeStyle = color;
@@ -204,6 +223,10 @@ export class CreateDrawCanvas {
 				ctx.arc(start_x, start_y, Math.sqrt(Math.pow(end_x - start_x, 2) + Math.pow(end_y - start_y, 2)), 0, 2 * Math.PI);
 				ctx.stroke();
 				ctx.fill();
+				ctx.fillStyle = color;
+				ctx.textBaseline = 'middle';
+				ctx.textAlign = 'center';
+				ctx.fillText(shape.label, points[0][0], points[0][1]);
 			}
 		}
 	}
@@ -215,18 +238,7 @@ export class CreateDrawCanvas {
 	}
 	updateLabelInfo(labelInfo: LabelNodeProps) {
 		this.labels = labelInfo;
-		this.render();
-	}
-	addShape(shape: ShapesProps) {
-		this.labels.shapes.push(shape);
-		this.render();
-		this.createPolygon.reset();
-	}
-	deleteShape(shape: ShapesProps) {
-		const index = this.labels.shapes.findIndex(item => item.id === shape.id);
-		if (index !== -1) {
-			this.labels.shapes.splice(index, 1);
-		}
+		this.onResetHitShape();
 	}
 	render = () => {
 		const ctx = this.ctx;
@@ -295,6 +307,9 @@ export class CreateDrawCanvas {
 				this.editVertexes = vertexes;
 				this.notifyEditing();
 			});
+			this.editDrawPolygon.onContextmenu(e => {
+				this.notifyContextmenuShape(e, shape);
+			});
 		} else if (shape.shape_type === ShapeType.Rectangle) {
 			this.editDrawRectangle.drawRectangle(points);
 			// 编辑矩形通知
@@ -307,6 +322,9 @@ export class CreateDrawCanvas {
 				this.editVertexes = vertexes;
 				this.notifyEditing();
 			});
+			this.editDrawRectangle.onContextmenu(e => {
+				this.notifyContextmenuShape(e, shape);
+			});
 		} else if (shape.shape_type === ShapeType.Circle) {
 			this.editDrawCircle.drawCircle(points);
 			this.editDrawCircle.onEditing(vertexes => {
@@ -317,6 +335,9 @@ export class CreateDrawCanvas {
 				this.render();
 				this.editVertexes = vertexes;
 				this.notifyEditing();
+			});
+			this.editDrawCircle.onContextmenu(e => {
+				this.notifyContextmenuShape(e, shape);
 			});
 		}
 		this.render();

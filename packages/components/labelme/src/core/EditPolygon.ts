@@ -21,6 +21,7 @@ export default class EditPolygon {
 	private pointRecover: Array<number>;
 	private observers: ((vertexes: [number, number][]) => void)[] = [];
 	private editPolygonObserver?: (vertexes: [number, number][]) => void;
+	private contextmenuObserver?: (e: MouseEvent) => void;
 	constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, imageScaleX: number, imageScaleY: number) {
 		this.canvas = canvas;
 		this.ctx = ctx;
@@ -39,12 +40,19 @@ export default class EditPolygon {
 		this.canvasMouseup = this.canvasMouseup.bind(this);
 		this.canvasMousemove = this.canvasMousemove.bind(this);
 		this.canvasMouseClick = this.canvasMouseClick.bind(this);
+		this.canvasMouseContextmenu = this.canvasMouseContextmenu.bind(this);
 	}
 	private notifyEditPolygonObserver() {
 		this.editPolygonObserver?.(this.vertexes);
 	}
 	public onEditPolygon(callback: (vertexes: [number, number][]) => void) {
 		this.editPolygonObserver = callback;
+	}
+	public onContextmenu(callback: (e: MouseEvent) => void) {
+		this.contextmenuObserver = callback;
+	}
+	private notifyContextmenuObserver(e: MouseEvent) {
+		this.contextmenuObserver?.(e);
 	}
 	private getTransformPoint(x: number, y: number): [number, number] {
 		const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
@@ -199,6 +207,7 @@ export default class EditPolygon {
 		this.canvas.addEventListener('mouseup', this.canvasMouseup);
 		this.canvas.addEventListener('mousemove', this.canvasMousemove);
 		this.canvas.addEventListener('click', this.canvasMouseClick);
+		this.canvas.addEventListener('contextmenu', this.canvasMouseContextmenu);
 		this.observers.push(callback);
 	}
 	canvasMousedown(e: MouseEvent) {
@@ -310,6 +319,16 @@ export default class EditPolygon {
 			}
 		}
 	}
+	canvasMouseContextmenu(e: MouseEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+		if (e.ctrlKey) return;
+		const { offsetX, offsetY } = e;
+		const isIn = isPointInPath(offsetX, offsetY, this.vertexes, this.ctx);
+		if (isIn) {
+			this.notifyContextmenuObserver(e);
+		}
+	}
 	destroy() {
 		this.vertexes = [];
 		this.observers = [];
@@ -319,5 +338,6 @@ export default class EditPolygon {
 		this.canvas.removeEventListener('mouseup', this.canvasMouseup);
 		this.canvas.removeEventListener('mousemove', this.canvasMousemove);
 		this.canvas.removeEventListener('click', this.canvasMouseClick);
+		this.canvas.removeEventListener('contextmenu', this.canvasMouseContextmenu);
 	}
 }

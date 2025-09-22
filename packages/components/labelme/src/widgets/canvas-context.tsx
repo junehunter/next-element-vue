@@ -122,6 +122,10 @@ export default defineComponent({
 						};
 						updateContextmenuLabelFixed(mouseOffset.x, mouseOffset.y, shape);
 					});
+					drawCanvas.value.subscribeContextmenuShape((e, shape) => {
+						const { offsetX, offsetY } = e;
+						updateContextmenuLabelFixed(offsetX, offsetY, shape);
+					});
 					drawCanvas.value.subscribeEditing((vertexes, shape) => {
 						const new_vertexes = vertexesToImageScale(vertexes, scaleX, scaleY, false);
 						const index = _labelInfo.value.labels.shapes?.findIndex((item: ShapesProps) => item.id === shape.id);
@@ -136,6 +140,7 @@ export default defineComponent({
 						emit('editPolygon', _labelInfo.value);
 					});
 					drawCanvas.value.subscribeActiveShape(shape => {
+						onCloseContentmenuLabel();
 						emit('selectShape', shape);
 					});
 					watch(
@@ -254,8 +259,11 @@ export default defineComponent({
 			);
 		};
 		expose({
-			rerenderImage: (labelInfo: LabelNodeProps) => {
-				if (labelInfo) _labelInfo.value = labelInfo;
+			updateLabelInfo: (node: LabelNodeProps) => {
+				if (node) _labelInfo.value = node;
+			},
+			rerenderImage: (node: LabelNodeProps) => {
+				if (node) _labelInfo.value = node;
 				(_labelInfo.value.labels ??= { shapes: [] }).shapes ??= [];
 				nextTick(() => {
 					changeToolsActive('');

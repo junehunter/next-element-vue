@@ -4,12 +4,14 @@ export enum ShapeType {
 	Polygon = 'polygon',
 	Rectangle = 'rectangle',
 	Circle = 'circle',
+	keypoint = 'keypoint',
 }
 export enum ToolsHandleType {
 	CREATE_POLYGON = 'createPolygon',
 	EDIT_SHAPE = 'editShape',
 	CREATE_RECTANGLE = 'createRectangle',
 	CREATE_CIRCLE = 'createCircle',
+	CREATE_KEYPOINT = 'createKeypoint',
 }
 export interface ScaleTranslate {
 	scale: number;

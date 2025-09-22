@@ -85,6 +85,7 @@ export default {
 			deletePolygon: '刪除多邊形',
 			createRectangle: '創建矩形',
 			createCircle: '創建圓形',
+			createKeypoint: '創建關鍵點',
 			selectClasses: '選擇標籤',
 			emptyClassesText: '咱無標註',
 			deleteClasses: '刪除標註',

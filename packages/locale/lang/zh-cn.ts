@@ -85,6 +85,7 @@ export default {
 			deletePolyton: '删除多边形',
 			createRectangle: '创建矩形',
 			createCircle: '创建圆形',
+			createKeypoint: '创建关键点',
 			selectClasses: '选择标签',
 			emptyClassesText: '暂无标注',
 			deleteClasses: '删除标注',

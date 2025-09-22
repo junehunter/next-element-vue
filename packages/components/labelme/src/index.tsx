@@ -80,8 +80,8 @@ export default defineComponent({
 			const node = labelImages.value[activateNodeIndex.value] || {};
 			return deepClone(node);
 		});
-		const onUpdateLabelInfo = (val: LabelNodeProps) => {
-			labelImages.value[activateNodeIndex.value] = val;
+		const onUpdateLabelInfo = (node: LabelNodeProps) => {
+			labelImages.value[activateNodeIndex.value] = node;
 		};
 		const onDeleteLabelShape = (shape: ShapesProps) => {
 			const node = currentNode.value;
@@ -208,8 +208,12 @@ export default defineComponent({
 			},
 		} as ScaleTranslateManager);
 		expose({
-			getCurrentInstance: () => {
-				return this;
+			onSave: (cb?: Function) => {
+				onChangeActivateNode(activateNodeIndex.value);
+				cb && cb(currentNode.value);
+			},
+			getCurrentNode: () => {
+				return currentNode.value;
 			},
 		});
 		const renderContent = () => {
