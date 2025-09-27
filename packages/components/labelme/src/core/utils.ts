@@ -64,6 +64,24 @@ export const isPointInCircleShape = (px: number, py: number, vertexes: [number, 
 	return isPointInCircle(x, y, center_x, center_y, radius);
 };
 /**
+ * 点是否在点位内
+ * @param px 鼠标x坐标
+ * @param py 鼠标y坐标
+ * @param vertexes 点位数据
+ * @param ctx 上下文
+ * @returns
+ */
+export const isPointInKeypointShape = (px: number, py: number, vertexes: [number, number][], ctx: CanvasRenderingContext2D): boolean => {
+	if (!px || !py || !vertexes || !ctx) return false;
+	if (vertexes.length === 0) return false;
+	const transform = ctx.getTransform();
+	const inverse = transform.inverse();
+	const { x, y } = new DOMPoint(px, py).matrixTransform(inverse);
+	const [[center_x, center_y]] = vertexes;
+	const radius = 5;
+	return isPointInCircle(x, y, center_x, center_y, radius);
+};
+/**
  * 点是否在折线内
  * @param px 鼠标x坐标
  * @param py 鼠标y坐标

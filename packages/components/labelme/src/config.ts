@@ -4,7 +4,7 @@ export enum ShapeType {
 	Polygon = 'polygon',
 	Rectangle = 'rectangle',
 	Circle = 'circle',
-	keypoint = 'keypoint',
+	Keypoint = 'keypoint',
 }
 export enum ToolsHandleType {
 	CREATE_POLYGON = 'createPolygon',

@@ -6,8 +6,11 @@ import CreateRectangle from '../core/CreateRectangle';
 import EditRectangle from '../core/EditRectangle';
 import CreateCircle from '../core/CreateCircle';
 import EditCircle from '../core/EditCircle';
+import CreateKeypoint from '../core/CreateKeypoint';
+import EditKeypoint from '../core/EditKeypoint';
 import { useChangeColor } from 'packages/utils/theme';
-import { getTranslateAndScale, isPointInCircleShape, isPointInPath, isPointInRectangle, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
+import { getTranslateAndScale, isPointInCircleShape, isPointInKeypointShape, isPointInPath, isPointInRectangle, printsToPath, vertexesToImageScale, vertexToPixel } from '../core/utils';
+
 const { hexToRgba } = useChangeColor();
 
 export interface CreateRectCanvasProps {
@@ -38,6 +41,8 @@ export class CreateDrawCanvas {
 	private editDrawRectangle: EditRectangle;
 	private createCircle: CreateCircle;
 	private editDrawCircle: EditCircle;
+	private createKeypoint: CreateKeypoint;
+	private editDrawKeypoint: EditKeypoint;
 	private addVertexes: [number, number][] = [];
 	private createCompleteSubscribers = new Set<(vertexes: [number, number][], mouseOffset: { x: number; y: number }, shapeType?: ShapeType) => void>();
 	private editingShape: ShapesProps;
@@ -61,6 +66,8 @@ export class CreateDrawCanvas {
 		this.editDrawRectangle = new EditRectangle(canvas, ctx);
 		this.createCircle = new CreateCircle(canvas, ctx);
 		this.editDrawCircle = new EditCircle(canvas, ctx);
+		this.createKeypoint = new CreateKeypoint(canvas, ctx);
+		this.editDrawKeypoint = new EditKeypoint(canvas, ctx);
 		this.createPolygon.vertexesChangeEventListener(vertexes => {
 			this.render();
 			this.createPolygon.drawPolygon(vertexes);
@@ -94,6 +101,13 @@ export class CreateDrawCanvas {
 			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
 			this.addVertexes = vertexes;
 			this.notifyCreateComplete({ x, y }, ShapeType.Circle);
+		});
+		// 新增关键点
+		this.createKeypoint.subscribeDrawComplete((vertexes, mouseOffset) => {
+			const { scale, translateX, translateY } = getTranslateAndScale(this.ctx);
+			const [x, y] = vertexToPixel([mouseOffset.x, mouseOffset.y], { scale, x: translateX, y: translateY });
+			this.addVertexes = vertexes;
+			this.notifyCreateComplete({ x, y }, ShapeType.Keypoint);
 		});
 		this.render();
 		this.onMouseDown = this.onMouseDown.bind(this);
@@ -163,6 +177,10 @@ export class CreateDrawCanvas {
 	public onStartCreateCircle() {
 		this.createCircle.start();
 	}
+	// 允许创建关键点
+	public onStartCreateKeypoint() {
+		this.createKeypoint.start();
+	}
 
 	public resetAllInstance() {
 		this.onCreateEnd();
@@ -174,6 +192,7 @@ export class CreateDrawCanvas {
 		this.createPolygon.reset();
 		this.createRectangle.reset();
 		this.createCircle.reset();
+		this.createKeypoint.reset();
 	}
 
 	drawShapes(shapes: ShapesProps[]) {
@@ -227,6 +246,17 @@ export class CreateDrawCanvas {
 				ctx.textBaseline = 'middle';
 				ctx.textAlign = 'center';
 				ctx.fillText(shape.label, points[0][0], points[0][1]);
+			} else if (shape.shape_type === ShapeType.Keypoint) {
+				const [[x, y]] = points;
+				const radius = 5 / scale;
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0, 2 * Math.PI);
+				ctx.fillStyle = color;
+				ctx.fill();
+				ctx.fillStyle = color;
+				ctx.textBaseline = 'middle';
+				ctx.textAlign = 'center';
+				ctx.fillText(shape.label, x, y + fontPadding + radius);
 			}
 		}
 	}
@@ -254,6 +284,7 @@ export class CreateDrawCanvas {
 		this.editDrawPolygon.render();
 		this.editDrawRectangle.render();
 		this.editDrawCircle.render();
+		this.editDrawKeypoint.render();
 		ctx.restore();
 	};
 	private mouseHitShape(event: MouseEvent): ShapesProps {
@@ -281,6 +312,13 @@ export class CreateDrawCanvas {
 				}
 			} else if (shape.shape_type === ShapeType.Circle) {
 				const isIn = isPointInCircleShape(x, y, points, this.ctx);
+				if (isIn) {
+					hit = true;
+					hitShape = shape;
+					break;
+				}
+			} else if (shape.shape_type === ShapeType.Keypoint) {
+				const isIn = isPointInKeypointShape(x, y, points, this.ctx);
 				if (isIn) {
 					hit = true;
 					hitShape = shape;
@@ -339,6 +377,17 @@ export class CreateDrawCanvas {
 			this.editDrawCircle.onContextmenu(e => {
 				this.notifyContextmenuShape(e, shape);
 			});
+		} else if (shape.shape_type === ShapeType.Keypoint) {
+			this.editDrawKeypoint.draw(points);
+			this.editDrawKeypoint.onEditing(vertexes => {
+				this.editVertexes = vertexes;
+				this.render();
+			});
+			this.editDrawKeypoint.onEditCompleted(vertexes => {
+				this.render();
+				this.editVertexes = vertexes;
+				this.notifyEditing();
+			});
 		}
 		this.render();
 	}
@@ -358,6 +407,7 @@ export class CreateDrawCanvas {
 		this.editDrawPolygon.destroy();
 		this.editDrawRectangle.destroy();
 		this.editDrawCircle.destroy();
+		this.editDrawKeypoint.destroy();
 		this.render();
 	}
 	private onMouseDoubleClick(e: MouseEvent) {
@@ -421,6 +471,7 @@ export class CreateDrawCanvas {
 		this.createCircle.destroy();
 		this.createRectangle.destroy();
 		this.createPolygon.destroy();
+		this.createKeypoint.destroy();
 	}
 	destroy() {
 		this.labels = {};

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-const classes = ref<any>(['动物-马', '动物-鹿', '动物-狼', '动物-狐狸']);
+const classes = ref<any>(['动物-马', '动物-鹿', '动物-狼', '动物-狐狸', '尾巴', '角', '耳朵']);
 const list = ref<any>([
 	{
 		id: 3,
@@ -88,6 +88,14 @@ const list = ref<any>([
 					label: '动物-狐狸',
 					description: '',
 					group_id: '3',
+				},
+				{
+					id: '20250927165038030454',
+					shape_type: 'keypoint',
+					points: [[302.1276595744681, 313.4040013162968]],
+					label: '尾巴',
+					description: '',
+					group_id: '',
 				},
 			],
 			imageHeight: 533,

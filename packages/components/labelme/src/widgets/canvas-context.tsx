@@ -156,6 +156,8 @@ export default defineComponent({
 								drawCanvas.value!.onStartCreateRectangle();
 							} else if (toolsActive.value === ToolsHandleType.CREATE_CIRCLE) {
 								drawCanvas.value!.onStartCreateCircle();
+							} else if (toolsActive.value === ToolsHandleType.CREATE_KEYPOINT) {
+								drawCanvas.value!.onStartCreateKeypoint();
 							}
 						},
 						{ immediate: true }
