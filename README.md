@@ -79,7 +79,7 @@ app.mount('#app');
 
 🖼️ labelme标注
 
-![labelimg标注](https://junehunter.github.io/next-element-vue/assets/images/labelme_00.png)
+![labelme标注](https://junehunter.github.io/next-element-vue/assets/images/labelme_00.png)
 
 ---
 

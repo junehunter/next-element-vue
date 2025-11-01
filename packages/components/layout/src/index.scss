@@ -1,11 +1,11 @@
 @use 'packages/theme-chalk/mixins/index' as *;
 @use 'packages/theme-chalk/mixins/_var' as *;
-@import 'packages/theme-chalk/varilable';
-@import './transverse/index.scss';
-@import './columns/index.scss';
-@import './classic/index.scss';
-@import './defaults/index.scss';
-@import './composite/index.scss';
+@use 'packages/theme-chalk/varilable.scss' as *;
+@use './transverse/index.scss' as transverse;
+@use './columns/index.scss' as columns;
+@use './classic/index.scss' as classic;
+@use './defaults/index.scss' as defaults;
+@use './composite/index.scss' as composite;
 
 $block: 'layout'; 
 .#{bf($block)} {

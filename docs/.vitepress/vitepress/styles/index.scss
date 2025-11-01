@@ -1,6 +1,6 @@
 @use './code';
-@import './content.scss';
-@import './common.scss';
+@use './content.scss';
+@use './common.scss';
 :root {
 	--vp-layout-max-width: 100%;
 	--vp-sidebar-width: 320px;

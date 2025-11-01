@@ -1,5 +1,5 @@
-@use 'packages/theme-chalk/mixins/index' as *;
-@import 'packages/theme-chalk/varilable';
+@use 'packages/theme-chalk/mixins/index.scss' as *;
+@use 'packages/theme-chalk/varilable.scss' as *;
 .#{bem('spin-loading')} {
 	position: relative;
 	&-mask {

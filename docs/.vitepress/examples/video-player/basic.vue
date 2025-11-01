@@ -66,7 +66,7 @@ const mp4_url = new URL('./assets/video/demo02.mp4', import.meta.url).href;
 					<span>m3u8</span>
 				</div>
 				<div class="card-body">
-					<NextVideoPlayer type="m3u8" :autoplay="false" src="http://220.161.87.62:8800/hls/0/index.m3u8" :tensorflow="modelCfg" :tf="tf"></NextVideoPlayer>
+					<NextVideoPlayer type="m3u8" :autoplay="false" src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" :tensorflow="modelCfg" :tf="tf"></NextVideoPlayer>
 				</div>
 			</el-col>
 			<el-col :span="12">

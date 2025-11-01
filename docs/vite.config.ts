@@ -34,6 +34,13 @@ export default defineConfig({
 		}),
 		MarkdownTransform(),
 	],
+	css: {
+		preprocessorOptions: {
+			scss: {
+				silenceDeprecations: ['legacy-js-api'],
+			},
+		},
+	},
 	resolve: {
 		alias: {
 			packages: pathResolve('../packages'), // 引用组件源码，设置路径别名

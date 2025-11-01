@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use './config.scss';
 
 @function be($block, $blockSuffix, $element: '') {
@@ -64,5 +65,5 @@
 }
 
 @function rgba-color($color, $opacity) {
-	@return rgba(red($color), green($color), blue($color), $opacity);
+	@return rgba(color.channel($color, 'red', $space: rgb), color.channel($color, 'green', $space: rgb), color.channel($color, 'blue', $space: rgb), $opacity);
 }

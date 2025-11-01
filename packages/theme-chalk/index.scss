@@ -1,7 +1,9 @@
 @use 'sass:math';
 @use 'sass:map';
-@import './varilable';
-@import './common.scss';
+@use "sass:color";
+@use './varilable' as *;
+@use './common.scss';
+@use './dark.scss';
 * {
 	padding: 0px;
 	margin: 0px;
@@ -20,11 +22,11 @@
 	--el-color-white: #ffffff;
 	--el-color-black: #000000;
 	--el-color-primary: #{$theme-color};
-	--el-color-primary-light-3: #{mix(white, $theme-color, 30%)};
-	--el-color-primary-light-5: #{mix(white, $theme-color, 50%)};
-	--el-color-primary-light-7: #{mix(white, $theme-color, 70%)};
-	--el-color-primary-light-8: #{mix(white, $theme-color, 80%)};
-	--el-color-primary-light-9: #{mix(white, $theme-color, 90%)};
+	--el-color-primary-light-3: #{color.mix(white, $theme-color, 30%)};
+	--el-color-primary-light-5: #{color.mix(white, $theme-color, 50%)};
+	--el-color-primary-light-7: #{color.mix(white, $theme-color, 70%)};
+	--el-color-primary-light-8: #{color.mix(white, $theme-color, 80%)};
+	--el-color-primary-light-9: #{color.mix(white, $theme-color, 90%)};
 	--el-color-primary-dark-2: #{$theme-color};
 	--el-color-success: #67c23a;
 	--el-color-success-light-3: #95d475;
@@ -116,4 +118,3 @@
     --el-menu-icon-width: 24px;
 }
 
-@import './dark.scss';

@@ -6,13 +6,21 @@
 		"email": "htengweb@163.com"
 	},
 	"description": "Component library based on element-plus secondary encapsulation",
-	"keywords": ["next", "element", "vue3", "next-element-vue"],
+	"keywords": [
+		"next",
+		"element",
+		"vue3",
+		"labelimg",
+		"labelme"
+	],
 	"main": "dist/index.min.js",
 	"module": "dist/index.js",
 	"unpkg": "dist/index.umd.min.js",
 	"jsdelivr": "dist/index.umd.min.js",
 	"types": "dist/index.d.ts",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"repository": {
 		"type": "git",
@@ -38,19 +46,19 @@
 		"postinstall": "simple-git-hooks"
 	},
 	"dependencies": {
-		"@element-plus/icons-vue": "^2.1.0",
+		"@element-plus/icons-vue": "^2.3.1",
 		"element-resize-detector": "^1.2.4",
 		"lodash-unified": "^1.0.3"
 	},
 	"peerDependencies": {
 		"@types/lodash-es": "^4.17.12",
 		"@vueuse/core": "^12.8.2",
-		"element-plus": "^2.9.9",
+		"element-plus": "^2.11.7",
 		"flv.js": "^1.6.2",
 		"lodash-es": "^4.17.21",
 		"mpegts.js": "~1.7.3",
-		"video.js": "^8.6.0",
-		"vue": "^3.5.13",
+		"video.js": "^8.23.4",
+		"vue": "^3.5.22",
 		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
 	},
@@ -81,7 +89,7 @@
 		"autoprefixer": "^10.4.16",
 		"concurrently": "^8.2.1",
 		"cssnano": "^6.0.1",
-		"element-plus": "^2.9.9",
+		"element-plus": "^2.11.7",
 		"eslint": "^8.50.0",
 		"eslint-plugin-unicorn": "^48.0.1",
 		"eslint-plugin-vue": "^9.17.0",
@@ -100,13 +108,13 @@
 		"rollup-plugin-serve": "^1.1.1",
 		"rollup-plugin-typescript2": "^0.36.0",
 		"rollup-plugin-vue": "6.0.0",
-		"sass": "1.68.0",
+		"sass": "1.93.3",
 		"simple-git-hooks": "^2.9.0",
 		"typescript": "^5.7.2",
 		"unplugin-vue-macros": "^2.5.1",
-		"video.js": "^8.6.0",
+		"video.js": "^8.23.4",
 		"vitest": "^3.1.4",
-		"vue": "^3.5.13",
+		"vue": "^3.5.22",
 		"vue-eslint-parser": "^9.3.1",
 		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
@@ -115,17 +123,20 @@
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*.{vue,js,jsx,json}": ["eslint --fix"],
-		"*.ts?(x)": ["eslint --fix"]
+		"*.{vue,js,jsx,json}": [
+			"eslint --fix"
+		],
+		"*.ts?(x)": [
+			"eslint --fix"
+		]
 	},
 	"engines": {
-		"node": ">=16"
+		"node": ">=18"
 	},
 	"license": "MIT",
 	"pnpm": {
 		"overrides": {
-			"form-data": "^4.0.4",
-			"esbuild": "^0.25.8"
+			"esbuild@<=0.24.2": ">=0.25.0"
 		}
 	}
 }

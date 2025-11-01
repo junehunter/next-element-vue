@@ -34,7 +34,7 @@ export const detectVideoFrame = async (
 	let input = tf.tidy(() => tf.image.resizeBilinear(tf.browser.fromPixels(video), [modelWeight, modelHeight]).div(255.0).expandDims(0));
 	ctx.clearRect(0, 0, videoWidth, videoHeight);
 	detect_ctx.clearRect(0, 0, videoWidth, videoHeight);
-	await model.executeAsync(input).then(async (res: any) => {
+	await model?.executeAsync(input).then(async (res: any) => {
 		let [boxes, scores, classes, valid_detections] = res;
 		for (let i = 0; i < valid_detections.dataSync()[0]; ++i) {
 			let [x0, y0, x1, y1] = boxes.dataSync().slice(i * 4, (i + 1) * 4);

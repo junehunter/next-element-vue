@@ -1,5 +1,5 @@
 @use 'packages/theme-chalk/mixins/index' as *;
-@import 'packages/theme-chalk/varilable.scss';
+@use 'packages/theme-chalk/varilable.scss' as *;
 
 $block: 'video-player';
 .#{bem($block)}{
