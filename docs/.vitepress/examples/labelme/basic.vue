@@ -105,7 +105,26 @@ const list = ref<any>([
 	{
 		id: 4,
 		imageSrc: 'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
-		labels: {},
+		labels: {
+			shapes: [
+				{
+					id: '20251101160506288787',
+					shape_type: 'polygon',
+					points: [
+						[321.36752136752136, 140.53376231092895],
+						[564.1025641025641, 149.10289415915634],
+						[579.4871794871796, 322.19935749334934],
+						[369.2307692307692, 387.3247595398774],
+						[205.12820512820514, 250.21864996823936],
+					],
+					label: '动物-狼',
+					description: '',
+					group_id: '',
+				},
+			],
+		},
+		imageHeight: 533,
+		imageWidth: 800,
 	},
 ]);
 const onEditPolygon = (arg: any) => {

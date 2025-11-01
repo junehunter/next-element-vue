@@ -71,11 +71,11 @@ export default class CreateCircle {
 		e.stopPropagation();
 		e.preventDefault();
 		if (e.ctrlKey) return;
+		this.canvas!.style.cursor = 'crosshair';
 		if (this.isDrawing) {
 			const [x, y] = this.transformMousePoint(e);
 			this.mouseOffset.x = x;
 			this.mouseOffset.y = y;
-			this.canvas!.style.cursor = 'crosshair';
 			this.notifyVertexesChange();
 		}
 	}

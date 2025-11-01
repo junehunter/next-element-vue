@@ -133,7 +133,14 @@ export default defineComponent({
 			document.removeEventListener('keydown', onKeydownPrevNext);
 			window.removeEventListener('resize', updateMainContentHeight);
 		});
-		const onKeydownPrevNext = () => {};
+		const onKeydownPrevNext = (e: KeyboardEvent) => {
+			if (loading.value) return;
+			if (e.code === 'KeyA' || e.key === 'ArrowLeft') {
+				onPaginationPrev();
+			} else if (e.code === 'KeyD' || e.key === 'ArrowRight') {
+				onPaginationNext();
+			}
+		};
 		const onPaginationPrev = () => {
 			const imageLength = labelImages.value.length;
 			let i = activateNodeIndex.value - 1;

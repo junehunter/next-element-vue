@@ -1,4 +1,4 @@
-import { defineComponent, inject } from 'vue';
+import { defineComponent, inject, onMounted, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
 import { useLocale } from 'packages/hooks';
 import { ToolsHandleType } from '../config';
@@ -15,6 +15,33 @@ export default defineComponent({
 			changeToolsActive(type);
 			emit('change', type);
 		};
+		const onKeydownChangeTools = (e: KeyboardEvent) => {
+			let type = toolsActive!.value;
+			switch (e.code) {
+				case 'KeyP':
+					type = ToolsHandleType.CREATE_POLYGON;
+					break;
+				case 'KeyE':
+					type = ToolsHandleType.EDIT_SHAPE;
+					break;
+				case 'KeyR':
+					type = ToolsHandleType.CREATE_RECTANGLE;
+					break;
+				case 'KeyC':
+					type = ToolsHandleType.CREATE_CIRCLE;
+					break;
+				case 'KeyK':
+					type = ToolsHandleType.CREATE_KEYPOINT;
+					break;
+			}
+			onClickToolsActive(type);
+		};
+		onMounted(() => {
+			document.addEventListener('keydown', onKeydownChangeTools);
+		});
+		onUnmounted(() => {
+			document.removeEventListener('keydown', onKeydownChangeTools);
+		});
 		const renderContent = () => {
 			return (
 				<ul class={[_ns.be('main', 'left-tools')]}>

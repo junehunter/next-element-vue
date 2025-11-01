@@ -13,6 +13,7 @@ export default class CreateKeypoint {
 		this.ctx = ctx;
 		this.mouseOffset = { x: 0, y: 0 };
 		this.canvasMouseClick = this.canvasMouseClick.bind(this);
+		this.canvasMouseMove = this.canvasMouseMove.bind(this);
 	}
 	public subscribeDrawComplete(callback: (vertexes: [number, number][], mouseOffset: { x: number; y: number }) => void) {
 		this.drawCompleteCallback = callback;
@@ -26,10 +27,12 @@ export default class CreateKeypoint {
 	}
 	public start() {
 		this.canvas.addEventListener('click', this.canvasMouseClick);
+		this.canvas.addEventListener('mousemove', this.canvasMouseMove);
 	}
 	public stop() {
 		this.reset();
 		this.canvas.removeEventListener('click', this.canvasMouseClick);
+		this.canvas.removeEventListener('mousemove', this.canvasMouseMove);
 	}
 	public reset() {
 		this.vertexes = [];
@@ -46,6 +49,12 @@ export default class CreateKeypoint {
 		this.vertexes = [[x, y]];
 		this.render();
 		this.notifyDrawComplete();
+	};
+	private canvasMouseMove = (e: MouseEvent) => {
+		e.stopPropagation();
+		e.preventDefault();
+		if (e.ctrlKey) return;
+		this.canvas!.style.cursor = 'crosshair';
 	};
 
 	public draw(vertexes: [number, number][]) {

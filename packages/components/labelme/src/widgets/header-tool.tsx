@@ -121,6 +121,26 @@ export default defineComponent({
 												<span>Ctrl+鼠标：</span>
 												<span>按住Ctrl键+鼠标滚动可以缩放图片，按住Ctrl+左键拖动可以移动图片</span>
 											</li>
+											<li>
+												<span>P：</span>
+												<span>创建多边形</span>
+											</li>
+											<li>
+												<span>E：</span>
+												<span>编辑形状</span>
+											</li>
+											<li>
+												<span>R：</span>
+												<span>创建矩形</span>
+											</li>
+											<li>
+												<span>C：</span>
+												<span>创建圆形</span>
+											</li>
+											<li>
+												<span>K：</span>
+												<span>创建关键点</span>
+											</li>
 										</ul>
 									),
 								}}

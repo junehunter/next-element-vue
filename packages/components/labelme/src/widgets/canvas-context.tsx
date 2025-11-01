@@ -177,8 +177,7 @@ export default defineComponent({
 					if (valueExist(height)) {
 						canvasMainRef.value!.style.height = height + 'px';
 						nextTick(() => {
-							changeToolsActive('');
-							renderImageLabel(_labelInfo.value);
+							rerenderImage();
 						});
 					}
 				}
@@ -191,6 +190,7 @@ export default defineComponent({
 		const rerenderImage = () => {
 			onCloseContentmenuLabel();
 			nextTick(() => {
+				drawCanvas.value!.resetAllInstance();
 				renderImageLabel(_labelInfo.value);
 			});
 		};
@@ -268,7 +268,7 @@ export default defineComponent({
 				if (node) _labelInfo.value = node;
 				(_labelInfo.value.labels ??= { shapes: [] }).shapes ??= [];
 				nextTick(() => {
-					changeToolsActive('');
+					changeToolsActive(toolsActive.value);
 					rerenderImage();
 				});
 			},
