@@ -8,10 +8,11 @@ $layout-active-color: var(--next-layout-active-color, $theme-color);
 $layout-header-height: var(--next-layout-header-height, 64px);
 $layout-nav-height: var(--next-layout-nav-height, 45px);
 $layout-sidebar-width: var(--next-layout-sidebar-width, 240px);
-
+$layout-sidebar-subwidth: var(--next-layout-sidebar-subwidth, 180px);
 
 @mixin setScrollBar($color: #aaaaaa, $bg-color: transparent, $w: 6px, $resizer-color: transparent) {
 	overflow-y: auto;
+
 	/* 修改滚动条的颜色和宽度 */
 	&::-webkit-scrollbar {
 		max-width: $w;
@@ -36,6 +37,7 @@ $layout-sidebar-width: var(--next-layout-sidebar-width, 240px);
 	&::-webkit-scrollbar-thumb:inactive {
 		background-color: #eee;
 	}
+
 	/*鼠标悬停在元素内容上时设置滚动条样式*/
 	&:hover::-webkit-scrollbar-thumb {
 		background-color: rgba($color, 0.5);
@@ -45,12 +47,15 @@ $layout-sidebar-width: var(--next-layout-sidebar-width, 240px);
 		border-radius: $w;
 		background-color: $resizer-color;
 	}
+
 	&::-webkit-scrollbar-corner {
 		background-color: $resizer-color;
 	}
+
 	&::-webkit-resizer {
 		background-color: $resizer-color;
 	}
+
 	// IE
 	scrollbar-face-color: transparent;
 	scrollbar-shadow-color: $color;

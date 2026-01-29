@@ -29,7 +29,8 @@ form/input-table-select
 | 属性名    | 说明     | 类型     | 可选值      | 默认值    |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------|
 | size | 大小尺寸 | string | large / default / small | default |
-| colSpan | 表单列比例 | number | - | 8 |
+| colSpan | 表单列比例 | number | `2` `3` `4` `6` `8` `12` `24` | 8 |
+| colSpanFixed | 表单列固定比例 | number | `2` `3` `4` `6` `8` `12` `24` | null |
 | labelWidth | 表单列label宽度 | string | - | 6em |
 | columnMinWidth | 表单列最小宽度 | number | - | 350 |
 | formDatum | 表单默认参数 | object | - | - |
@@ -44,4 +45,6 @@ form/input-table-select
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------|
 | prop | 字段属性 | string | -  | - |
 | label | 字段名称 | string | -  | - |
-| type | 表单类型 | string | `input` `password` `inputInteger` `inputNumber` `textarea` `select` `radio` `checkbox` `date` `time` `datetime` `daterange` `datetimerange` `numberRange` `inputTableSelect` `uploadImage` `treeSelect` `cascader` | input |
+| type | 表单类型 | string | `input` `password` `inputInteger` `inputNumber` `textarea` `select` `radio` `checkbox` `date` `timeSelect` `datetime` `daterange` `datetimerange` `numberRange` `inputTableSelect` `uploadImage` `treeSelect` `cascader` `timePicker` | input |
+| multiple | 是否多选 | boolean | - | false |
+| collapseTags | 是否多选时是否折叠标签 | boolean | - | true |

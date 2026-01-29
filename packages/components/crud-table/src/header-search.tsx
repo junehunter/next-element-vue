@@ -1,5 +1,5 @@
 import { defineComponent, inject, reactive, ref, isRef, unref, onMounted, getCurrentInstance } from 'vue';
-import { ElForm, ElRow, ElCol, ElFormItem, ElButton, ElIcon } from 'element-plus';
+import { ElForm, ElRow, ElCol, ElFormItem, ElButton } from 'element-plus';
 import { Search, Delete, DArrowLeft, DArrowRight, ArrowUp, ArrowDown } from '@element-plus/icons-vue';
 import type { SearchColumnProps } from './config';
 import { elementResize, isValueExist } from 'packages/hooks/global-hook';
@@ -110,16 +110,7 @@ export default defineComponent({
 					return (
 						<ElButton type="primary" text bg class={ns.b('header-search-expandBtn')} onClick={onSwitchExpand}>
 							{{
-								icon: () =>
-									isExpand.value ? (
-										<ElIcon>
-											<ArrowUp />
-										</ElIcon>
-									) : (
-										<ElIcon>
-											<ArrowDown />
-										</ElIcon>
-									),
+								icon: () => (isExpand.value ? <ArrowUp /> : <ArrowDown />),
 								default: () => (isExpand.value ? t('next.table.foldSearch') : t('next.table.unfoldSearch')),
 							}}
 						</ElButton>
@@ -144,21 +135,13 @@ export default defineComponent({
 							<ElFormItem>
 								<ElButton type="primary" onClick={onConfirmSearch}>
 									{{
-										icon: () => (
-											<ElIcon>
-												<Search />
-											</ElIcon>
-										),
+										icon: () => <Search />,
 										default: () => t('next.table.search'),
 									}}
 								</ElButton>
 								<ElButton onClick={onClearSearch}>
 									{{
-										icon: () => (
-											<ElIcon>
-												<Delete />
-											</ElIcon>
-										),
+										icon: () => <Delete />,
 										default: () => t('next.table.clear'),
 									}}
 								</ElButton>

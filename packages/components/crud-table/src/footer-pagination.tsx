@@ -14,8 +14,8 @@ export default defineComponent({
 		const _options = inject('options', {} as any);
 		const options = isRef(_options) ? unref(_options) : _options;
 		const page = props.page;
-		const handleCurrentChange = (index: number) => {
-			page.pageIndex = index;
+		const handleCurrentChange = (number: number) => {
+			page.pageNo = number;
 			emit('change', page);
 		};
 		const handleSizeChange = (size: number) => {
@@ -25,10 +25,10 @@ export default defineComponent({
 		const renderContent = () => {
 			return (
 				<ElPagination
-					v-model:currentPage={page.pageIndex}
+					v-model:currentPage={page.pageNo}
 					v-model:pageSize={page.pageSize}
 					total={page.total}
-					small={options.size === 'small'}
+					size={options.size}
 					layout="total, sizes, prev, pager, next, jumper"
 					page-sizes={valueExist(page.pageSizes, [10, 20, 30, 40, 50, 100])}
 					onCurrent-change={handleCurrentChange}

@@ -1,5 +1,5 @@
 import { defineComponent, inject, computed, isRef, unref, ref, toRaw } from 'vue';
-import { ElButton, ElIcon, ElMessageBox, ElMessage } from 'element-plus';
+import { ElButton, ElMessageBox, ElMessage } from 'element-plus';
 import { Plus, Delete, Refresh, Tools } from '@element-plus/icons-vue';
 import { useLocale } from 'packages/hooks';
 import DrawerSetting from './widgets/drawer-setting';
@@ -56,24 +56,16 @@ export default defineComponent({
 					{options.addBtn && (
 						<ElButton type="primary" size={options.size} onClick={onClickAdd}>
 							{{
-								icon: () => (
-									<ElIcon>
-										<Plus />
-									</ElIcon>
-								),
-								default: () => t('next.table.add'),
+								icon: () => <Plus />,
+								default: () => options.addBtnText || t('next.table.add'),
 							}}
 						</ElButton>
 					)}
 					{options.batchDelBtn && (
 						<ElButton type="danger" size={options.size} disabled={!multipleSelectionLength.value} onClick={onClickBatchDelete}>
 							{{
-								icon: () => (
-									<ElIcon>
-										<Delete />
-									</ElIcon>
-								),
-								default: () => t('next.table.batchDelete'),
+								icon: () => <Delete />,
+								default: () => options.batchDelBtnText || t('next.table.batchDelete'),
 							}}
 						</ElButton>
 					)}
@@ -84,22 +76,14 @@ export default defineComponent({
 					{options.refreshBtn && (
 						<ElButton circle size={options.size} onClick={onClickRefresh}>
 							{{
-								icon: () => (
-									<ElIcon>
-										<Refresh />
-									</ElIcon>
-								),
+								icon: () => <Refresh />,
 							}}
 						</ElButton>
 					)}
 					{options.settingBtn && (
 						<ElButton circle size={options.size} onClick={onClickSetting}>
 							{{
-								icon: () => (
-									<ElIcon>
-										<Tools />
-									</ElIcon>
-								),
+								icon: () => <Tools />,
 							}}
 						</ElButton>
 					)}

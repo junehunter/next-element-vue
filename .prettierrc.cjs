@@ -21,12 +21,10 @@ module.exports = {
 		{
 			files: ['*.scss'],
 			options: {
-				parser: 'css',
+				parser: 'scss',
 			},
 		},
 	],
-	// 是否使用eslint的代码格式进行校验
-	eslintIntegration: true,
 	// 一行最多多少个字符
 	printWidth: 200,
 	// 指定每个缩进级别的空格数
@@ -45,8 +43,6 @@ module.exports = {
 	trailingComma: 'es5',
 	// 在对象文字中的括号之间打印空格
 	bracketSpacing: true,
-	// jsx 标签的反尖括号需要换行
-	jsxBracketSameLine: false,
 	// 在单独的箭头函数参数周围包括括号 always：(x) => x \ avoid：x => x
 	arrowParens: 'avoid',
 	// 这两个选项可用于格式化以给定字符偏移量（分别包括和不包括）开始和结束的代码

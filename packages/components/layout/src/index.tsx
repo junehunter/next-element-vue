@@ -8,6 +8,7 @@ import transverse from './transverse/index';
 import columns from './columns/index';
 import classic from './classic/index';
 import composite from './composite/index';
+import type { MenuItemInterface } from 'packages/components/menu/src/interface';
 
 const ns = useNamespace('layout');
 
@@ -52,6 +53,11 @@ export default defineComponent({
 		provide('__slots__', slots);
 		const updateOptions = (cfg: any) => {
 			_config.value = mergeWith(_config.value, cfg, customizerCoverArray);
+			// 处理一级菜单没有设置level的情况
+			_config.value.menuTree?.forEach((menuItem: MenuItemInterface) => {
+				menuItem.meta ??= {};
+				menuItem.meta.level ??= 1;
+			});
 			updateThemeColorCssVar(_config.value?.setting);
 			emit('changeOptions', _config.value);
 		};

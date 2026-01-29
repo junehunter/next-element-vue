@@ -97,5 +97,3 @@ export const useNamespace = (block: string, namespaceOverrides?: Ref<string | un
 		cssVarBlockName,
 	};
 };
-
-export type UseNamespaceReturn = ReturnType<typeof useNamespace>;

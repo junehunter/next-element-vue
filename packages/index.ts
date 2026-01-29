@@ -3,6 +3,7 @@ import type { App } from 'vue';
 import './theme-chalk/index.scss';
 export * from './hooks';
 export * from './components';
+export * from './utils/theme';
 import * as components from './components';
 import directives from './utils/directive';
 import { configProviderContextKey } from './hooks/global-config';

@@ -1,7 +1,7 @@
 import { defineComponent, watch, ref } from 'vue';
 import type { PropType, CSSProperties } from 'vue';
 import { ElDialog, ElIcon } from 'element-plus';
-import { FullScreen, Close } from '@element-plus/icons-vue';
+import { FullScreen, Close, CopyDocument } from '@element-plus/icons-vue';
 import { useNamespace } from 'packages/hooks/use-namespace/index';
 
 const ns = useNamespace('dialog');
@@ -15,6 +15,10 @@ export default defineComponent({
 		style: {
 			type: Object as PropType<CSSProperties>,
 			default: () => ({}),
+		},
+		modalClass: {
+			type: String,
+			default: '',
 		},
 		modelValue: {
 			type: Boolean,
@@ -51,6 +55,10 @@ export default defineComponent({
 		draggable: {
 			type: Boolean,
 			default: true,
+		},
+		overflow: {
+			type: Boolean,
+			default: false,
 		},
 		zoomSize: {
 			type: Boolean,
@@ -92,6 +100,7 @@ export default defineComponent({
 				<ElDialog
 					v-model={visible.value}
 					class={[ns.b(), props.className, props.nofill && ns.b('nofill')]}
+					modal-class={props.modalClass}
 					style={props.style}
 					title={props.title}
 					appendToBody={props.appendToBody}
@@ -104,6 +113,7 @@ export default defineComponent({
 					width={props.width}
 					top={props.top}
 					draggable={props.draggable}
+					overflow={props.overflow}
 					destroyOnClose={props.destroyOnClose}
 					onClose={onClose}
 					v-slots={{
@@ -115,9 +125,7 @@ export default defineComponent({
 								<div class={ns.e('header-right')}>
 									{props.fullscreenBtn && (
 										<span class="icon-fullscreen" onClick={() => (isFullscreen.value = !isFullscreen.value)}>
-											<ElIcon>
-												<FullScreen />
-											</ElIcon>
+											<ElIcon size="18">{!isFullscreen.value ? <FullScreen /> : <CopyDocument />}</ElIcon>
 										</span>
 									)}
 									{props.showClose && (

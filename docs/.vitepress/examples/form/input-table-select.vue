@@ -28,7 +28,7 @@ const options = {
 		onTableSelect: (formParams, rows, col) => {
 			console.log(formParams, rows, col);
 		},
-		loadData: (formParams: any, { pageIndex, pageSize }: any, resolve: Function) => {
+		loadData: (formParams: any, { pageNo, pageSize }: any, resolve: Function) => {
 			setTimeout(() => {
 				const res = {
 					data: [

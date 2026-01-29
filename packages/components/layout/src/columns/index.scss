@@ -1,42 +1,195 @@
 @use 'packages/theme-chalk/mixins/index' as *;
 @use 'packages/theme-chalk/varilable' as *;
 
-
 $block: 'layout-columns';
+$active-itme-bg: rgba(#000000, 0.2);
+
 .#{bf($block)} {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    .#{bf($block, 'sidebar')} {
-        flex-grow: 0;
-        flex-shrink: 0;
-        width: $layout-sidebar-width;
-        height: 100%;
-        // background-color: $layout-bg-color;
-        // color: $layout-font-color;
-    }
-    .#{bf($block, 'content')} {
-        flex: 1 1 auto;
-        width: calc(100% - $layout-sidebar-width);
-        height: 100%;
-    }
-    .#{bf($block, 'header')} {
-        height: $layout-header-height;
-        background-color: $layout-bg-color;
-        color: $layout-font-color;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        .#{bf($block ,'header', 'menu')} {
-            flex: 1 1 auto;
-            height: 100%;
-            overflow: hidden;
-        }
-    }
-    .#{bf($block ,'main')} {
-        width: 100%;
-        height: calc(100% - #{$layout-header-height});
-    }
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: space-between;
+
+	.#{bf($block, 'sidebar')} {
+		flex-grow: 0;
+		flex-shrink: 0;
+		height: 100%;
+		background-color: $layout-bg-color;
+		color: $layout-font-color;
+		display: flex;
+		$menu-footer-height: 60px;
+
+		.#{be($block, 'sidebar', 'content')} {
+			height: 100%;
+
+			.#{be($block, 'sidebar', 'scrollbar')} {
+				height: calc(100% - #{$menu-footer-height});
+
+				.el-menu.el-menu--vertical {
+
+					.el-menu-item,
+					.el-sub-menu,
+					.el-sub-menu__title {
+						overflow: hidden;
+					}
+				}
+
+				.#{be($block, 'sidebar', 'menu')} {
+					height: 100%;
+					width: 64px;
+					overflow: hidden;
+
+					.#{be($block, 'sidebar', 'menu-item')} {
+						display: flex;
+						flex-direction: column;
+						justify-content: center;
+						align-items: center;
+						padding: 10px 0px;
+						cursor: pointer;
+
+						&:hover {
+							background-color: $active-itme-bg;
+						}
+
+						.#{be($block, 'sidebar', 'menu-text')} {
+							padding-top: 3px;
+							font-size: 12px;
+							max-width: 4em;
+						}
+					}
+				}
+			}
+
+			.el-menu--collapse {
+				height: 100%;
+			}
+
+		}
+
+		.#{be($block, 'sidebar', 'footer')} {
+			height: $menu-footer-height;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			svg {
+				cursor: pointer;
+				transition: all 0.3s ease-out;
+			}
+
+			.collapsed-svg {
+				transform: rotate(180deg);
+			}
+		}
+
+		.#{be($block, 'sidebar', 'subcontent')} {
+			background-color: var(--next-layout-bg-color-light-2);
+			padding: 15px 0px;
+			box-sizing: border-box;
+
+			.el-menu {
+				width: $layout-sidebar-subwidth;
+				color: $layout-font-color;
+
+				.active-menu-item {
+					color: $layout-active-color;
+
+					.icon {
+						fill: $layout-active-color;
+					}
+
+					i.iconfont {
+						color: $layout-active-color;
+					}
+				}
+
+				@mixin active-menu-icon {
+					i.iconfont {
+						color: $layout-active-color;
+					}
+
+					.el-icon.el-sub-menu__icon-arrow,
+					.el-icon.el-sub-menu__icon-more {
+						path {
+							fill: $layout-active-color;
+						}
+					}
+				}
+
+				.el-menu-item,
+				.el-sub-menu__title {
+					color: $layout-font-color;
+
+					>.#{bf('menu', 'item')} {
+						&__title {
+							overflow-x: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+					}
+
+					.icon {
+						fill: $layout-font-color;
+					}
+
+					i.iconfont {
+						color: $layout-font-color;
+					}
+
+					&:hover {
+						background-color: $active-itme-bg;
+
+						>.#{bf($block, 'item')} {
+
+							&__icon,
+							&__title {
+								@extend .active-menu-item;
+							}
+						}
+
+						@include active-menu-icon;
+					}
+				}
+
+				.el-menu-item.is-active {
+					>.#{bf($block, 'item')} {
+
+						&__icon,
+						&__title {
+							@extend .active-menu-item;
+						}
+					}
+
+					@include active-menu-icon;
+				}
+			}
+		}
+	}
+
+	.#{bf($block, 'content')} {
+		flex: 1 1 auto;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.#{bf($block, 'header')} {
+		height: $layout-header-height;
+		background-color: $layout-bg-color;
+		color: $layout-font-color;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		.#{bf($block ,'header', 'menu')} {
+			flex: 1 1 auto;
+			height: 100%;
+			overflow: hidden;
+		}
+	}
+
+	.#{bf($block ,'main')} {
+		width: 100%;
+		height: calc(100% - #{$layout-header-height});
+	}
 }

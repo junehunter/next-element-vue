@@ -1,4 +1,4 @@
-import { onUnmounted } from 'vue';
+import { getCurrentInstance, onUnmounted } from 'vue';
 import elementResizeDetectorMaker from 'element-resize-detector';
 
 /**
@@ -171,8 +171,10 @@ export const formatArg = (obj: any): string => {
  * @param value
  * @returns
  */
-export const isValueExist = (value: any): boolean => {
-	return value !== null && value !== undefined && (typeof value === 'string' ? value.trim() !== '' : value !== false);
+export const isValueExist = (value: unknown): boolean => {
+	if (value === null || value === undefined) return false;
+	if (typeof value === 'string' && value.trim() === '') return false;
+	return true;
 };
 
 /**
@@ -241,4 +243,19 @@ export const timeUniqueId = () => {
 	const dateStr = dateFormat(date, 'yyyyMMddhhmmsss');
 	const num = dateStr + Math.random().toString(10).substring(2, 8);
 	return String(num);
+};
+/**
+ * 忽略警告
+ * 官方警告bug Slot "default" invoked outside of the render function
+ * @returns
+ */
+export const warnHandlerIgnore = () => {
+	const instance = getCurrentInstance();
+	if (!instance) return;
+	const originalWarn = instance?.appContext.config.warnHandler;
+	// select slot warnHandler
+	instance!.appContext.config.warnHandler = (msg, ...args) => {
+		if (msg.includes('Slot "default" invoked outside of the render function')) return;
+		originalWarn?.(msg, ...args);
+	};
 };

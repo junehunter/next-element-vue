@@ -1,5 +1,10 @@
 <script setup lang="ts">
-const config = {};
+import { ElDivider } from 'element-plus';
+import { h } from 'vue';
+
+const config = {
+	slelectUserTags: '',
+};
 const columns = [
 	{
 		prop: 'num',
@@ -16,6 +21,18 @@ const columns = [
 		type: 'input',
 		span: 24,
 		required: true,
+		renderDivider: () => {
+			return h(
+				ElDivider,
+				{
+					vertical: true,
+					contentPosition: 'left',
+				},
+				{
+					default: '这里是分割线了',
+				}
+			);
+		},
 	},
 	{
 		prop: 'number',
@@ -63,6 +80,78 @@ const columns = [
 		type: 'input',
 		span: 24,
 		required: true,
+	},
+	{
+		label: '用户名称',
+		prop: 'slelectUserTags',
+		type: 'inputTableSelect',
+		required: true,
+		tableSelectDefaultValue: (row, col, done) => {
+			const tags = row.slelectUserTags;
+			done([{ id: 1, name: 'zhangs' }]);
+		},
+		onTableSelect: (formParams, rows, col) => {
+			console.log(formParams, rows, col);
+		},
+		tableSelect: {
+			selectType: 'radio',
+			addBtn: true,
+			columns: [
+				{
+					prop: 'name',
+					label: '用户名称',
+					searchType: 'input',
+				},
+				{
+					prop: 'type',
+					label: '用户类型',
+				},
+				{
+					prop: 'createDate',
+					label: '创建时间',
+				},
+			],
+			loadData: (formParams: any, { pageNo, pageSize }: any, resolve: Function) => {
+				setTimeout(() => {
+					const res = {
+						data: [
+							{
+								id: 1,
+								name: '张三',
+								type: '测试1',
+								createDate: '2023-9-7 12:00:00',
+							},
+							{
+								id: 2,
+								name: '李四',
+								type: '测试2',
+								createDate: '2023-9-7 12:20:00',
+							},
+							{
+								id: 3,
+								name: '王五',
+								type: '测试1',
+								createDate: '2023-9-7 12:00:00',
+							},
+							{
+								id: 4,
+								name: '李丽',
+								type: '测试1',
+								createDate: '2023-9-7 12:00:00',
+							},
+							{
+								id: 5,
+								name: '昊天',
+								type: '测试1',
+								createDate: '2023-9-7 12:00:00',
+							},
+						],
+						total: 3,
+					};
+					resolve(res);
+				}, 1000);
+			},
+		},
 	},
 ];
 

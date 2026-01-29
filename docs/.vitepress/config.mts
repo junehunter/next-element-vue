@@ -34,6 +34,10 @@ const createdSidebar = () => {
 							text: '快速开始',
 							link: 'quickstart',
 						},
+						{
+							text: '全局配置',
+							link: 'global-config',
+						},
 					],
 				},
 				{
@@ -129,7 +133,7 @@ const createdSidebar = () => {
 };
 
 export default defineConfig({
-	base: process.env.NODE_ENV === 'production' ? '/next-element-vue' : '/',
+	base: process.env.NODE_ENV === 'production' ? '/next-element-vue/' : '/',
 	lang: 'zh-cn',
 	title: 'Next Element Vue',
 	description: '基于Element Plus封装的高级组件库',
@@ -152,7 +156,7 @@ export default defineConfig({
 		sidebar: createdSidebar(),
 		footer: {
 			message: 'Released under the MIT License.',
-			copyright: 'Copyright © 2025 huangteng',
+			copyright: 'Copyright © 2026 huangteng',
 		},
 	},
 	markdown: {

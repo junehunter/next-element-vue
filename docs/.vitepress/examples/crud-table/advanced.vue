@@ -140,7 +140,7 @@ const options = reactive({
 			},
 			tableSelect: {
 				selectType: 'checkbox',
-				loadData: (formParams: any, { pageIndex, pageSize }: any, resolve: Function) => {
+				loadData: (formParams: any, { pageNo, pageSize }: any, resolve: Function) => {
 					console.log(formParams);
 					setTimeout(() => {
 						const res = {
@@ -319,7 +319,7 @@ const options = reactive({
 const tableReactive = reactive({
 	loading: false,
 	page: {
-		pageIndex: 1,
+		pageNo: 1,
 		pageSize: 10,
 		total: 50,
 	},

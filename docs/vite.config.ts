@@ -55,4 +55,7 @@ export default defineConfig({
 	define: {
 		__version__: JSON.stringify(version),
 	},
+	build: {
+		copyPublicDir: false, // 不复制 public 目录，本地部署临时使用
+	},
 });

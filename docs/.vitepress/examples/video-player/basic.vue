@@ -83,7 +83,7 @@ const mp4_url = new URL('./assets/video/demo02.mp4', import.meta.url).href;
 				</div>
 				<div class="card-body">
 					<NextVideoPlayer
-						type="mpegts"
+						type="flv"
 						:autoplay="false"
 						:src="'//sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'"
 						:tensorflow="modelCfg"
@@ -96,13 +96,16 @@ const mp4_url = new URL('./assets/video/demo02.mp4', import.meta.url).href;
 					<span>flv</span>
 				</div>
 				<div class="card-body">
-					<NextVideoPlayer
+					<!-- <NextVideoPlayer
 						type="flv"
-						:autoplay="false"
-						:src="'//sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'"
-						:tensorflow="modelCfg"
-						:tf="tf"
-					></NextVideoPlayer>
+						src="http://e0c4bfb4e2214a9f6a30b2f0dcd19314.cloud.xstrive.com:9502/player/webrtc?streamPath=hlsram/live0&isMute=1&auto=1&aspect=0&hasAudio=1&username=admin&auth=f6fdffe48c908deb0f4c3bd36c032e72"
+					></NextVideoPlayer> -->
+					<!-- <iframe
+						src="http://player.xstrive.com/video/live?videoUrl=https%3A%2F%2Fflv.cloud.xstrive.com%2Fe0c4bfb4e2214a9f6a30b2f0dcd19314%2Fhlsram%2Flive0%2F10fe8b4d82b48f444376f879059ba487.flv%3Ft%3D1763803586%26pass%3D20251125172626"
+						frameborder="0"
+						width="100%"
+						height="100%"
+					></iframe> -->
 				</div>
 			</el-col>
 		</el-row>

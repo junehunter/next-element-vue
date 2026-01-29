@@ -1,23 +1,8 @@
 @use './code';
 @use './content.scss';
 @use './common.scss';
+
 :root {
 	--vp-layout-max-width: 100%;
 	--vp-sidebar-width: 320px;
-}
-.dark {
-	--el-color-primary: #409eff;
-	--menu-bg-color: #282c34 !important;
-	--menu-font-color: #ffffff !important;
-	--next-main-bg-color: #1f1f1f !important;
-	--el-fill-color-blank: var(--next-main-bg-color);
-	--el-text-color-regular: #ffffff;
-	--el-text-color-secondary: var(--next-main-bg-color);
-	--el-bg-color: var(--next-main-bg-color);
-	--el-fill-color-light: var(--next-main-bg-color);
-	--el-bg-color-overlay: var(--next-main-bg-color);
-	--el-text-color-primary: #ffffff;
-	--el-mask-color: rgba(0, 0, 0, 0.6);
-	--el-color-primary-light-8: transparent;
-	--el-color-primary-light-9: transparent;
 }

@@ -1,5 +1,5 @@
 import { defineComponent, inject, computed, isRef, unref } from 'vue';
-import { ElTableColumn, ElTooltip, ElButton, ElIcon, ElMessageBox, ElMessage } from 'element-plus';
+import { ElTableColumn, ElTooltip, ElButton, ElMessageBox, ElMessage } from 'element-plus';
 import { EditPen, View, Delete } from '@element-plus/icons-vue';
 import { useLocale } from 'packages/hooks';
 import { valueExist } from 'packages/hooks/global-hook';
@@ -67,12 +67,8 @@ export default defineComponent({
 											onClick={() => onClickRowEdit(scoped)}
 										>
 											{{
-												icon: () => (
-													<ElIcon>
-														<EditPen />
-													</ElIcon>
-												),
-												default: () => t('next.table.edit'),
+												icon: () => <EditPen />,
+												default: () => (operationsShowText.value ? t('next.table.edit') : ''),
 											}}
 										</ElButton>
 									</ElTooltip>
@@ -88,12 +84,8 @@ export default defineComponent({
 											onClick={() => onClickRowView(scoped)}
 										>
 											{{
-												icon: () => (
-													<ElIcon>
-														<View />
-													</ElIcon>
-												),
-												default: () => t('next.table.view'),
+												icon: () => <View />,
+												default: () => (operationsShowText.value ? t('next.table.view') : ''),
 											}}
 										</ElButton>
 									</ElTooltip>
@@ -109,12 +101,8 @@ export default defineComponent({
 											onClick={() => onClickRowDel(scoped)}
 										>
 											{{
-												icon: () => (
-													<ElIcon>
-														<Delete />
-													</ElIcon>
-												),
-												default: () => t('next.table.delete'),
+												icon: () => <Delete />,
+												default: () => (operationsShowText.value ? t('next.table.delete') : ''),
 											}}
 										</ElButton>
 									</ElTooltip>

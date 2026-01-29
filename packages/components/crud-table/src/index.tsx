@@ -3,7 +3,7 @@ import { useNamespace, useLocale } from 'packages/hooks';
 import { ElTable, ElEmpty, ElTableColumn } from 'element-plus';
 import { merge } from 'lodash-unified';
 import isEqual from 'lodash-es/isEqual';
-import { deepClone, elementResize, isValueExist } from 'packages/hooks/global-hook';
+import { deepClone, elementResize, isValueExist, valueExist, warnHandlerIgnore } from 'packages/hooks/global-hook';
 import defaultPropsConfig from './props';
 import defaultConfig, { header_menu_slots_key, operation_column_slots_key } from './config';
 import type { TableColumnProps, SearchColumnProps, FormColunmProps } from './config';
@@ -16,6 +16,7 @@ import TableColumnOperations from './widgets/table-column-operations';
 import FooterPagination from './footer-pagination';
 import NextDialog from 'packages/components/dialog/src';
 import AddEditForm from './widgets/add-edit-form';
+import { getConfigProviderContext } from 'packages/hooks/global-config';
 
 const ns = useNamespace('crud-table');
 export default defineComponent({
@@ -43,7 +44,15 @@ export default defineComponent({
 		'submit-form',
 	],
 	setup(props, { emit, slots, expose }) {
+		warnHandlerIgnore();
 		const _config = deepClone(defaultConfig);
+		const _globalConfig = getConfigProviderContext();
+		const { crudTable } = _globalConfig;
+		_config.size = valueExist(_globalConfig?.size, _config.size);
+		_config.operationsBtnText = valueExist(crudTable?.btnText, _config.operationsBtnText);
+		_config.operationsBtnPlain = valueExist(crudTable?.btnPlain, _config.operationsBtnPlain);
+		_config.operationsBtnSize = valueExist(crudTable?.btnSize, _globalConfig?.size, _config.operationsBtnSize);
+		_config.dialogCloseOnClickModal = valueExist(crudTable?.dialogCloseOnClickModal, _config.dialogCloseOnClickModal);
 		const _options = computed(() => {
 			const cfg = unref(props.options);
 			return merge(_config, cfg);
@@ -83,7 +92,7 @@ export default defineComponent({
 			const params = deepClone(toRaw(searchParams));
 			// 参数对比，当查询参数有修改时设置分页为第一页
 			if (!isEqual(_searchFormParams.value, params)) {
-				props.page.pageIndex = 1;
+				props.page.pageNo = 1;
 				_searchFormParams.value = params;
 			}
 			emit('confirm-search', params);
@@ -155,7 +164,7 @@ export default defineComponent({
 			}
 		});
 		const onChangePagination = (page: any) => {
-			props.page.pageIndex = page.pageIndex;
+			props.page.pageNo = page.pageNo;
 			props.page.pageSize = page.pageSize;
 			emit('change-pagination', page);
 			onConfirmSearch(_searchFormParams.value);
@@ -171,16 +180,108 @@ export default defineComponent({
 			title: t('next.table.add'),
 			rowInfo: {} as any,
 			isEditing: true,
+			loading: false,
 		});
 		const onClickHeaderAdd = (row = {}) => {
-			const { dialogTitle } = options;
+			const { dialogTitle, dialogFormParamsDefault } = options;
+			const rowInfo = { ...dialogFormParamsDefault, ...row };
 			addEditDialog.isEditing = true;
 			addEditDialog.title = dialogTitle + ' ' + t('next.table.add');
-			addEditDialog.rowInfo = row;
-			emit('click-add-edit', row, options);
+			addEditDialog.rowInfo = rowInfo;
+			addEditDialog.visible = true;
 			nextTick(() => {
-				addEditDialog.visible = true;
+				const { formColumnsMap } = addEditFormRef.value?.getFormExpose() || {};
+				emit('click-add-edit', { row: rowInfo, formColumnsMap }, options);
 			});
+		};
+		const onClickRowEdit = (scoped: any) => {
+			const { dialogTitle, loadFormDetail } = options;
+			addEditDialog.isEditing = true;
+			addEditDialog.title = dialogTitle + ' ' + t('next.table.edit');
+			addEditDialog.visible = true;
+			const onEmitCallback = () => {
+				// 将编辑弹框中的表单数据传出去
+				nextTick(() => {
+					const { formColumnsMap } = addEditFormRef.value?.getFormExpose() || {};
+					emit(
+						'click-add-edit',
+						{
+							row: addEditDialog.rowInfo,
+							$index: scoped.$index,
+							column: scoped.column,
+							formColumnsMap,
+						},
+						options
+					);
+				});
+			};
+			if (loadFormDetail && typeof loadFormDetail === 'function') {
+				addEditDialog.loading = true;
+				loadFormDetail?.(
+					{
+						row: scoped.row,
+						$index: scoped.$index,
+						column: scoped.column,
+					},
+					(rowInfo: any) => {
+						addEditDialog.rowInfo = rowInfo;
+						addEditDialog.loading = false;
+						onEmitCallback();
+					},
+					() => {
+						addEditDialog.loading = false;
+					}
+				);
+			} else {
+				addEditDialog.rowInfo = scoped.row;
+				onEmitCallback();
+			}
+		};
+		const onClickRowView = (scoped: any) => {
+			const { dialogTitle, loadFormDetail } = options;
+			addEditDialog.isEditing = false;
+			addEditDialog.title = dialogTitle + ' ' + t('next.table.view');
+			addEditDialog.visible = true;
+			const onEmitCallback = () => {
+				nextTick(() => {
+					emit(
+						'view-add-edit',
+						{
+							row: scoped.row,
+							$index: scoped.$index,
+							column: scoped.column,
+						},
+						options
+					);
+				});
+			};
+			if (loadFormDetail && typeof loadFormDetail === 'function') {
+				addEditDialog.loading = true;
+				loadFormDetail?.(
+					{
+						row: scoped.row,
+						$index: scoped.$index,
+						column: scoped.column,
+					},
+					(rowInfo: any) => {
+						addEditDialog.rowInfo = rowInfo;
+						addEditDialog.loading = false;
+						onEmitCallback();
+					},
+					() => {
+						addEditDialog.loading = false;
+					}
+				);
+			} else {
+				addEditDialog.rowInfo = scoped.row;
+				onEmitCallback();
+			}
+		};
+		const onCloseAddEditDialog = () => {
+			addEditDialog.visible = false;
+			addEditDialog.title = '';
+			addEditDialog.rowInfo = {};
+			emit('close-add-edit');
 		};
 		const onClickDeleteRows = (rows: any) => {
 			emit('delete-rows', rows, () => {
@@ -192,35 +293,20 @@ export default defineComponent({
 				onClickRefresh();
 			});
 		};
-		const onClickRowEdit = (scoped: any) => {
-			const { dialogTitle } = options;
-			addEditDialog.isEditing = true;
-			addEditDialog.title = dialogTitle + ' ' + t('next.table.edit');
-			addEditDialog.rowInfo = scoped.row;
-			emit('click-add-edit', scoped.row, options);
-			// 将编辑弹框中的表单数据传出去
-			nextTick(() => {
-				addEditDialog.visible = true;
-			});
-		};
-		const onClickRowView = (scoped: any) => {
-			const { dialogTitle } = options;
-			addEditDialog.isEditing = false;
-			addEditDialog.title = dialogTitle + ' ' + t('next.table.view');
-			addEditDialog.rowInfo = scoped.row;
-			emit('view-add-edit', scoped.row);
-			nextTick(() => {
-				addEditDialog.visible = true;
-			});
-		};
-		const onCloseAddEditDialog = () => {
-			addEditDialog.visible = false;
-			addEditDialog.title = '';
-			addEditDialog.rowInfo = {};
-			emit('close-add-edit');
-		};
-		const onSubmitAddEditDialog = (...arg) => {
-			emit('submit-form', ...arg);
+		const onSubmitAddEditDialog = (formParams: any, done: () => void, error: () => void) => {
+			emit(
+				'submit-form',
+				formParams,
+				(reload: boolean = true) => {
+					done();
+					if (reload) {
+						onClickRefresh();
+					}
+				},
+				() => {
+					error();
+				}
+			);
 		};
 		const columnSlots = ref<string[]>([]);
 		const searchFormSlots = ref<string[]>([]);
@@ -239,8 +325,8 @@ export default defineComponent({
 		provide('addEditFormSlots', addEditFormSlots);
 		// 自定义序号
 		const _customRowIndex = (index: number) => {
-			const { pageIndex, pageSize } = props.page;
-			const order = (pageIndex - 1) * pageSize + (index + 1);
+			const { pageNo, pageSize } = props.page;
+			const order = (pageNo - 1) * pageSize + (index + 1);
 			return order;
 		};
 		// 根据总条数自动设置序号列宽度
@@ -286,12 +372,15 @@ export default defineComponent({
 			columns: _columns.value,
 			getFormExpose: _getFormExpose,
 			// options数据更新异步调用
-			updateColumns: ops => {
+			updateColumns: (ops: any) => {
 				_updateColumnsAll(ops);
 			},
 			getSearchFormParams: getSearchFormParams,
 			reloadData: () => {
 				onClickRefresh();
+			},
+			onRefresh: () => {
+				_updateColumnsAll(_options.value);
 			},
 		});
 		const renderContent = () => {
@@ -394,21 +483,26 @@ export default defineComponent({
 							title={addEditDialog.title}
 							width={options.dialogWidth}
 							fullscreen={options.dialogFullscreen}
-							closeOnClickModal={options.closeOnClickModal}
+							fullscreenBtn={options.dialogFullscreenBtn}
+							draggable={options.dialogDraggable}
+							top={options.dialogTop}
+							closeOnClickModal={options.dialogCloseOnClickModal}
 							onClose={onCloseAddEditDialog}
 						>
 							{{
 								default: () => (
-									<AddEditForm
-										ref={addEditFormRef}
-										formDatum={addEditDialog.rowInfo}
-										columns={_formColumns.value}
-										isEditing={addEditDialog.isEditing}
-										onClose={onCloseAddEditDialog}
-										onSubmit={onSubmitAddEditDialog}
-									>
-										{addEditForm_slots}
-									</AddEditForm>
+									<NextSpinLoading loading={addEditDialog.loading}>
+										<AddEditForm
+											ref={addEditFormRef}
+											formDatum={addEditDialog.rowInfo}
+											columns={_formColumns.value}
+											isEditing={addEditDialog.isEditing}
+											onClose={onCloseAddEditDialog}
+											onSubmit={onSubmitAddEditDialog}
+										>
+											{addEditForm_slots}
+										</AddEditForm>
+									</NextSpinLoading>
 								),
 							}}
 						</NextDialog>

@@ -20,14 +20,14 @@ const TableColumnDynamic = defineComponent({
 		// const { t } = useLocale();
 		const columnSlots = inject('columnSlots') as any;
 		const column_slots = {};
-		columnSlots.value.forEach(slotName => {
-			column_slots[slotName] = (...arg) => slots[slotName] && slots[slotName](...arg);
+		columnSlots.value.forEach((slotName: string) => {
+			column_slots[slotName] = (...args: any[]) => slots[slotName] && slots[slotName](...args);
 		});
 		const _options = inject('options', {} as any);
 		const options = isRef(_options) ? unref(_options) : _options;
 		const columnOption = props.columnOption;
 		// 自定义字典数据字段
-		const _dicKey = valueExist(columnOption.dicKey, 'value');
+		const _dicKey = valueExist(columnOption.dicKey, columnOption.treeSelectProps?.value, 'value');
 		const _dicLabel = valueExist(columnOption.dicLabel, columnOption.treeSelectProps?.label, 'label');
 		// 树级选择器 分隔符
 		const _separator = valueExist(columnOption.treeSelectProps?.separator, ',');
@@ -47,7 +47,7 @@ const TableColumnDynamic = defineComponent({
 				return value;
 			}
 		};
-		const renderCustomItem = (row, $index) => {
+		const renderCustomItem = (row: any, $index: number) => {
 			const prop = columnOption.prop;
 			// 处理slot名称, 多层属性时 替换 . 为 -
 			const _prop = prop?.replace(/\./g, '-');

@@ -1,6 +1,6 @@
 import { defineComponent, ref, watch } from 'vue';
 import { ElCascader } from 'element-plus';
-import { valueExist } from 'packages/hooks/global-hook';
+import { deepClone, valueExist, warnHandlerIgnore } from 'packages/hooks/global-hook';
 import { useLocale } from 'packages/hooks';
 
 export default defineComponent({
@@ -25,6 +25,7 @@ export default defineComponent({
 	},
 	emits: ['change', 'clear', 'expand-change', 'visible-change', 'remove-tag', 'blur', 'focus'],
 	setup(props, { emit, expose }) {
+		warnHandlerIgnore();
 		const { t } = useLocale();
 		const _modelValue = ref(props.modelValue);
 		watch(
@@ -39,6 +40,13 @@ export default defineComponent({
 			label: 'label',
 			children: 'children',
 		};
+		const cascaderProps = valueExist(_column.treeSelectProps, _defaultProps);
+		const _formParams = props.formParams;
+		// cascader config 配置属性中添加 formParams 和 column 参数
+		if (cascaderProps.lazy && cascaderProps.lazyLoad && typeof cascaderProps.lazyLoad === 'function') {
+			cascaderProps._formParams = _formParams;
+			cascaderProps._column = deepClone(_column);
+		}
 		const onChange = (val: any) => {
 			const checkedNodes = treeSelectRef.value.getCheckedNodes();
 			const nodes = checkedNodes.map((item: any) => item.data);
@@ -67,8 +75,9 @@ export default defineComponent({
 					ref={treeSelectRef}
 					v-model={_modelValue.value}
 					placeholder={placeholder}
+					props={cascaderProps}
+					separator={valueExist(cascaderProps.separator, '/')}
 					options={valueExist(_column.dicData, [])}
-					props={valueExist(_column.treeSelectProps, _defaultProps)}
 					disabled={valueExist(props.disabled, false)}
 					clearable={valueExist(_column.clearable, true)}
 					filterable={valueExist(_column.filterable, false)}

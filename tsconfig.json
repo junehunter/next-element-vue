@@ -105,6 +105,7 @@
         "skipLibCheck": true /* Skip type checking all .d.ts files. */
     },
     "include": [
+        "index.ts",
         "packages/**/*.ts",
         "packages/**/*.tsx",
         "packages/**/*.d.ts",

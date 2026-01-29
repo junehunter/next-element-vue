@@ -8,6 +8,9 @@ export declare interface Column {
 	label: string;
 	type?: string;
 	placeholder?: string;
+	rangeSeparator?: string;
+	startPlaceholder?: string;
+	endPlaceholder?: string;
 	dicKey?: string;
 	dicData?: DictData[];
 	loadDicData?: Function;
@@ -32,6 +35,7 @@ export interface SearchColumnProps extends Column {
 	searchType?: string;
 	searchSort?: number;
 	searchLabel?: string;
+	showSearchLabel?: boolean;
 	searchLabelWidth?: string | number;
 	searchDefaultValue?: any;
 	searchDisabled?: boolean;
@@ -39,7 +43,10 @@ export interface SearchColumnProps extends Column {
 	searchHide?: boolean;
 	searchMultiple?: boolean;
 	searchFormat?: string;
-	searchDisabledDate?: string;
+	searchRangeSeparator?: string;
+	searchStartPlaceholder?: string;
+	searchEndPlaceholder?: string;
+	searchDisabledDate?: Function;
 	searchEditable?: boolean;
 	searchShortcuts?: any;
 	searchMin?: number;
@@ -75,31 +82,65 @@ export interface FormColunmProps extends Column {
 	formType?: string;
 	formDefaultValue?: any;
 	formPlaceholder?: string;
+	formStartPlaceholder?: string;
+	formEndPlaceholder?: string;
+	formRangeSeparator?: string;
+	formTimePickerProps?: {
+		isRange?: boolean;
+		rangeSeparator?: string;
+		arrowControl?: boolean;
+		placement?: string;
+		disabledHours?: Function;
+		disabledMinutes?: Function;
+		disabledSeconds?: Function;
+	};
+	formTimeSelectProps?: {
+		start?: string;
+		end?: string;
+		step?: string;
+		minTime?: string;
+		maxTime?: string;
+	};
 	formDisabled?: string;
+	formEditDisabled?: boolean;
 	formClearable?: boolean;
 	formReadonly?: boolean;
 	formRequired?: boolean;
 	formHide?: boolean;
+	formTextareaAutosize?: boolean | { minRows?: number; maxRows?: number };
+	formTextareaRows?: number;
+	formInputMinlength?: number;
+	formInputMaxlength?: number;
 	formPrefix?: Function;
 	formSuffix?: Function;
 	formPrepend?: Function;
 	formAppend?: Function;
 	formSpan?: number;
+	formSpanFixed?: number;
 	formTip?: string;
 	formLabel?: string;
 	formMutiple?: boolean;
 	formDisabledDate?: Function;
 	formShortcuts?: any[];
-	formDivider?: any;
+	formFormat?: string;
+	formAccept?: string;
+	formRenderDivider?: Function;
 	formRemark?: string;
 	formRules?: any[];
 	formDicKey?: string;
 	formMultiple?: boolean;
+	formCollapseTags?: boolean;
 	formLimit?: number;
 	formDicData?: DictData[];
 	formLoadDicData?: Function;
 	formAccordion?: boolean;
 	onChangeForm?: Function;
+	onClearForm?: Function;
+	onBlurForm?: Function;
+	onFocusForm?: Function;
+	onExceedForm?: Function;
+	formFilterable?: boolean;
+	formAllowCreate?: boolean;
 	// tree select
 	formNodeKey?: string;
 	formCheckStrictly?: boolean;
@@ -151,7 +192,7 @@ export default {
 	// 搜兰模块
 	showSearchForm: true,
 	showHeaderMenu: true,
-	showSearchLabel: true,
+	showSearchLabel: false,
 	searchSpan: 4,
 	searchGutter: 20,
 	searchLabelWidth: '5em',
@@ -179,9 +220,14 @@ export default {
 	dialogTitle: '',
 	dialogWidth: '60%',
 	dialogFullscreen: false, // 是否全屏
-	closeOnClickModal: false,
+	dialogFullscreenBtn: true, // 是否显示全屏按钮
+	dialogDraggable: true, // 是否可拖动
+	dialogFormParamsDefault: {},
+	dialogCloseOnClickModal: true,
 	formColumns: <FormColunmProps | unknown>[],
 	formLabelWidth: '5em',
 	formSpan: 12,
+	formSpanFixed: null, // 固定表单列宽度，默认不固定
 	formColumnMinWidth: 350,
+	loadFormDetail: null,
 };

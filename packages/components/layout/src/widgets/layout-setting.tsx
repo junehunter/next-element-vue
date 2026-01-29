@@ -1,20 +1,22 @@
 import { defineComponent, inject, reactive } from 'vue';
 import { ElColorPicker, ElDivider, ElScrollbar, ElMessage, ElSwitch } from 'element-plus';
 import { MoonNight, Sunny } from '@element-plus/icons-vue';
-import { nextUseCssTheme, nextUseCssVar } from 'packages/hooks';
+import { nextUseCssTheme, nextUseCssVar, useLocale } from 'packages/hooks';
 import { isValueExist } from 'packages/hooks/global-hook';
 
 export default defineComponent({
 	setup() {
 		const config = inject('options', {} as any);
+		const { t } = useLocale();
 		if (!isValueExist(config.setting.headerBarFontActiveColor)) {
 			config.setting.headerBarFontActiveColor = config.setting.themeColor;
 		}
-		return { config };
+		return { config, t };
 	},
 	render() {
 		const _slots = inject('__slots__', {} as any);
 		const _ns = inject('__ns__', {} as any);
+		const _t = this.t;
 		const _config = this.config;
 		const _updateOptions = inject('updateOptions', null as any);
 		const settingConfig = reactive({
@@ -41,10 +43,38 @@ export default defineComponent({
 			nextUseCssTheme('--el-color-primary', color);
 			_changeUpdateOptions();
 		};
+		const _onChangeTextPrimary = (color: string) => {
+			if (!color) {
+				ElMessage({
+					type: 'warning',
+					message: '主文本颜色不能为空',
+				});
+				return false;
+			}
+			settingConfig.textPrimary = color;
+			nextUseCssTheme('--el-text-color-primary', color);
+			_changeUpdateOptions();
+		};
 		const _onChangeSwitchDark = () => {
 			const body = document.documentElement as HTMLElement;
-			if (settingConfig.isDark) body.setAttribute('data-theme', 'dark');
-			else body.setAttribute('data-theme', '');
+			if (settingConfig.isDark) {
+				body.setAttribute('data-theme', 'dark');
+				body.classList.add('dark');
+			} else {
+				body.setAttribute('data-theme', '');
+				body.classList.remove('dark');
+			}
+			_changeUpdateOptions();
+		};
+		const _onChangeSwitchGlass = () => {
+			const body = document.documentElement as HTMLElement;
+			if (settingConfig.themeGlass) {
+				body.setAttribute('theme-background', 'glass');
+				body.classList.add('glass');
+			} else {
+				body.setAttribute('theme-background', '');
+				body.classList.remove('glass');
+			}
 			_changeUpdateOptions();
 		};
 		const _onChangeColor = (color: string, key: string, cssvar: string) => {
@@ -85,9 +115,9 @@ export default defineComponent({
 		};
 		return (
 			<ElScrollbar>
-				<ElDivider border-style="dashed">全局主题</ElDivider>
+				<ElDivider border-style="dashed">{_t('next.layout.setting.globalTheme')}</ElDivider>
 				<div class={_ns.b('config-bar-item')}>
-					<span class={_ns.be('config-bar-item', 'label')}>主题颜色</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.themeColor')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<ElColorPicker
 							v-model={settingConfig.themeColor}
@@ -98,7 +128,18 @@ export default defineComponent({
 					</div>
 				</div>
 				<div class={_ns.b('config-bar-item')}>
-					<span class={_ns.be('config-bar-item', 'label')}>暗黑模式</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.textPrimary')}</span>
+					<div class={_ns.be('config-bar-item', 'value')}>
+						<ElColorPicker
+							v-model={settingConfig.textPrimary}
+							predefine={['#606266', '#000000', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#c71585', '#FB07A0']}
+							show-alpha
+							onChange={_onChangeTextPrimary}
+						></ElColorPicker>
+					</div>
+				</div>
+				<div class={_ns.b('config-bar-item')}>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.darkMode')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<ElSwitch
 							v-model={settingConfig.isDark}
@@ -113,45 +154,45 @@ export default defineComponent({
 					</div>
 				</div>
 				<div class={_ns.b('config-bar-item')}>
-					<span class={_ns.be('config-bar-item', 'label')}>顶栏背景颜色</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.headerBackground')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<ElColorPicker
 							v-model={settingConfig.headerBarColor}
 							predefine={['#282c34', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
 							show-alpha
-							onChange={color => _onChangeColor(color, 'headerBarColor', '--next-layout-bg-color')}
+							onChange={(color: string) => _onChangeColor(color, 'headerBarColor', '--next-layout-bg-color')}
 						></ElColorPicker>
 					</div>
 				</div>
 				<div class={_ns.b('config-bar-item')}>
-					<span class={_ns.be('config-bar-item', 'label')}>顶栏字体颜色</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.headerTextColor')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<ElColorPicker
 							v-model={settingConfig.headerBarFontColor}
 							predefine={['#282c34', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
 							show-alpha
-							onChange={color => _onChangeColor(color, 'headerBarFontColor', '--next-layout-font-color')}
+							onChange={(color: string) => _onChangeColor(color, 'headerBarFontColor', '--next-layout-font-color')}
 						></ElColorPicker>
 					</div>
 				</div>
 				<div class={_ns.b('config-bar-item')}>
-					<span class={_ns.be('config-bar-item', 'label')}>顶栏激活字体颜色</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.headerActiveTextColor')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<ElColorPicker
 							v-model={settingConfig.headerBarFontActiveColor}
 							predefine={['#282c34', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585', '#FB07A0']}
 							show-alpha
-							onChange={color => _onChangeColor(color, 'headerBarFontActiveColor', '--next-layout-active-color')}
+							onChange={(color: string) => _onChangeColor(color, 'headerBarFontActiveColor', '--next-layout-active-color')}
 						></ElColorPicker>
 					</div>
 				</div>
 				<div class={_ns.b('config-bar-item')}>
-					<span class={_ns.be('config-bar-item', 'label')}>顶栏背景渐变</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.headerGradient')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<el-switch v-model={settingConfig.isHeaderBarColorGradual} onChange={_changeUpdateOptions} />
 					</div>
 				</div>
-				<ElDivider border-style="dashed">布局方式</ElDivider>
+				<ElDivider border-style="dashed">{_t('next.layout.setting.layoutMode')}</ElDivider>
 				<ul class={_ns.b('config-bar-layout')}>
 					{layouts.map(item => {
 						return (
@@ -167,9 +208,15 @@ export default defineComponent({
 					})}
 				</ul>
 				<div class={_ns.b('config-bar-item')} style={{ 'margin-top': '20px' }}>
-					<span class={_ns.be('config-bar-item', 'label')}>是否显示标签栏</span>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.isShowTab')}</span>
 					<div class={_ns.be('config-bar-item', 'value')}>
 						<ElSwitch v-model={_config.showTabs} />
+					</div>
+				</div>
+				<div class={_ns.b('config-bar-item')} style={{ 'margin-top': '20px' }}>
+					<span class={_ns.be('config-bar-item', 'label')}>{_t('next.layout.setting.themeGlass')}</span>
+					<div class={_ns.be('config-bar-item', 'value')}>
+						<ElSwitch v-model={settingConfig.themeGlass} onChange={_onChangeSwitchGlass} />
 					</div>
 				</div>
 				{_slots.setting?.({ config: settingConfig })}

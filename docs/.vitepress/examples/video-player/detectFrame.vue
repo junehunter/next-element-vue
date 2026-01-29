@@ -119,7 +119,7 @@ const onLoaded = () => {
 					<span>MP4</span>
 				</div>
 				<div class="card-body">
-					<NextVideoPlayer ref="videoPlayer" type="mp4" :src="mp4_url" @loaded="onLoaded"></NextVideoPlayer>
+					<NextVideoPlayer ref="videoPlayer" type="mp4" :autoplay="false" :src="mp4_url" @loaded="onLoaded"></NextVideoPlayer>
 				</div>
 			</el-col>
 			<el-col :span="12">

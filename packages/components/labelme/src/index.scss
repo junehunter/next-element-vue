@@ -1,13 +1,13 @@
 @use 'packages/theme-chalk/mixins/index' as *;
 @use 'packages/theme-chalk/varilable.scss' as *;
 
-$block: 'labelme'; 
+$block: 'labelme';
 .#{bf($block, 'loading')} {
-    .#{bem('spin-loading')} {
-        &-mask__text {
-            text-shadow: unset;
-        }
-    }
+	.#{bem('spin-loading')} {
+		&-mask__text {
+			text-shadow: unset;
+		}
+	}
 }
 .#{bf($block, 'fullscreen')} {
 	position: fixed;
@@ -28,7 +28,7 @@ $block: 'labelme';
 	user-select: none;
 	border: 1px solid #eee;
 	border-radius: 3px;
-    
+
 	&-header {
 		display: flex;
 		justify-content: space-between;
@@ -39,20 +39,20 @@ $block: 'labelme';
 		&__tool {
 			display: flex;
 			align-items: center;
-			>li {
+			> li {
 				cursor: pointer;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				margin: 0 6px;
 				text-align: center;
-				>.label-text {
+				> .label-text {
 					margin: 0;
 					padding: 5px 8px;
 					line-height: normal;
 				}
 			}
-			>li.tool-item {
+			> li.tool-item {
 				// flex-direction: column;
 				&:hover {
 					color: $theme-color;
@@ -67,26 +67,26 @@ $block: 'labelme';
 		width: 100%;
 		display: flex;
 		align-items: stretch;
-        justify-content: space-between;
+		justify-content: space-between;
 		&__left-tools {
 			flex: 0 0 100px;
 			padding: 10px 0 !important;
 			box-shadow: 10px 0px 20px 0 rgba(0, 0, 0, 0.1);
-			>li {
+			> li {
 				cursor: pointer;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				padding: 6px 0;
 				text-align: center;
-				>.label-text {
+				> .label-text {
 					margin: 0;
 					padding: 5px 8px;
 					line-height: normal;
 					font-size: 12px;
 				}
 			}
-			>li.tool-item {
+			> li.tool-item {
 				flex-direction: column;
 				cursor: pointer;
 				&:hover {
@@ -96,7 +96,7 @@ $block: 'labelme';
 					}
 				}
 			}
-			>li.active-tool {
+			> li.active-tool {
 				color: $theme-color;
 				cursor: not-allowed;
 				svg {
@@ -108,7 +108,7 @@ $block: 'labelme';
 			flex: 0 0 200px;
 			padding: 10px;
 			box-shadow: -10px 0px 20px 0 rgba(0, 0, 0, 0.1);
-			
+
 			> ul {
 				padding: 10px;
 				box-sizing: border-box;
@@ -155,14 +155,14 @@ $block: 'labelme';
 				}
 			}
 		}
-        &__content {
-            flex: 1 1 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+		&__content {
+			flex: 1 1 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
 			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADZJREFUOE9jZKAQMFKon2HUAAYah8HZs2f/MzAw3DY2NlbDFVt4Y4FiA4hJI6PpgNbpgJhYAAB1/AoRxXg31wAAAABJRU5ErkJggg==);
-        }
+		}
 		.#{bf($block, 'loading')} {
 			width: 100%;
 			display: flex;
@@ -172,7 +172,7 @@ $block: 'labelme';
 		.#{bf($block, 'canvas')} {
 			width: 100%;
 			min-height: 500px;
-            height: 100%;
+			height: 100%;
 			position: relative;
 			border: 1px solid #eeeeee;
 			&__context {
@@ -187,60 +187,59 @@ $block: 'labelme';
 				width: 100%;
 				z-index: 1;
 			}
-		}	
-    }
-    
+		}
+	}
+
 	&-footer {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 20px 12px 8px;
-        .left-right {
-            flex: 0 0 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            .el-icon {
-                &:hover {
-                    cursor: pointer;
-                }
-            }
-        }
-        &__left {
-            @extend .left-right;
-        }
-        &__right {
-            @extend .left-right;
-        }
-        &__center {
-            flex: 1 1 auto;
-            &--list {
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-                flex-wrap: nowrap;
+		.left-right {
+			flex: 0 0 50px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			.el-icon {
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+		&__left {
+			@extend .left-right;
+		}
+		&__right {
+			@extend .left-right;
+		}
+		&__center {
+			flex: 1 1 auto;
+			&--list {
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
+				flex-wrap: nowrap;
 				min-height: 80px;
-                >li {
-                    flex: 0 0 100px;
-                    height: 80px;
-                    border: 1px solid #eeeeee;
-                    background-color: #ffffff;
-                    box-sizing: border-box;
-                    overflow: hidden;
-                    text-align: center;
-                    cursor: pointer;
-                    margin: 0 5px;
-                    &:hover {
-                        border: 1px solid $theme-color
-                    }
-                }
-                >li.is-activate {
-                    border: 1px solid $theme-color
-                }
-            }
-        }
+				> li {
+					flex: 0 0 100px;
+					height: 80px;
+					border: 1px solid #eeeeee;
+					background-color: #ffffff;
+					box-sizing: border-box;
+					overflow: hidden;
+					text-align: center;
+					cursor: pointer;
+					margin: 0 5px;
+					&:hover {
+						border: 1px solid $theme-color;
+					}
+				}
+				> li.is-activate {
+					border: 1px solid $theme-color;
+				}
+			}
+		}
 	}
-	
 }
 .#{bf($block, 'contextmenu-label')} {
 	position: fixed;
@@ -252,7 +251,7 @@ $block: 'labelme';
 	white-space: nowrap;
 	box-shadow: 0 0 50px 3px #cccccc;
 	transition: all 0.3s;
-	>.label-head {
+	> .label-head {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -266,7 +265,7 @@ $block: 'labelme';
 			}
 		}
 	}
-	>.label-main {
+	> .label-main {
 		max-height: 300px;
 		overflow-y: auto;
 		@include setScrollBar();
@@ -288,7 +287,7 @@ $block: 'labelme';
 				border-radius: 3px;
 			}
 		}
-		>li.activate-label {
+		> li.activate-label {
 			color: $theme-color;
 		}
 	}

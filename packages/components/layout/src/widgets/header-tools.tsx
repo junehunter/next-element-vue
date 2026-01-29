@@ -147,7 +147,7 @@ export default defineComponent({
 				<Teleport to="body">
 					<ElDrawer
 						v-model={this.settingDrawer}
-						title={this.t('next.layout.systemSetting')}
+						title={this.t('next.layout.setting.systemSetting')}
 						direction="rtl"
 						size="380px"
 						class={_ns.be('drawer', 'setting')}

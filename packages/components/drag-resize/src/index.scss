@@ -2,6 +2,6 @@
 @use 'packages/theme-chalk/varilable.scss' as *;
 
 $block: 'drag-resize';
-.#{bem($block)}{
-    position: relative;
+.#{bem($block)} {
+	position: relative;
 }

@@ -42,7 +42,7 @@ export default defineComponent({
 						title={addEditDialog.title}
 						width={options.dialogWidth}
 						fullscreen={options.dialogFullscreen}
-						closeOnClickModal={options.closeOnClickModal}
+						closeOnClickModal={options.dialogCloseOnClickModal}
 						onClose={onCloseAddEditDialog}
 					></NextDialog>
 				</div>

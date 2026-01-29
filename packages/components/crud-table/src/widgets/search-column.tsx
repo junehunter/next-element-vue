@@ -1,10 +1,11 @@
 import { defineComponent, inject, reactive, ref, isRef, unref, watch } from 'vue';
-import { ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber } from 'element-plus';
+import { ElCol, ElFormItem, ElInput, ElSelect, ElOption, ElDatePicker, ElInputNumber, ElRadioGroup, ElRadio } from 'element-plus';
 import type { SearchColumnProps } from '../config';
 import { searchFormSlotName } from '../hook';
 import { useLocale } from 'packages/hooks';
 import { NextTextEllipsis, NextTreeSelect, NextTreeCascader } from 'packages/components';
-import { valueExist } from 'packages/hooks/global-hook';
+import { valueExist, warnHandlerIgnore } from 'packages/hooks/global-hook';
+import type { DicData } from 'packages/components/form/src/config';
 
 export default defineComponent({
 	name: 'SearchColumn',
@@ -23,6 +24,7 @@ export default defineComponent({
 		},
 	},
 	setup(props, { slots }) {
+		warnHandlerIgnore();
 		const _options = inject('options', {} as any);
 		const options = isRef(_options) ? unref(_options) : _options;
 		const { t } = useLocale();
@@ -109,7 +111,7 @@ export default defineComponent({
 		const renderColItemContent = (col: SearchColumnProps) => {
 			const _disabled = valueExist(col.searchDisabled, col.disabled, false);
 			if (slots[searchFormSlotName(col.prop)]) {
-				return slots[searchFormSlotName(col.prop)]({ column: col });
+				return slots[searchFormSlotName(col.prop)]({ column: col, formParams });
 			} else if (col.type === 'input' || !col.type) {
 				const placeholder = t('next.form.input') + (col.searchPlaceholder || col.searchLabel || col.label);
 				return (
@@ -152,13 +154,44 @@ export default defineComponent({
 				if (!formParams[col.prop] && col.multiple) {
 					formParams[col.prop] = [];
 				}
+				const renderOptions = () => {
+					return (col.dicData as any[]).map(item => {
+						return <ElOption value={item.value} label={item.label}></ElOption>;
+					});
+				};
 				return (
-					<ElSelect v-model={formParams[col.prop]} clearable disabled={_disabled} placeholder={placeholder} multiple={col.multiple || false} collapse-tags collapse-tags-tooltip>
-						{col.dicData &&
-							(col.dicData as any[]).map(item => {
-								return <ElOption value={item.value} label={item.label}></ElOption>;
-							})}
+					<ElSelect
+						v-model={formParams[col.prop]}
+						clearable
+						disabled={_disabled}
+						placeholder={placeholder}
+						multiple={valueExist(col.multiple, false)}
+						collapse-tags
+						collapse-tags-tooltip
+						persistent={true}
+					>
+						{{
+							default: col.dicData?.length ? renderOptions : null,
+						}}
 					</ElSelect>
+				);
+			} else if (col.type === 'radio') {
+				return (
+					<ElRadioGroup
+						v-model={formParams[col.prop]}
+						disabled={valueExist(col.disabled, false)}
+						readonly={valueExist(col.readonly, false)}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams)}
+					>
+						{col.dicData &&
+							(col.dicData as DicData[]).map((item: DicData) => {
+								return (
+									<ElRadio key={item.value} value={item.value} disabled={valueExist(item.disabled, false)}>
+										{item.label}
+									</ElRadio>
+								);
+							})}
+					</ElRadioGroup>
 				);
 			} else if (col.type === 'date') {
 				const placeholder = t('next.form.select') + (col.searchPlaceholder || col.searchLabel || col.label);
@@ -166,10 +199,10 @@ export default defineComponent({
 					<ElDatePicker
 						v-model={formParams[col.prop]}
 						type="date"
-						value-format={col.searchFormat || 'YYYY-MM-DD'}
-						format={col.searchFormat || 'YYYY-MM-DD'}
+						value-format={valueExist(col.searchFormat, 'YYYY-MM-DD')}
+						format={valueExist(col.searchFormat, 'YYYY-MM-DD')}
 						clearable
-						disabled-date={col.searchDisabledDate || _defaultDisabledDate}
+						disabled-date={valueExist(col.searchDisabledDate, _defaultDisabledDate)}
 						disabled={_disabled}
 						placeholder={placeholder}
 						editable={col.searchEditable || false}
@@ -180,13 +213,13 @@ export default defineComponent({
 					<ElDatePicker
 						v-model={formParams[col.prop]}
 						type="daterange"
-						value-format={col.searchFormat || 'YYYY-MM-DD'}
-						format={col.searchFormat || 'YYYY-MM-DD'}
+						value-format={valueExist(col.searchFormat, 'YYYY-MM-DD')}
+						format={valueExist(col.searchFormat, 'YYYY-MM-DD')}
 						clearable
-						range-separator={t('next.date.rangeSeparator')}
-						start-placeholder={t('next.date.startPlaceholder')}
-						end-placeholder={t('next.date.endPlaceholder')}
-						disabled-date={col.searchDisabledDate || _defaultDisabledDate}
+						range-separator={valueExist(col.rangeSeparator, t('next.date.rangeSeparator'))}
+						start-placeholder={valueExist(col.startPlaceholder, t('next.date.startPlaceholder'))}
+						end-placeholder={valueExist(col.endPlaceholder, t('next.date.endPlaceholder'))}
+						disabled-date={valueExist(col.searchDisabledDate, _defaultDisabledDate)}
 						disabled={_disabled}
 						editable={col.searchEditable || false}
 						shortcuts={col.searchShortcuts || _defaultShortcuts}
@@ -197,13 +230,13 @@ export default defineComponent({
 					<ElDatePicker
 						v-model={formParams[col.prop]}
 						type="datetimerange"
-						value-format={col.searchFormat || 'YYYY-MM-DD HH:mm:ss'}
-						format={col.searchFormat || 'YYYY-MM-DD HH:mm:ss'}
+						value-format={valueExist(col.searchFormat, 'YYYY-MM-DD HH:mm:ss')}
+						format={valueExist(col.searchFormat, 'YYYY-MM-DD HH:mm:ss')}
 						clearable
-						range-separator={t('next.date.rangeSeparator')}
-						start-placeholder={t('next.date.startPlaceholder')}
-						end-placeholder={t('next.date.endPlaceholder')}
-						disabled-date={col.searchDisabledDate || _defaultDisabledDate}
+						range-separator={valueExist(col.rangeSeparator, t('next.date.rangeSeparator'))}
+						start-placeholder={valueExist(col.startPlaceholder, t('next.date.startPlaceholder'))}
+						end-placeholder={valueExist(col.endPlaceholder, t('next.date.endPlaceholder'))}
+						disabled-date={valueExist(col.searchDisabledDate, _defaultDisabledDate)}
 						disabled={_disabled}
 						editable={col.searchEditable || false}
 						shortcuts={col.searchShortcuts || _defaultShortcuts}
@@ -263,7 +296,7 @@ export default defineComponent({
 									<ElFormItem>
 										{{
 											label: () =>
-												col.label && valueExist(options.showSearchLabel, true) ? (
+												col.label && valueExist(options.showSearchLabel, false) ? (
 													<NextTextEllipsis width={options.searchLabelWidth} content={col.label} textAlign="right"></NextTextEllipsis>
 												) : null,
 											default: () => renderColItemContent(col),

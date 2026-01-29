@@ -145,6 +145,7 @@ export default defineComponent({
 						list-type={props.listType}
 						multiple={props.multiple}
 						limit={props.limit}
+						accept={props.accept}
 						auto-upload={false}
 						on-preview={_onPreview}
 						on-change={_onChange}

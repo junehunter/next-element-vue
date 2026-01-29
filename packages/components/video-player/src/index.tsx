@@ -199,10 +199,12 @@ export default defineComponent({
 				playerFlv.value = flvjs.createPlayer({
 					type: 'flv',
 					url: url,
+					cors: true,
+					isLive: true,
 				});
 				playerFlv.value.attachMediaElement(video);
 				playerFlv.value.load();
-				// playerFlv.value.play();
+				if (props.autoplay) playerFlv.value.play();
 			}
 			const canvasContainer = document.createElement('div');
 			const palyerContainer = container.children[0];

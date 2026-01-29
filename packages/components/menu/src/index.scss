@@ -2,103 +2,180 @@
 @use 'packages/theme-chalk/varilable.scss' as *;
 
 $block: 'menu';
+$active-itme-bg: var(--next-layout-bg-color-light-3);
+// $active-itme-bg: rgba(#000000, 0.2);
+
 .active-menu-item {
 	color: $layout-active-color;
+
 	.icon {
 		fill: $layout-active-color;
 	}
+
 	i.iconfont {
 		color: $layout-active-color;
 	}
 }
+
 @mixin active-menu-icon {
+
 	.el-icon.el-sub-menu__icon-arrow,
 	.el-icon.el-sub-menu__icon-more {
 		path {
 			fill: $layout-active-color;
-		}	
+		}
 	}
 }
+
 // 纵向菜单
 .#{bem($block)}.el-menu--vertical {
-    height: 100%;
+	height: 100%;
 	border: unset;
 	background-color: transparent;
 	border-bottom: none;
 	user-select: none;
+
 	.el-menu {
 		background-color: transparent;
 	}
+
 	.el-menu-item,
 	.el-sub-menu,
 	.el-sub-menu__title {
-        color: var(--el-text-color-primary);
-        .icon {
-            fill: var(--el-text-color-primary);
-        }
+		color: var(--el-text-color-primary);
+		overflow-x: hidden;
+
+		.icon {
+			fill: var(--el-text-color-primary);
+		}
+
 		i.iconfont {
 			color: var(--el-text-color-primary);
 		}
+
+		.#{bf($block, 'item')} {
+			&__title {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+		}
+
 		&:hover {
 			>.#{bf($block, 'item')} {
+
 				&__icon,
 				&__title {
 					@extend .active-menu-item;
 				}
 			}
+
 			@include active-menu-icon;
 		}
-    }
+	}
+
 	.el-menu-item.is-active,
 	.el-sub-menu.is-active {
 		>.#{bf($block, 'item')} {
+
 			&__icon,
 			&__title {
 				@extend .active-menu-item;
 			}
 		}
+
 		>.el-sub-menu__title {
-            >.#{bf($block, 'item')} {
-                &__icon,
-                &__title {
-                    @extend .active-menu-item;
-                }
-            }
-		}
-		@include active-menu-icon;
-	}
-}
-// 横向菜单
-.#{bem($block)}.el-menu--horizontal {
-    width: 100%;
-    height: $layout-header-height;
-	background-color: transparent;
-	border-bottom: none;
-	user-select: none;
-	.el-menu-item,
-	.el-sub-menu__title,
-	.is-active {
-		border-bottom: unset !important;
-	}
-	.el-menu-item,
-	.el-sub-menu,
-	.el-sub-menu__title {
-		position: relative;
-		color: $layout-font-color;
-		&:hover {
-			background-color: unset !important;
 			>.#{bf($block, 'item')} {
+
 				&__icon,
 				&__title {
 					@extend .active-menu-item;
 				}
 			}
+		}
+
+		@include active-menu-icon;
+	}
+}
+
+.#{bem($block)}.el-menu--collapse {
+	height: 100%;
+	background-color: $layout-bg-color;
+
+	.el-menu-item,
+	.el-sub-menu,
+	.el-sub-menu__title {
+		>.#{bf($block, 'item')} {
+			&__icon {
+				display: inline-block;
+				width: var(--el-menu-icon-width);
+				vertical-align: middle;
+				text-align: center;
+				margin-right: unset;
+
+				.iconfont {
+					color: $layout-font-color;
+				}
+			}
+		}
+
+		&:hover {
+			background-color: $active-itme-bg;
+
+			>.#{bf($block, 'item')} {
+				&__icon {
+					@extend .active-menu-item;
+				}
+			}
+
 			@include active-menu-icon;
 		}
+	}
+
+	.el-sub-menu.is-active {
+		background-color: $active-itme-bg;
+	}
+}
+
+// 横向菜单
+.#{bem($block)}.el-menu--horizontal {
+	width: 100%;
+	height: $layout-header-height;
+	background-color: transparent;
+	border-bottom: none;
+	user-select: none;
+
+	.el-menu-item,
+	.el-sub-menu__title,
+	.is-active {
+		border-bottom: unset !important;
+	}
+
+	.el-menu-item,
+	.el-sub-menu,
+	.el-sub-menu__title {
+		position: relative;
+		color: $layout-font-color;
+
+		&:hover {
+			background-color: unset !important;
+
+			>.#{bf($block, 'item')} {
+
+				&__icon,
+				&__title {
+					@extend .active-menu-item;
+				}
+			}
+
+			@include active-menu-icon;
+		}
+
 		&:focus {
 			background-color: unset !important;
 			color: $layout-font-color;
 		}
+
 		&::after {
 			content: '';
 			position: absolute;
@@ -109,23 +186,29 @@ $block: 'menu';
 			transition: all 0.3s ease-in-out;
 		}
 	}
+
 	.el-menu-item.is-active,
 	.el-sub-menu.is-active {
-        >.#{bf($block, 'item')} {
-            &__icon,
-            &__title {
-                @extend .active-menu-item;
-            }
-        }
-		>.el-sub-menu__title {
-            >.#{bf($block, 'item')} {
-                &__icon,
-                &__title {
-                    @extend .active-menu-item;
-                }
-            }
+		>.#{bf($block, 'item')} {
+
+			&__icon,
+			&__title {
+				@extend .active-menu-item;
+			}
 		}
+
+		>.el-sub-menu__title {
+			>.#{bf($block, 'item')} {
+
+				&__icon,
+				&__title {
+					@extend .active-menu-item;
+				}
+			}
+		}
+
 		@include active-menu-icon;
+
 		&::after {
 			content: '';
 			position: absolute;
@@ -137,60 +220,77 @@ $block: 'menu';
 		}
 	}
 }
+
 $popper: bf($block, 'popper');
+
 .#{$popper} {
-    border: unset;
+	border: unset;
+
 	.el-menu--horizontal {
 		border-bottom: unset;
 	}
+
 	.el-menu--popup {
 		background-color: $layout-bg-color;
+
 		.el-menu-item,
 		.el-sub-menu__title {
-            color: $layout-font-color;
+			color: $layout-font-color;
 			background-color: transparent;
+
 			&:hover {
-				background-color: rgba(#000000, 0.2);
-                >.#{bf($block, 'item')} {
-                    &__icon,
-                    &__title {
-                        @extend .active-menu-item;
-                    }
-                }
+				background-color: $active-itme-bg;
+
+				>.#{bf($block, 'item')} {
+
+					&__icon,
+					&__title {
+						@extend .active-menu-item;
+					}
+				}
+
 				@include active-menu-icon;
 			}
 		}
+
 		.el-menu-item.is-active,
 		.el-sub-menu.is-active,
 		.el-sub-menu__title.is-active {
-            .#{bf($block, 'item')} {
-                &__icon,
-                &__title {
-                    @extend .active-menu-item;
-                }
-            }
+			.#{bf($block, 'item')} {
+
+				&__icon,
+				&__title {
+					@extend .active-menu-item;
+				}
+			}
+
 			@include active-menu-icon;
 		}
 	}
 }
+
 // 菜单下拉弹框样式
 .#{bf($block, 'popper')}.el-popper.is-light {
-    @extend .#{$popper};
+	@extend .#{$popper};
 }
+
 .#{bem($block + '-item', 'icon')} {
-    font-size: 16px;
-    color: $layout-font-color;
-    margin-right: 6px;
-    display: inline-flex;
-    align-items: center;
-    .icon {
-        width: 16px;
-        height: 16px;
-        fill: $layout-font-color;
-    }
+	font-size: 16px;
+	color: $layout-font-color;
+	margin-right: 6px;
+	display: inline-flex;
+	align-items: center;
+
+	.icon {
+		width: 16px;
+		height: 16px;
+		fill: $layout-font-color;
+	}
 }
-.el-menu-item,.el-sub-menu__title  {
-    * {
-        vertical-align: unset;
-    }
+
+.el-menu-item,
+.el-sub-menu__title {
+	* {
+		vertical-align: unset;
+	}
 }

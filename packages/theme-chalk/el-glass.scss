@@ -1,0 +1,48 @@
+.glass,
+[theme-background='glass'] {
+    $glass-bg-color: rgba(0, 0, 0, 0.5);
+    $text-color-primary: #ffffff;
+    // 主要背景颜色
+    --next-main-bg-color: #{$glass-bg-color};
+    --el-bg-color: #{$glass-bg-color};
+    --el-bg-color-overlay: #{$glass-bg-color};
+    --el-drawer-bg-color: #{$glass-bg-color};
+    --el-input-bg-color: #{$glass-bg-color};
+    --el-fill-color-blank: #{$glass-bg-color};
+    --el-fill-color-lighter: #{$glass-bg-color};
+    --el-fill-color-light: #{$glass-bg-color};
+    --el-border-color: rgba(255, 255, 255, 0.5);
+    // 文本颜色
+    --el-text-color-primary: #{$text-color-primary};
+    --el-color-primary-light-9: rgba(255, 255, 255, 0.2) !important;
+    --el-text-color-regular: #{$text-color-primary};
+
+    .el-table {
+        .el-table__header-wrapper {
+            .el-table__header thead tr th {
+                background: transparent;
+                color: var(--el-text-color-primary);
+            }
+        }
+    }
+
+    .el-overlay {
+        .el-icon {
+            color: $text-color-primary;
+
+            svg {
+                color: $text-color-primary;
+            }
+        }
+    }
+
+    .el-popper {
+        --el-bg-color-overlay: #{$glass-bg-color};
+    }
+
+    .el-popper.is-dark,
+    .el-popper.is-dark>.el-popper__arrow:before {
+        color: $text-color-primary !important;
+        background-color: #222222;
+    }
+}

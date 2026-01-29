@@ -31,18 +31,6 @@ if (!fs.existsSync(path.resolve(dirname))) {
 	fs.mkdirSync(dirname);
 }
 fs.writeFileSync(path.resolve(dirname, 'package.json'), packageJsonContent, 'utf-8');
-const globals_cfg = {
-	vue: 'Vue',
-	'element-plus': 'ElementPlus',
-	'vue-router': 'VueRouter',
-	'@vueuse/core': 'VueuseCore',
-	'video.js': 'videojs',
-	'video.js/dist/lang/zh-CN.json': 'zhCN',
-	'video.js/dist/lang/en.json': 'En',
-	'video.js/dist/lang/zh-TW.json': 'zhTW',
-	'mpegts.js': 'mpegts',
-	'flv.js': 'flvjs',
-};
 
 const outputDir = path.resolve(dirname, 'dist');
 const getDate = () => {
@@ -55,25 +43,13 @@ const getDate = () => {
 /* eslint-disable no-irregular-whitespace */
 const banner = `
 /**
- * 作　　者：huangteng
- * 邮　　箱：htengweb@163.com
+ * 作　　者：${packageJson.author.name}
+ * 邮　　箱：${packageJson.author.email}
  * 当前版本：${version} v
  * 发布日期：${getDate()}
  * 地　　址：https://www.npmjs.com/package/next-element-vue
  */
 `;
-const terserCompress = terser({
-	compress: {
-		warnings: false,
-		drop_console: true,
-		drop_debugger: true,
-		pure_funcs: ['console.log'], //移除console
-	},
-	format: {
-		comments: false, // 移除注释
-		preamble: banner,
-	},
-});
 const output = [
 	{
 		format: 'esm', // esm格式
@@ -82,52 +58,42 @@ const output = [
 		assetFileNames: 'assets/[name].[hash][extname]', // 自定义构建结果中的静态资源名称，或者值为一个函数
 		plugins: [
 			terser({
+				compress: {
+					drop_console: true, // 移除console
+					drop_debugger: true, // 移除debugger
+					pure_funcs: ['console.log'], //移除console
+					passes: 2, // 压缩次数
+				},
 				format: {
 					comments: false, // true 保留注释 false 去掉注释
-					beautify: true, // 保存代码整洁
+					beautify: false, // true 保存代码整洁
 					preamble: banner, // 序言配置，可用于配置banner
 				},
-				mangle: false, // 不混淆变量名称
+				mangle: true, // false 不混淆变量名称
 			}),
 		],
 		banner, // 因为使用了terser，所有这里banner无效
 	},
-	{
-		format: 'esm', // esm格式
-		dir: outputDir,
-		entryFileNames: '[name].min.js',
-		assetFileNames: 'assets/[name].[hash][extname]',
-		plugins: [terserCompress],
-	},
-	{
-		format: 'umd', // umd格式
-		dir: outputDir,
-		entryFileNames: '[name].umd.js',
-		name: 'NEXT_ELEMENT',
-		exports: 'named', // 该选项用于指定导出模式
-		globals: globals_cfg,
-		assetFileNames: 'assets/[name].[hash][extname]',
-		plugins: [
-			terser({
-				format: {
-					comments: false,
-					beautify: true,
-					preamble: banner,
-				},
-				mangle: false,
-			}),
-		],
-	},
-	{
-		format: 'umd', // umd格式
-		dir: outputDir,
-		entryFileNames: '[name].umd.min.js',
-		name: 'NEXT_ELEMENT',
-		exports: 'named',
-		globals: globals_cfg,
-		assetFileNames: 'assets/[name].[hash][extname]',
-		plugins: [terserCompress],
-	},
+	// {
+	// 	format: 'esm', // esm格式
+	// 	dir: outputDir,
+	// 	entryFileNames: '[name].min.js',
+	// 	assetFileNames: 'assets/[name].[hash][extname]',
+	// 	plugins: [
+	// 		terser({
+	// 			compress: {
+	// 				warnings: false,
+	// 				drop_console: true,
+	// 				drop_debugger: true,
+	// 				pure_funcs: ['console.log'], //移除console
+	// 			},
+	// 			format: {
+	// 				comments: false, // 移除注释
+	// 				preamble: banner,
+	// 			},
+	// 		}),
+	// 	],
+	// },
 ];
 export default {
 	input: {
@@ -145,8 +111,9 @@ export default {
 				compilerOptions: {
 					declaration: true, // 打包后是否输出d.ts文件，设置为true则输出
 					declarationDir: outputDir, // 输出类型声明文件的目录，与输出文件目录一致
+					outDir: outputDir,
 				},
-				exclude: ['packages/**/*.test.ts'], // 忽略文件输出d.ts文件
+				exclude: ['node_modules', 'packages/**/*.test.ts'], // 忽略文件输出d.ts文件
 			},
 		}),
 		vuePlugin({
@@ -205,40 +172,10 @@ export default {
 			name: 'afterBuild',
 			// 打包文件输出之前执行
 			// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-			generateBundle: (options, bundle) => {
-				// 动态生成index.d.ts文件
-				const content = `export * from './packages/index';`;
-				const outputPath = path.resolve(outputDir, 'index.d.ts');
-				fs.writeFileSync(outputPath, content, 'utf-8');
-			},
+			generateBundle: (options, bundle) => {},
 			// 在打包完成后的钩子中监听输出文件的更改
 			// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-			writeBundle: (options, bundle) => {
-				const inputPath = path.resolve(outputDir, 'index.d.ts');
-				for (let i = 0; i < output.length; i++) {
-					const entryFileNames = output[i].entryFileNames;
-					if (entryFileNames) {
-						const pathFile = entryFileNames.replace(/\[name\]/g, 'index');
-						const name = pathFile.replace(/\.[^.]+$/, '.d.ts');
-						const outputPath = path.resolve(outputDir, name);
-						try {
-							fs.copyFileSync(inputPath, outputPath);
-							const cssFileName = pathFile.replace(/\.js$/, '.css');
-							if (cssFileName !== 'index.css') {
-								const cssFilePath = path.resolve(outputDir, cssFileName);
-								if (fs.existsSync(cssFilePath)) {
-									// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-									fs.unlinkSync(cssFilePath, err => {
-										// eslint-disable-next-line no-console
-										console.log('css文件删除失败：', cssFilePath);
-									});
-								}
-							}
-							// eslint-disable-next-line no-empty
-						} catch (error) {}
-					}
-				}
-			},
+			writeBundle: (options, bundle) => {},
 		},
 	],
 	// 声明外部依赖，不会被打包进组件库
@@ -261,7 +198,8 @@ export default {
 				// 忽略关于 'vue' 模块的 'resolveDirective' 未使用导入的警告
 				return;
 			}
-		} else if (warning.code === 'CIRCULAR_DEPENDENCY') {
+		}
+		if (warning.code === 'CIRCULAR_DEPENDENCY') {
 			// 忽略关于 '(!) Circular dependency' 的警告
 			return;
 		}

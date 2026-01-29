@@ -51,7 +51,7 @@ const InputTableSelect = defineComponent({
 		const _tableDefaultConfig = deepClone(tableDefaultConfig);
 		const _tableSelectConfig = deepClone(tableSelectConfig);
 		const _options = merge(_tableDefaultConfig, _tableSelectConfig, _column.tableSelect);
-		const { value: propsValue, label: propsLabel } = _column.tableSelectProps || { value: 'id', label: 'name' };
+		const { value: propsValue, label: propsLabel, required = true } = _column.tableSelectProps || { value: 'id', label: 'name', required: true };
 		const tableSelectDialog = reactive({
 			visible: false,
 			title: _column.label + t('next.form.tableSelect'),
@@ -66,7 +66,7 @@ const InputTableSelect = defineComponent({
 		const tableReactive = reactive({
 			loading: false,
 			page: {
-				pageIndex: 1,
+				pageNo: 1,
 				pageSize: 20,
 				total: 0,
 			},
@@ -90,6 +90,7 @@ const InputTableSelect = defineComponent({
 			}
 		});
 		const _disabledSelect = computed(() => {
+			if (!required) return false;
 			if (_options.selectType === 'radio') {
 				return !sinleSelection.value;
 			}
@@ -123,7 +124,7 @@ const InputTableSelect = defineComponent({
 			const rowKey = _options.rowKey;
 			const value = valueExist(row[rowKey], null);
 			if (_options.selectType === 'checkbox') {
-				return <ElCheckbox value={value} onChange={event => onchangeCheckBox(event, toRaw(row))}></ElCheckbox>;
+				return <ElCheckbox value={value} onChange={(event: any) => onchangeCheckBox(event, toRaw(row))}></ElCheckbox>;
 			}
 			return (
 				<ElRadio
@@ -237,8 +238,9 @@ const InputTableSelect = defineComponent({
 					<NextDialog
 						v-model={tableSelectDialog.visible}
 						title={tableSelectDialog.title}
-						closeOnClickModal={_options.closeOnClickModal}
+						closeOnClickModal={_options.dialogCloseOnClickModal}
 						width={_options.dialogWidth}
+						modalClass={ns.em('input-table', 'modal')}
 						appendToBody={valueExist(_options.dialogAppendToBody, true)}
 						modal={valueExist(_options.dialogModal, false)}
 						onClose={onCloseTableDialog}

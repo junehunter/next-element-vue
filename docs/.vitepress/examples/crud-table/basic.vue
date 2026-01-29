@@ -3,59 +3,42 @@ import { reactive, ref } from 'vue';
 import { useDateFormat, useFullscreen } from '@vueuse/core';
 
 const { toggle, isFullscreen } = useFullscreen();
+let id = 0;
 const nowTimestamp = new Date().getTime();
 const startTime = useDateFormat(nowTimestamp - 1000 * 60 * 60 * 24, 'YYYY-MM-DD HH:mm:ss').value;
 const endTime = useDateFormat(nowTimestamp, 'YYYY-MM-DD HH:mm:ss').value;
 const options = reactive({
 	searchLabelWidth: '4em',
 	border: true,
-	operationsWidth: 220,
+	operationsWidth: 320,
+	// formSpanFixed: 12,
 	addBtn: true,
 	editBtn: true,
 	delBtn: true,
 	viewBtn: true,
 	batchDelBtn: true,
+	loadFormDetail: (params, done) => {
+		console.log('加载详情数据', params);
+		setTimeout(() => {
+			done({
+				name: '张三',
+				age: 20,
+				email: 'zhangsan@example.com',
+				username: 'zhangsan',
+				phone: '13800000000',
+				sex: '1',
+				job: '1',
+			});
+		}, 3000);
+	},
 	searchColumns: [
 		{
 			type: 'datetimerange',
 			prop: 'timeRange',
 			label: '时间范围',
 			defaultValue: [startTime, endTime],
-		},
-		{
-			prop: 'region',
-			label: '地区',
-			type: 'cascader',
-			dicData: [
-				{
-					value: '1',
-					label: '广东省',
-					children: [
-						{
-							value: '11',
-							label: '广州市',
-							children: [
-								{
-									value: '111',
-									label: '天河区',
-								},
-								{
-									value: '112',
-									label: '天河区',
-								},
-							],
-						},
-						{
-							value: '12',
-							label: '番禺区',
-						},
-						{
-							value: '13',
-							label: '海珠区',
-						},
-					],
-				},
-			],
+			startPlaceholder: '自定义开始时间',
+			endPlaceholder: '自定义结束时间',
 		},
 	],
 	columns: [
@@ -104,7 +87,7 @@ const options = reactive({
 			label: '性别',
 			sortable: true,
 			formSort: 3,
-			formType: 'select',
+			formType: 'radio',
 			dicData: [],
 			loadDicData: (col, done) => {
 				setTimeout(() => {
@@ -127,9 +110,12 @@ const options = reactive({
 			label: '职务',
 			searchType: 'select',
 			type: 'select',
-			multiple: true,
+			multiple: false,
+			editDisabled: true,
 			dicData: [],
 			sort: 5,
+			formFilterable: true,
+			formAllowCreate: true,
 			loadDicData: (col, done) => {
 				setTimeout(() => {
 					const dicData = [
@@ -148,7 +134,14 @@ const options = reactive({
 					];
 					console.log('更新了数据');
 					done(dicData);
-				}, 3000);
+				}, 300);
+			},
+			onChange: (event: Event, col: any, formParams: any, formColumns: any[], formColumnsMap: Map<string, any>) => {
+				formColumnsMap.get('name')!.label = '监听改变了姓名';
+				console.log('onChange', event, col, formParams, formColumns, formColumnsMap);
+			},
+			onClear: (col: any, formParams: any, formColumns: any[], formColumnsMap: Map<string, any>) => {
+				console.log('onClear', col, formParams, formColumns, formColumnsMap);
 			},
 		},
 		{
@@ -186,6 +179,71 @@ const options = reactive({
 					],
 				},
 			],
+			onClear: (col: any, formParams: any, formColumns: any[], formColumnsMap: Map<string, any>) => {
+				console.log('onClear', col, formParams, formColumns, formColumnsMap);
+			},
+		},
+		{
+			prop: 'region',
+			label: '地区',
+			type: 'cascader',
+			searchType: 'cascader',
+			sort: 5,
+			dicData: [],
+			treeSelectProps: {
+				value: 'id',
+				label: 'name',
+				separator: '/',
+				lazy: true,
+				lazyLoad: (node: any, resolve: (_data: any[]) => void, reject: () => void) => {
+					const { level, config } = node;
+					const region = config._formParams?.region || [];
+					setTimeout(() => {
+						const nodes = Array.from({ length: level + 1 }).map(item => ({
+							id: ++id,
+							name: `Option - ${id}`,
+							leaf: level >= 2,
+						}));
+						resolve(nodes);
+					}, 200);
+				},
+			},
+			// loadDicData: (col, done) => {
+			// 	setTimeout(() => {
+			// 		const dicData = [
+			// 			{
+			// 				value: '1',
+			// 				label: '广东省',
+			// 				children: [
+			// 					{
+			// 						value: '11',
+			// 						label: '广州市',
+			// 						children: [
+			// 							{
+			// 								value: '111',
+			// 								label: '天河区',
+			// 							},
+			// 							{
+			// 								value: '112',
+			// 								label: '天河区',
+			// 							},
+			// 						],
+			// 					},
+			// 					{
+			// 						value: '12',
+			// 						label: '番禺区',
+			// 					},
+			// 					{
+			// 						value: '13',
+			// 						label: '海珠区',
+			// 					},
+			// 				],
+			// 			},
+			// 		];
+			// 		console.log('更新了数据');
+			// 		done(dicData);
+			// 	}, 300);
+			// },
 		},
 		{
 			prop: 'slelectUser',
@@ -209,7 +267,7 @@ const options = reactive({
 const tableReactive = reactive({
 	loading: false,
 	page: {
-		pageIndex: 1,
+		pageNo: 1,
 		pageSize: 10,
 		total: 50,
 	},
@@ -226,6 +284,7 @@ const tableReactive = reactive({
 			endDate: '2023-9-9 12:00:00',
 			age: 30,
 			deptId: 2,
+			region: ['1', '11', '111'],
 			children: [
 				{
 					id: 2,
@@ -252,6 +311,7 @@ const tableReactive = reactive({
 			job: '2',
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
+			region: ['1', '12'],
 		},
 		{
 			id: 5,
@@ -301,6 +361,9 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 	console.log(fromParams);
 	done();
 };
+const onRefresh = () => {
+	crudTable.value.onRefresh();
+};
 </script>
 
 <template>
@@ -318,6 +381,14 @@ const onsubmitForm = (fromParams: any, done: Function) => {
 			@delete-rows="onDeleteRows"
 			@submit-form="onsubmitForm"
 		>
+			<template #menu-left-prefix="{ size }">
+				<el-button type="primary" :size="size" @click="onRefresh">
+					<template #icon>
+						<el-icon><RefreshLeft /></el-icon>
+					</template>
+					刷新
+				</el-button>
+			</template>
 			<template #form-name="{ formParams }">
 				<div>自定义表单{{ formParams.name }}列</div>
 			</template>

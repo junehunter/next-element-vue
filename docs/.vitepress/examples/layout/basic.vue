@@ -16,8 +16,7 @@ const menuTree = [
 			isHide: false,
 			isKeepAlive: false,
 			isAffix: false,
-			icon: 'iconfont monitor-shouye-shouye',
-			level: 1,
+			icon: 'iconfont next-home',
 		},
 		children: [],
 	},
@@ -31,8 +30,7 @@ const menuTree = [
 			isHide: false,
 			isKeepAlive: false,
 			isAffix: false,
-			icon: 'iconfont monitor-data-Inquire',
-			level: 1,
+			icon: 'iconfont next-menu-manage',
 		},
 		children: [
 			{
@@ -45,7 +43,7 @@ const menuTree = [
 					isHide: false,
 					isKeepAlive: false,
 					isAffix: false,
-					icon: 'iconfont monitor-shujuchaxun',
+					icon: 'iconfont next-data-query',
 					level: 2,
 				},
 				children: [],
@@ -62,7 +60,7 @@ const menuTree = [
 			isHide: false,
 			isKeepAlive: false,
 			isAffix: false,
-			icon: 'iconfont monitor-data-Inquire',
+			icon: 'iconfont next-peizhi',
 			level: 1,
 		},
 		children: [
@@ -76,7 +74,7 @@ const menuTree = [
 					isHide: false,
 					isKeepAlive: false,
 					isAffix: false,
-					icon: 'iconfont monitor-shujuchaxun',
+					icon: 'iconfont next-user',
 					level: 2,
 				},
 				children: [],
@@ -91,10 +89,48 @@ const menuTree = [
 					isHide: false,
 					isKeepAlive: false,
 					isAffix: false,
-					icon: 'iconfont monitor-jiankongzhongxin',
+					icon: 'iconfont next-role',
 					level: 2,
 				},
 				children: [],
+			},
+			{
+				id: '111',
+				path: '',
+				name: '',
+				meta: {
+					title: '加一层系统',
+					isLink: '',
+					isHide: false,
+					isKeepAlive: false,
+					isAffix: false,
+					icon: 'iconfont next-role',
+					level: 2,
+				},
+				children: [
+					{
+						name: 'SystemTlog',
+						path: '/system/tlog',
+						meta: {
+							title: 'router.system.tlog',
+							level: 2,
+							permissionBtns: ['add', 'edit', 'del', 'view', 'upload', 'export'],
+							icon: 'iconfont next-yuandian',
+						},
+						id: '27',
+					},
+					{
+						name: 'SystemUser',
+						path: '/system/user',
+						meta: {
+							title: 'router.system.user',
+							level: 2,
+							permissionBtns: ['add', 'edit', 'del', 'view', 'upload', 'export'],
+							icon: 'iconfont next-yuandian',
+						},
+						id: '28',
+					},
+				],
 			},
 		],
 	},
@@ -112,6 +148,9 @@ const layoutOptions = ref<any>({
 		themeColor: '#1E90FF',
 		// headerBarFontActiveColor: '#1E90FF',
 		layout: layout.value,
+	},
+	onClickLogo: () => {
+		console.log('onClickLogo');
 	},
 });
 const layoutRef = ref<any>();
@@ -137,11 +176,11 @@ const onSaveSetting = config => {
 	<div class="layout-container">
 		<div class="tabs">
 			<el-radio-group v-model="layout" size="large" @change="onChangeLayout">
-				<el-radio-button value="transverse">横向布局</el-radio-button>
-				<el-radio-button value="columns">分栏布局</el-radio-button>
-				<el-radio-button value="classic">经典布局</el-radio-button>
-				<el-radio-button value="defaults">默认布局</el-radio-button>
-				<el-radio-button value="composite">综合布局</el-radio-button>
+				<el-tooltip placement="top-start" content="transverse"> <el-radio-button value="transverse"> 横向布局 </el-radio-button></el-tooltip>
+				<el-tooltip placement="top-start" content="columns"> <el-radio-button value="columns">分栏布局</el-radio-button></el-tooltip>
+				<el-tooltip placement="top-start" content="classic"> <el-radio-button value="classic">经典布局</el-radio-button></el-tooltip>
+				<el-tooltip placement="top-start" content="defaults"> <el-radio-button value="defaults">默认布局</el-radio-button></el-tooltip>
+				<el-tooltip placement="top-start" content="composite"> <el-radio-button value="composite">综合布局</el-radio-button></el-tooltip>
 			</el-radio-group>
 			<div>
 				<span style="padding: 0 20px">是否显示导航栏</span>
@@ -180,9 +219,6 @@ const onSaveSetting = config => {
 	.tabs {
 		display: flex;
 		align-items: center;
-	}
-	:deep(.main) {
-		background-color: #f5f5f5;
 	}
 }
 </style>

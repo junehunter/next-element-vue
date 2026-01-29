@@ -1,6 +1,6 @@
 import { defineComponent, ref, watch } from 'vue';
 import { ElTreeSelect } from 'element-plus';
-import { valueExist } from 'packages/hooks/global-hook';
+import { valueExist, warnHandlerIgnore } from 'packages/hooks/global-hook';
 import { useLocale } from 'packages/hooks';
 
 export default defineComponent({
@@ -23,8 +23,9 @@ export default defineComponent({
 			default: () => ({}),
 		},
 	},
-	emits: ['change', 'node-click', 'node-contextmenu', 'check', 'check-change', 'node-expand', 'node-collapse', 'current-change'],
+	emits: ['change', 'clear', 'node-click', 'node-contextmenu', 'check', 'check-change', 'node-expand', 'node-collapse', 'current-change'],
 	setup(props, { emit, expose }) {
+		warnHandlerIgnore();
 		const { t } = useLocale();
 		const _modelValue = ref(props.modelValue);
 		watch(
@@ -49,6 +50,7 @@ export default defineComponent({
 		const onClearValue = () => {
 			props.formParams[_column.prop] = '';
 			_modelValue.value = '';
+			emit('clear');
 		};
 		const onNodeClick = (item: any, node: any) => {
 			emit('node-click', item, node, _formParams);

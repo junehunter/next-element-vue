@@ -28,7 +28,7 @@ export default {
 		type: Object,
 		default: () => {
 			return {
-				pageIndex: 1,
+				pageNo: 1,
 				pageSize: 10,
 				total: 0,
 			};

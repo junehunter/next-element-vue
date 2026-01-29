@@ -35,6 +35,10 @@ export default defineComponent({
 				return [];
 			},
 		},
+		collapse: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	setup(props) {
 		provide('ns', ns);
@@ -48,9 +52,29 @@ export default defineComponent({
 				activePath.value = to.fullPath;
 			}
 		);
+		const menuKey = ref(0);
+		watch(
+			() => props.menuTree,
+			() => {
+				menuKey.value++;
+			},
+			{
+				deep: true,
+			}
+		);
 		const renderContent = () => {
 			return (
-				<ElMenu class={[ns.b(), props.className]} style={props.style} popper-class={ns.b('popper')} defaultActive={activePath.value} router={props.router} mode={props.mode} ellipsis>
+				<ElMenu
+					key={menuKey.value}
+					class={[ns.b(), props.className]}
+					style={props.style}
+					popper-class={ns.b('popper')}
+					defaultActive={activePath.value}
+					router={props.router}
+					mode={props.mode}
+					collapse={props.collapse}
+					ellipsis
+				>
 					{/* 必须要先循环遍历一遍，直接调用递归组件NextMenuItem时ellipsis有bug */}
 					<>
 						{props.menuTree.map(item => {

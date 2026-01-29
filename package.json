@@ -1,26 +1,19 @@
 {
 	"name": "next-element-vue",
-	"version": "0.6.6",
+	"version": "0.7.5-dev.16",
 	"author": {
 		"name": "huangteng",
-		"email": "htengweb@163.com"
+		"email": "junehunter@163.com"
 	},
 	"description": "Component library based on element-plus secondary encapsulation",
-	"keywords": [
-		"next",
-		"element",
-		"vue3",
-		"labelimg",
-		"labelme"
-	],
-	"main": "dist/index.min.js",
+	"keywords": ["next", "element", "vue3", "labelimg", "labelme"],
+	"main": "dist/index.js",
 	"module": "dist/index.js",
 	"unpkg": "dist/index.umd.min.js",
 	"jsdelivr": "dist/index.umd.min.js",
+	"style": "dist/index.css",
 	"types": "dist/index.d.ts",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
 	"repository": {
 		"type": "git",
@@ -33,7 +26,7 @@
 	"scripts": {
 		"dev": "rollup -c scripts/rollup.config.dev.mjs -w",
 		"build": "rimraf ./publish && rollup -c scripts/rollup.config.prod.mjs",
-		"prettier": "prettier --config .prettierrc.cjs -l -w \"./packages/**/*.{ts,tsx,js,json}\"",
+		"prettier": "prettier --config .prettierrc.cjs -l -w \"./packages/**/*.{ts,tsx,js,json,scss}\"",
 		"lint-fix": "eslint --fix --ext .vue,.ts,tsx,.js,.jsx,.json packages/ --max-warnings 0 --cache",
 		"clean": "pnpm -r exec -- cmd.exe /C rmdir /s /q node_modules",
 		"test": "vitest run",
@@ -41,24 +34,25 @@
 		"docs:dev": "pnpm run -C docs dev",
 		"docs:build": "pnpm -F=docs build",
 		"docs:preview": "pnpm -F=docs preview",
-		"publish": "npm publish ./publish",
+		"publish": "npm publish ./publish --access public",
+		"publish:dev": "npm publish ./publish --tag dev",
 		"prepare": "git init && concurrently \"pnpm run postinstall\"",
 		"postinstall": "simple-git-hooks"
 	},
 	"dependencies": {
-		"@element-plus/icons-vue": "^2.3.1",
+		"@element-plus/icons-vue": "^2.3.2",
 		"element-resize-detector": "^1.2.4",
 		"lodash-unified": "^1.0.3"
 	},
 	"peerDependencies": {
 		"@types/lodash-es": "^4.17.12",
 		"@vueuse/core": "^12.8.2",
-		"element-plus": "^2.11.7",
+		"element-plus": "^2.13.0",
 		"flv.js": "^1.6.2",
 		"lodash-es": "^4.17.21",
 		"mpegts.js": "~1.7.3",
 		"video.js": "^8.23.4",
-		"vue": "^3.5.22",
+		"vue": "^3.5.25",
 		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
 	},
@@ -89,7 +83,7 @@
 		"autoprefixer": "^10.4.16",
 		"concurrently": "^8.2.1",
 		"cssnano": "^6.0.1",
-		"element-plus": "^2.11.7",
+		"element-plus": "^2.13.0",
 		"eslint": "^8.50.0",
 		"eslint-plugin-unicorn": "^48.0.1",
 		"eslint-plugin-vue": "^9.17.0",
@@ -98,7 +92,7 @@
 		"lint-staged": "^16.1.2",
 		"lodash-es": "^4.17.21",
 		"mpegts.js": "~1.7.3",
-		"postcss-import": "^15.1.0",
+		"postcss-import": "^16.1.1",
 		"postcss-scss": "^4.0.8",
 		"prettier": "^3.0.3",
 		"rimraf": "^5.0.1",
@@ -108,13 +102,12 @@
 		"rollup-plugin-serve": "^1.1.1",
 		"rollup-plugin-typescript2": "^0.36.0",
 		"rollup-plugin-vue": "6.0.0",
-		"sass": "1.93.3",
+		"sass": "1.97.1",
 		"simple-git-hooks": "^2.9.0",
 		"typescript": "^5.7.2",
-		"unplugin-vue-macros": "^2.5.1",
 		"video.js": "^8.23.4",
 		"vitest": "^3.1.4",
-		"vue": "^3.5.22",
+		"vue": "^3.5.25",
 		"vue-eslint-parser": "^9.3.1",
 		"vue-i18n": "^11.1.11",
 		"vue-router": "^4.5.0"
@@ -123,12 +116,8 @@
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*.{vue,js,jsx,json}": [
-			"eslint --fix"
-		],
-		"*.ts?(x)": [
-			"eslint --fix"
-		]
+		"*.{vue,js,jsx,json}": ["eslint --fix"],
+		"*.ts?(x)": ["eslint --fix"]
 	},
 	"engines": {
 		"node": ">=18"

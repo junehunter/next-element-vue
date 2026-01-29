@@ -62,7 +62,7 @@ export default defineComponent({
 			const params = deepClone(toRaw(searchParams));
 			// 参数对比，当查询参数有修改时设置分页为第一页
 			if (!isEqual(_searchFormParams.value, params)) {
-				props.page.pageIndex = 1;
+				props.page.pageNo = 1;
 				_searchFormParams.value = params;
 			}
 			emit('confirm-search', params);
@@ -123,7 +123,7 @@ export default defineComponent({
 			}
 		});
 		const onChangePagination = (page: any) => {
-			props.page.pageIndex = page.pageIndex;
+			props.page.pageNo = page.pageNo;
 			props.page.pageSize = page.pageSize;
 			emit('change-pagination', page);
 			onConfirmSearch(_searchFormParams.value);
@@ -214,8 +214,8 @@ export default defineComponent({
 		provide('addEditFormSlots', addEditFormSlots);
 		// 自定义序号
 		const _customRowIndex = (index: number) => {
-			const { pageIndex, pageSize } = props.page;
-			const order = (pageIndex - 1) * pageSize + (index + 1);
+			const { pageNo, pageSize } = props.page;
+			const order = (pageNo - 1) * pageSize + (index + 1);
 			return order;
 		};
 		const searchFrom_slots = {};
@@ -321,7 +321,7 @@ export default defineComponent({
 							title={addEditDialog.title}
 							width={options.dialogWidth}
 							fullscreen={options.dialogFullscreen}
-							closeOnClickModal={options.closeOnClickModal}
+							closeOnClickModal={options.dialogCloseOnClickModal}
 							onClose={onCloseAddEditDialog}
 						>
 							{{

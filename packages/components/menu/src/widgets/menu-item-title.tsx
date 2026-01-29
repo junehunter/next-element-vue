@@ -1,5 +1,6 @@
 import { defineComponent, inject } from 'vue';
 import { useLocale } from 'packages/hooks';
+import { NextTextEllipsis } from 'packages/components';
 
 export default defineComponent({
 	props: {
@@ -30,8 +31,11 @@ export default defineComponent({
 		};
 		return () => (
 			<>
-				<span class={_ns.be('item', 'icon')}>{renderItemIcon()}</span>
-				<span class={_ns.be('item', 'title')}>{t(meta.title)}</span>
+				<strong class={_ns.be('item', 'icon')}>{renderItemIcon()}</strong>
+				{/* <span class={_ns.be('item', 'title')}>{t(meta.title)}</span> */}
+				<span class={_ns.be('item', 'title')}>
+					<NextTextEllipsis content={t(meta.title)} placement="right"></NextTextEllipsis>
+				</span>
 			</>
 		);
 	},
