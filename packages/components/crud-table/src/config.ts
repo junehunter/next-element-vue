@@ -66,6 +66,7 @@ export interface SearchColumnProps extends Column {
 	searchLeafOnly?: boolean;
 	searchShowCheckboxn?: boolean;
 	searchCheckStrictly?: boolean;
+	searchCheckOnClickNode?: boolean;
 	searchRenderAfterExpand?: boolean;
 	searchTreeSelectProps?: string;
 	treeSelectNodeClickSearch?: Function;
@@ -124,12 +125,15 @@ export interface FormColunmProps extends Column {
 	formShortcuts?: any[];
 	formFormat?: string;
 	formAccept?: string;
-	formRenderDivider?: Function;
+	formRenderDividerBefore?: Function;
+	formRenderDividerAfter?: Function;
 	formRemark?: string;
 	formRules?: any[];
 	formDicKey?: string;
 	formMultiple?: boolean;
+	formShowAllLevels?: boolean;
 	formCollapseTags?: boolean;
+	formCollapseTagsTooltip?: boolean;
 	formLimit?: number;
 	formDicData?: DictData[];
 	formLoadDicData?: Function;
@@ -144,6 +148,7 @@ export interface FormColunmProps extends Column {
 	// tree select
 	formNodeKey?: string;
 	formCheckStrictly?: boolean;
+	formCheckOnClickNode?: boolean;
 	formLeafOnly?: boolean;
 	formShowCheckboxn?: boolean;
 	formRenderAfterExpand?: boolean;
@@ -223,7 +228,7 @@ export default {
 	dialogFullscreenBtn: true, // 是否显示全屏按钮
 	dialogDraggable: true, // 是否可拖动
 	dialogFormParamsDefault: {},
-	dialogCloseOnClickModal: true,
+	dialogCloseOnClickModal: false,
 	formColumns: <FormColunmProps | unknown>[],
 	formLabelWidth: '5em',
 	formSpan: 12,

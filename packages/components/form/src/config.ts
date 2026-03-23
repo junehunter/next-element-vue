@@ -45,13 +45,16 @@ export interface FormItemProps {
 	};
 	readonly?: boolean;
 	filterable?: boolean;
+	showAllLevels?: boolean;
 	allowCreate?: boolean;
 	clearable?: boolean;
 	dicData?: DicData[];
 	loadDicData?: Function;
+	_dictDataLoading?: boolean;
 	hide?: boolean;
 	multiple?: boolean;
 	collapseTags?: boolean;
+	collapseTagsTooltip?: boolean;
 	limit?: number;
 	accept?: string;
 	editable?: boolean;
@@ -59,7 +62,8 @@ export interface FormItemProps {
 	disabledDate?: Function;
 	shortcuts?: any[];
 	tip?: string;
-	renderDivider?: Function;
+	renderDividerBefore?: Function;
+	renderDividerAfter?: Function;
 	remark?: string;
 	onChange?: Function;
 	onClear?: Function;
@@ -79,6 +83,7 @@ export interface FormItemProps {
 	nodeKey?: string;
 	accordion?: boolean;
 	checkStrictly?: boolean;
+	checkOnClickNode?: boolean;
 	showCheckbox?: boolean;
 	leafOnly?: boolean;
 	renderAfterExpand?: boolean;

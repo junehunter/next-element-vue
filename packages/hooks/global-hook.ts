@@ -217,22 +217,33 @@ export const shareObjectProperty = (target: any, source: any, key: string) => {
  * @param format
  * @returns
  */
-export const dateFormat = (date: Date | any, format = 'yyyy-MM-dd') => {
-	if (date != 'Invalid Date') {
-		const o: any = {
-			'M+': date.getMonth() + 1, //month
-			'd+': date.getDate(), //day
-			'h+': date.getHours(), //hour
-			'm+': date.getMinutes(), //minute
-			's+': date.getSeconds(), //second
-			'q+': Math.floor((date.getMonth() + 3) / 3), //quarter
-			S: date.getMilliseconds(), //millisecond
-		};
-		if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (date.getFullYear() + '').substring(4 - RegExp.$1.length));
-		for (const k in o) if (new RegExp('(' + k + ')').test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substring(('' + o[k]).length));
-		return format;
+export const dateFormat = (date: Date | any, format = 'YYYY-MM-DD') => {
+	if (!date) return '';
+	let d: Date;
+	if (date instanceof Date) {
+		d = date;
+	} else if (typeof date === 'string') {
+		d = new Date(date.replace(/-/g, '/'));
+	} else {
+		d = new Date(date);
 	}
-	return '';
+	if (isNaN(d.getTime())) return '';
+	const o: Record<string, number> = {
+		'M+': d.getMonth() + 1, //month
+		'D+': d.getDate(), //day
+		'h+': d.getHours(), //hour
+		'm+': d.getMinutes(), //minute
+		's+': d.getSeconds(), //second
+		'q+': Math.floor((d.getMonth() + 3) / 3), //quarter
+		S: d.getMilliseconds(), //millisecond
+	};
+	if (/(Y+)/.test(format)) format = format.replace(RegExp.$1, (d.getFullYear() + '').substr(4 - RegExp.$1.length));
+	for (const k in o) {
+		if (new RegExp('(' + k + ')').test(format)) {
+			format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? String(o[k]) : ('00' + o[k]).slice(String(o[k]).length));
+		}
+	}
+	return format;
 };
 /**
  * 时间唯一id
@@ -240,7 +251,7 @@ export const dateFormat = (date: Date | any, format = 'yyyy-MM-dd') => {
  */
 export const timeUniqueId = () => {
 	const date = new Date();
-	const dateStr = dateFormat(date, 'yyyyMMddhhmmsss');
+	const dateStr = dateFormat(date, 'YYYYMMDDhhmmsss');
 	const num = dateStr + Math.random().toString(10).substring(2, 8);
 	return String(num);
 };

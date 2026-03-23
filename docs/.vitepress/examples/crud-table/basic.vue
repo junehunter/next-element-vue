@@ -9,6 +9,7 @@ const startTime = useDateFormat(nowTimestamp - 1000 * 60 * 60 * 24, 'YYYY-MM-DD 
 const endTime = useDateFormat(nowTimestamp, 'YYYY-MM-DD HH:mm:ss').value;
 const options = reactive({
 	searchLabelWidth: '4em',
+	searchColumnMinWidth: 300,
 	border: true,
 	operationsWidth: 320,
 	// formSpanFixed: 12,
@@ -28,8 +29,9 @@ const options = reactive({
 				phone: '13800000000',
 				sex: '1',
 				job: '1',
+				id: 999,
 			});
-		}, 3000);
+		}, 200);
 	},
 	searchColumns: [
 		{
@@ -39,6 +41,23 @@ const options = reactive({
 			defaultValue: [startTime, endTime],
 			startPlaceholder: '自定义开始时间',
 			endPlaceholder: '自定义结束时间',
+		},
+		{
+			prop: 'month',
+			label: '考勤月份',
+			type: 'month',
+		},
+	],
+	formColumns: [
+		{
+			prop: 'yearTime',
+			label: '年份',
+			type: 'yearrange',
+			sort: 4,
+			onChange: (val: any, col: any, formParams: any) => {
+				console.log(val);
+				console.log(formParams);
+			},
 		},
 	],
 	columns: [
@@ -155,9 +174,10 @@ const options = reactive({
 			minWidth: '120px',
 			type: 'treeSelect',
 			sort: 6,
-			dicKey: 'id',
+			nodeKey: 'id',
 			// showCheckbox: true,
 			// multiple: true,
+			formCheckStrictly: true,
 			dicData: [
 				{
 					id: 1,
@@ -182,6 +202,9 @@ const options = reactive({
 			onClear: (col: any, formParams: any, formColumns: any[], formColumnsMap: Map<string, any>) => {
 				console.log('onClear', col, formParams, formColumns, formColumnsMap);
 			},
+			onChange: (val: any, col: any, formParams: any) => {
+				formParams.deptId = val;
+			},
 		},
 		{
 			prop: 'region',
@@ -205,7 +228,7 @@ const options = reactive({
 							leaf: level >= 2,
 						}));
 						resolve(nodes);
-					}, 200);
+					}, 2000);
 				},
 			},
 			// loadDicData: (col, done) => {
@@ -334,7 +357,7 @@ setTimeout(() => {
 }, 5000);
 const onConfirmSearch = searchParams => {
 	tableReactive.loading = true;
-	console.log(crudTable.value.getSearchFormParams());
+	console.log(crudTable.value.getSearchFormParams(), searchParams);
 	setTimeout(() => {
 		tableReactive.loading = false;
 	}, 500);
@@ -388,6 +411,9 @@ const onRefresh = () => {
 					</template>
 					刷新
 				</el-button>
+			</template>
+			<template #search-month="{ formParams }">
+				<el-date-picker v-model="formParams.month" type="month" placeholder="选择考勤月份" value-format="YYYY-MM" />
 			</template>
 			<template #form-name="{ formParams }">
 				<div>自定义表单{{ formParams.name }}列</div>

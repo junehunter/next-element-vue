@@ -124,6 +124,9 @@ export default defineComponent({
 				emit('play', video, container);
 				_loadModelDetectFrame(canvasContainer, video);
 			});
+			player.value.on('error', (e: any) => {
+				emit('error', e);
+			});
 			_createScreenshotBtn(container);
 			emit('loaded', { player: player.value, video });
 		};
@@ -163,6 +166,9 @@ export default defineComponent({
 			player.value.on('play', () => {
 				emit('play', video, container);
 				_loadModelDetectFrame(canvasContainer, video);
+			});
+			player.value.on('error', (e: any) => {
+				emit('error', e);
 			});
 			_createScreenshotBtn(container);
 			emit('loaded', { player: player.value, video });
@@ -213,6 +219,9 @@ export default defineComponent({
 				emit('play', video, container);
 				_loadModelDetectFrame(canvasContainer, video);
 			});
+			player.value.on('error', (e: any) => {
+				emit('error', e);
+			});
 			_createScreenshotBtn(container);
 			emit('loaded', { player: player.value, video });
 		};
@@ -250,8 +259,8 @@ export default defineComponent({
 				playerMpgets.value.attachMediaElement(video as HTMLVideoElement);
 				playerMpgets.value.load();
 				// playerMpgets.value.play();
-				playerMpgets.value.on('error', () => {
-					emit('error', video);
+				playerMpgets.value.on('error', (e: any) => {
+					emit('error', e);
 				});
 				_createScreenshotBtn(container);
 				// 创建一个canvas画布，并将画布放置播放器前面，防止遮挡播放器上面其他功能按钮
@@ -290,6 +299,9 @@ export default defineComponent({
 			player.value.on('play', () => {
 				emit('play', video, container);
 				_loadModelDetectFrame(canvasContainer, video);
+			});
+			player.value.on('error', (e: any) => {
+				emit('error', e);
 			});
 			_createScreenshotBtn(container);
 			emit('loaded', { player: player.value, video });

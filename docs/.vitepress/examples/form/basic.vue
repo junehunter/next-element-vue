@@ -21,12 +21,24 @@ const columns = [
 		type: 'input',
 		span: 24,
 		required: true,
-		renderDivider: () => {
+		renderDividerAfter: () => {
 			return h(
 				ElDivider,
 				{
 					vertical: true,
 					contentPosition: 'left',
+				},
+				{
+					default: '这里是分割线了',
+				}
+			);
+		},
+		renderDividerBefore: () => {
+			return h(
+				ElDivider,
+				{
+					vertical: true,
+					contentPosition: 'right',
 				},
 				{
 					default: '这里是分割线了',

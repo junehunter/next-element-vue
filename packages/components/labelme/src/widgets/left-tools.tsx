@@ -16,6 +16,9 @@ export default defineComponent({
 			emit('change', type);
 		};
 		const onKeydownChangeTools = (e: KeyboardEvent) => {
+			const target = e.target as HTMLElement;
+			const isTyping = target.closest('input, textarea, [contenteditable="true"]');
+			if (isTyping) return;
 			let type = toolsActive!.value;
 			switch (e.code) {
 				case 'KeyP':

@@ -45,6 +45,6 @@ form/input-table-select
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------|
 | prop | 字段属性 | string | -  | - |
 | label | 字段名称 | string | -  | - |
-| type | 表单类型 | string | `input` `password` `inputInteger` `inputNumber` `textarea` `select` `radio` `checkbox` `date` `timeSelect` `datetime` `daterange` `datetimerange` `numberRange` `inputTableSelect` `uploadImage` `treeSelect` `cascader` `timePicker` | input |
+| type | 表单类型 | string | `input` `password` `inputInteger` `inputNumber` `textarea` `select` `radio` `checkbox` `date` `timeSelect` `datetime` `daterange` `monthrange` `yearrange` `datetimerange` `numberRange` `inputTableSelect` `uploadImage` `treeSelect` `cascader` `timePicker` | input |
 | multiple | 是否多选 | boolean | - | false |
 | collapseTags | 是否多选时是否折叠标签 | boolean | - | true |

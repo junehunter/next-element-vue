@@ -76,7 +76,7 @@ export default defineComponent({
 		const _formColumns = ref<FormItemProps[]>([]);
 		const formColumnsMap = reactive(new Map<string, FormItemProps>());
 		const formRules = reactive<FormRules>({}) as any;
-		const _updateFormColumns = () => {
+		const updateFormColumns = () => {
 			const columns = props.columns as FormItemProps[];
 			_formColumns.value = columns;
 			// 可以编辑时
@@ -104,11 +104,15 @@ export default defineComponent({
 					rules.push(...col.rules);
 				}
 				formRules[col.prop] = rules;
-				if (!col.dicData?.length && col.loadDicData) {
+				if (!col.dicData?.length && col.loadDicData && col._dictDataLoading === undefined) {
+					// 设置加载状态，防止重复加载, 只有首次col._dictDataLoading为undefined时才加载
+					col._dictDataLoading = true;
 					col.loadDicData(
 						col,
 						(data: any[]) => {
-							if (data?.length) col.dicData = data;
+							if (Array.isArray(data) && data?.length) col.dicData = data;
+							col._dictDataLoading = false;
+							updateFormColumns();
 						},
 						formParams
 					);
@@ -128,7 +132,8 @@ export default defineComponent({
 			() => [props.columns, props.formDatum],
 			([_, formVal]) => {
 				Object.assign(_formDatum.value, formVal);
-				_updateFormColumns();
+				merge(formParams, _formDatum.value);
+				updateFormColumns();
 			},
 			{
 				deep: true,
@@ -270,7 +275,7 @@ export default defineComponent({
 		];
 		const renderFormItem = (col: FormItemProps) => {
 			if (slots[formSlotName(col.prop)]) {
-				return slots[formSlotName(col.prop)]({ column: col, formParams });
+				return slots[formSlotName(col.prop)]({ column: col, formParams, formColumns, formColumnsMap });
 			} else if (col.type === 'input' || !col.type) {
 				const placeholder = col.placeholder || t('next.form.input') + col.label;
 				return (
@@ -476,7 +481,7 @@ export default defineComponent({
 						editable={valueExist(col.editable, false)}
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
-						onUpdate:modelValue={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'datetime') {
@@ -493,7 +498,7 @@ export default defineComponent({
 						editable={valueExist(col.editable, false)}
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
-						onUpdate:modelValue={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'daterange') {
@@ -503,7 +508,7 @@ export default defineComponent({
 						v-model={formParams[col.prop]}
 						placeholder={placeholder}
 						type="daterange"
-						valueFormat={valueExist(col.format, 'YYYY-MM-DD ')}
+						valueFormat={valueExist(col.format, 'YYYY-MM-DD')}
 						format={valueExist(col.format, 'YYYY-MM-DD')}
 						range-separator={valueExist(col.rangeSeparator, t('next.date.rangeSeparator'))}
 						start-placeholder={valueExist(col.startPlaceholder, t('next.date.startPlaceholder'))}
@@ -514,7 +519,49 @@ export default defineComponent({
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
 						shortcuts={col.shortcuts || _defaultShortcuts}
-						onUpdate:modelValue={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
+					></ElDatePicker>
+				);
+			} else if (col.type === 'monthrange') {
+				const placeholder = col.placeholder || t('next.form.select') + col.label;
+				return (
+					<ElDatePicker
+						v-model={formParams[col.prop]}
+						placeholder={placeholder}
+						type="monthrange"
+						valueFormat={valueExist(col.format, 'YYYY-MM')}
+						format={valueExist(col.format, 'YYYY-MM')}
+						range-separator={valueExist(col.rangeSeparator, t('next.date.rangeSeparator'))}
+						start-placeholder={valueExist(col.startPlaceholder, t('next.date.startPlaceholder'))}
+						end-placeholder={valueExist(col.endPlaceholder, t('next.date.endPlaceholder'))}
+						disabledDate={(time: Date) => (col.disabledDate ? col.disabledDate(time, formParams) : _defaultDisabledDate(time))}
+						clearable={valueExist(col.clearable, true)}
+						editable={valueExist(col.editable, false)}
+						disabled={valueExist(col.disabled, false)}
+						readonly={valueExist(col.readonly, false)}
+						shortcuts={col.shortcuts || _defaultShortcuts}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
+					></ElDatePicker>
+				);
+			} else if (col.type === 'yearrange') {
+				const placeholder = col.placeholder || t('next.form.select') + col.label;
+				return (
+					<ElDatePicker
+						v-model={formParams[col.prop]}
+						placeholder={placeholder}
+						type="yearrange"
+						valueFormat={valueExist(col.format, 'YYYY')}
+						format={valueExist(col.format, 'YYYY')}
+						range-separator={valueExist(col.rangeSeparator, t('next.date.rangeSeparator'))}
+						start-placeholder={valueExist(col.startPlaceholder, t('next.date.startPlaceholder'))}
+						end-placeholder={valueExist(col.endPlaceholder, t('next.date.endPlaceholder'))}
+						disabledDate={(time: Date) => (col.disabledDate ? col.disabledDate(time, formParams) : _defaultDisabledDate(time))}
+						clearable={valueExist(col.clearable, true)}
+						editable={valueExist(col.editable, false)}
+						disabled={valueExist(col.disabled, false)}
+						readonly={valueExist(col.readonly, false)}
+						shortcuts={col.shortcuts || _defaultShortcuts}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'datetimerange') {
@@ -535,7 +582,7 @@ export default defineComponent({
 						disabled={valueExist(col.disabled, false)}
 						readonly={valueExist(col.readonly, false)}
 						shortcuts={col.shortcuts || _defaultShortcuts}
-						onUpdate:modelValue={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
+						onChange={(event: Event) => col.onChange?.(event, col, formParams, formColumns, formColumnsMap)}
 					></ElDatePicker>
 				);
 			} else if (col.type === 'timeSelect') {
@@ -632,7 +679,7 @@ export default defineComponent({
 					<NextTreeCascader
 						v-model={formParams[col.prop]}
 						disabled={valueExist(col.disabled, false)}
-						column={col}
+						column={valueExist(formColumnsMap.get(col.prop), col)}
 						formParams={formParams}
 						onChange={(...arg: any) => col.onChange?.(...arg, col, formParams, formColumns, formColumnsMap)}
 					></NextTreeCascader>
@@ -661,6 +708,7 @@ export default defineComponent({
 							if (column.hide) return null;
 							return (
 								<>
+									{column.renderDividerBefore ? <ElCol span={24}>{column.renderDividerBefore()}</ElCol> : null}
 									<ElCol span={valueExist(column.span, options.colSpanFixed, colSpan.value)}>
 										<ElFormItem
 											prop={column.prop}
@@ -686,7 +734,7 @@ export default defineComponent({
 											}}
 										</ElFormItem>
 									</ElCol>
-									{column.renderDivider ? <ElCol span={24}>{column.renderDivider()}</ElCol> : null}
+									{column.renderDividerAfter ? <ElCol span={24}>{column.renderDividerAfter()}</ElCol> : null}
 								</>
 							);
 						})}

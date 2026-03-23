@@ -129,6 +129,9 @@ export default defineComponent({
 			}
 		};
 		const onKeydownPrevNext = (e: KeyboardEvent) => {
+			const target = e.target as HTMLElement;
+			const isTyping = target.closest('input, textarea, [contenteditable="true"]');
+			if (isTyping) return;
 			if (loading.value) return;
 			if (!['KeyA', 'KeyD'].includes(e.code)) return;
 			loading.value = true;

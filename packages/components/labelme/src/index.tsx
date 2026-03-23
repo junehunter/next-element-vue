@@ -134,6 +134,9 @@ export default defineComponent({
 			window.removeEventListener('resize', updateMainContentHeight);
 		});
 		const onKeydownPrevNext = (e: KeyboardEvent) => {
+			const target = e.target as HTMLElement;
+			const isTyping = target.closest('input, textarea, [contenteditable="true"]');
+			if (isTyping) return;
 			if (loading.value) return;
 			if (e.code === 'KeyA' || e.key === 'ArrowLeft') {
 				onPaginationPrev();

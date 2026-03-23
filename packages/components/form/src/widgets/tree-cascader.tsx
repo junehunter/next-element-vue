@@ -28,13 +28,13 @@ export default defineComponent({
 		warnHandlerIgnore();
 		const { t } = useLocale();
 		const _modelValue = ref(props.modelValue);
+		const _column = props.column;
 		watch(
 			() => props.modelValue,
 			(val: any) => {
 				_modelValue.value = val;
 			}
 		);
-		const _column = props.column;
 		const placeholder = _column.placeholder || t('next.form.select') + _column.label;
 		const _defaultProps = {
 			label: 'label',
@@ -71,20 +71,23 @@ export default defineComponent({
 		});
 		const renderContent = () => {
 			return (
-				<ElCascader
-					ref={treeSelectRef}
-					v-model={_modelValue.value}
-					placeholder={placeholder}
-					props={cascaderProps}
-					separator={valueExist(cascaderProps.separator, '/')}
-					options={valueExist(_column.dicData, [])}
-					disabled={valueExist(props.disabled, false)}
-					clearable={valueExist(_column.clearable, true)}
-					filterable={valueExist(_column.filterable, false)}
-					collapse-tags
-					collapse-tags-tooltip
-					onChange={onChange}
-				></ElCascader>
+				<div v-loading={valueExist(_column._dictDataLoading, false)} style="width: 100%;">
+					<ElCascader
+						ref={treeSelectRef}
+						v-model={_modelValue.value}
+						placeholder={placeholder}
+						props={cascaderProps}
+						separator={valueExist(cascaderProps.separator, '/')}
+						options={valueExist(_column.dicData, [])}
+						disabled={valueExist(props.disabled, false)}
+						clearable={valueExist(_column.clearable, true)}
+						filterable={valueExist(_column.filterable, false)}
+						show-all-levels={valueExist(_column.showAllLevels, true)}
+						collapse-tags={valueExist(_column.collapseTags, true)}
+						collapse-tags-tooltip={valueExist(_column.collapseTagsTooltip, true)}
+						onChange={onChange}
+					></ElCascader>
+				</div>
 			);
 		};
 		return () => <>{renderContent()}</>;

@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, nextTick, ref, watch } from 'vue';
 import { ElTreeSelect } from 'element-plus';
 import { valueExist, warnHandlerIgnore } from 'packages/hooks/global-hook';
 import { useLocale } from 'packages/hooks';
@@ -57,6 +57,11 @@ export default defineComponent({
 			const val = item[valueKey];
 			_column.treeSelectNodeClick?.(item, node, _formParams);
 			onChange(val);
+			if (_column.checkStrictly) {
+				nextTick(() => {
+					treeSelectRef.value?.blur();
+				});
+			}
 		};
 		const onNodeContextmenu = (...arg) => {
 			emit('node-contextmenu', ...arg);
@@ -100,6 +105,7 @@ export default defineComponent({
 				<ElTreeSelect
 					ref={treeSelectRef}
 					v-model={_modelValue.value}
+					v-loading={valueExist(_column._dictDataLoading, false)}
 					placeholder={placeholder}
 					data={valueExist(_column.dicData, [])}
 					node-key={valueExist(_column.nodeKey, 'id')}
@@ -108,6 +114,7 @@ export default defineComponent({
 					leaf-only={valueExist(_column.leafOnly, false)}
 					render-after-expand={valueExist(_column.renderAfterExpand, true)}
 					check-strictly={valueExist(_column.checkStrictly, false)}
+					check-on-click-node={valueExist(_column.checkOnClickNode, false)}
 					disabled={valueExist(props.disabled, false)}
 					clearable={valueExist(_column.clearable, true)}
 					accordion={valueExist(_column.accordion, false)}

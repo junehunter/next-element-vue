@@ -9,6 +9,7 @@ const startTime = useDateFormat(nowTimestamp - 1000 * 60 * 60 * 24, 'YYYY-MM-DD 
 const endTime = useDateFormat(nowTimestamp, 'YYYY-MM-DD HH:mm:ss').value;
 const options = reactive({
 	searchLabelWidth: '4em',
+	formLabelWidth: '6em',
 	border: true,
 	operationsWidth: 220,
 	addBtn: true,
@@ -16,8 +17,19 @@ const options = reactive({
 	delBtn: true,
 	viewBtn: true,
 	batchDelBtn: true,
-	searchColumn: [],
-	formLabelWidth: '6em',
+	searchColumns: [],
+	formColumns: [
+		{
+			prop: 'yearTime',
+			label: '年份',
+			type: 'datetime',
+			sort: 4,
+			onChange: (val: any, col: any, formParams: any) => {
+				console.log(val);
+				console.log(formParams);
+			},
+		},
+	],
 	columns: [
 		{
 			prop: 'name',
@@ -135,7 +147,8 @@ const options = reactive({
 				// console.log(formParams, rows, col);
 			},
 			tableSelectDefaultValue: (row, col, done) => {
-				const tags = row.slelectUserTags;
+				const tags = row.slelectUser;
+				console.log(row);
 				done(tags);
 			},
 			tableSelect: {
@@ -279,10 +292,11 @@ const options = reactive({
 			prop: 'code',
 			label: '区域',
 			type: 'cascader',
+			sort: 6,
 			span: 24,
 			required: true,
 			dicData: [],
-			treeSelectProps: { label: 'name', value: 'code' },
+			treeSelectProps: { label: 'label', value: 'value' },
 			loadDicData: (col, done) => {
 				setTimeout(() => {
 					const dicData = [
@@ -311,7 +325,8 @@ const options = reactive({
 						},
 					];
 					done(dicData);
-				}, 3000);
+					console.log('加载区域数据完成');
+				}, 10000);
 			},
 		},
 	],
@@ -365,8 +380,7 @@ setTimeout(() => {
 			startDate: '2023-9-7 12:00:00',
 			endDate: '2023-9-9 12:00:00',
 			image: new URL('/logo.svg', import.meta.url).href,
-			slelectUser: [3, 4],
-			slelectUserTags: [
+			slelectUser: [
 				{
 					id: 3,
 					name: '王五',

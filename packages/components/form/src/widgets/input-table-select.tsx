@@ -82,13 +82,6 @@ const InputTableSelect = defineComponent({
 		};
 		const multipleSelection = ref<any[]>([]);
 		const sinleSelection = ref<string | number>('');
-		_column.tableSelectDefaultValue?.(props.formParams, _column, (rows: any[]) => {
-			if (rows?.length) {
-				_column.tableSelectRows = rows;
-				multipleSelection.value = rows;
-				sinleSelection.value = rows[0][propsValue];
-			}
-		});
 		const _disabledSelect = computed(() => {
 			if (!required) return false;
 			if (_options.selectType === 'radio') {
@@ -182,6 +175,25 @@ const InputTableSelect = defineComponent({
 			() => {
 				_sinleSelection.value = sinleSelection.value;
 				_updateTags();
+			},
+			{
+				deep: true,
+				immediate: true,
+			}
+		);
+		// 动态加载详情或数据更新后，重新设置表格选择器的默认值
+		watch(
+			() => props.formParams[_column.prop],
+			val => {
+				if (val) {
+					_column.tableSelectDefaultValue?.(props.formParams, _column, (rows: any[]) => {
+						if (rows?.length) {
+							_column.tableSelectRows = rows;
+							multipleSelection.value = rows;
+							sinleSelection.value = rows[0][propsValue];
+						}
+					});
+				}
 			},
 			{
 				deep: true,

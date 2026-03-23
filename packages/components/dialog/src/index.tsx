@@ -42,7 +42,7 @@ export default defineComponent({
 		},
 		closeOnClickModal: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 		showClose: {
 			type: Boolean,

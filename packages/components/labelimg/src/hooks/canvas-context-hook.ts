@@ -69,10 +69,13 @@ export const DrawRectCanvas = ({ canvas, originWidth, originHeight }: { canvas: 
 		};
 		callback && callback(rect, { endX, endY });
 	};
-	const documentKeydown = (event: KeyboardEvent) => {
+	const documentKeydown = (e: KeyboardEvent) => {
+		const target = e.target as HTMLElement;
+		const isTyping = target.closest('input, textarea, [contenteditable="true"]');
+		if (isTyping) return;
 		if (isWKeyPressed) return;
-		if (event.code === 'KeyW') {
-			event.preventDefault();
+		if (e.code === 'KeyW') {
+			e.preventDefault();
 			isWKeyPressed = true;
 			canvas!.style.cursor = 'crosshair';
 			canvas!.style.zIndex = '11';
